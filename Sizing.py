@@ -11,11 +11,9 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from ValueStreams import DemandChargeReduction, EnergyTimeShift
-from ValueStreamsDER import Reliability
-from Technology import BatteryTech
-from TechnologiesDER import CurtailPV
-from storagevet.Input import Input
+# from ValueStreams import DemandChargeReduction, EnergyTimeShift
+from ValueStreamsDER import Reliability, DemandChargeReduction, EnergyTimeShift
+from TechnologiesDER import CurtailPV, BatterySizing
 import sys
 import copy
 import numpy as np
@@ -168,13 +166,9 @@ class Scenario(object):
         # this will have to be more dynamic in RIVET
 
         # AC versus DC handling
-        self.opt_results['ac_gen'] = 0
-        self.opt_results['dc_gen'] = 0
+        self.opt_results['generation'] = 0
         if self.pv:
-            if self.pv_loc == 'ac':
-                self.opt_results['ac_gen'] += self.opt_results['PV_Gen (kW)']
-            if self.pv_loc == 'dc':
-                self.opt_results['dc_gen'] += self.opt_results['PV_Gen (kW)']
+            self.opt_results['generation'] += self.opt_results['PV_Gen (kW)']
 
         # logic to exclude site or aux load from load used
         self.opt_results['load'] = 0
@@ -235,7 +229,7 @@ class Scenario(object):
         self.tech.update({'binary': self.input.Scenario['binary'],
                           'dt': self.dt})
         if self.Battery is not None:
-            self.technologies[name] = BatteryTech.BatteryTech('Battery', self.financials, self.input.Battery,  self.tech, self.cycle_life)
+            self.technologies[name] = BatterySizing.BatterySizing('Battery', self.financials, self.input.Battery,  self.tech, self.cycle_life)
 
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding
@@ -273,29 +267,28 @@ class Scenario(object):
         print("Adding Dispatch Services...") if self.verbose else None
         service_active_map = {
             'DCM': self.input.DCM,
-            'retailTixmeShift': self.input.retailTimeShift
+            'retailTimeShift': self.input.retailTimeShift
         }
         service_action_map = {
             'DCM': DemandChargeReduction.DemandChargeReduction,
             'retailTimeShift': EnergyTimeShift.EnergyTimeShift
         }
-        # for service in service_action_map.keys():
-        #     if service_active_map[service] is not None:
-        #         print(service) if self.verbose else None
-        #         new_service = service_action_map[service](service_active_map[service], self.technologies['Storage'], self.dt)
-        #         self.services[service] = new_service
-        if self.input.retailTimeShift is not None:
-            self.input.retailTimeShift.update({'price': self.financials.fin_inputs.loc[:, 'p_energy'],
-                                               'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Demand_rate']})
-            new_service = EnergyTimeShift.EnergyTimeShift(self.input.retailTimeShift, self.technologies['Storage'], self.dt)
-            self.services['retailTimeShift'] = new_service
-
-        if self.input.DCM is not None:
-            self.input.DCM.update({'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Energy_price'],
-                                   'billing_period': self.financials.fin_inputs.loc[:, 'billing_period']})
-            new_service = DemandChargeReduction.DemandChargeReduction(self.input.DCM, self.technologies['Storage'], self.dt)
-            self.services['DCM'] = new_service
-
+        for service in service_action_map.keys():
+            if service_active_map[service] is not None:
+                print(service) if self.verbose else None
+                new_service = service_action_map[service](service_active_map[service], self.financials, self.technologies['Storage'], self.dt)
+                self.services[service] = new_service
+        # if self.input.retailTimeShift is not None:
+        #     self.input.retailTimeShift.update({'price': self.financials.fin_inputs.loc[:, 'p_energy'],
+        #                                        'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Demand_rate']})
+        #     new_service = EnergyTimeShift.EnergyTimeShift(self.input.retailTimeShift, self.technologies['Storage'], self.dt)
+        #     self.services['retailTimeShift'] = new_service
+        #
+        # if self.input.DCM is not None:
+        #     self.input.DCM.update({'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Energy_price'],
+        #                            'billing_period': self.financials.fin_inputs.loc[:, 'billing_period']})
+        #     new_service = DemandChargeReduction.DemandChargeReduction(self.input.DCM, self.technologies['Storage'], self.dt)
+        #     self.services['DCM'] = new_service
 
     def add_control_constraints(self, deferral_check=False):
         """ Creates time series control constraints for each technology based on predispatch services.
@@ -307,7 +300,7 @@ class Scenario(object):
         """
         tech = self.technologies['Storage']
         for service in self.predispatch_services.values():
-            tech.add_value_streams(service, predispatch=True)
+            tech.add_service(service, predispatch=True)
         feasible_check = tech.calculate_control_constraints(self.opt_results.index)  # should pass any user inputted constraints here
 
         if (feasible_check is not None) & (not deferral_check):
@@ -415,8 +408,8 @@ class Scenario(object):
 
         for service in self.services.values():
             variable_dic.update(service.add_vars(opt_var_size))  # add optimization variables associated with each service
-            obj_expression.update(service.objective_function(variable_dic, subs, mask))  # add objective expression associated with each service
-            obj_const += service.build_constraints(variable_dic)   # add constraints associated with each service
+            obj_expression.update(service.objective_function(variable_dic, subs))  # add objective expression associated with each service
+            obj_const += service.build_constraints(variable_dic, subs)   # add constraints associated with each service
             temp_power, temp_energy = service.power_ene_reservations(variable_dic)
             power_reservations = power_reservations + np.array(temp_power)   # add power reservations associated with each service
             energy_reservations = energy_reservations + np.array(temp_energy)   # add energy reservations associated with each service
@@ -433,8 +426,7 @@ class Scenario(object):
         # TODO: make slack, binary class attributes
         for tech in self.technologies.values():
 
-            obj_expression.update(tech.objective_function(variable_dic, mask, self.dt,
-                                                          self.input.Scenario['slack'],
+            obj_expression.update(tech.objective_function(variable_dic, mask, self.dt, self.input.Scenario['slack'],
                                                           self.input.Scenario['startup']))
             obj_const += tech.build_master_constraints(variable_dic, self.dt, mask, reservations,
                                                        self.input.Scenario['binary'],

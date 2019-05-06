@@ -12,10 +12,11 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 from Technology.DER import DER
+from TechnologiesDER.TechnologySizing import TechnologySizing
 import cvxpy as cvx
 
 
-class CurtailPV(DER):
+class CurtailPV(TechnologySizing):
     """ Pre_IEEE 1547 2018 standards. Assumes perfect foresight. Ability to curtail PV generation, unlike ChildPV.
 
     """
@@ -29,7 +30,7 @@ class CurtailPV(DER):
             params (dict): params dictionary from dataframe for one case
             time_series (series): time series dataframe
         """
-        DER.__init__(self, name, tech_params)
+        TechnologySizing.__init__(self, name, tech_params, 'PV curtailed')
         self.no_export = tech_params['no_export']
         self.generation = time_series['PV_Gen (kW)']
         self.load = time_series['Site_Load (kW)']

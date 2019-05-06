@@ -198,7 +198,7 @@ class Financial:
         results = copy.deepcopy(results)
         # results.loc[:, 'net_power'] = results.loc[:, 'dis'] - results.loc[:, 'ch'] - results.loc[:, 'load'] + results.loc[:, 'ac_gen'] + results.loc[:, 'dc_gen']
         results.loc[:, 'net_power'] = results.loc[:, 'dis'] - results.loc[:, 'ch'] - results.loc[:, 'load'] + results.loc[:, 'pv_out']
-        results.loc[:, 'original_net_power'] = - results.loc[:, 'load'] + results.loc[:, 'ac_gen'] + results.loc[:, 'dc_gen']
+        results.loc[:, 'original_net_power'] = - results.loc[:, 'load']
         # calculate energy cost every time step
         results.loc[:, 'energy_cost'] = -self.dt * np.multiply(results.loc[:, 'net_power'], self.fin_inputs.loc[:, 'p_energy'])
         results.loc[:, 'original_energy_cost'] = -self.dt * np.multiply(results.loc[:, 'original_net_power'], self.fin_inputs.loc[:, 'p_energy'])

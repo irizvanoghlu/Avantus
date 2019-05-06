@@ -1,5 +1,5 @@
 """
-ParamsDER.py
+Input.py
 
 """
 
@@ -27,11 +27,17 @@ from prettytable import PrettyTable
 import matplotlib.pyplot as plt
 from pandas import read_csv
 
+# from pandas import Series
+# import plotly.plotly as py
 import numpy as np
-import storagevet.Library as Lib
+# import lxml
+# matplotlib.use("TkAgg")
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# from matplotlib.figure import Figure
+import svet_helper as sh
 
 
-class ParamsDER:
+class Input:
     """
         # TODO note to self: make better class comment! - YY
         class attributes are made up of services, technology, and any other needed inputs. The attributes are filled
@@ -41,9 +47,9 @@ class ParamsDER:
     @classmethod
     def initialize(cls, filename, schema):
         """
-            Initialize the class variable of the ParamsDER class that will be used to create ParamsDER objects for the
+            Initialize the class variable of the Input class that will be used to create Input objects for the
             sensitivity analyses. Specifically, it will preload the needed CSV and/or time series data, identify
-            sensitivity variables, and prepare so-called default ParamsDER values as a template for creating objects.
+            sensitivity variables, and prepare so-called default Input values as a template for creating objects.
 
             Args:
                 filename (string): filename of XML file to load for StorageVET sensitivity analysis
@@ -83,10 +89,10 @@ class ParamsDER:
         else:
             cls.instances[0] = cls.template
 
-        logging.info('Finished ParamsDER class initialization...!')
+        logging.info('Finished Input class initialization...!')
 
     def __init__(self):
-        """ Initialize all ParamsDER objects with the following attributes.
+        """ Initialize all Input objects with the following attributes.
         """
         #tech
         logging.info('Adding info about Battery...')
@@ -148,8 +154,8 @@ class ParamsDER:
             cls.fill_active(element.tag)
             for properties in element:
                 # fills dictionary with the values from the xml file
-                dictionary[properties.tag] = ParamsDER.convert_data_type(properties.find('value').text,
-                                                                         properties.find('Data_Type').text)
+                dictionary[properties.tag] = Input.convert_data_type(properties.find('value').text,
+                                                                     properties.find('Data_Type').text)
                 if flag and properties.get('analysis') is not None and properties.get('analysis')[0].lower() == "y":
                     temp = dictionary[properties.tag]
                     dictionary[properties.tag] = set(ast.literal_eval(properties.find('sensitivity').text))
@@ -418,7 +424,7 @@ class ParamsDER:
             if rowNum == 0:
                 tags = row
                 tags.remove('Category')
-                tags.remove('ParamsDER Name in UI')
+                tags.remove('Input Name in UI')
                 tags.remove('active')
                 tags.remove('analysis')
                 tags.remove('Validation Criteria')
@@ -597,20 +603,20 @@ class ParamsDER:
                 elem = cls.xmlTree.findall(element.get('name'))
                 elem = elem[0].find(properties.get('name'))
                 type_of_input = elem.find('Data_Type').text
-                value = ParamsDER.convert_data_type(value, type_of_input)
+                value = Input.convert_data_type(value, type_of_input)
                 tups = element.get('name'), properties.get('name')
                 if tups in list(cls.sensitivity['attributes'].keys()):
                     sensitivity = attribute.find(properties.get('name')).find('sensitivity').text
-                    for values in ParamsDER.extract_data(sensitivity, type_of_input):
-                        error_list = ParamsDER.checks_for_validate(values, properties, type_of_input,
-                                                                   type_of_obj, minimum, maximum, error_list)
+                    for values in Input.extract_data(sensitivity, type_of_input):
+                        error_list = Input.checks_for_validate(values, properties, type_of_input,
+                                                               type_of_obj, minimum, maximum, error_list)
 
-                error_list = ParamsDER.checks_for_validate(value, properties, type_of_input,
-                                                           type_of_obj, minimum, maximum, error_list)
+                error_list = Input.checks_for_validate(value, properties, type_of_input,
+                                                       type_of_obj, minimum, maximum, error_list)
 
         # checks if error_list is not empty.
         if error_list:
-            ParamsDER.error(error_list)
+            Input.error(error_list)
 
         return True
 
@@ -623,14 +629,14 @@ class ParamsDER:
         start_year = Scenario['start_year']
         dt = Scenario['dt']
         opt_years = Scenario['opt_years']
-        time_series_dict = ParamsDER.datasets["time_series"]
+        time_series_dict = Input.datasets["time_series"]
         incl_site_load = Scenario['incl_site_load']
 
         for time_series_name in time_series_dict:
             time_series = time_series_dict[time_series_name]
             data_length = len(time_series.index)
             years_included = (time_series.index - pd.Timedelta('1s')).year.unique()
-            leap_years = [Lib.is_leap_yr(year) for year in years_included]
+            leap_years = [sh.is_leap_yr(year) for year in years_included]
             timeseries_dt = sum(8784 * leap_years) + sum(8760 * np.invert(leap_years))
 
             if any(value < years_included[0] for value in opt_years):
@@ -703,12 +709,12 @@ class ParamsDER:
         if minimum is None and maximum is None:
             return error_list
         elif maximum is None and minimum is not None:
-            minimum = ParamsDER.convert_data_type(minimum, type_of_obj)
+            minimum = Input.convert_data_type(minimum, type_of_obj)
         elif maximum is not None and minimum is None:
-            maximum = ParamsDER.convert_data_type(maximum, type_of_obj)
+            maximum = Input.convert_data_type(maximum, type_of_obj)
         else:
-            minimum = ParamsDER.convert_data_type(minimum, type_of_obj)
-            maximum = ParamsDER.convert_data_type(maximum, type_of_obj)
+            minimum = Input.convert_data_type(minimum, type_of_obj)
+            maximum = Input.convert_data_type(maximum, type_of_obj)
 
         if minimum is not None and value < minimum:
             error_list.append((properties.get('name'), value, "size", minimum, maximum))
@@ -744,7 +750,7 @@ class ParamsDER:
         treeRoot = tree.getroot()
         schema = cls.schema_tree
 
-        logging.info("Printing summary table for class ParamsDER")
+        logging.info("Printing summary table for class Input")
         table = PrettyTable()
         table.field_names = ["Category", "Element", "Active?", "Property", "Analysis?",
                              "Value", "Value Type", "Sensitivity"]
@@ -758,7 +764,7 @@ class ParamsDER:
         print(table)
         if "y" in YesNo.lower():
             logging.info('\n' + str(table))
-            logging.info("Successfully printed summary table for class ParamsDER in log file")
+            logging.info("Successfully printed summary table for class Input in log file")
 
         print("Printing all scenarios available for Sensitivity Analysis...")
         df = cls.df_analysis

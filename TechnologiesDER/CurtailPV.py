@@ -11,11 +11,11 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from Technology import Technology
+from Technology.DER import DER
 import cvxpy as cvx
 
 
-class CurtailPV(Technology.Technology):
+class CurtailPV(DER):
     """ Pre_IEEE 1547 2018 standards. Assumes perfect foresight. Ability to curtail PV generation, unlike ChildPV.
 
     """
@@ -29,10 +29,10 @@ class CurtailPV(Technology.Technology):
             params (dict): params dictionary from dataframe for one case
             time_series (series): time series dataframe
         """
-        Technology.Technology.__init__(self, name, tech_params, 'PV with controls')
+        DER.__init__(self, name, tech_params)
         self.no_export = tech_params['no_export']
-        self.generation = time_series['PV_gen']
-        self.load = time_series['site_load']
+        self.generation = time_series['PV_Gen (kW)']
+        self.load = time_series['Site_Load (kW)']
 
     def build_master_constraints(self, variables, dt, mask, reservations, binary, slack, startup):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

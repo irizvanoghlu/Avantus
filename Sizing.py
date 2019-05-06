@@ -1,5 +1,5 @@
 """
-Sizing.py
+Scenario.py
 
 This Python class contains methods and attributes vital for completing the scenario analysis.
 """
@@ -11,19 +11,23 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from storagevet.ValueStreams import DemandChargeReduction, EnergyTimeShift
+from ValueStreams import DemandChargeReduction, EnergyTimeShift
 from ValueStreamsDER import Reliability
-from storagevet.Technology import BatteryTech
-from TechnologyDER import CurtailPV
+from Technology import BatteryTech
+from TechnologiesDER import CurtailPV
+from storagevet.Input import Input
 import sys
 import copy
 import numpy as np
 import pandas as pd
 import cbaDER as Fin
 import cvxpy as cvx
-import storagevet.Library as Lib
+import svet_helper as sh
 import time
 import os
+import matplotlib.pyplot as plt
+import pickle
+import plotly as py
 from pathlib import Path
 import logging
 from prettytable import PrettyTable
@@ -121,18 +125,16 @@ class Scenario(object):
 
         """
         # create basic data table with dttm columns
-        self.opt_results = Lib.create_outputs_df(self.time_series.index)
+        self.opt_results = sh.create_outputs_df(self.time_series.index)
 
         # which columns are needed from time_series [input validation logic]
         needed_cols = []
         if self.incl_site_load:
-            needed_cols += ['site_load']
-        if self.incl_aux_load == '1':
-            needed_cols += ['aux_load']
+            needed_cols += ['Site_Load (kW)']
         if self.pv:
-            needed_cols += ['PV_gen']
+            needed_cols += ['PV_Gen (kW)']
         # user inputed constraints
-        self.user_cols = list(np.intersect1d(Lib.bound_names, list(self.time_series)))
+        self.user_cols = list(np.intersect1d(sh.bound_names, list(self.time_series)))
         # intersect1d() just finds the intersection of the 2 arrays. -HN
 
         # join in time_series data
@@ -160,7 +162,7 @@ class Scenario(object):
         self.opt_results = self.add_growth_data(self.opt_results, opt_years, self.dt, self.verbose)
 
         # create opt_agg (has to happen after adding future years)
-        self.opt_results = Lib.create_opt_agg(self.opt_results, self.input.Scenario['n'], self.dt)
+        self.opt_results = sh.create_opt_agg(self.opt_results, self.input.Scenario['n'], self.dt)
 
         # add individual generation data to general generation columns
         # this will have to be more dynamic in RIVET
@@ -170,16 +172,14 @@ class Scenario(object):
         self.opt_results['dc_gen'] = 0
         if self.pv:
             if self.pv_loc == 'ac':
-                self.opt_results['ac_gen'] += self.opt_results['PV_gen']
+                self.opt_results['ac_gen'] += self.opt_results['PV_Gen (kW)']
             if self.pv_loc == 'dc':
-                self.opt_results['dc_gen'] += self.opt_results['PV_gen']
+                self.opt_results['dc_gen'] += self.opt_results['PV_Gen (kW)']
 
         # logic to exclude site or aux load from load used
         self.opt_results['load'] = 0
         if self.incl_site_load:
-            self.opt_results['load'] += self.opt_results['site_load']
-        if self.incl_aux_load:
-            self.opt_results['load'] += self.opt_results['aux_load']
+            self.opt_results['load'] += self.opt_results['Site_Load (kW)']
 
         self.opt_results = self.opt_results.sort_index()
 
@@ -190,7 +190,7 @@ class Scenario(object):
 
         """
         print("Adding Financials...") if self.verbose else None
-        # adding data to cbaDER input dictionary ... there seems to be duplicates, couple XML parameters?
+        # adding data to Financial input dictionary ... there seems to be duplicates, couple XML parameters?
         input_tree.Finance['n'] = self.n
         input_tree.Finance['start_year'] = self.start_year
         input_tree.Finance['end_year'] = self.end_year
@@ -198,8 +198,8 @@ class Scenario(object):
         input_tree.Finance['predispatch'] = input_tree.active_service["pre-dispatch"]
         input_tree.Finance['def_growth'] = input_tree.Scenario['def_growth']
 
-        self.financials = Fin.cbaDER(input_tree.Finance, self.time_series, self.customer_tariff,
-                                     self.monthly_data, self.opt_years, self.dt)
+        self.financials = Fin.Financial(input_tree.Finance, self.time_series, self.customer_tariff,
+                                        self.monthly_data, self.opt_years, self.dt)
         self.financials.calc_retail_energy_price()
 
     def add_technology(self):
@@ -232,6 +232,8 @@ class Scenario(object):
         """
         # TODO: move self.cycle_life into self.tech
         # TODO: remove self.input.Battery (it is empty)
+        self.tech.update({'binary': self.input.Scenario['binary'],
+                          'dt': self.dt})
         if self.Battery is not None:
             self.technologies[name] = BatteryTech.BatteryTech('Battery', self.financials, self.input.Battery,  self.tech, self.cycle_life)
 
@@ -247,34 +249,53 @@ class Scenario(object):
         """
 
         print("Adding Predispatch Services...") if self.verbose else None
-        predispatch_service_active_map = {
-            'Reliability': self.input.Reliability
-        }
-        predispatch_service_action_map = {
-            'Reliability': Reliability.Reliability
-        }
-        for service in predispatch_service_action_map.keys():
-            if predispatch_service_active_map[service] is not None:
-                print(service) if self.verbose else None
-                new_service = predispatch_service_action_map[service](predispatch_service_active_map[service],
-                                                                      self.technologies['Storage'], self.opt_results,
-                                                                      self.financials.fin_inputs)
-                self.predispatch_services[service] = new_service
+        # predispatch_service_active_map = {
+        #     'Reliability': self.input.Reliability
+        # }
+        # predispatch_service_action_map = {
+        #     'Reliability': Reliability.Reliability
+        # }
+        # for service in predispatch_service_action_map.keys():
+        #     if predispatch_service_active_map[service] is not None:
+        #         print(service) if self.verbose else None
+        #         new_service = predispatch_service_action_map[service](predispatch_service_active_map[service],
+        #                                                               self.technologies['Storage'], self.opt_results,
+        #                                                               self.financials.fin_inputs)
+        #         self.predispatch_services[service] = new_service
+
+        if self.input.Reliability is not None:
+            self.input.Reliability.update()
+            print('Reliability') if self.verbose else None
+            new_service = Reliability.Reliability(self.input.Reliability, self.technologies['Storage'], self.opt_results,
+                                                  self.financials.fin_inputs)
+            self.predispatch_services['Reliability'] = new_service
 
         print("Adding Dispatch Services...") if self.verbose else None
         service_active_map = {
             'DCM': self.input.DCM,
-            'retailTimeShift': self.input.retailTimeShift
+            'retailTixmeShift': self.input.retailTimeShift
         }
         service_action_map = {
             'DCM': DemandChargeReduction.DemandChargeReduction,
             'retailTimeShift': EnergyTimeShift.EnergyTimeShift
         }
-        for service in service_action_map.keys():
-            if service_active_map[service] is not None:
-                print(service) if self.verbose else None
-                new_service = service_action_map[service](service_active_map[service], self.financials, self.technologies['Storage'], self.dt)
-                self.services[service] = new_service
+        # for service in service_action_map.keys():
+        #     if service_active_map[service] is not None:
+        #         print(service) if self.verbose else None
+        #         new_service = service_action_map[service](service_active_map[service], self.technologies['Storage'], self.dt)
+        #         self.services[service] = new_service
+        if self.input.retailTimeShift is not None:
+            self.input.retailTimeShift.update({'price': self.financials.fin_inputs.loc[:, 'p_energy'],
+                                               'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Demand_rate']})
+            new_service = EnergyTimeShift.EnergyTimeShift(self.input.retailTimeShift, self.technologies['Storage'], self.dt)
+            self.services['retailTimeShift'] = new_service
+
+        if self.input.DCM is not None:
+            self.input.DCM.update({'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Energy_price'],
+                                   'billing_period': self.financials.fin_inputs.loc[:, 'billing_period']})
+            new_service = DemandChargeReduction.DemandChargeReduction(self.input.DCM, self.technologies['Storage'], self.dt)
+            self.services['DCM'] = new_service
+
 
     def add_control_constraints(self, deferral_check=False):
         """ Creates time series control constraints for each technology based on predispatch services.
@@ -286,8 +307,8 @@ class Scenario(object):
         """
         tech = self.technologies['Storage']
         for service in self.predispatch_services.values():
-            tech.add_service(service, predispatch=True)
-        feasible_check = tech.calculate_control_constraints(self.opt_results.index, self.opt_results[self.user_cols])  # should pass any user inputted constraints here
+            tech.add_value_streams(service, predispatch=True)
+        feasible_check = tech.calculate_control_constraints(self.opt_results.index)  # should pass any user inputted constraints here
 
         if (feasible_check is not None) & (not deferral_check):
             # if not running deferral failure analysis and infeasible scenario then stop and tell user
@@ -348,12 +369,12 @@ class Scenario(object):
 
             # add optimization variable results to opt_results
             if not results.empty:
-                self.opt_results = Lib.update_df(self.opt_results, results)
+                self.opt_results = sh.update_df(self.opt_results, results)
 
             # add objective expressions to financial obj_val
             if not obj_exp.empty:
                 obj_exp.index = [opt_period]
-                self.financials.obj_val = Lib.update_df(self.financials.obj_val, obj_exp)
+                self.financials.obj_val = sh.update_df(self.financials.obj_val, obj_exp)
 
     def optimization_problem(self, mask):
         """ Sets up and runs optimization on a subset of data.
@@ -597,7 +618,7 @@ class Scenario(object):
 
                 # create new dataframe for missing year
                 new_index = pd.DatetimeIndex(start='01/01/' + str(yr), end='01/01/' + str(yr + 1), freq=pd.Timedelta(self.dt, unit='h'), closed='right')
-                new_data = Lib.create_outputs_df(new_index)
+                new_data = sh.create_outputs_df(new_index)
 
                 source_data = df[df['year'] == source_year]  # use source year data
 
@@ -615,16 +636,16 @@ class Scenario(object):
                         else:
                             print((name, ' growth not in params. Using default growth rate:', def_rate)) if verbose else None
                             rate = def_rate
-                        new_data[col] = Lib.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
+                        new_data[col] = sh.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
                     elif col_type == 'price':
                         if name in self.financials.growth_rates.keys():
                             rate = self.financials.growth_rates[name]
                         else:
                             print((name, ' growth not in params. Using default growth rate:', def_rate)) if verbose else None
                             rate = def_rate
-                        new_data[col] = Lib.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
+                        new_data[col] = sh.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
                     else:
-                        new_data[col] = Lib.apply_growth(source_data[col], 0, source_year, yr, dt)
+                        new_data[col] = sh.apply_growth(source_data[col], 0, source_year, yr, dt)
 
                 # add new year to original data frame
                 df = pd.concat([df, new_data], sort=True)
@@ -642,7 +663,7 @@ class Scenario(object):
         Returns:
             bool: True if objects are close to equal, False if not equal.
         """
-        return Lib.compare_class(self, other, compare_init)
+        return sh.compare_class(self, other, compare_init)
 
     def save_results_csv(self, savepath=None):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.

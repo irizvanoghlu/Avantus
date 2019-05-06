@@ -1,5 +1,5 @@
 """
-cbaDER.py
+Finances.py
 
 This Python class contains methods and attributes vital for completing financial analysis given optimal dispathc.
 """
@@ -15,17 +15,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-import storagevet.Library as Lib
-import storagevet.Finances as Finances
+import svet_helper as sh
 import copy
+import re
 
 SATURDAY = 5
 
 
-class cbaDER(Finances):
+class Financial:
 
     def __init__(self, params, time_series, tariff, monthly_data, opt_years, dt):
-        """ Initialized cbaDER object for case
+        """ Initialized Financial object for case
 
          Args:
             params (Dict): input parameters
@@ -73,41 +73,62 @@ class cbaDER(Finances):
         self.adv_monthly_bill = None
         self.sim_monthly_bill = None
 
-    def prep_fin_inputs(self, time_series):
+    def prep_fin_inputs(self, time_series, params):
         """
         Create standard dataframe of prices from user time_series input
 
         Args:
-            time_series (DataFrame): ParamsDER of time series prices
+            time_series (DataFrame): Input of time series prices
+            params (Dict): Input parameters
 
         """
-        # create basic dataframe with dttm columns
-        outputs_df = time_series
 
-        outputs_df['year'] = time_series.index.to_period('Y')
-        outputs_df['yr_mo'] = time_series.index.to_period('M')
-        outputs_df['date'] = time_series.index.to_period('D')
-        outputs_df['weekday'] = (outputs_df.index.weekday < SATURDAY).astype('int64')
-        outputs_df['he'] = (time_series.index + pd.Timedelta('1s')).hour + 1
+        # copy time_series so don't change it
+        # time_series = copy.deepcopy(time_series) # i'm not sure this was necessary - YY
+
+        # create basic dataframe with dttm columns
+        self.fin_inputs = sh.create_outputs_df(time_series.index)
 
         # only join needed price columns from time_series [input validation logic]
-        for col in list(time_series):
-            outputs_df[col] = time_series[col].values
+        service_names = ['SR', 'NSR', 'DA', 'RT']
+        for name in service_names:
+            if name in self.service_list:
+                self.required_price_cols += [name.lower()+'_price']
+        if 'FR' in self.service_list:
+            if params['CombinedMarket']:
+                self.required_price_cols += ['fr_price']
+            else:
+                self.required_price_cols += ['regu_price', 'regd_price']
+            self.required_price_cols += [params['energyprice']]
+
+        self.fin_inputs = self.fin_inputs.join(time_series[self.required_price_cols])
 
         # merge in monthly prices
         if not self.monthly_prices.empty:
-            outputs_df = outputs_df.reset_index().merge(self.monthly_prices.reset_index(), on='yr_mo', how='left').set_index(outputs_df.index.names)
+            self.fin_inputs = self.fin_inputs.reset_index()\
+                .merge(self.monthly_prices.reset_index(), on='yr_mo', how='left')\
+                .set_index(self.fin_inputs.index.names)
+
+       #if self.dt != (time_series.index[1] - time_series.index[0]).seconds / 3600:
+       #     print('Time Series not same granularity as dt parameter. Aggregating...')
+            #if self.dt != 1:
+            #    print('agg not set up for anything other than an hour')
+            #    quit()
+            # self.opt_results['dt'] = self.opt_results['hour']/self.dt
+
+            # interval beginning
+            new_index = self.fin_inputs.reset_index().groupby(['year', 'month', 'day', 'weekday', 'he']).nth(0).Datetime.values
+            # interval ending
+            # new_index = self.opt_results.reset_index().groupby(['year', 'month', 'he']).nth(-1).Datetime.values
+            self.fin_inputs = self.fin_inputs.groupby(['year', 'month', 'day', 'weekday', 'he']).mean().reset_index()
+            self.fin_inputs.index = new_index
 
         # calculate data for simulation of future years using growth rate
-        outputs_df = self.add_growth_data(outputs_df, self.opt_years, self.verbose)
+        self.required_price_cols = self.required_price_cols + list(self.monthly_prices)
+        self.fin_inputs = self.add_growth_data(self.fin_inputs, self.opt_years, self.dt, True)
 
         # create opt_agg column (has to happen after adding future years)
-        if self.mpc:
-            outputs_df = Lib.create_opt_agg(outputs_df, "mpc", self.dt)
-        else:
-            outputs_df = Lib.create_opt_agg(outputs_df, self.n, self.dt)
-
-        return outputs_df
+        self.fin_inputs = sh.create_opt_agg(self.fin_inputs, self.n, self.dt)
 
     def calc_retail_energy_price(self):
         """ Calculates retail energy rates with given data and adds the retail prices into the time_series data frame.
@@ -358,7 +379,7 @@ class cbaDER(Finances):
 
                 # create new dataframe for missing year
                 new_index = pd.DatetimeIndex(start='01/01/' + str(yr), end='01/01/' + str(yr + 1), freq=pd.Timedelta(self.dt, unit='h'), closed='right')
-                new_data = Lib.create_outputs_df(new_index)
+                new_data = sh.create_outputs_df(new_index)
 
                 source_data = df[df['year'] == source_year]  # use source year data
 
@@ -374,7 +395,7 @@ class cbaDER(Finances):
                     else:
                         print((name, ' rate not in params. Using default growth rate:', def_rate)) if verbose else None
                         rate = def_rate
-                    new_data[col] = Lib.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
+                    new_data[col] = sh.apply_growth(source_data[col], rate, source_year, yr, dt)  # apply growth rate to column
 
                 # add new year to original data frame
                 df = pd.concat([df, new_data], sort=True)
@@ -401,4 +422,4 @@ class cbaDER(Finances):
         Returns:
             bool: True if objects are close to equal, False if not equal.
         """
-        return Lib.compare_class(self, other, compare_init)
+        return sh.compare_class(self, other, compare_init)

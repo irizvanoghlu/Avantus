@@ -192,14 +192,24 @@
     </component>
 
     <!-- technology -->
-    <component name="PV" src="Technology.py" type="generator">
+    <component name="PV" src="Technology.py" type="technology">
         <property name="inv_max">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0.0"/>
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="growth">
             <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="rated_capacity">
+            <field name="value" type="float" min="0.0"  />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="cost_per_kW">
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>

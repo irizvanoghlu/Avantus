@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <schema name="Default schema" vertion="1.0.0">
+    <!-- value-streams -->
      <component name="Reliability" src="Service.py" type="pre-dispatch">
         <property name="reliability_target">
             <field name="value" type="float" min="0.0" max="100.0" />
@@ -8,34 +9,34 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="RA" src="Service.py" type="pre-dispatch">
+    <component name="RA" src="ValueStream.py" type="pre-dispatch">
         <property name="growth">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0" max="100" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="events">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="366" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="length">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="24" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="dispmode">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int"/>
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="maxp">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="maxe">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -44,15 +45,25 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
+        <property name="dt">
+            <field name="value" type="float" min="0.0" max="1.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
     </component>
-    <component name="DR" src="Service.py" type="pre-dispatch">
+    <component name="DR" src="ValueStream.py" type="pre-dispatch">
+        <property name="dt">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
         <property name="days">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="366" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="length">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="24" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -61,45 +72,35 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="cap">
-            <field name="value" type="int" min="0" max="100" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
         <property name="weekend">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="program_start_hour">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="24" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="program_end_hour">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="24" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="energy_reservation">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="Deferral" src="Service.py" type="pre-dispatch">
-        <property name="price">
-            <field name="value" type="float" min="0.0" max="20000.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
+    <component name="Deferral" src="ValueStream.py" type="pre-dispatch">
         <property name="max_import">
-            <field name="value" type="float" min="0.0" max="10000.0" />
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="max_export">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" max="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -109,44 +110,37 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="Backup" src="Service.py" type="pre-dispatch">
-    </component>
-    <component name="Volt" src="Service.py" type="pre-dispatch">
+    <component name="Volt" src="ValueStream.py" type="pre-dispatch">
         <property name="price">
-            <field name="value" type="float" min="0.0" max="20000.0" />
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
+        <property name="inv_max">
+            <field name="value" type="float" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+    </component>
+    <component name="Backup" src="ValueStream.py" type="pre-dispatch">
+    </component>
+    <component name="User" src="ValueStream.py" type="pre-dispatch">
+    </component>
+    <component name="DA" src="ValueStream.py" type="service">
         <property name="growth">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="User" src="Service.py" type="pre-dispatch">
-    </component>
-
-    <!-- services -->
-    <component name="DA" src="Service.py" type="service">
-        <property name="growth">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-    </component>
-    <component name="FR" src="Service.py" type="service">
+    <component name="FR" src="ValueStream.py" type="service">
         <property name="ku">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0.0" max="1.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="kd">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="rp">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0.0" max="1.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -155,8 +149,8 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="energyprice">
-            <field name="value" type="string" min="0.0" max="100.0" />
+        <property name="energyprice_growth">
+            <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -166,48 +160,39 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="SR" src="Service.py" type="service">
+    <component name="SR" src="ValueStream.py" type="service">
         <property name="growth">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="NSR" src="Service.py" type="service">
+    <component name="NSR" src="ValueStream.py" type="service">
         <property name="growth">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="RT" src="Service.py" type="service">
+    <component name="RT" src="ValueStream.py" type="service">
+        <property name="growth">
+            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
         <property name="dt">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="growth">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0.0" max="1.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="Flexr" src="Service.py" type="service">
-        <property name="growth">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
+    <component name="DCM" src="ValueStream.py" type="service">
     </component>
-    <component name="DCM" src="Service.py" type="service">
-    </component>
-    <component name="retailTimeShift" src="Service.py" type="service">
+    <component name="retailTimeShift" src="ValueStream.py" type="service">
     </component>
 
     <!-- technology -->
-    <component name="Battery" src="Technology.py" type="technology">
-    </component>
-    <component name="PV" src="Technology.py" type="technology">
+    <component name="PV" src="Technology.py" type="generator">
         <property name="inv_max">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
@@ -219,41 +204,156 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="CAES" src="Technology.py" type="technology">
+    <component name="Diesel" src="Technology.py" type="generator">
+        <property name="marcs_term">
+            <field name="value" type="float" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="min_power">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="startup_time">
+            <field name="value" type="int" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="efficiency">
+            <field name="value" type="float" min="0.0"/>
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="fuel_cost">
+            <field name="value" type="float" min="0.0"/>
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="variable_om_cost">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="fixed_om_cost">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="rated_capacity">
+            <field name="value" type="float" min="0.0"  />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="ccost">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="n_min">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="n_max">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+    </component>
+    <!-- storage -->
+    <component name="Battery" src="Storage.py" type="storage">
+    </component>
+    <component name="CAES" src="Storage.py" type="storage">
         <property name="heat_rate_high">
-            <field name="value" type="float" min="0.0" max="100.0" />
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="N/A" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="Technology" src="Technology.py"  type="other">
-        <property name="hr">
-            <field name="value" type="float" min="0.0" max="10000.0" />
+    <component name="Storage" src="Storage.py"  type="storage">
+	    <property name="startup">
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="mcr">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="ccost">
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-            <property name="mdr">
-            <field name="value" type="float" min="0.0" max="100.0" />
+		<property name="ccost_kw">
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="pmc">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="ccost_kwh">
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="pmd">
-            <field name="value" type="int" min="0" max="100" />
+        <property name="fixedOM">
+            <field name="value" type="float" min="0.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="cr">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="OMexpenses">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+		<property name="ch_max_rated">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="ch_min_rated">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="dis_max_rated">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="dis_min_rated">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="ene_max_rated">
+            <field name="value" type="float" min="0.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="ulsoc">
+            <field name="value" type="float" min="0.0" max="1.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="llsoc">
+            <field name="value" type="float" min="0.0" max="1.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="rte">
+            <field name="value" type="float" min="0.0" max="1.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="sdr">
+            <field name="value" type="float" min="0.0" max="99.9" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+		<property name="soc_target">
+            <field name="value" type="float" min="0.0" max="1.0" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+		<property name="incl_cycle_degrade">
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -262,177 +362,77 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="soc_target">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="install_date">
+            <field name="value" type="Timestamp" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="no_export">
-            <field name="value" type="int" min="0" max="100" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="ch_max_rated">
-            <field name="value" type="float" min="0.0" max="1000.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="ch_min_rated">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="dis_max_rated">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="dis_min_rated">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="ene_max_rated">
-            <field name="value" type="float" min="0.0" max="1000.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="ulsoc">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="llsoc">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="rte">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="sdr">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="hp">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="cbr">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_ene_max">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_ene_min">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_dis_max">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_dis_min">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_ch_max">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="kappa_ch_min">
-            <field name="value" type="float" min="0" max="100000" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="p_start_ch">
-            <field name="value" type="float" min="0" max="100" />
+		<property name="p_start_ch">
+            <field name="value" type="float" min="0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="p_start_dis">
-            <field name="value" type="float" min="0" max="100" />
+            <field name="value" type="float" min="0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-         <property name="ccost">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="kappa_ene_max">
+            <field name="value" type="float" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="ccost_kw">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="kappa_ene_min">
+            <field name="value" type="float"  />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="ccost_kwh">
-            <field name="value" type="float" min="0.0" max="10000.0" />
+        <property name="kappa_dis_max">
+            <field name="value" type="float"  />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="fixedOM">
-            <field name="value" type="float" min="0.0" max="2000.0" />
+        <property name="kappa_dis_min">
+            <field name="value" type="float" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="OMexpenses">
-            <field name="value" type="float" min="0.0" max="100.0" />
+        <property name="kappa_ch_max">
+            <field name="value" type="float"  />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="kappa_ch_min">
+            <field name="value" type="float" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
 
-    <!-- Scenario -->
-    <component name="Scenario" src="Technology.py" type="other">
-        <property name="loc">
-            <field name="value" type="string" min="0.0" max="100.0" />
-            <field name="unit" type="N/A" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
+    <!-- scenario -->
+    <component name="Scenario" src="Scenario.py" type="scenario">
         <property name="monthly_data_filename">
-            <field name="value" type="string" min="0.0" max="100.0" />
+            <field name="value" type="string" />
             <field name="unit" type="N/A" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="time_series_filename">
-            <field name="value" type="string" min="0.0" max="100.0" />
+            <field name="value" type="string" />
             <field name="unit" type="N/A" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="customer_tariff_filename">
-            <field name="value" type="string" min="0.0" max="100.0" />
+            <field name="value" type="string" />
             <field name="unit" type="N/A" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="cycle_life_filename">
-            <field name="value" type="string" min="0.0" max="100.0" />
+            <field name="value" type="string" />
             <field name="unit" type="N/A" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="dt">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="verbose">
-            <field name="value" type="int" min="0" max="100" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="verbose_opt">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="float" min="0.0" max="1.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -442,42 +442,37 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="start_year">
-            <field name="value" type="Period" min="0.0" max="100.0" />
+            <field name="value" type="Period" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="end_year">
-            <field name="value" type="int" min="0" max="3000" />
+            <field name="value" type="Period" />
             <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="install_date">
-            <field name="value" type="string" min="0" max="100" />
-            <field name="unit" type="int" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="n">
-            <field name="value" type="string" min="0.0" max="100.0" />
+            <field name="value" type="string/int" min="0" max="366" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="n_control">
-            <field name="value" type="string" min="0.0" max="100.0" />
+        <property name="n_control"  >
+            <field name="value" type="int" min="0" max="366" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_site_load">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_aux_load">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_deferral_load">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -487,34 +482,29 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="slack">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="binary">
-            <field name="value" type="int" min="0" max="100" />
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
-        <property name="startup">
-            <field name="value" type="int" min="0" max="100" />
+        <property name="verbose">
+            <field name="value" type="int" min="0" max="1" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
+        <property name="verbose_opt">
+            <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
 
     <!-- finance -->
-    <component name="Finance" src="Technology.py" type="other">
-        <property name="pdexpense">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="elexpenses">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
+    <component name="Finance" src="Finances.py" type="finance">
         <property name="inflation_rate">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
@@ -526,24 +516,17 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
     </component>
-    <component name="Questionnaire" src="run_StorageVET.py" type="other">
-        <property name="loc3">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="loc2">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="loc">
-            <field name="value" type="float" min="0.0" max="100.0" />
-            <field name="unit" type="string" />
-            <field name="description" type="string" maxlength="1000" />
-        </property>
-        <property name="result_folder">
-            <field name="value" type="float" min="0.0" max="100.0" />
+
+    <!-- commands -->
+    <component name="Previsualization" src="run_StorageVET.py" type="command">
+    </component>
+    <component name="Simulation" src="run_StorageVET.py" type="command">
+    </component>
+    <component name="Validation" src="run_StorageVET.py" type="command">
+    </component>
+        <component name="Results_Directory" src="Scenario.py" type="command">
+        <property name="local_path">
+            <field name="value" type="string" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>

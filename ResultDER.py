@@ -175,6 +175,98 @@ class Result:
         #     print('The duration of the Energy Storage System is greater than 24 hours!')
         dLogger.debug("Finished post optimization analysis")
 
+    def post_optimization_analysis(self):
+        """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
+        provided, analysis on the optimization solutions are completed here.
+
+        TODO: [multi-tech] a lot of this logic will have to change with multiple technologies
+        """
+        print("Performing Post Optimization Analysis...") if self.verbose else None
+
+        # add MONTHLY ENERGY BILL if customer sided
+        # TODO change this check to look if customer sided
+        if "DCM" in self.services.keys() or "retailTimeShift" in self.services.keys():
+            self.financials.calc_energy_bill(self.opt_results)
+
+        # add other helpful information to a RESULTS DATAFRAME (important to keep this separate from opt_results)
+        self.results = pd.DataFrame(index=self.opt_results.index)
+        if self.pv is not None:
+            self.results['PV Maximum (kW)'] = self.opt_results['PV_gen']
+            self.results['PV Power (kW)'] = self.opt_results['pv_out']
+        self.results['Load (kW)'] = self.opt_results['load']
+        self.results['Discharge (kW)'] = self.opt_results['dis']
+        self.results['Charge (kW)'] = self.opt_results['ch']
+        self.results['Battery Power (kW)'] = self.opt_results['dis'] - self.opt_results['ch']
+        self.results['State of Energy (kWh)'] = self.opt_results['ene']
+        self.results['SOC (%)'] = self.opt_results['ene'] / self.technologies['Storage'].ene_max_rated.value
+        self.results['Net Load (kW)'] = self.opt_results['load'] - self.opt_results['dis'] + self.opt_results['ch'] - self.opt_results['pv_out']
+        self.results['Billing Period'] = self.financials.fin_inputs['billing_period']
+        self.results['Energy Price ($)'] = self.financials.fin_inputs['p_energy']
+
+        # calculate FINANCIAL SUMMARY
+        self.financials.yearly_financials(self.technologies, self.services, self.opt_results)
+
+        if self.Reliability:
+            reliability_requirement = self.predispatch_services['Reliability'].reliability_requirement
+            self.results['SOC Constraints (%)'] = reliability_requirement / self.technologies['Storage'].ene_max_rated.value
+            # calculate RELIABILITY SUMMARY
+            outage_energy = self.predispatch_services['Reliability'].reliability_requirement
+            self.results['Total Outage Requirement (kWh)'] = outage_energy
+            outage_requirement = outage_energy.sum()
+            coverage_timestep = self.predispatch_services['Reliability'].coverage_timesteps
+
+            reliability = {}
+            if self.pv:
+                reverse = self.results['PV Power (kW)'].iloc[::-1]  # reverse the time series to use rolling function
+                reverse = reverse.rolling(coverage_timestep, min_periods=1).sum() * self.dt  # rolling function looks back, so reversing looks forward
+                pv_outage = reverse.iloc[::-1].values  # set it back the right way
+                if self.technologies['PV'].no_export:
+                    pv_outage = pv_outage.clip(min=0)
+                pv_contribution = np.sum(pv_outage)/outage_requirement
+                reliability.update({'PV': pv_contribution})
+                battery_outage_ene = outage_energy.values - pv_outage
+
+                over_generation = battery_outage_ene.clip(max=0)
+                pv_outage_energy = pv_outage + over_generation
+                battery_outage_ene = battery_outage_ene.clip(min=0)
+            else:
+                pv_outage_energy = np.zeros(len(self.results.index))
+                pv_contribution = 0
+                battery_outage_ene = outage_energy
+            battery_contribution = 1 - pv_contribution
+            self.results['PV Outage Contribution (kWh)'] = pv_outage_energy
+            self.results['Battery Outage Contribution (kWh)'] = battery_outage_ene
+
+            reliability.update({'Battery': battery_contribution})
+            # TODO: go through each technology/DER (each contribution should sum to 1)
+            self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
+
+        # create DISPATCH MAP
+        if self.Battery is not None:
+            dispatch = self.results.loc[:, 'Battery Power (kW)'].to_frame()
+            dispatch['date'] = self.opt_results['date']
+            dispatch['he'] = self.opt_results['he']
+            dispatch = dispatch.reset_index(drop=True)
+
+            energy_price = self.results.loc[:, 'Energy Price ($)'].to_frame()
+            energy_price['date'] = self.opt_results['date']
+            energy_price['he'] = self.opt_results['he']
+            energy_price = energy_price.reset_index(drop=True)
+
+            self.dispatch_map = dispatch.pivot_table(values='Battery Power (kW)', index='he', columns='date')
+            self.energyp_map = energy_price.pivot_table(values='Energy Price ($)', index='he', columns='date')
+
+        # DESIGN PLOT (peak load day)
+        max_day = self.opt_results.loc[self.opt_results['site_load'].idxmax(), :]['date']
+        max_day_data = self.opt_results[self.opt_results['date'] == max_day]
+        time_step = pd.Index(np.arange(0, 24, self.dt), name='Timestep Beginning')
+        max_day_net_load = max_day_data['load'] - max_day_data['dis'] + max_day_data['ch'] - max_day_data['pv_out']
+        self.peak_day_load = pd.DataFrame({'Date': max_day_data['date'].values,
+                                           'Load (kW)': max_day_data['site_load'].values,
+                                           'Net Load (kW)': max_day_net_load.values}, index=time_step)
+        if self.sizing_results['Duration (hours)'].values[0] > 24:
+            print('The duration of the Energy Storage System is greater than 24 hours!')
+
     def save_results_csv(self, savepath=None):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
 
@@ -195,6 +287,31 @@ class Result:
         if 'Battery' in self.active_objects['storage']:
             self.dispatch_map.to_csv(path_or_buf=Path(savepath, 'dispatch_map.csv'))
             # self.energyp_map.to_csv(path_or_buf=Path(savepath, 'energyp_map.csv'))
+
+        self.financials.pro_forma.to_csv(path_or_buf=Path(savepath, 'pro_forma.csv'))
+        self.financials.npv.to_csv(path_or_buf=Path(savepath, 'npv.csv'))
+        self.financials.cost_benefit.to_csv(path_or_buf=Path(savepath, 'cost_benefit.csv'))
+
+    def save_results_csv(self, savepath=None):
+        """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
+
+        """
+        if savepath is None:
+            savepath = self.results_path
+        if not os.path.exists(savepath):
+            os.makedirs(savepath)
+
+        self.results.to_csv(path_or_buf=Path(savepath, 'timeseries_results.csv'))
+        if "DCM" in self.services.keys() or "retailTimeShift" in self.services.keys():
+            self.financials.adv_monthly_bill.to_csv(path_or_buf=Path(savepath, 'adv_monthly_bill.csv'))
+            self.financials.sim_monthly_bill.to_csv(path_or_buf=Path(savepath, 'simple_monthly_bill.csv'))
+        if self.Reliability:
+            self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary.csv'))
+        self.peak_day_load.to_csv(path_or_buf=Path(savepath, 'peak_day_load.csv'))
+        self.sizing_results.to_csv(path_or_buf=Path(savepath, 'size.csv'))
+        if self.Battery is not None:
+            self.dispatch_map.to_csv(path_or_buf=Path(savepath, 'dispatch_map.csv'))
+            self.energyp_map.to_csv(path_or_buf=Path(savepath, 'energyp_map.csv'))
 
         self.financials.pro_forma.to_csv(path_or_buf=Path(savepath, 'pro_forma.csv'))
         self.financials.npv.to_csv(path_or_buf=Path(savepath, 'npv.csv'))

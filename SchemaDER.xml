@@ -213,6 +213,11 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
+        <property name="marcs_term">
+            <field name="value" type="float" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
     </component>
     <component name="Diesel" src="Technology.py" type="generator">
         <property name="marcs_term">

@@ -34,7 +34,7 @@ class Reliability(ValueStream):
 
         # generate the generic predispatch service object
         ValueStream.__init__(self, tech, 'Reliability', dt)
-        self.outage_duration_coverage = params['reliability_target']  # must be in hours
+        self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
 
         # determines how many time_series timestamps relates to the reliability target hours to cover

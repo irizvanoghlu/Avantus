@@ -60,13 +60,16 @@ class RunSizing:
 
             if not value.other_error_checks():
                 continue
-            run = Sizing.Scenario(value)
+            value.prepare_scenario()
+            value.prepare_finance()
+
+            run = Sizing.Sizing(value)
             run.add_technology()
             run.add_services()
             run.add_control_constraints()
             run.optimize_problem_loop()
-            run.post_optimization_analysis()
-            run.save_results_csv()
+            # run.post_optimization_analysis()
+            # run.save_results_csv()
 
             logging.debug('Successfully ran one simulation.')
 

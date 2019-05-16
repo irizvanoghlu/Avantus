@@ -3,7 +3,7 @@
 <schema name="Default schema" vertion="1.0.0">
     <!-- value-streams -->
      <component name="Reliability" src="Service.py" type="pre-dispatch">
-        <property name="reliability_target">
+        <property name="target">
             <field name="value" type="float" min="0.0" max="100.0" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />

@@ -124,85 +124,6 @@ class Sizing(Scenario):
 
         dLogger.info("Finished adding Services for Value Stream")
 
-    def add_control_constraints(self, deferral_check=False):
-        """ Creates time series control constraints for each technology based on predispatch services.
-        Must be run after predispatch services are attached to case.
-
-        Args:
-            deferral_check (bool): flag to return non feasible timestamps if running deferral feasbility analysis
-
-        """
-        tech = self.technologies['Storage']
-        for service in self.predispatch_services.values():
-            tech.add_service(service, predispatch=True)
-        feasible_check = tech.calculate_control_constraints(self.opt_results.index)  # should pass any user inputted constraints here
-
-        if (feasible_check is not None) & (not deferral_check):
-            # if not running deferral failure analysis and infeasible scenario then stop and tell user
-            print('Predispatch and Technology inputs results in infeasible scenario')
-            quit()
-        elif deferral_check:
-            # return failure dttm to deferral failure analysis
-            return feasible_check
-        else:
-            print("Control Constraints Successfully Created...") if self.verbose else None
-
-    def optimize_problem_loop(self):
-        """ This function selects on opt_agg of data in self.time_series and calls optimization_problem on it.
-
-        """
-
-        print("Preparing Optimization Problem...") if self.verbose else None
-
-        # list of all optimization windows
-        periods = pd.Series(copy.deepcopy(self.opt_results.opt_agg.unique()))
-        periods.sort_values()
-
-        for ind, opt_period in enumerate(periods):
-            # ind = 0
-            # opt_period = self.opt_results.opt_agg[ind]
-
-            print(time.strftime('%H:%M:%S'), ": Running Optimization Problem for", opt_period, "...", end=" ") if self.verbose else None
-
-            # used to select rows from time_series relevant to this optimization window
-            mask = self.opt_results.loc[:, 'opt_agg'] == opt_period
-
-            if self.incl_cycle_degrade:
-                # apply past degradation
-                degrade_perc = 0
-                for tech in self.technologies.values():
-                    if tech.degrade_data is not None:
-                        # if time period since end of last optimization period is greater than dt need to estimate missing degradation
-                        time_diff = (self.opt_results[mask].index[0]-self.opt_results[self.opt_results.opt_agg == periods[max(ind - 1, 0)]].index[-1])
-                        if time_diff > pd.Timedelta(self.dt, unit='h'):
-                            avg_degrade = np.mean(np.diff(tech.degrade_data.degrade_perc[0:ind]))
-                            days_opt_agg = 30 if self.n == 'month' else int(self.n)
-                            degrade_perc = avg_degrade/days_opt_agg*time_diff.days  # this could be a better estimation
-                        else:
-                            # else look back to previous degrade rate
-                            degrade_perc = tech.degrade_data.iloc[max(ind - 1, 0)].loc['degrade_perc']
-
-                        # apply degradation to technology (affects physical_constraints['ene_max_rated'] and control constraints)
-                        tech.degrade_data.loc[opt_period, 'eff_e_cap'] = tech.apply_degradation(degrade_perc, self.opt_results.index)
-
-            # run optimization and return optimal variable and objective expressions
-            results, obj_exp = self.optimization_problem(mask)
-
-            # Add past degrade rate with degrade from calculated period
-            if self.incl_cycle_degrade:
-                for tech in self.technologies.values():
-                    if tech.degrade_data is not None:
-                        tech.degrade_data.loc[opt_period, 'degrade_perc'] = tech.calc_degradation(results.index[0], results.index[-1], results['ene']) + degrade_perc
-
-            # add optimization variable results to opt_results
-            if not results.empty:
-                self.opt_results = sh.update_df(self.opt_results, results)
-
-            # add objective expressions to financial obj_val
-            if not obj_exp.empty:
-                obj_exp.index = [opt_period]
-                self.financials.obj_val = sh.update_df(self.financials.obj_val, obj_exp)
-
     def optimization_problem(self, mask):
         """ Sets up and runs optimization on a subset of data.
 
@@ -271,57 +192,44 @@ class Sizing(Scenario):
         prob = cvx.Problem(obj, obj_const)
 
         try:
-            if prob.is_mixed_integer():
-                # result = prob.solve(verbose=self.verbose_opt, solver=cvx.ECOS_BB,
-                #                     mi_abs_eps=1, mi_rel_eps=1e-2, mi_max_iters=1000)
-                result = prob.solve(verbose=self.verbose_opt, solver=cvx.GLPK_MI)
-            else:
-                # ECOS is default sovler and seems to work fine here
-                result = prob.solve(verbose=self.verbose_opt, solver=cvx.GLPK_MI)
-                # result = prob.solve(verbose=self.verbose_opt)
+            start = time.time()
+            prob.solve(verbose=self.verbose_opt, solver=cvx.GLPK_MI)
+            end = time.time()
+            print("Time it takes for Scenario solver to finish: " + str(end - start))
         except cvx.error.SolverError as err:
+            uLogger.error("Solver Error...")
+            dLogger.error("Solver Error...")
             sys.exit(err)
 
-        # TODO: not sure if we want to stop the simulation if a optimization is suboptimal or just alert the user
-        print(prob.status) if self.verbose else None
-        # assert prob.status == 'optimal', 'Optimization problem not solved to optimality'
+        uLogger.info(prob.status)
 
         # save solver used
         self.solvers = self.solvers.union(prob.solver_stats.solver_name)
 
-        # evaluate optimal objective expression
         cvx_types = (cvx.expressions.cvxtypes.expression(), cvx.expressions.cvxtypes.constant())
-        obj_values = pd.DataFrame({name: [obj_expression[name].value if isinstance(obj_expression[name], cvx_types)
-                                          else obj_expression[name]] for name in list(obj_expression)})
+        # evaluate optimal objective expression
+        obj_values = pd.DataFrame(
+            {name: [obj_expression[name].value if isinstance(obj_expression[name], cvx_types) else obj_expression[name]] for name in
+             list(obj_expression)})
         # collect optimal dispatch variables
         variable_values = pd.DataFrame({name: variable_dic[name].value for name in list(variable_dic)}, index=subs.index)
 
         # check for non zero slack
         if np.any(abs(obj_values.filter(regex="_*slack$")) >= 1):
-            print('WARNING! non-zero slack variables found in optimization solution')
-            # sys.exit()
+            uLogger.info('WARNING! non-zero slack variables found in optimization solution')
 
         # check for charging and discharging in same time step
-        eps = 1e-3
-        if any(((abs(variable_values['ch']) >= eps) & (abs(variable_values['dis']) >= eps))):
-            print('WARNING! non-zero charge and discharge powers found in optimization solution. Try binary formulation')
+        eps = 1e-4
+        if any(((abs(variable_values['ch']) >= eps) & (abs(variable_values['dis']) >= eps)) & ('CAES' not in self.active_objects['storage'])):
+            uLogger.info('WARNING! non-zero charge and discharge powers found in optimization solution. Try binary formulation')
 
         # collect actual energy contributions from services
-        # TODO: switch order of loops -- no need to loop through each serv if the simulation is customer-sided  --HN
         for serv in self.services.values():
-            if "DCM" not in self.services.keys() and "retailTimeShift" not in self.services.keys():
+            if self.customer_sided:
+                temp_ene_df = pd.DataFrame({'ene': np.zeros(len(subs.index))}, index=subs.index)
+            else:
                 sub_list = serv.e[-1].value.flatten('F')
                 temp_ene_df = pd.DataFrame({'ene': sub_list}, index=subs.index)
-                serv.ene_results.update(temp_ene_df)
-
-        self.sizing_results = pd.DataFrame({'Energy Capacity (kWh)': self.technologies['Storage'].ene_max_rated.value,
-                                            'Power Capacity (kW)': self.technologies['Storage'].ch_max_rated.value,
-                                            'Duration (hours)': self.technologies['Storage'].ene_max_rated.value/self.technologies['Storage'].ch_max_rated.value,
-                                            'Capital Cost ($)': self.technologies['Storage'].ccost,
-                                            'Capital Cost ($/kW)': self.technologies['Storage'].ccost_kw,
-                                            'Capital Cost ($/kWh)': self.technologies['Storage'].ccost_kwh},
-                                           index=pd.Index(['Battery']))  # TODO: replace with name of technology sized
-        print('ene_rated: ', self.technologies['Storage'].ene_max_rated.value)
-        print('ch_rated: ', self.technologies['Storage'].ch_max_rated.value)
+            serv.ene_results = pd.concat([serv.ene_results, temp_ene_df], sort=True)
 
         return variable_values, obj_values

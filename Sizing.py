@@ -12,14 +12,15 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 # from ValueStreams import DemandChargeReduction, EnergyTimeShift
-from ValueStreamsDER import Reliability, DemandChargeReduction, EnergyTimeShift
+from ValueStreamsDER import Reliability
 from TechnologiesDER import CurtailPV, BatterySizing
 from storagevet.Scenario import Scenario
+from storagevet.ValueStreams import DemandChargeReduction, EnergyTimeShift
 import sys
 import copy
 import numpy as np
 import pandas as pd
-import cbaDER as Fin
+from cbaDER import CostBenDER
 import cvxpy as cvx
 import svet_helper as sh
 import time
@@ -50,40 +51,40 @@ class Sizing(Scenario):
 
         self.predispatch_service_inputs_map.update({'Reliability': input_tree.Reliability})
 
+    def init_financials(self, finance_inputs):
+        """ Initializes the financial class with a copy of all the price data from timeseries, the tariff data, and any
+         system variables required for post optimization analysis.
+
+         Args:
+             finance_inputs (Dict): Financial inputs
+
+        """
+
+        self.financials = CostBenDER(finance_inputs)
+        dLogger.info("Finished adding Financials...")
+
     def add_technology(self):
         """ Reads params and adds technology. Each technology gets initialized and their physical constraints are found.
 
         TODO: perhaps add any data relating to anything that could be a technology here -- HN**
 
         """
+        Scenario.add_technology(self)
+        generator_action_map = {
+            'PV': CurtailPV.CurtailPV,
 
-        print("Adding Technology...") if self.verbose else None
+        }
 
-        # add battery and find constraints CHANGE THIS LATER
-        # make this dynamic in RIVET
-        print('Battery')
-        self.add_storage('Storage')
+        active_storage = self.active_objects['generator']
+        storage_inputs = self.technology_inputs_map['Storage']
+        for storage in active_storage:
+            inputs = self.technology_inputs_map[storage]
+            tech_func = generator_action_map[storage]
+            self.technologies['Storage'] = tech_func('Storage', self.financials, inputs, storage_inputs, self.cycle_life)
+            dLogger.info("Finished adding storage...")
         if self.pv is not None:
             print('PV')
             self.technologies['PV'] = CurtailPV.CurtailPV('PV', self.financials, self.input.Battery, self.tech, self.time_series)
-
-    def add_storage(self, name):
-        """ Add a battery to the model.
-
-        Note:
-            This creates a general technology, not a specific one.
-
-        Args:
-            name (str): A name/description of the service provided.
-
-        ToDo: add checks to make sure no duplicates are being added
-        """
-        # TODO: move self.cycle_life into self.tech
-        # TODO: remove self.input.Battery (it is empty)
-        self.tech.update({'binary': self.input.Scenario['binary'],
-                          'dt': self.dt})
-        if self.Battery is not None:
-            self.technologies[name] = BatterySizing.BatterySizing('Battery', self.financials, self.input.Battery,  self.tech, self.cycle_life)
 
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding

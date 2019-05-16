@@ -22,7 +22,7 @@ import re
 SATURDAY = 5
 
 
-class Financial:
+class CostBenDER:
 
     def __init__(self, params, time_series, tariff, monthly_data, opt_years, dt):
         """ Initialized Financial object for case

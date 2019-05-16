@@ -75,16 +75,13 @@ class Sizing(Scenario):
 
         }
 
-        active_storage = self.active_objects['generator']
+        active_generator = self.active_objects['generator']
         storage_inputs = self.technology_inputs_map['Storage']
-        for storage in active_storage:
-            inputs = self.technology_inputs_map[storage]
-            tech_func = generator_action_map[storage]
-            self.technologies['Storage'] = tech_func('Storage', self.financials, inputs, storage_inputs, self.cycle_life)
-            dLogger.info("Finished adding storage...")
-        if self.pv is not None:
-            print('PV')
-            self.technologies['PV'] = CurtailPV.CurtailPV('PV', self.financials, self.input.Battery, self.tech, self.time_series)
+        for gen in active_generator:
+            inputs = self.technology_inputs_map[gen]
+            tech_func = generator_action_map[gen]
+            self.technologies[gen] = tech_func(gen, self.financials, inputs, storage_inputs, self.cycle_life)
+            dLogger.info("Finished adding generators...")
 
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding
@@ -98,19 +95,6 @@ class Sizing(Scenario):
         """
 
         print("Adding Predispatch Services...") if self.verbose else None
-        # predispatch_service_active_map = {
-        #     'Reliability': self.input.Reliability
-        # }
-        # predispatch_service_action_map = {
-        #     'Reliability': Reliability.Reliability
-        # }
-        # for service in predispatch_service_action_map.keys():
-        #     if predispatch_service_active_map[service] is not None:
-        #         print(service) if self.verbose else None
-        #         new_service = predispatch_service_action_map[service](predispatch_service_active_map[service],
-        #                                                               self.technologies['Storage'], self.opt_results,
-        #                                                               self.financials.fin_inputs)
-        #         self.predispatch_services[service] = new_service
 
         if self.input.Reliability is not None:
             self.input.Reliability.update()
@@ -133,17 +117,6 @@ class Sizing(Scenario):
                 print(service) if self.verbose else None
                 new_service = service_action_map[service](service_active_map[service], self.financials, self.technologies['Storage'], self.dt)
                 self.services[service] = new_service
-        # if self.input.retailTimeShift is not None:
-        #     self.input.retailTimeShift.update({'price': self.financials.fin_inputs.loc[:, 'p_energy'],
-        #                                        'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Demand_rate']})
-        #     new_service = EnergyTimeShift.EnergyTimeShift(self.input.retailTimeShift, self.technologies['Storage'], self.dt)
-        #     self.services['retailTimeShift'] = new_service
-        #
-        # if self.input.DCM is not None:
-        #     self.input.DCM.update({'tariff': self.financials.tariff.loc[:, self.financials.tariff.columns != 'Energy_price'],
-        #                            'billing_period': self.financials.fin_inputs.loc[:, 'billing_period']})
-        #     new_service = DemandChargeReduction.DemandChargeReduction(self.input.DCM, self.technologies['Storage'], self.dt)
-        #     self.services['DCM'] = new_service
 
     def add_control_constraints(self, deferral_check=False):
         """ Creates time series control constraints for each technology based on predispatch services.

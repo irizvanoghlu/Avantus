@@ -1,5 +1,5 @@
 """
-run_StorageVET.py
+runStorageVET.py
 
 This Python script serves as the initial launch point executing the Python-based version of StorageVET
 (AKA StorageVET 2.0 or SVETpy).
@@ -15,26 +15,70 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import argparse
 import Sizing
-from ParamsDER import Input
+from ParamsDER import ParamsDER
+from storagevet.run_StorageVET import run_StorageVET
 
 import logging
 import os
 import time
+from datetime import datetime
+from pathlib import Path
+import sys
 
+developer_path = '.\logs'
 try:
-    os.chdir(os.path.dirname(__file__))
-except:
-    print('INFORMATION: Could not change the working directory.')
+    os.mkdir(developer_path)
+except OSError:
+    print("Creation of the developer_log directory %s failed. Possibly already created." % developer_path)
+else:
+    print("Successfully created the developer_log directory %s " % developer_path)
+
+LOG_FILENAME1 = developer_path + '\\developer_log_' + datetime.now().strftime('%H_%M_%S_%m_%d_%Y.log')
+handler = logging.FileHandler(Path(LOG_FILENAME1))
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+dLogger = logging.getLogger('Developer')
+dLogger.setLevel(logging.DEBUG)
+dLogger.addHandler(handler)
+dLogger.info('Started logging...')
 
 
-TEMPLATE_HEADERS = ['Key', 'Units', 'Description', 'Options']
+class RunSizing:
+
+    def __init__(self, input):
+        """
+            Constructor to initialize the parameters and data needed to run StorageVET\
+
+            Args:
+                input (ParamsDER.ParamsDER): an initialized Input object for the class to initialize
+        """
+
+        self.i = input
+
+        starts = time.time()
+
+        for key, value in self.i.instances.items():
+
+            if not value.other_error_checks():
+                continue
+            run = Sizing.Scenario(value)
+            run.add_technology()
+            run.add_services()
+            run.add_control_constraints()
+            run.optimize_problem_loop()
+            run.post_optimization_analysis()
+            run.save_results_csv()
+
+            logging.debug('Successfully ran one simulation.')
+
+        ends = time.time()
+        dLogger.info("runStorageVET runtime: ")
+        dLogger.info(ends - starts)
+
 
 if __name__ == '__main__':
-    starts = time.time()
-    logging.basicConfig(filename='logfile.log', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                        filemode='w', level=logging.DEBUG)
-
-    logging.info('Started basic configuration')
+    """
+            the Main section for runStorageVET to run by itself without the GUI 
+        """
 
     parser = argparse.ArgumentParser(prog='StorageVET.py',
                                      description='The Electric Power Research Institute\'s energy storage system ' +
@@ -47,39 +91,70 @@ if __name__ == '__main__':
                         help='specify the filename of the CSV file defining the PARAMETERS dataframe')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='specify this flag for verbose output during execution')
+    parser.add_argument('--gitlab-ci', action='store_true',
+                        help='specify this flag for gitlab-ci testing to skip user input')
     arguments = parser.parse_args()
 
-    logging.info('Finished basic configuration with the provided file: %s', arguments.parameters_filename)
+    dLogger.info('Finished basic configuration with the provided file: %s', arguments.parameters_filename)
 
-    print(os.path.dirname(arguments.parameters_filename))
     if arguments.parameters_filename.endswith(".csv"):
-        arguments.parameters_filename = Input.csv_to_xml(arguments.parameters_filename)
+        arguments.parameters_filename = ParamsDER.csv_to_xml(arguments.parameters_filename)
 
     # Initialize the Input Object from Model Parameters and Simulation Cases
-    Input.initialize(arguments.parameters_filename, "SchemaDER.xml")
-    logging.info('Successfully initialized the Input class with the XML file.')
+    script__rel_path = sys.argv[0]
+    dir_rel_path = script__rel_path[:-len('run_DERVET.py')]
+    schema_rel_path = dir_rel_path + "SchemaDER.xml"
 
-    # Determine were model_parameters lives
-    results_folder = os.path.dirname(arguments.parameters_filename) + "\ "[0] + Input.Questionnaire['result_filename']
-    print(results_folder)
+    ParamsDER.initialize(arguments.parameters_filename, schema_rel_path)
+    dLogger.info('Successfully initialized the Input class with the XML file.')
 
-    for key, value in Input.instances.items():
+    active_commands = ParamsDER.active_components['command']
+    if "Results_Directory" in active_commands:
+        userLog_path = ParamsDER.csv_path
+        try:
+            os.makedirs(userLog_path)
+        except OSError:
+            print("Creation of the user_log directory %s failed. Possibly already created." % userLog_path)
+        else:
+            print("Successfully created the user_log directory %s " % userLog_path)
+    else:
+        userLog_path = developer_path
 
-        if not value.other_error_checks():
-            continue
-        run = Sizing.Scenario(value)
-        run.add_technology()
-        run.add_services()
-        run.add_control_constraints()
-        run.optimize_problem_loop()
-        run.post_optimization_analysis()
-        run.save_results_csv(results_folder)
+    LOG_FILENAME2 = userLog_path + '\\user_log_' + datetime.now().strftime('%H_%M_%S_%m_%d_%Y.log')
 
-        logging.debug('Successfully ran one simulation.')
+    handler = logging.FileHandler(Path(LOG_FILENAME2))
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    uLogger = logging.getLogger('User')
+    uLogger.setLevel(logging.DEBUG)
+    uLogger.addHandler(handler)
+    uLogger.info('Started logging...')
 
-    logging.debug('Successfully ran all simulations.')
-    logging.debug('summary printed')
+    if not arguments.gitlab_ci:
+        if "Previsualization" in active_commands:
+            ParamsDER.class_summary()
+            uLogger.info('Successfully ran the pre-visualization.')
 
-    ends = time.time()
-    print("time time: ")
-    print(ends - starts)
+        if "Validation" in active_commands:
+            ParamsDER.validate()
+            uLogger.info('Successfully ran validate.')
+
+        if "Simulation" in active_commands:
+            if "Sizing" in active_commands:
+                RunSizing(ParamsDER)
+                uLogger.info('Sizing solution found.')
+            elif "Dispatch" in active_commands:
+                run_StorageVET(ParamsDER)
+                uLogger.info('Dispatch solution found.')
+
+    else:
+        ParamsDER.class_summary()
+        ParamsDER.validate()
+        if "Sizing" in active_commands:
+            RunSizing(ParamsDER)
+            uLogger.info('Sizing solution found.')
+        elif "Dispatch" in active_commands:
+            run_StorageVET(ParamsDER)
+            uLogger.info('Dispatch solution found.')
+        dLogger.info('Simulation ran pre-visualization, validate, and successfully finished.')
+
+    print("Program is done.")

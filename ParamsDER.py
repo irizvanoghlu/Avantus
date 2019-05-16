@@ -11,9 +11,10 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-
+import xml.etree.ElementTree as et
 import logging
 from storagevet.Input import Input
+import pandas as pd
 
 dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
@@ -29,13 +30,11 @@ class ParamsDER(Input):
         """ Initialize all Input objects with the following attributes.
         """
         Input.__init__(self)
-        # tech
-        dLogger.info('Adding info about Diesel...')
         self.Diesel = self.read_from_xml_object('Diesel')
-
-        # predispatch
-        dLogger.info('Adding info about Reliability')
         self.Reliability = self.read_from_xml_object('Reliability')
+
+        self.Sizing = self.read_from_xml_object('Sizing')  # this is an empty dictionary
+        self.Dispatch = self.read_from_xml_object('Dispatch')  # this is an empty dictionary
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).

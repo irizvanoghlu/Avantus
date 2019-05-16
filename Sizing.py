@@ -93,30 +93,36 @@ class Sizing(Scenario):
 
         TODO [mulit-tech] need dynamic mapping of services to tech in RIVET
         """
+        storage_inputs = self.technologies['Storage']
 
-        print("Adding Predispatch Services...") if self.verbose else None
-
-        if self.input.Reliability is not None:
-            self.input.Reliability.update()
-            print('Reliability') if self.verbose else None
-            new_service = Reliability.Reliability(self.input.Reliability, self.technologies['Storage'], self.opt_results,
-                                                  self.financials.fin_inputs)
-            self.predispatch_services['Reliability'] = new_service
-
-        print("Adding Dispatch Services...") if self.verbose else None
-        service_active_map = {
-            'DCM': self.input.DCM,
-            'retailTimeShift': self.input.retailTimeShift
+        predispatch_service_action_map = {
+            'Reliability': Reliability
         }
+
+        for service in self.active_objects['pre-dispatch']:
+            dLogger.info("Using: " + str(service))
+            inputs = self.predispatch_service_inputs_map[service]
+            service_func = predispatch_service_action_map[service]
+            new_service = service_func(inputs, storage_inputs, self.power_kw, self.dt)
+            new_service.estimate_year_data(self.opt_years, self.frequency)
+            self.predispatch_services[service] = new_service
+
+        dLogger.info("Finished adding Predispatch Services for Value Stream")
+
         service_action_map = {
-            'DCM': DemandChargeReduction.DemandChargeReduction,
-            'retailTimeShift': EnergyTimeShift.EnergyTimeShift
+            'DCM': DemandChargeReduction,
+            'retailTimeShift': EnergyTimeShift
         }
-        for service in service_action_map.keys():
-            if service_active_map[service] is not None:
-                print(service) if self.verbose else None
-                new_service = service_action_map[service](service_active_map[service], self.financials, self.technologies['Storage'], self.dt)
-                self.services[service] = new_service
+
+        for service in self.active_objects['service']:
+            dLogger.info("Using: " + str(service))
+            inputs = self.service_input_map[service]
+            service_func = service_action_map[service]
+            new_service = service_func(inputs, storage_inputs, self.dt)
+            new_service.estimate_year_data(self.opt_years, self.frequency)
+            self.services[service] = new_service
+
+        dLogger.info("Finished adding Services for Value Stream")
 
     def add_control_constraints(self, deferral_check=False):
         """ Creates time series control constraints for each technology based on predispatch services.

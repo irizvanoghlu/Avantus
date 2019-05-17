@@ -61,6 +61,8 @@ class RunSizing:
             if not value.other_error_checks():
                 continue
             value.prepare_scenario()
+            value.prepare_technology()
+            value.prepare_services()
             value.prepare_finance()
 
             run = Sizing.Sizing(value)

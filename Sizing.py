@@ -12,8 +12,9 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 # from ValueStreams import DemandChargeReduction, EnergyTimeShift
-from ValueStreamsDER import Reliability
-from TechnologiesDER import CurtailPV, BatterySizing
+from ValueStreamsDER.Reliability import Reliability
+from TechnologiesDER.CurtailPV import CurtailPV
+from TechnologiesDER.BatterySizing import BatterySizing
 from storagevet.Scenario import Scenario
 from storagevet.ValueStreams import DemandChargeReduction, EnergyTimeShift
 import sys
@@ -48,7 +49,8 @@ class Sizing(Scenario):
         TODO: remove self.input
         """
         Scenario.__init__(self, input_tree)
-
+        self.sizing = input_tree.Sizing is not None
+        self.dispatch = input_tree.Dispatch is not None
         self.predispatch_service_inputs_map.update({'Reliability': input_tree.Reliability})
 
     def init_financials(self, finance_inputs):
@@ -69,18 +71,32 @@ class Sizing(Scenario):
         TODO: perhaps add any data relating to anything that could be a technology here -- HN**
 
         """
-        Scenario.add_technology(self)
-        generator_action_map = {
-            'PV': CurtailPV.CurtailPV,
+        storage_inputs = self.technology_inputs_map['Storage']
 
+        if self.dispatch:
+            Scenario.add_technology(self)
+        elif self.sizing:
+            ess_sizing_action_map = {
+                'Battery': BatterySizing,
+            }
+
+            active_storage = self.active_objects['storage']
+            for storage in active_storage:
+                inputs = self.technology_inputs_map[storage]
+                tech_func = ess_sizing_action_map[storage]
+                self.technologies['Storage'] = tech_func('Storage', self.financials, inputs, storage_inputs, self.cycle_life)
+                dLogger.info("Finished adding storage...")
+
+        generator_action_map = {
+            'PV': CurtailPV,
         }
 
         active_generator = self.active_objects['generator']
-        storage_inputs = self.technology_inputs_map['Storage']
+
         for gen in active_generator:
             inputs = self.technology_inputs_map[gen]
             tech_func = generator_action_map[gen]
-            self.technologies[gen] = tech_func(gen, self.financials, inputs, storage_inputs, self.cycle_life)
+            self.technologies[gen] = tech_func(gen, self.power_kw['opt_agg'].unique(), inputs, storage_inputs, self.cycle_life)
             dLogger.info("Finished adding generators...")
 
     def add_services(self):

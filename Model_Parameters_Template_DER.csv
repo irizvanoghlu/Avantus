@@ -1,6 +1,6 @@
 Tag,Key,Value,Units,Type,Allowed Values,Sensitivity Parameters,Coupled,Description,Active,Sensitivity Analysis,Options/Notes
 Scenario,monthly_data_filename,.\Testing\Datasets\000-001-monthly.csv,N/A,string,valid file path to a monthly data file,N/A,None,N/A,yes,no,
-Scenario,time_series_filename,.\Testing\Datasets\000-001-timeseries.csv,N/A,string,valid file path to a time series data file,.\Data\test1.csv,None,N/A,.,no,
+Scenario,time_series_filename,.\Testing\Datasets\000-003-timeseries.csv,N/A,string,valid file path to a time series data file,.\Data\test1.csv,None,N/A,.,no,
 Scenario,customer_tariff_filename,.\Testing\Datasets\000-001-tariff.csv,N/A,string,valid file path to a customer tariff file,N/A,None,N/A,.,no,
 Scenario,cycle_life_filename,.\Testing\Datasets\000-001-cycle.csv,N/A,string,valid file path to a degradation data file,N/A,None,N/A,.,no,
 Scenario,dt,1,N/A,float,"{0,1}",N/A,None,Time step in the time series data file,.,no,
@@ -8,7 +8,8 @@ Scenario,opt_years,2017,N/A,list/int,the year number(s) specified here must appe
 Scenario,start_year,2017,N/A,Period,opt_years must be between start_year and end_year,N/A,None,first year of analysis,.,no,
 Scenario,end_year,2030,N/A,Period,opt_years must be between start_year and end_year,N/A,None,last year of analysis,.,no,
 Scenario,n,month,N/A,string/int,"{month,(0,365]}",N/A,None,optimization prediction horizon ('month' or number of days). ,.,no,
-Scenario,incl_site_load,1,N/A,int,"{0,1}",N/A,None,Flag to include site_load in load calculation,.,no,
+Scenario,incl_site_load,1,N/A,int,"{0,1}",N/A,None,Flag to include site_load in load calculation (MUST BE ONE IF DCM OR RETAILETS ARE ON),.,no,
+Scenario,incl_sys_load,0,N/A,int,"{0,1}",N/A,None,Flag to include site_load in load calculation (MUST BE ONE IF RA OR DA ARE ON),.,no,
 Scenario,incl_aux_load,0,N/A,int,"{0,1}",N/A,None,Flag to include aux_load in load calculation,.,no,
 Scenario,incl_deferral_load,0,N/A,int,"{0,1}",N/A,None,Flag to include deferral_load in load calculation,.,no,
 Scenario,def_growth,2,%/yr,float,"[0,100]",N/A,None,default growth rate applied to load and any missing rates,.,no,

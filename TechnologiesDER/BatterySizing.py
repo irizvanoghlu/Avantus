@@ -24,13 +24,13 @@ class BatterySizing(TechnologySizing.TechnologySizing):
 
     """
 
-    def __init__(self, name,  financial, params, tech_params, cycle_life):
+    def __init__(self, name,  opt_agg, params, tech_params, cycle_life):
         """ Initializes a battery class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
         Args:
             name (string): name of technology
-            financial (Analysis): Initalized Financial Class
+            opt_agg (Analysis): Initalized Financial Class
             tech_params (dict): params dictionary from dataframe for one case
             cycle_life (DataFrame): Cycle life information
         """
@@ -40,7 +40,7 @@ class BatterySizing(TechnologySizing.TechnologySizing):
 
         # add degradation information
         self.cycle_life = cycle_life
-        self.degrade_data = pd.DataFrame(index=financial.obj_val.index)
+        self.degrade_data = pd.DataFrame(index=opt_agg)
 
         # calculate current degrade_perc since installation
         if tech_params['incl_cycle_degrade']:

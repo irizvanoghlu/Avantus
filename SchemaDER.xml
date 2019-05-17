@@ -481,6 +481,11 @@
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
+        <property name="incl_sys_load">
+            <field name="value" type="int" min="0" max="1" />
+            <field name="unit" type="string" />
+            <field name="description" type="string" maxlength="1000" />
+        </property>
         <property name="incl_aux_load">
             <field name="value" type="int" min="0" max="1" />
             <field name="unit" type="string" />

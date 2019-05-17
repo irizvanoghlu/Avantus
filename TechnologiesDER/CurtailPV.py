@@ -14,6 +14,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 from Technology.DER import DER
 from TechnologiesDER.TechnologySizing import TechnologySizing
 import cvxpy as cvx
+import pandas as pd
 
 
 class CurtailPV(TechnologySizing):
@@ -30,10 +31,14 @@ class CurtailPV(TechnologySizing):
             params (dict): params dictionary from dataframe for one case
             time_series (series): time series dataframe
         """
-        TechnologySizing.__init__(self, name, tech_params, 'PV curtailed')
+        TechnologySizing.__init__(self, name, tech_params, 'PV with controls')
         self.no_export = tech_params['no_export']
-        self.generation = time_series['PV_Gen (kW)']
-        self.load = time_series['Site_Load (kW)']
+        self.gen_per_rated = time_series['PV_gen/rated']
+        self.load = time_series['site_load']
+        self.rated_capacity = params['rated_capacity']
+        self.cost_per_kW = params['cost_per_kW']
+        if not self.rated_capacity:
+            self.rated_capacity = cvx.Variable(shape=1, name='PV rating', integer=True, nonneg=True)
 
     def build_master_constraints(self, variables, dt, mask, reservations, binary, slack, startup):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -53,8 +58,9 @@ class CurtailPV(TechnologySizing):
             A list of constraints that corresponds the battery's physical constraints and its
             service constraints.
         """
-        constraint_list = [cvx.NonPos(variables['pv_out'] - self.generation[mask])]
-        constraint_list += [cvx.NonPos(-variables['pv_out'])]
+        constraint_list = [cvx.NonPos(variables['pv_out'] - cvx.multiply(self.gen_per_rated[mask], self.rated_capacity))]
+        # constraint_list += [cvx.NonPos(-variables['pv_out'])]
+        # constraint_list += [cvx.NonPos(-self.rated_capacity)]
 
         if self.no_export:
             constraint_list += [cvx.NonPos(variables['dis']-variables['ch']+variables['pv_out']-self.load[mask])]
@@ -77,6 +83,38 @@ class CurtailPV(TechnologySizing):
             Dictionary of optimization variables
         """
 
-        variables = {'pv_out': cvx.Variable(shape=size, name='pv_out')}
+        variables = {'pv_out': cvx.Variable(shape=size, name='pv_out', nonneg=True)}
 
         return variables
+
+    def calculate_control_constraints(self, datetimes, user_inputted_constraint=pd.DataFrame):
+        """ Generates a list of master or 'control constraints' from physical constraints and all
+        predispatch service constraints.
+
+        Args:
+            datetimes (list): The values of the datetime column within the initial time_series data frame.
+            user_inputted_constraint (DataFrame): timeseries of any user inputed constraints.
+
+        Returns:
+            Array of datetimes where the control constraints conflict and are infeasible. If all feasible return None.
+
+        Note: the returned failed array returns the first infeasibility found, not all feasibilities.
+        """
+        return None
+
+    def objective_function(self, variables, mask, dt, slack, startup):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
+
+        Args:
+            variables (Dict): dictionary of variables being optimized
+            mask (Series): Series of booleans used, the same length as case.opt_results
+            dt (float): optimization timestep (hours)
+            slack (bool): True if user wants to implement slack variables in optimization, else False
+            startup (bool): True if user wants to implement startup variables in optimization, else False
+
+        Returns:
+            self.expressions (Dict): Dict of objective expressions
+        """
+        self.expressions = {'PV capital cost': self.cost_per_kW*self.rated_capacity}
+        self.capex = self.cost_per_kW*self.rated_capacity
+        return self.expressions

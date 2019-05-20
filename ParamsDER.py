@@ -1,5 +1,5 @@
 """
-Input.py
+ParamsDER.py
 
 """
 
@@ -13,7 +13,8 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import xml.etree.ElementTree as et
 import logging
-from storagevet.Input import Input
+from dervet.storagevet.Params import Input
+# from storagevet.Params import Input
 import pandas as pd
 
 dLogger = logging.getLogger('Developer')

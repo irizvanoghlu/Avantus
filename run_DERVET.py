@@ -16,7 +16,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import argparse
 import Sizing
 from ParamsDER import ParamsDER
-from storagevet.run_StorageVET import run_StorageVET
+from dervet.storagevet.run_StorageVET import run_StorageVET
 
 import logging
 import os
@@ -80,37 +80,16 @@ class RunSizing:
         dLogger.info(ends - starts)
 
 
-if __name__ == '__main__':
+def main(model_params_path, schema_relative_path):
     """
-            the Main section for runStorageVET to run by itself without the GUI 
-        """
+                the Main section for DERVET that takes in a string path to the location
+                of the model parameters defined by the user. Determines if Sizing or Dispatch
+                is to be running, then calls the corresponding functions.
+    """
+    if model_params_path.endswith(".csv"):
+        model_params_path = ParamsDER.csv_to_xml(model_params_path)
 
-    parser = argparse.ArgumentParser(prog='StorageVET.py',
-                                     description='The Electric Power Research Institute\'s energy storage system ' +
-                                                 'analysis, dispatch, modelling, optimization, and valuation tool' +
-                                                 '. Should be used with Python 3.6.x, pandas 0.19+.x, and CVXPY' +
-                                                 ' 0.4.x or 1.0.x.',
-                                     epilog='Copyright 2018. Electric Power Research Institute (EPRI). ' +
-                                            'All Rights Reserved.')
-    parser.add_argument('parameters_filename', type=str,
-                        help='specify the filename of the CSV file defining the PARAMETERS dataframe')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='specify this flag for verbose output during execution')
-    parser.add_argument('--gitlab-ci', action='store_true',
-                        help='specify this flag for gitlab-ci testing to skip user input')
-    arguments = parser.parse_args()
-
-    dLogger.info('Finished basic configuration with the provided file: %s', arguments.parameters_filename)
-
-    if arguments.parameters_filename.endswith(".csv"):
-        arguments.parameters_filename = ParamsDER.csv_to_xml(arguments.parameters_filename)
-
-    # Initialize the Input Object from Model Parameters and Simulation Cases
-    script__rel_path = sys.argv[0]
-    dir_rel_path = script__rel_path[:-len('run_DERVET.py')]
-    schema_rel_path = dir_rel_path + "SchemaDER.xml"
-
-    ParamsDER.initialize(arguments.parameters_filename, schema_rel_path)
+    ParamsDER.initialize(model_params_path, schema_relative_path)
     dLogger.info('Successfully initialized the Input class with the XML file.')
 
     active_commands = ParamsDER.active_components['command']
@@ -134,32 +113,49 @@ if __name__ == '__main__':
     uLogger.addHandler(handler)
     uLogger.info('Started logging...')
 
-    if not arguments.gitlab_ci:
-        if "Previsualization" in active_commands:
-            ParamsDER.class_summary()
-            uLogger.info('Successfully ran the pre-visualization.')
-
-        if "Validation" in active_commands:
-            ParamsDER.validate()
-            uLogger.info('Successfully ran validate.')
-
-        if "Simulation" in active_commands:
-            if "Sizing" in active_commands:
-                RunSizing(ParamsDER)
-                uLogger.info('Sizing solution found.')
-            elif "Dispatch" in active_commands:
-                run_StorageVET(ParamsDER)
-                uLogger.info('Dispatch solution found.')
-
-    else:
+    if "Previsualization" in active_commands:
         ParamsDER.class_summary()
+        uLogger.info('Successfully ran the pre-visualization.')
+
+    if "Validation" in active_commands:
         ParamsDER.validate()
+        uLogger.info('Successfully ran validate.')
+
+    if "Simulation" in active_commands:
         if "Sizing" in active_commands:
             RunSizing(ParamsDER)
             uLogger.info('Sizing solution found.')
         elif "Dispatch" in active_commands:
             run_StorageVET(ParamsDER)
             uLogger.info('Dispatch solution found.')
-        dLogger.info('Simulation ran pre-visualization, validate, and successfully finished.')
-
     print("Program is done.")
+
+
+if __name__ == '__main__':
+    """
+            the Main section for runStorageVET to run by itself without the GUI 
+    """
+
+    parser = argparse.ArgumentParser(prog='StorageVET.py',
+                                     description='The Electric Power Research Institute\'s energy storage system ' +
+                                                 'analysis, dispatch, modelling, optimization, and valuation tool' +
+                                                 '. Should be used with Python 3.6.x, pandas 0.19+.x, and CVXPY' +
+                                                 ' 0.4.x or 1.0.x.',
+                                     epilog='Copyright 2018. Electric Power Research Institute (EPRI). ' +
+                                            'All Rights Reserved.')
+    parser.add_argument('parameters_filename', type=str,
+                        help='specify the filename of the CSV file defining the PARAMETERS dataframe')
+    # parser.add_argument('-v', '--verbose', action='store_true',
+    #                     help='specify this flag for verbose output during execution')
+    # parser.add_argument('--gitlab-ci', action='store_true',
+    #                     help='specify this flag for gitlab-ci testing to skip user input')
+    arguments = parser.parse_args()
+
+    dLogger.info('Finished basic configuration with the provided file: %s', arguments.parameters_filename)
+
+    # Initialize the Input Object from Model Parameters and Simulation Cases
+    script_rel_path = sys.argv[0]
+    dir_rel_path = script_rel_path[:-len('run_DERVET.py')]
+    schema_rel_path = dir_rel_path + "SchemaDER.xml"
+
+    main(arguments.parameters_filename, schema_rel_path)

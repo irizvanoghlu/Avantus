@@ -125,10 +125,11 @@ def main(model_params_path, schema_relative_path):
         if "Sizing" in active_commands:
             RunSizing(ParamsDER)
             uLogger.info('Sizing solution found.')
+            print("Program is done.")
         elif "Dispatch" in active_commands:
             run_StorageVET(ParamsDER)
             uLogger.info('Dispatch solution found.')
-    print("Program is done.")
+            print("Program is done.")
 
 
 if __name__ == '__main__':

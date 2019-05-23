@@ -477,22 +477,22 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_site_load">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_sys_load">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_aux_load">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="incl_deferral_load">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
@@ -502,22 +502,22 @@
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="slack">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="binary">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="verbose">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>
         <property name="verbose_opt">
-            <field name="value" type="int" min="0" max="1" />
+            <field name="value" type="bool" min="0" max="1" />
             <field name="unit" type="string" />
             <field name="description" type="string" maxlength="1000" />
         </property>

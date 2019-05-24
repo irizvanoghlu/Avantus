@@ -84,7 +84,7 @@ class Sizing(Scenario):
             for storage in active_storage:
                 inputs = self.technology_inputs_map[storage]
                 tech_func = ess_sizing_action_map[storage]
-                self.technologies['Storage'] = tech_func('Storage', self.financials, inputs, storage_inputs, self.cycle_life)
+                self.technologies['Storage'] = tech_func('Storage', self.power_kw['opt_agg'], inputs, storage_inputs, self.cycle_life)
                 dLogger.info("Finished adding storage...")
 
         generator_action_map = {

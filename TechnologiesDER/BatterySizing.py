@@ -44,7 +44,7 @@ class BatterySizing(TechnologySizing.TechnologySizing):
 
         # calculate current degrade_perc since installation
         if tech_params['incl_cycle_degrade']:
-            start_dttm = financial.fin_inputs.index[0]
+            start_dttm = opt_agg[0]
             degrade_perc = self.calc_degradation(self.install_date, start_dttm)
             self.degrade_data['degrade_perc'] = degrade_perc
             self.degrade_data['eff_e_cap'] = self.apply_degradation(degrade_perc)

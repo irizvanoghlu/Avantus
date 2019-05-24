@@ -47,7 +47,7 @@ class ParamsDER(Input):
 
         required_power_series = Input.prepare_services(self)
 
-        if self.Reliability in pre_dispatch_serv:
+        if 'Reliability' in pre_dispatch_serv:
             self.Reliability["dt"] = self.Scenario["dt"]
 
         return required_power_series

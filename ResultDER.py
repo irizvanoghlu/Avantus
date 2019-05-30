@@ -184,13 +184,16 @@ class Result:
         print("Performing Post Optimization Analysis...") if self.verbose else None
 
         # add MONTHLY ENERGY BILL if customer sided
-        # TODO change this check to look if customer sided
-        if "DCM" in self.services.keys() or "retailTimeShift" in self.services.keys():
-            self.financials.calc_energy_bill(self.opt_results)
+        if self.customer_sided:
+            if 'retailTimeShift' not in self.active_objects['service']:
+                p_energy = np.zeros(len(self.opt_results.index))
+            else:
+                p_energy = self.services['retailTimeShift'].p_energy
+            self.financials.calc_energy_bill(self.opt_results, p_energy)
 
         # add other helpful information to a RESULTS DATAFRAME (important to keep this separate from opt_results)
         self.results = pd.DataFrame(index=self.opt_results.index)
-        if self.pv is not None:
+        if 'PV' in self.active_objects['generator']:
             self.results['PV Maximum (kW)'] = self.opt_results['PV_gen']
             self.results['PV Power (kW)'] = self.opt_results['pv_out']
         self.results['Load (kW)'] = self.opt_results['load']

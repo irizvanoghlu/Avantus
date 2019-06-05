@@ -13,7 +13,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import xml.etree.ElementTree as et
 import logging
-from dervet.storagevet.Params import Input
+from dervet.storagevet.Params import Params
 # from storagevet.Params import Input
 import pandas as pd
 
@@ -21,7 +21,7 @@ dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
 
 
-class ParamsDER(Input):
+class ParamsDER(Params):
     """ Inherits from Input from storagevet. Takes user CSV or XML input and preforms validation/clean-up.
         Class attributes are made up of services, technology, and any other needed inputs. The attributes are filled
         by converting the xml file in a python object.
@@ -30,7 +30,7 @@ class ParamsDER(Input):
     def __init__(self):
         """ Initialize all Input objects with the following attributes.
         """
-        Input.__init__(self)
+        Params.__init__(self)
         self.Diesel = self.read_from_xml_object('Diesel')
         self.Reliability = self.read_from_xml_object('Reliability')
 
@@ -45,7 +45,7 @@ class ParamsDER(Input):
         """
         pre_dispatch_serv = self.active_components['pre-dispatch']
 
-        required_power_series = Input.prepare_services(self)
+        required_power_series = Params.prepare_services(self)
 
         if 'Reliability' in pre_dispatch_serv:
             self.Reliability["dt"] = self.Scenario["dt"]

@@ -55,14 +55,14 @@ class BatterySizing(Storage):
 
         # add degradation information
         self.cycle_life = cycle_life
-        self.degrade_data = pd.DataFrame(index=opt_agg)
+        self.degrade_data = pd.DataFrame(index=opt_agg.unique())
 
         # calculate current degrade_perc since installation
         if tech_params['incl_cycle_degrade']:
-            start_dttm = opt_agg[0]
-            degrade_perc = self.calc_degradation(self.install_date, start_dttm)
-            self.degrade_data['degrade_perc'] = degrade_perc
-            self.degrade_data['eff_e_cap'] = self.apply_degradation(degrade_perc)
+            start_dttm = opt_agg.index[0].to_timestamp()
+            self.calc_degradation(None, self.install_date, start_dttm)
+            self.degrade_data['degrade_perc'] = self.degrade_perc
+            self.degrade_data['eff_e_cap'] = self.apply_degradation()
 
     def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -270,7 +270,7 @@ class BatterySizing(Storage):
             else:
                 self.degrade_perc = degrade_percent + self.degrade_perc
 
-    def apply_degradation(self, degrade_percent, datetimes=None):
+    def apply_degradation(self, datetimes=None):
         """ Updates ene_max_rated and control constraints based on degradation percent
 
         Args:
@@ -282,7 +282,7 @@ class BatterySizing(Storage):
         """
 
         # apply degrade percent to rated energy capacity
-        new_ene_max = max(self.ulsoc*self.ene_max_rated*(1-degrade_percent), 0)
+        new_ene_max = max(self.ulsoc * self.ene_max_rated * (1 - self.degrade_perc), 0)
 
         # update physical constraint
         self.physical_constraints['ene_max_rated'].value = new_ene_max
@@ -293,7 +293,7 @@ class BatterySizing(Storage):
             failure = self.calculate_control_constraints(datetimes)
         if failure is not None:
             # possible that degredation caused infeasible scenario
-            print('Degradation results in infeasible scenario')
+            dLogger.error('Degradation results in infeasible scenario')
             quit()
         return new_ene_max
 

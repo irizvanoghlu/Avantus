@@ -152,7 +152,8 @@ class Sizing(Scenario):
         opt_var_size = int(np.sum(mask))
 
         # subset of input data relevant to this optimization period
-        subs = self.opt_results.loc[mask, :]
+        subs = self.power_kw.loc[mask, :]
+        uLogger.info(subs.index.year[0])
 
         obj_const = []  # list of constraint expressions (make this a dict for continuity??)
         variable_dic = {}  # Dict of optimization variables
@@ -161,9 +162,8 @@ class Sizing(Scenario):
         # add optimization variables for each technology
         # TODO [multi-tech] need to handle naming multiple optimization variables (i.e ch_1)
         for tech in self.technologies.values():
-            variable_dic.update(tech.add_vars(opt_var_size, self.input.Scenario['binary'],
-                                              self.input.Scenario['slack'], self.input.Scenario['startup']))
-        if self.pv is None:
+            variable_dic.update(tech.add_vars(opt_var_size))
+        if 'PV' not in self.active_objects['generator']:
             variable_dic.update({'pv_out': cvx.Parameter(shape=opt_var_size, name='pv_out', value=np.zeros(opt_var_size))})
             obj_const += [cvx.NonPos(variable_dic['dis'] - variable_dic['ch'] + variable_dic['pv_out'] - subs['load'])]
 
@@ -190,18 +190,14 @@ class Sizing(Scenario):
                         'E_lower': energy_reservations[2]}
 
         # add any objective expressions from tech and the main physical constraints
-        # TODO: make slack, binary class attributes
         for tech in self.technologies.values():
 
-            obj_expression.update(tech.objective_function(variable_dic, mask, self.dt, self.input.Scenario['slack'],
-                                                          self.input.Scenario['startup']))
-            obj_const += tech.build_master_constraints(variable_dic, self.dt, mask, reservations,
-                                                       self.input.Scenario['binary'],
-                                                       self.input.Scenario['slack'],
-                                                       self.input.Scenario['startup'])
+            obj_expression.update(tech.objective_function(variable_dic, mask))
+            obj_const += tech.build_master_constraints(variable_dic, mask, reservations)
 
         obj = cvx.Minimize(sum(obj_expression.values()))
         prob = cvx.Problem(obj, obj_const)
+        dLogger.info("Finished setting up the problem. Solving now.")
 
         try:
             start = time.time()
@@ -213,7 +209,7 @@ class Sizing(Scenario):
             dLogger.error("Solver Error...")
             sys.exit(err)
 
-        uLogger.info(prob.status)
+        dLogger.info(prob.status)
 
         # save solver used
         self.solvers = self.solvers.union(prob.solver_stats.solver_name)

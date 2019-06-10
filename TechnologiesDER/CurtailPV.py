@@ -12,35 +12,37 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 from Technology.DER import DER
-from TechnologiesDER.TechnologySizing import TechnologySizing
 import cvxpy as cvx
-import pandas as pd
 
 
-class CurtailPV(TechnologySizing):
+class CurtailPV(DER):
     """ Pre_IEEE 1547 2018 standards. Assumes perfect foresight. Ability to curtail PV generation, unlike ChildPV.
 
     """
 
-    def __init__(self, name,  financial, params, tech_params, time_series):
+    def __init__(self, name, params):
         """ Initializes a PV class where perfect foresight of generation is assumed.
         It inherits from the technology class. Additionally, it sets the type and physical constraints of the
         technology.
 
         Args:
-            params (dict): params dictionary from dataframe for one case
-            time_series (series): time series dataframe
+            name (str): A unique string name for the technology being added, also works as category.
+            params (dict): Dict of parameters
         """
-        TechnologySizing.__init__(self, name, tech_params, 'PV with controls')
-        self.no_export = tech_params['no_export']
-        self.gen_per_rated = time_series['PV_gen/rated']
-        self.load = time_series['site_load']
+        DER.__init__(self, name)
+        self.no_export = params['no_export']
+        self.no_import = params['no_import']
+        self.charge_from_solar = params['charge_from_solar']
+
+        self.gen_per_rated = params['PV_gen/rated']
+        self.load = params['site_load']
         self.rated_capacity = params['rated_capacity']
         self.cost_per_kW = params['cost_per_kW']
-        if not self.rated_capacity:
-            self.rated_capacity = cvx.Variable(shape=1, name='PV rating', integer=True, nonneg=True)
 
-    def build_master_constraints(self, variables, dt, mask, reservations, binary, slack, startup):
+        if not self.rated_capacity:
+            self.rated_capacity = cvx.Variable(shape=1, name='PV rating', integer=True)
+
+    def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -59,15 +61,19 @@ class CurtailPV(TechnologySizing):
             service constraints.
         """
         constraint_list = [cvx.NonPos(variables['pv_out'] - cvx.multiply(self.gen_per_rated[mask], self.rated_capacity))]
-        # constraint_list += [cvx.NonPos(-variables['pv_out'])]
-        # constraint_list += [cvx.NonPos(-self.rated_capacity)]
 
         if self.no_export:
             constraint_list += [cvx.NonPos(variables['dis']-variables['ch']+variables['pv_out']-self.load[mask])]
+
+        if self.no_import:
+            constraint_list += [cvx.NonPos(-variables['dis'] + variables['ch'] - self.generation[mask] + self.load[mask])]
+
+        if self.charge_from_solar:
+            constraint_list += [cvx.NonPos(variables['ch'] - self.generation[mask])]
+
         return constraint_list
 
-    @staticmethod
-    def add_vars(size, binary, slack, startup):
+    def add_vars(self, size):
         """ Adds optimization variables to dictionary
 
         Variables added:
@@ -75,9 +81,6 @@ class CurtailPV(TechnologySizing):
 
         Args:
             size (Int): Length of optimization variables to create
-            slack (bool): True if any pre-dispatch services are turned on, else False
-            binary (bool): True if user wants to implement binary variables in optimization, else False
-            startup (bool): True if user wants to implement startup variables in optimization, else False
 
         Returns:
             Dictionary of optimization variables
@@ -87,30 +90,12 @@ class CurtailPV(TechnologySizing):
 
         return variables
 
-    def calculate_control_constraints(self, datetimes, user_inputted_constraint=pd.DataFrame):
-        """ Generates a list of master or 'control constraints' from physical constraints and all
-        predispatch service constraints.
-
-        Args:
-            datetimes (list): The values of the datetime column within the initial time_series data frame.
-            user_inputted_constraint (DataFrame): timeseries of any user inputed constraints.
-
-        Returns:
-            Array of datetimes where the control constraints conflict and are infeasible. If all feasible return None.
-
-        Note: the returned failed array returns the first infeasibility found, not all feasibilities.
-        """
-        return None
-
-    def objective_function(self, variables, mask, dt, slack, startup):
+    def objective_function(self, variables, mask):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
         Args:
             variables (Dict): dictionary of variables being optimized
             mask (Series): Series of booleans used, the same length as case.opt_results
-            dt (float): optimization timestep (hours)
-            slack (bool): True if user wants to implement slack variables in optimization, else False
-            startup (bool): True if user wants to implement startup variables in optimization, else False
 
         Returns:
             self.expressions (Dict): Dict of objective expressions

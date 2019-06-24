@@ -211,9 +211,11 @@ class TechnologySizing:
         constraint_list += [cvx.Zero(ene[-1] - ene_target)]
 
         # Keep energy in bounds determined in the constraints configuration function
+        # keep SOE low enough to never run out of headroom
         constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][0] - variables['ene_max_slack'][0])]
         constraint_list += [cvx.NonPos(ene[:-1] - ene_max + reservations['E_upper'][1:] - variables['ene_max_slack'][1:])]
 
+        # keep SOE high enough to never run out of stored energy
         constraint_list += [cvx.NonPos(-ene_target + ene_min[0] - (pv_gen[0]*dt) - reservations['E_lower'][0] - variables['ene_min_slack'][0])]
         constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*dt) - ene[:-1] - reservations['E_lower'][1:] - variables['ene_min_slack'][1:])]
 

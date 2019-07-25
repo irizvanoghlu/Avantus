@@ -106,7 +106,7 @@
             <Description>last year of analysis</Description>
         </end_year>
         <n analysis="no">
-            <Value>month</Value>
+            <Value>year</Value>
             <Units>hours</Units>
             <Type>string/int</Type>
             <Allowed_Values>{month,year,(0,8760]}</Allowed_Values>
@@ -169,7 +169,7 @@
             <Description>general feedback flag</Description>
         </verbose>
         <verbose_opt analysis="no">
-            <Value>0</Value>
+            <Value>1</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
             <Allowed_Values>nan</Allowed_Values>
@@ -214,7 +214,7 @@
             <Description>Prevent the system from charging from the grid</Description>
         </no_import>
         <no_export analysis="no">
-            <Value>1</Value>
+            <Value>0</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
             <Allowed_Values>{1,0}</Allowed_Values>
@@ -286,7 +286,7 @@
             <Description>User defined name specific to this tag</Description>
         </name>
         <ccost analysis="no">
-            <Value>0</Value>
+            <Value>150</Value>
             <Units>$</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ccost)</Allowed_Values>
@@ -304,7 +304,7 @@
             <Description>Capital Cost in $/kW of storage discharge power capacity</Description>
         </ccost_kw>
         <ccost_kwh analysis="no">
-            <Value>800</Value>
+            <Value>100</Value>
             <Units>$/kWh</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ccost_kwh)</Allowed_Values>
@@ -322,7 +322,7 @@
             <Description>T of F to include startup cost in the dispatch optimization</Description>
         </startup>
         <fixedOM analysis="no">
-            <Value>1000</Value>
+            <Value>0</Value>
             <Units>$/kW-yr</Units>
             <Type>float</Type>
             <Allowed_Values>[0, fixedOM)</Allowed_Values>
@@ -340,7 +340,7 @@
             <Description>Variable Operation and Maintenance Costs per MWh of energy delivered by storage system</Description>
         </OMexpenses>
         <ch_max_rated analysis="no">
-            <Value>2000</Value>
+            <Value>0</Value>
             <Units>kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ch_max_rated)</Allowed_Values>
@@ -349,7 +349,7 @@
             <Description>Energy Storage Charge Capacity</Description>
         </ch_max_rated>
         <dis_max_rated analysis="no">
-            <Value>2000</Value>
+            <Value>0</Value>
             <Units>kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, dis_max_rated)</Allowed_Values>
@@ -376,7 +376,7 @@
             <Description>Energy Storage Discharge Capacity</Description>
         </dis_min_rated>
         <ene_max_rated analysis="no">
-            <Value>10000</Value>
+            <Value>0</Value>
             <Units>kWh</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ene_max_rated)</Allowed_Values>
@@ -596,7 +596,7 @@
         </rated_capacity>
     </PV>
 
-    <Diesel active="yes">
+    <Diesel active="no">
         <name analysis="no">
             <Value>ice gen</Value>
             <Units>nan</Units>
@@ -697,7 +697,7 @@
             <Description>TBA</Description>
         </marcs_term>
         <n_min analysis="no">
-            <Value>1</Value>
+            <Value>0</Value>
             <Units>generators</Units>
             <Type>int</Type>
             <Allowed_Values>nan</Allowed_Values>
@@ -706,7 +706,7 @@
             <Description>Minimum number of generators whose combined rated power is p_max</Description>
         </n_min>
         <n_max analysis="no">
-            <Value>1</Value>
+            <Value>3</Value>
             <Units>generators</Units>
             <Type>int</Type>
             <Allowed_Values>nan</Allowed_Values>
@@ -800,7 +800,7 @@
         </growth>
     </NSR>
 
-    <DCM active="no">
+    <DCM active="yes">
         <growth analysis="no">
             <Value>5</Value>
             <Units>%/yr</Units>

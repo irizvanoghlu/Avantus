@@ -35,6 +35,7 @@ class CurtailPVSizing(CurtailPV):
 
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
+            self.capex = self.cost_per_kW * self.rated_capacity
 
     def sizing_summary(self):
         """

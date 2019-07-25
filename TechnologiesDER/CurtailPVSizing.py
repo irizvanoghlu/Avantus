@@ -34,7 +34,7 @@ class CurtailPVSizing(CurtailPV):
         CurtailPV.__init__(self, name, params)
 
         if not self.rated_capacity:
-            self.rated_capacity = self.rated_capacity = cvx.Variable(shape=1, name='PV rating', integer=True)
+            self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
 
     def sizing_summary(self):
         """

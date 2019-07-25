@@ -33,7 +33,7 @@ class DieselSizing(Diesel):
         Diesel.__init__(self, name, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
-        self.n = cvx.Variable(shape=1, integer=True, name='generators')
+        self.n = cvx.Variable(integer=True, name='generators')
         self.capex = self.capital_cost * self.n + self.capital_cost * self.p_max
 
     def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):

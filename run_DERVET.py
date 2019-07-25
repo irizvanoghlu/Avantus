@@ -16,7 +16,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import argparse
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
-from ResultDER import Result
+from ResultDER import ResultDER as Result
 import logging
 from pathlib import Path
 import time

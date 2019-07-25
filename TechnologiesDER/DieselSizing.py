@@ -65,10 +65,17 @@ class DieselSizing(Diesel):
         Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
 
         """
-        sizing_data = [self.p_max/self.n,
+        # obtain the size of the battery, these may or may not be optimization variable
+        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
+        # If there is an error, then we know that it was user inputted and we just take that value instead.
+        try:
+            n = self.n.value
+        except AttributeError:
+            n = self.n
+        sizing_data = [self.p_max/n,
                        self.capital_cost,
                        self.ccost_kw,
-                       self.n]
+                       n]
         index = pd.Index(['Power Capacity (kW)',
                           'Capital Cost ($)',
                           'Capital Cost ($/kW)',

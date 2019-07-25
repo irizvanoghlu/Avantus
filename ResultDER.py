@@ -38,7 +38,8 @@ class ResultDER(Result):
         """
         Result.__init__(self, scenario, results_inputs)
         self.reliability_df = pd.DataFrame()
-        self.sizing_df = pd.DataFrame()
+        self.sizing_df = pd.DataFrame(index=pd.Index(['Power Capacity (kW)',
+                                                      'Capital Cost ($)'], name='Size and Costs'))
 
     def post_analysis(self):
         """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
@@ -49,14 +50,14 @@ class ResultDER(Result):
         Result.post_analysis(self)
         for name, tech in self.technologies.items():
             sizing_df = tech.sizing_summary()
-            self.sizing_df = pd.merge([sizing_df, self.sizing_df], how='outer', on='Size and Costs')
+            self.sizing_df = pd.merge(self.sizing_df, sizing_df, how='outer', on='Size and Costs')
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             # TODO: make this more dynamic
             reliability_requirement = self.predispatch_services['Reliability'].reliability_requirement
-            self.results['SOC Constraints (%)'] = reliability_requirement / self.technologies['Storage'].ene_max_rated.value
+            self.results.loc[:, 'SOC Constraints (%)'] = reliability_requirement / self.technologies['Storage'].ene_max_rated.value
             # calculate RELIABILITY SUMMARY
             outage_energy = self.predispatch_services['Reliability'].reliability_requirement
-            self.results['Total Outage Requirement (kWh)'] = outage_energy
+            self.results.loc[:, 'Total Outage Requirement (kWh)'] = outage_energy
             sum_outage_requirement = outage_energy.sum()  # sum of energy required to provide x hours of energy if outage occurred at every timestep
             coverage_timestep = self.predispatch_services['Reliability'].coverage_timesteps  # guaranteed power for this many hours in outage
 
@@ -110,9 +111,9 @@ class ResultDER(Result):
             else:
                 diesel_outage_ene = np.zeros(len(self.results.index))
 
-            self.results['PV Outage Contribution (kWh)'] = pv_outage_energy
-            self.results['Battery Outage Contribution (kWh)'] = battery_outage_ene
-            self.results['Generator Outage Contribution (kWh)'] = diesel_outage_ene
+            self.results.loc[:, 'PV Outage Contribution (kWh)'] = pv_outage_energy
+            self.results.loc[:, 'Battery Outage Contribution (kWh)'] = battery_outage_ene
+            self.results.loc[:, 'Generator Outage Contribution (kWh)'] = diesel_outage_ene
 
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
@@ -124,10 +125,6 @@ class ResultDER(Result):
         Result.save_results_csv(self)
         savepath = self.results_path
         if 'Reliability' in self.predispatch_services.keys():
-            self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary.csv'))
-        # self.sizing_results.to_csv(path_or_buf=Path(savepath, 'size.csv'))
-        if 'Battery' in self.active_objects['storage']:
-            self.dispatch_map.to_csv(path_or_buf=Path(savepath, 'dispatch_map' + self.csv_label + '.csv'))
-            # self.energyp_map.to_csv(path_or_buf=Path(savepath, 'energyp_map.csv'))
-
+            self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
+        self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.results_path)

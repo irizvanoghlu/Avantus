@@ -42,7 +42,14 @@ class CurtailPVSizing(CurtailPV):
         Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
 
         """
-        sizing_data = [self.rated_capacity.value,
+        # obtain the size of the battery, these may or may not be optimization variable
+        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
+        # If there is an error, then we know that it was user inputted and we just take that value instead.
+        try:
+            rated_capacity = self.rated_capacity.value
+        except AttributeError:
+            rated_capacity = self.rated_capacity
+        sizing_data = [rated_capacity,
                        self.cost_per_kW]
         index = pd.Index(['Power Capacity (kW)',
                           'Capital Cost ($/kW)'], name='Size and Costs')

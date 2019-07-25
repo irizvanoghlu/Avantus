@@ -716,7 +716,7 @@
         </n_max>
     </Diesel>
 
-    <DA active="yes">
+    <DA active="no">
         <growth analysis="no">
             <Value>0</Value>
             <Units>%/yr</Units>
@@ -812,7 +812,7 @@
         </growth>
     </DCM>
 
-    <retailTimeShift active="no">
+    <retailTimeShift active="yes">
         <growth analysis="no">
             <Value>5</Value>
             <Units>%/yr</Units>

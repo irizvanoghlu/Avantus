@@ -1,5 +1,5 @@
 """
-ParamsDER.py
+Params.py
 
 """
 
@@ -11,43 +11,83 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-import xml.etree.ElementTree as et
+
 import logging
-from dervet.storagevet.Params import Params
-# from storagevet.Params import Input
-import pandas as pd
+from storagevet.Params import Params
+from matplotlib.font_manager import FontProperties
 
 dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
+e_logger = logging.getLogger('Error')
+fontP = FontProperties()
+fontP.set_size('small')
 
 
 class ParamsDER(Params):
-    """ Inherits from Input from storagevet. Takes user CSV or XML input and preforms validation/clean-up.
+    """
         Class attributes are made up of services, technology, and any other needed inputs. The attributes are filled
         by converting the xml file in a python object.
+
+        Notes:
+             Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
 
     def __init__(self):
-        """ Initialize all Input objects with the following attributes.
+        """ Initialize these following attributes of the empty Params class object.
         """
         Params.__init__(self)
-        self.Diesel = self.read_from_xml_object('Diesel')
         self.Reliability = self.read_from_xml_object('Reliability')
 
-        self.Sizing = self.read_from_xml_object('Sizing')  # this is an empty dictionary
-        self.Dispatch = self.read_from_xml_object('Dispatch')  # this is an empty dictionary
+    # def other_error_checks(self):
+    #
+    #     storagevet_checks = Params.other_error_checks(self)
+    #
+    #     if not storagevet_checks:
+    #         return False
+    #
+    #     return True
+
+    # def prepare_technology(self):
+    #     """ Interprets user given data and prepares it for Storage/Storage.
+    #
+    #     Returns: collects required timeseries columns required + collects power growth rates
+    #
+    #     """
+    #     Params.prepare_technology(self)
+    #     dLogger.info("Successfully prepared the Technologies")
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
 
-        Returns: collects required power timeseries
-
         """
+        Params.prepare_services(self)
         pre_dispatch_serv = self.active_components['pre-dispatch']
-
-        required_power_series = Params.prepare_services(self)
 
         if 'Reliability' in pre_dispatch_serv:
             self.Reliability["dt"] = self.Scenario["dt"]
 
-        return required_power_series
+        dLogger.info("Successfully prepared the value-stream (services)")
+
+    def prepare_scenario(self):
+        """ Interprets user given data and prepares it for Scenario.
+
+        """
+        Params.prepare_scenario(self)
+
+        if self.Scenario['binary']:
+            e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+                             'by turning the binary formulation flag off.')
+            uLogger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+                            'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+                            'by turning the binary formulation flag off.')
+
+        dLogger.info("Successfully prepared the Scenario and some Finance")
+
+    # def prepare_finance(self):
+    #     """ Interprets user given data and prepares it for Finance.
+    #
+    #     """
+    #     Params.prepare_finance(self)
+    #
+    #     dLogger.info("Successfully prepared the Finance")

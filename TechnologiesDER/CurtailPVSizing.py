@@ -13,6 +13,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 from storagevet.Technology.CurtailPV import CurtailPV
 import cvxpy as cvx
+import pandas as pd
 
 
 class CurtailPVSizing(CurtailPV):
@@ -34,3 +35,16 @@ class CurtailPVSizing(CurtailPV):
 
         if not self.rated_capacity:
             self.rated_capacity = self.rated_capacity = cvx.Variable(shape=1, name='PV rating', integer=True)
+
+    def sizing_summary(self):
+        """
+
+        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+
+        """
+        sizing_data = [self.rated_capacity.value,
+                       self.cost_per_kW]
+        index = pd.Index(['Power Capacity (kW)',
+                          'Capital Cost ($/kW)'], name='Size and Costs')
+        sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
+        return sizing_results

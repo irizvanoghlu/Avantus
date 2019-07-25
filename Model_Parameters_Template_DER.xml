@@ -106,7 +106,7 @@
             <Description>last year of analysis</Description>
         </end_year>
         <n analysis="no">
-            <Value>year</Value>
+            <Value>month</Value>
             <Units>hours</Units>
             <Type>string/int</Type>
             <Allowed_Values>{month,year,(0,8760]}</Allowed_Values>
@@ -539,7 +539,7 @@
         </charge_from_solar>
     </Battery>
 
-    <PV active="no">
+    <PV active="yes">
         <name analysis="no">
             <Value>solar1</Value>
             <Units>nan</Units>

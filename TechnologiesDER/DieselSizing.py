@@ -58,3 +58,20 @@ class DieselSizing(Diesel):
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.p_max)]
 
         return constraint_list
+
+    def sizing_summary(self):
+        """
+
+        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+
+        """
+        sizing_data = [self.p_max/self.n,
+                       self.capital_cost,
+                       self.ccost_kw,
+                       self.n]
+        index = pd.Index(['Power Capacity (kW)',
+                          'Capital Cost ($)',
+                          'Capital Cost ($/kW)',
+                          'Quantity'], name='Size and Costs')
+        sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
+        return sizing_results

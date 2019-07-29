@@ -214,7 +214,7 @@
             <Description>Prevent the system from charging from the grid</Description>
         </no_import>
         <no_export analysis="no">
-            <Value>1</Value>
+            <Value>0</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
             <Allowed_Values>{1,0}</Allowed_Values>
@@ -539,7 +539,7 @@
         </charge_from_solar>
     </Battery>
 
-    <PV active="yes">
+    <PV active="no">
         <name analysis="no">
             <Value>solar1</Value>
             <Units>nan</Units>
@@ -596,7 +596,7 @@
         </rated_capacity>
     </PV>
 
-    <Diesel active="yes">
+    <Diesel active="no">
         <name analysis="no">
             <Value>ice gen</Value>
             <Units>nan</Units>
@@ -706,7 +706,7 @@
             <Description>Minimum number of generators whose combined rated power is p_max</Description>
         </n_min>
         <n_max analysis="no">
-            <Value>3</Value>
+            <Value>2</Value>
             <Units>generators</Units>
             <Type>int</Type>
             <Allowed_Values>nan</Allowed_Values>
@@ -838,7 +838,7 @@
             <Allowed_Values>[1,24]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Number of hours a day that energy is guarenteed to be provided</Description>
+            <Description>Dynamically ensure there is enough power and energy capacity in the DER mix to be able to supply the site load during any grid outage that lasts the target number of hours.</Description>
         </target>
     </Reliability>
 

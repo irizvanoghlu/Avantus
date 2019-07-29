@@ -33,8 +33,11 @@ class CurtailPVSizing(CurtailPV):
         # create generic technology object
         CurtailPV.__init__(self, name, params)
 
+        self.size_constraints = []
+
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
+            self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
             self.capex = self.cost_per_kW * self.rated_capacity
 
     def sizing_summary(self):
@@ -56,3 +59,22 @@ class CurtailPVSizing(CurtailPV):
                           'Capital Cost ($/kW)'], name='Size and Costs')
         sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
         return sizing_results
+
+    def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):
+        """ Builds the master constraint list for the subset of timeseries data being optimized.
+
+        Args:
+            variables (Dict): Dictionary of variables being optimized
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+            reservations (Dict): Dictionary of energy and power reservations required by the services being
+                preformed with the current optimization subset
+            mpc_ene (float): value of energy at end of last opt step (for mpc opt)
+
+        Returns:
+            A list of constraints that corresponds the battery's physical constraints and its service constraints
+        """
+        constraints = CurtailPV.build_master_constraints(self, variables, mask, reservations, mpc_ene)
+
+        constraints += self.size_constraints
+        return constraints

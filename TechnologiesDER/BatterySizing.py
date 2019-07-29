@@ -16,6 +16,9 @@ import logging
 import cvxpy as cvx
 import pandas as pd
 import numpy as np
+import Constraint as Const
+import copy
+import re
 
 dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
@@ -46,25 +49,32 @@ class BatterySizing(BatteryTech):
         # if the user inputted the energy rating as 0, then size for duration
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)
-            # self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
+            self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
             # self.size_constraints += [cvx.NonPos(self.ene_max_rated-100000)]
 
         # if both the discharge and charge ratings are 0, then size for both and set them equal to each other
         if not self.ch_max_rated and not self.dis_max_rated:
             self.ch_max_rated = cvx.Variable(name='power_cap', integer=True)
-            # self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
+            self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
             # self.size_constraints += [cvx.NonPos(self.ch_max_rated - 100000)]
             self.dis_max_rated = self.ch_max_rated
         elif not self.ch_max_rated:  # if the user inputted the discharge rating as 0, then size discharge rating
             self.ch_max_rated = cvx.Variable(name='charge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
-            self.size_constraints += [cvx.NonPos(self.ch_max_rated - 100000)]
+            # self.size_constraints += [cvx.NonPos(self.ch_max_rated - 100000)]
         elif not self.dis_max_rated:  # if the user inputted the charge rating as 0, then size for charge
             self.dis_max_rated = cvx.Variable(name='discharge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.dis_max_rated)]
-            self.size_constraints += [cvx.NonPos(self.dis_max_rated - 100000)]
+            # self.size_constraints += [cvx.NonPos(self.dis_max_rated - 100000)]
 
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
+        self.physical_constraints = {
+            'ene_min_rated': Const.Constraint('ene_min_rated', self.name, self.llsoc * self.ene_max_rated),
+            'ene_max_rated': Const.Constraint('ene_max_rated', self.name, self.ulsoc * self.ene_max_rated),
+            'ch_min_rated': Const.Constraint('ch_min_rated', self.name, self.ch_min_rated),
+            'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
+            'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
+            'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
 
     def objective_function(self, variables, mask):
         BatteryTech.objective_function(self, variables, mask)
@@ -154,15 +164,21 @@ class BatterySizing(BatteryTech):
 
         # create cvx parameters of control constraints (this improves readability in cvx costs and better handling)
         # ene_max = cvx.Parameter(size, value=self.control_constraints['ene_max'].value[mask].values, name='ene_max')
-        ene_min = cvx.Parameter(size, value=self.control_constraints['ene_min'].value[mask].values, name='ene_min')
+        # ene_min = cvx.Parameter(size, value=self.control_constraints['ene_min'].value[mask].values, name='ene_min')
         # ch_max = cvx.Parameter(size, value=self.control_constraints['ch_max'].value[mask].values, name='ch_max')
-        ch_min = cvx.Parameter(size, value=self.control_constraints['ch_min'].value[mask].values, name='ch_min')
+        # ch_min = cvx.Parameter(size, value=self.control_constraints['ch_min'].value[mask].values, name='ch_min')
         # dis_max = cvx.Parameter(size, value=self.control_constraints['dis_max'].value[mask].values, name='dis_max')
-        dis_min = cvx.Parameter(size, value=self.control_constraints['dis_min'].value[mask].values, name='dis_min')
+        # dis_min = cvx.Parameter(size, value=self.control_constraints['dis_min'].value[mask].values, name='dis_min')
+        ene_max = self.physical_constraints['ene_max_rated'].value
+        ene_min = self.control_constraints['ene_min'].value[mask].values
+        ch_max = self.physical_constraints['ch_max_rated'].value  #TODO: this will break if we have any max charge/discharge constraints
+        ch_min = self.control_constraints['ch_min'].value[mask].values
+        dis_max = self.physical_constraints['dis_max_rated'].value
+        dis_min = self.control_constraints['dis_min'].value[mask].values
 
-        ene_max = self.ene_max_rated
-        ch_max = self.ch_max_rated
-        dis_max = self.dis_max_rated
+        # ene_max = self.ene_max_rated
+        # ch_max = self.ch_max_rated
+        # dis_max = self.dis_max_rated
         # ch_min = 0
         # dis_min = 0
 
@@ -178,7 +194,7 @@ class BatterySizing(BatteryTech):
         else:
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
-        # # Keep energy in bounds determined in the constraints configuration function
+        # Keep energy in bounds determined in the constraints configuration function
         constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
         constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
@@ -228,3 +244,106 @@ class BatterySizing(BatteryTech):
         constraint_list += self.size_constraints
 
         return constraint_list
+
+    def calculate_control_constraints(self, datetimes):
+        """ Generates a list of master or 'control constraints' from physical constraints and all
+        predispatch service constraints.
+
+        Args:
+            datetimes (list): The values of the datetime column within the initial time_series data frame.
+
+        Returns:
+            Array of datetimes where the control constraints conflict and are infeasible. If all feasible return None.
+
+        Note: the returned failed array returns the first infeasibility found, not all feasibilities.
+        TODO: come back and check the user inputted constraints --HN
+        """
+        # create temp dataframe with values from physical_constraints
+        temp_constraints = pd.DataFrame(index=datetimes)
+        # create a df with all physical constraint values
+        for constraint in self.physical_constraints.values():
+            temp_constraints[re.search('^.+_.+_', constraint.name).group(0)[0:-1]] = copy.deepcopy(constraint.value)
+
+        # change physical constraint with predispatch service constraints at each timestep
+        # predispatch service constraints should be absolute constraints
+        for service in self.predispatch_services.values():
+            for constraint in service.constraints.values():
+                if constraint.value is not None:
+                    strp = constraint.name.split('_')
+                    const_name = strp[0]
+                    const_type = strp[1]
+                    name = const_name + '_' + const_type
+                    absolute_const = constraint.value.values  # constraint values
+                    absolute_index = constraint.value.index  # the datetimes for which the constraint applies
+
+                    current_const = temp_constraints.loc[absolute_index, name].values  # value of the current constraint
+
+                    if const_type == "min":
+                        # if minimum constraint, choose higher constraint value
+                        try:
+                            temp_constraints.loc[absolute_index, name] = np.max(absolute_const, current_const)
+                        except TypeError:
+                            temp_constraints.loc[absolute_index, name] = absolute_const
+                        # temp_constraints.loc[constraint.value.index, name] += constraint.value.values
+
+                        # if the minimum value needed is greater than the physical maximum, infeasible scenario
+                        max_value = self.physical_constraints[const_name + '_max' + '_rated'].value
+                        try:
+                            constraint_violation = any(temp_constraints[name] > max_value)
+                        except (ValueError, TypeError):
+                            constraint_violation = False
+                        if constraint_violation:
+                            return temp_constraints[temp_constraints[name] > max_value].index
+
+                    else:
+                        # if maximum constraint, choose lower constraint value
+                        try:
+                            temp_constraints.loc[absolute_index, name] = np.min(absolute_const, current_const)
+                        except TypeError:
+                            temp_constraints.loc[absolute_index, name] = absolute_const
+                        # temp_constraints.loc[constraint.value.index, name] -= constraint.value.values
+
+                        # if the maximum energy needed is less than the physical minimum, infeasible scenario
+                        min_value = self.physical_constraints[const_name + '_min' + '_rated'].value
+                        try:
+                            constraint_violation = any(temp_constraints[name] > min_value)
+                        except (ValueError, TypeError):
+                            constraint_violation = False
+                        if (const_name == 'ene') & constraint_violation:
+
+                            return temp_constraints[temp_constraints[name] > max_value].index
+                        else:
+                            # it is ok to floor at zero since negative power max values will be handled in power min
+                            # i.e negative ch_max means dis_min should be positive and ch_max should be 0)
+                            temp_constraints[name] = temp_constraints[name].clip(lower=0)
+            if service.name == 'UserConstraints':
+                user_inputted_constraint = service.user_constraints
+                for user_constraint_name in user_inputted_constraint:
+                    # determine if the user inputted constraint is a max or min constraint
+                    user_constraint = user_inputted_constraint[user_constraint_name]
+                    const_type = user_constraint_name.split('_')[1]
+                    if const_type == 'max':
+                        # iterate through user inputted constraint Series
+                        for i in user_constraint.index:
+                            # update temp_constraints df if user inputted a lower max constraint
+                            if temp_constraints[user_constraint_name].loc[i] > user_constraint.loc[i]:
+                                temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
+                    elif const_type == 'min':
+                        # iterate through user inputted constraint Series
+                        for i in user_constraint.index:
+                            # update temp_constraints df if user inputted a higher min constraint
+                            if temp_constraints[user_constraint_name].loc[i] < user_constraint.loc[i]:
+                                temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
+                    else:
+                        dLogger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
+                        e_logger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
+                        sys.exit()
+
+        # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
+        self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),
+                                    'ene_max': Const.Constraint('ene_max', self.name, temp_constraints['ene_max']),
+                                    'ch_min': Const.Constraint('ch_min', self.name, temp_constraints['ch_min']),
+                                    'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
+                                    'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
+                                    'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
+        return None

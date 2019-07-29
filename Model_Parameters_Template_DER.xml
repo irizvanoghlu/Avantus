@@ -169,7 +169,7 @@
             <Description>general feedback flag</Description>
         </verbose>
         <verbose_opt analysis="no">
-            <Value>1</Value>
+            <Value>0</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
             <Allowed_Values>nan</Allowed_Values>
@@ -214,7 +214,7 @@
             <Description>Prevent the system from charging from the grid</Description>
         </no_import>
         <no_export analysis="no">
-            <Value>0</Value>
+            <Value>1</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
             <Allowed_Values>{1,0}</Allowed_Values>
@@ -286,7 +286,7 @@
             <Description>User defined name specific to this tag</Description>
         </name>
         <ccost analysis="no">
-            <Value>150</Value>
+            <Value>0</Value>
             <Units>$</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ccost)</Allowed_Values>
@@ -304,7 +304,7 @@
             <Description>Capital Cost in $/kW of storage discharge power capacity</Description>
         </ccost_kw>
         <ccost_kwh analysis="no">
-            <Value>100</Value>
+            <Value>800</Value>
             <Units>$/kWh</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ccost_kwh)</Allowed_Values>
@@ -322,7 +322,7 @@
             <Description>T of F to include startup cost in the dispatch optimization</Description>
         </startup>
         <fixedOM analysis="no">
-            <Value>0</Value>
+            <Value>10</Value>
             <Units>$/kW-yr</Units>
             <Type>float</Type>
             <Allowed_Values>[0, fixedOM)</Allowed_Values>
@@ -331,7 +331,7 @@
             <Description>Fixed Operation and Maintenace Costs per kW of storage discharge power capacity</Description>
         </fixedOM>
         <OMexpenses analysis="no">
-            <Value>0</Value>
+            <Value>10</Value>
             <Units>$/MWh</Units>
             <Type>float</Type>
             <Allowed_Values>[0, Omexpenses)</Allowed_Values>
@@ -568,7 +568,7 @@
             <Description>Annual pv generation growth rate. Useful if using storage to offset reverse power flow on a feeder, for example.</Description>
         </growth>
         <cost_per_kW analysis="no">
-            <Value>2000</Value>
+            <Value>200</Value>
             <Units>$/kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, cost_per_kW)</Allowed_Values>
@@ -586,7 +586,7 @@
             <Description>TBA</Description>
         </marcs_term>
         <rated_capacity analysis="no">
-            <Value>2000</Value>
+            <Value>0</Value>
             <Units>kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, rated_capacity)</Allowed_Values>
@@ -596,7 +596,7 @@
         </rated_capacity>
     </PV>
 
-    <Diesel active="no">
+    <Diesel active="yes">
         <name analysis="no">
             <Value>ice gen</Value>
             <Units>nan</Units>
@@ -829,5 +829,17 @@
 
     <Backup active="no">
     </Backup>
+
+    <Reliability active="yes">
+        <target analysis="no">
+            <Value>4</Value>
+            <Units>hours</Units>
+            <Type>float</Type>
+            <Allowed_Values>[1,24]</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Number of hours a day that energy is guarenteed to be provided</Description>
+        </target>
+    </Reliability>
 
 </input>

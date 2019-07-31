@@ -11,14 +11,12 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-import Constraint as Const
+import storagevet.Constraint as Const
 import numpy as np
-from storagevet.ValueStreams.ValueStream import ValueStream
-import pandas as pd
-import copy
+import storagevet
 
 
-class Reliability(ValueStream):
+class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
@@ -33,7 +31,7 @@ class Reliability(ValueStream):
         """
 
         # generate the generic predispatch service object
-        ValueStream.__init__(self, tech, 'Reliability', dt)
+        storagevet.ValueStream.__init__(self, tech, 'Reliability', dt)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
 

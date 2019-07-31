@@ -13,8 +13,9 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 
 import logging
-from storagevet.Params import Params
+import storagevet
 from matplotlib.font_manager import FontProperties
+from storagevet.Params import Params
 
 dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')

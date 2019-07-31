@@ -13,16 +13,27 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
+import sys
+from pathlib import Path
+import os.path
+
+# ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
+
+# dervet's directory path is the first in sys.path
+# determine storagevet path (absolute path)
+storagevet_path = os.path.join(sys.path[0], 'storagevet')
+
+# add storagevet (source root) to PYTHONPATH
+sys.path.insert(0, storagevet_path)
+print(sys.path)
+
+import logging
+import time
+from datetime import datetime
 import argparse
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
 from ResultDER import ResultDER as Result
-import logging
-from pathlib import Path
-import time
-from datetime import datetime
-import sys
-import os.path
 
 # TODO: make multi-platform by using path combine functions
 

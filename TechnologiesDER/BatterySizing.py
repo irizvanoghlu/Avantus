@@ -11,12 +11,12 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from storagevet.Technology.BatteryTech import BatteryTech
+import storagevet
 import logging
 import cvxpy as cvx
 import pandas as pd
 import numpy as np
-import Constraint as Const
+import storagevet.Constraint as Const
 import copy
 import re
 import sys
@@ -26,7 +26,7 @@ uLogger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class BatterySizing(BatteryTech):
+class BatterySizing(storagevet.BatteryTech):
     """ Battery class that inherits from Storage.
 
     """
@@ -43,7 +43,7 @@ class BatterySizing(BatteryTech):
         """
 
         # create generic storage object
-        BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
+        storagevet.BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
 
         self.size_constraints = []
 
@@ -89,7 +89,7 @@ class BatterySizing(BatteryTech):
         Returns:
             self.costs (Dict): Dict of objective costs
         """
-        BatteryTech.objective_function(self, variables, mask, annuity_scalar)
+        storagevet.BatteryTech.objective_function(self, variables, mask, annuity_scalar)
 
         self.costs.update({'capex': self.capex})
         return self.costs

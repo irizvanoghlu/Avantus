@@ -13,10 +13,10 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import cvxpy as cvx
 import pandas as pd
-from storagevet.Technology.Diesel import Diesel
+import storagevet
 
 
-class DieselSizing(Diesel):
+class DieselSizing(storagevet.Diesel):
     """ An ICE generator
 
     """
@@ -29,7 +29,7 @@ class DieselSizing(Diesel):
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        Diesel.__init__(self, name, params)
+        storagevet.Diesel.__init__(self, name, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
         self.n = cvx.Variable(integer=True, name='generators')
@@ -49,7 +49,7 @@ class DieselSizing(Diesel):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraint_list = Diesel.build_master_constraints(self, variables, mask, reservations, mpc_ene)
+        constraint_list = storagevet.Diesel.build_master_constraints(self, variables, mask, reservations, mpc_ene)
         ice_gen = variables['ice_gen']
 
         constraint_list += [cvx.NonPos(self.n_min - self.n)]

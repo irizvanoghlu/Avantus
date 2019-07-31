@@ -11,12 +11,12 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from storagevet.Technology.CurtailPV import CurtailPV
 import cvxpy as cvx
 import pandas as pd
+import storagevet
 
 
-class CurtailPVSizing(CurtailPV):
+class CurtailPVSizing(storagevet.CurtailPV):
     """ Pre_IEEE 1547 2018 standards. Assumes perfect foresight. Ability to curtail PV generation, unlike ChildPV.
 
     """
@@ -31,7 +31,7 @@ class CurtailPVSizing(CurtailPV):
             params (dict): Dict of parameters
         """
         # create generic technology object
-        CurtailPV.__init__(self, name, params)
+        storagevet.CurtailPV.__init__(self, name, params)
 
         self.size_constraints = []
 
@@ -74,7 +74,7 @@ class CurtailPVSizing(CurtailPV):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = CurtailPV.build_master_constraints(self, variables, mask, reservations, mpc_ene)
+        constraints = storagevet.CurtailPV.build_master_constraints(self, variables, mask, reservations, mpc_ene)
 
         constraints += self.size_constraints
         return constraints

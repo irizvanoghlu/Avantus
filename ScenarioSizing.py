@@ -11,20 +11,15 @@ __license__ = 'EPRI'
 __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
-from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
-from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
-from storagevet.ValueStreams.NonspinningReserve import NonspinningReserve
-from storagevet.ValueStreams.DemandChargeReduction import DemandChargeReduction
-from storagevet.ValueStreams.EnergyTimeShift import EnergyTimeShift
-from storagevet.ValueStreams.SpinningReserve import SpinningReserve
-from storagevet.ValueStreams.Backup import Backup
-from storagevet.ValueStreams.UserConstraints import UserConstraints
-from storagevet.Scenario import Scenario
+
+import storagevet
 
 from TechnologiesDER.BatterySizing import BatterySizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
 from TechnologiesDER.DieselSizing import DieselSizing
 from ValueStreamsDER.Reliability import Reliability
+
+from storagevet.Scenario import Scenario
 
 from cbaDER import CostBenDER
 
@@ -112,8 +107,8 @@ class ScenarioSizing(Scenario):
         storage_inputs = self.technologies['Storage']
 
         predispatch_service_action_map = {
-            'Backup': Backup,
-            'User': UserConstraints,
+            'Backup': storagevet.Backup,
+            'User': storagevet.UserConstraints,
             'Reliability': Reliability
         }
         for service in self.active_objects['pre-dispatch']:
@@ -127,12 +122,12 @@ class ScenarioSizing(Scenario):
         dLogger.info("Finished adding Predispatch Services for Value Stream")
 
         service_action_map = {
-            'DA': DAEnergyTimeShift,
-            'FR': FrequencyRegulation,
-            'SR': SpinningReserve,
-            'NSR': NonspinningReserve,
-            'DCM': DemandChargeReduction,
-            'retailTimeShift': EnergyTimeShift,
+            'DA': storagevet.DAEnergyTimeShift,
+            'FR': storagevet.FrequencyRegulation,
+            'SR': storagevet.SpinningReserve,
+            'NSR': storagevet.NonspinningReserve,
+            'DCM': storagevet.DemandChargeReduction,
+            'retailTimeShift': storagevet.EnergyTimeShift,
         }
 
         for service in self.active_objects['service']:

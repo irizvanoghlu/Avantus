@@ -64,7 +64,7 @@ PV,cost_per_kW,200,$/kW,float,"[0, cost_per_kW)",N/A,None,Captical cost per kW r
 PV,marcs_term,0,N/A,string,,N/A,None,TBA,.,no,
 PV,rated_capacity,0,kW,float,"[0, rated_capacity)",N/A,None,Rated capacity of PV system,.,no,
 Diesel,name,ice gen,N/A,string,,,,User defined name specific to this tag,no,no,
-Diesel,p_max,4000,kW,float,"[0, rated_capacity)",N/A,None,Maximum power that the entire genset can provide,.,no,
+Diesel,rated_power,4000,kW,float,"[0, rated_capacity)",N/A,None,Maximum power that the entire genset can provide,.,no,
 Diesel,min_power,100,kW/genertaor,float,"[0, min_power)",N/A,None,Minimum power a generator can produce,.,no,
 Diesel,startup_time,0,min,int,"[0, startup_time)",N/A,None,Time (in minutes) it takes to start generating,.,no,
 Diesel,efficiency,0.15,gal/kWh,float,"[0, efficiency)",N/A,None,Rate of fuel consumption per electric energy,.,no,

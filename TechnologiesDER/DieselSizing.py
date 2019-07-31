@@ -49,12 +49,18 @@ class DieselSizing(storagevet.Diesel):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraint_list = storagevet.Diesel.build_master_constraints(self, variables, mask, reservations, mpc_ene)
         ice_gen = variables['ice_gen']
+        on_ice = variables['on_ice']
+
+        # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
+        # cover that constraint
+        constraint_list = storagevet.Diesel.build_master_constraints(self, variables, mask, reservations, mpc_ene)[0]
+
+        constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
+        constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
 
         constraint_list += [cvx.NonPos(self.n_min - self.n)]
         constraint_list += [cvx.NonPos(self.n - self.n_max)]
-        constraint_list += [cvx.NonPos(ice_gen - self.n * self.p_max)]
 
         return constraint_list
 

@@ -22,7 +22,7 @@ from pathlib import Path
 import time
 from datetime import datetime
 import sys
-import inspect, os.path
+import os.path
 
 # TODO: make multi-platform by using path combine functions
 
@@ -44,7 +44,7 @@ dLogger.info('Started logging...')
 
 
 class DERVET:
-    """ StorageVET API. This will eventually allow storagevet to be imported and used like any
+    """ DERVET API. This will eventually allow storagevet to be imported and used like any
     other python library.
 
     """

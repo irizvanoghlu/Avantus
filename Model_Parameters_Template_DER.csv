@@ -87,5 +87,5 @@ NSR,growth,0,%/yr,float,"[0, 100]",N/A,None,Growth Rate of Non-Spinning Reserve 
 DCM,growth,5,%/yr,float,"[0, 100]",N/A,None,"Growth Rate of demand charges within the tariff, assuming the same tariff structure applies",yes,no,
 retailTimeShift,growth,5,%/yr,float,"[0, 100]",N/A,None,"Growth Rate of retail energy charges within the tariff, assuming the same tariff structure applies",yes,no,
 User,,,,,,,,,no,.,
-Backup,,,,,,,,Reserve a fixed amount of energy capacity (SOC in a battery or generation capability) that will only be used in case of an outage to supply the site load.,no,.,
-Reliability,target,4,hours,float,"[1,24]",N/A,None,Dynamically ensure there is enough power and energy capacity in the DER mix to be able to supply the site load during any grid outage that lasts the target number of hours.,yes,no,
+Backup,,,,,,,,Reserve a fixed amount of energy capacity (SOC in a battery or generation capability) that will only be used in case of an outage to supply the site load.,yes,.,
+Reliability,target,4,hours,float,"[1,24]",N/A,None,Dynamically ensure there is enough power and energy capacity in the DER mix to be able to supply the site load during any grid outage that lasts the target number of hours.,no,no,

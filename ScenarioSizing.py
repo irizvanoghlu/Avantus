@@ -51,6 +51,8 @@ class ScenarioSizing(Scenario):
 
         self.predispatch_service_inputs_map.update({'Reliability': input_tree.Reliability})
 
+        self.sizing_optimization = False
+
         dLogger.info("ScenarioDER initialized ...")
 
     def init_financials(self, finance_inputs):
@@ -142,3 +144,17 @@ class ScenarioSizing(Scenario):
             self.services[service] = new_service
 
         dLogger.info("Finished adding Services for Value Stream")
+
+    def optimize_problem_loop(self, annuity_scalar=1):
+        """This function selects on opt_agg of data in self.time_series and calls optimization_problem on it. We determine if the
+        optimization will be sizing and calculate a lifetime project NPV multiplier to pass into the optimization problem
+
+        Args:
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                the entire project lifetime (only to be set iff sizing)
+
+        """
+        if self.sizing_optimization:
+            annuity_scalar = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
+
+        Scenario.optimize_problem_loop(self, annuity_scalar)

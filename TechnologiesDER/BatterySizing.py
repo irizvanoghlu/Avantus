@@ -19,6 +19,7 @@ import numpy as np
 import Constraint as Const
 import copy
 import re
+import sys
 
 dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
@@ -76,14 +77,21 @@ class BatterySizing(BatteryTech):
             'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
             'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
 
-    def objective_function(self, variables, mask):
-        BatteryTech.objective_function(self, variables, mask)
-        # Calculate and add the annuity required to pay off the capex of the storage system. A more detailed financial model is required in the future
-        # capex = self.ene_max_rated * self.ccost_kwh + self.dis_max_rated * self.ccost_kw + self.ccost  # TODO: This is hard coded for battery storage
-        # n = self.end_year - self.start_year
-        # annualized_capex = (capex * .11)  # TODO: Hardcoded ratio - need to calculate annuity payment and fit into a multiyear optimization framework
-        # self.capex = annualized_capex
-        self.costs.update({'capex': self.capex * .11})
+    def objective_function(self, variables, mask, annuity_scalar=1):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
+
+        Args:
+            variables (Dict): dictionary of variables being optimized
+            mask (Series): Series of booleans used, the same length as case.power_kw
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                    the entire project lifetime (only to be set iff sizing, else alpha should not affect the aobject function)
+
+        Returns:
+            self.costs (Dict): Dict of objective costs
+        """
+        BatteryTech.objective_function(self, variables, mask, annuity_scalar)
+
+        self.costs.update({'capex': self.capex})
         return self.costs
 
     def sizing_summary(self):

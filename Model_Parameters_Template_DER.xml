@@ -827,10 +827,10 @@
     <User active="no">
     </User>
 
-    <Backup active="no">
+    <Backup active="yes">
     </Backup>
 
-    <Reliability active="yes">
+    <Reliability active="no">
         <target analysis="no">
             <Value>4</Value>
             <Units>hours</Units>

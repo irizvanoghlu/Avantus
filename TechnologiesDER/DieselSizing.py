@@ -12,7 +12,6 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import cvxpy as cvx
-import numpy as np
 import pandas as pd
 from storagevet.Technology.Diesel import Diesel
 

@@ -4,7 +4,7 @@ Diesel
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
@@ -35,7 +35,7 @@ class DieselSizing(storagevet.Diesel):
         self.n = cvx.Variable(integer=True, name='generators')
         self.capex = self.capital_cost * self.n + self.capital_cost * self.p_max
 
-    def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):
+    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -54,7 +54,7 @@ class DieselSizing(storagevet.Diesel):
 
         # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
         # cover that constraint
-        constraint_list = storagevet.Diesel.build_master_constraints(self, variables, mask, reservations, mpc_ene)[0]
+        constraint_list = storagevet.Diesel.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]
 
         constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]

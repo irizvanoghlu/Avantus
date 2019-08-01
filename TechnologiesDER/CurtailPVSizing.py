@@ -4,7 +4,7 @@ CurtailPVPV.py
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
@@ -60,7 +60,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
         sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
         return sizing_results
 
-    def build_master_constraints(self, variables, mask, reservations, mpc_ene=None):
+    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -74,7 +74,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = storagevet.CurtailPV.build_master_constraints(self, variables, mask, reservations, mpc_ene)
+        constraints = storagevet.CurtailPV.objective_constraints(self, variables, mask, reservations, mpc_ene)
 
         constraints += self.size_constraints
         return constraints

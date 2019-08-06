@@ -606,7 +606,7 @@
             <Coupled>nan</Coupled>
             <Description>User defined name specific to this tag</Description>
         </name>
-        <p_max analysis="no">
+        <rated_power analysis="no">
             <Value>4000</Value>
             <Units>kW</Units>
             <Type>float</Type>
@@ -614,7 +614,7 @@
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
             <Description>Maximum power that the entire genset can provide</Description>
-        </p_max>
+        </rated_power>
         <min_power analysis="no">
             <Value>100</Value>
             <Units>kW/genertaor</Units>

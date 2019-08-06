@@ -53,11 +53,10 @@ class CurtailPVSizing(storagevet.CurtailPV):
             rated_capacity = self.rated_capacity.value
         except AttributeError:
             rated_capacity = self.rated_capacity
-        sizing_data = [rated_capacity,
-                       self.cost_per_kW]
-        index = pd.Index(['Power Capacity (kW)',
-                          'Capital Cost ($/kW)'], name='Size and Costs')
-        sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
+
+        index = pd.Index([self.name], name='DER')
+        sizing_results = pd.DataFrame({'Power Capacity (kW)': rated_capacity,
+                                       'Capital Cost ($/kW)': self.cost_per_kW}, index=index)
         return sizing_results
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):

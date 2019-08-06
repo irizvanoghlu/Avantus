@@ -77,13 +77,10 @@ class DieselSizing(storagevet.Diesel):
             n = self.n.value
         except AttributeError:
             n = self.n
-        sizing_data = [self.rated_power,
-                       self.capital_cost,
-                       self.ccost_kw,
-                       n]
-        index = pd.Index(['Power Capacity (kW)',
-                          'Capital Cost ($)',
-                          'Capital Cost ($/kW)',
-                          'Quantity'], name='Size and Costs')
-        sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
+
+        index = pd.Index([self.name], name='DER')
+        sizing_results = pd.DataFrame({'Power Capacity (kW)': self.rated_power,
+                                       'Capital Cost ($)': self.capital_cost,
+                                       'Capital Cost ($/kW)': self.ccost_kw,
+                                       'Quantity': n}, index=index)
         return sizing_results

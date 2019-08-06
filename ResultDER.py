@@ -39,8 +39,7 @@ class ResultDER(Result):
         """
         Result.__init__(self, scenario, results_inputs)
         self.reliability_df = pd.DataFrame()
-        self.sizing_df = pd.DataFrame(index=pd.Index(['Power Capacity (kW)',
-                                                      'Capital Cost ($)'], name='Size and Costs'))
+        self.sizing_df = pd.DataFrame()
 
     def post_analysis(self):
         """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
@@ -51,7 +50,7 @@ class ResultDER(Result):
         Result.post_analysis(self)
         for name, tech in self.technologies.items():
             sizing_df = tech.sizing_summary()
-            self.sizing_df = pd.merge(self.sizing_df, sizing_df, how='outer', on='Size and Costs')
+            self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             # TODO: make this more dynamic
             reliability_requirement = self.predispatch_services['Reliability'].reliability_requirement

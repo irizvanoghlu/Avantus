@@ -118,21 +118,14 @@ class BatterySizing(storagevet.BatteryTech):
         except AttributeError:
             dis_max_rated = self.dis_max_rated
 
-        sizing_data = [energy_rated,
-                       ch_max_rated,
-                       dis_max_rated,
-                       energy_rated / dis_max_rated,
-                       self.ccost,
-                       self.ccost_kw,
-                       self.ccost_kwh]
-        index = pd.Index(['Energy Rating (kWh)',
-                          'Charge Rating (kW)',
-                          'Discharge Rating (kW)',
-                          'Duration (hours)',
-                          'Capital Cost ($)',
-                          'Capital Cost ($/kW)',
-                          'Capital Cost ($/kWh)'], name='Size and Costs')
-        sizing_results = pd.DataFrame({self.name: sizing_data}, index=index)
+        index = pd.Index([self.name], name='DER')
+        sizing_results = pd.DataFrame({'Energy Rating (kWh)': energy_rated,
+                                       'Charge Rating (kW)': ch_max_rated,
+                                       'Discharge Rating (kW)': dis_max_rated,
+                                       'Duration (hours)': energy_rated/dis_max_rated,
+                                       'Capital Cost ($)': self.ccost,
+                                       'Capital Cost ($/kW)': self.ccost_kw,
+                                       'Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
         return sizing_results
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):

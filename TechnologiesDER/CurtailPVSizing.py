@@ -43,7 +43,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
     def sizing_summary(self):
         """
 
-        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+        Returns: A dataframe indexed by the terms that describe this DER's size and captial costs.
 
         """
         # obtain the size of the battery, these may or may not be optimization variable

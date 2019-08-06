@@ -33,7 +33,7 @@ class DieselSizing(storagevet.Diesel):
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
         self.n = cvx.Variable(integer=True, name='generators')
-        self.capex = self.capital_cost * self.n + self.capital_cost * self.p_max
+        self.capex = self.capital_cost * self.n + self.capital_cost * self.rated_power
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -54,7 +54,7 @@ class DieselSizing(storagevet.Diesel):
 
         # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
         # cover that constraint
-        constraint_list = storagevet.Diesel.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]
+        constraint_list = [storagevet.Diesel.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]]
 
         constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
@@ -77,7 +77,7 @@ class DieselSizing(storagevet.Diesel):
             n = self.n.value
         except AttributeError:
             n = self.n
-        sizing_data = [self.p_max/n,
+        sizing_data = [self.rated_power,
                        self.capital_cost,
                        self.ccost_kw,
                        n]

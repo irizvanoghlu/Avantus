@@ -66,7 +66,7 @@ class ParamsDER(Params):
 
         if 'Reliability' in pre_dispatch_serv:
             self.Reliability["dt"] = self.Scenario["dt"]
-            self.Reliability.update({'load': self.Scenario['time_series'].loc[:, 'Deferral Load (kW)']})
+            self.Reliability.update({'load': self.Scenario['time_series'].loc[:, 'Site Load (kW)']})
 
         dLogger.info("Successfully prepared the value-stream (services)")
 

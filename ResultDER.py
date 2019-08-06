@@ -51,6 +51,8 @@ class ResultDER(Result):
         for name, tech in self.technologies.items():
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
+        if (self.sizing_df['Duration (hours)'] > 24).any():
+            print('The duration of an Energy Storage System is greater than 24 hours!')
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             # TODO: make this more dynamic
             reliability_requirement = self.predispatch_services['Reliability'].reliability_requirement

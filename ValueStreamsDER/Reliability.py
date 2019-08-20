@@ -14,6 +14,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import storagevet.Constraint as Const
 import numpy as np
 import storagevet
+import cvxpy as cvx
 
 
 class Reliability(storagevet.ValueStream):
@@ -48,10 +49,43 @@ class Reliability(storagevet.ValueStream):
         reverse = reverse.rolling(self.coverage_timesteps, min_periods=1).sum()*self.dt  # rolling function looks back, so reversing looks forward
         self.reliability_requirement = reverse.iloc[::-1]  # set it back the right way
 
+        ####self.reliability_pwr_requirement =
         # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
         # there will be 2 constraints: one for power, one for energy
         ene_min_add = Const.Constraint('ene_min_add', self.name, self.reliability_requirement)
+        ###dis_min = Const.Constraint('dis_min',self.name,)
 
         self.constraints = {'ene_min_add': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
+    def objective_constraints(self, variables, subs, generation, reservations=None):
+        """Default build constraint list method. Used by services that do not have constraints.
 
+        Args:
+            variables (Dict): dictionary of variables being optimized
+            subs (DataFrame): Subset of time_series data that is being optimized
+            generation (list, Expression): the sum of generation within the system for the subset of time
+                being optimized
+            reservations (Dict): power reservations from dispatch services
+
+        Returns:
+            An empty list
+        """
+
+        try:
+            pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
+        except KeyError:
+            pv_generation = np.zeros(subs.shape[0])
+
+        try:
+            ice_generation = variables['ice_gen']  # time series ICE generation optimization variable
+        except KeyError:
+            ice_generation = np.zeros(subs.shape[0])
+
+        try:
+            battery_dis_size = variables['dis_max_rated']  # discharge size parameter for batteries
+        except KeyError:
+            battery_dis_size = 0
+
+        # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
+        # to ensure that our DER mix can cover peak net load during any outage in the year
+        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_generation)]

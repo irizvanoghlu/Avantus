@@ -47,26 +47,31 @@ class BatterySizing(storagevet.BatteryTech):
 
         self.size_constraints = []
 
+        self.optimization_variables = {}
+
         # if the user inputted the energy rating as 0, then size for duration
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
-            # self.size_constraints += [cvx.NonPos(self.ene_max_rated-100000)]
+            self.optimization_variables['ene_max_rated'] = self.ene_max_rated
 
         # if both the discharge and charge ratings are 0, then size for both and set them equal to each other
         if not self.ch_max_rated and not self.dis_max_rated:
             self.ch_max_rated = cvx.Variable(name='power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
-            # self.size_constraints += [cvx.NonPos(self.ch_max_rated - 100000)]
             self.dis_max_rated = self.ch_max_rated
+            self.optimization_variables['ch_max_rated'] = self.ch_max_rated
+            self.optimization_variables['dis_max_rated'] = self.dis_max_rated
+
         elif not self.ch_max_rated:  # if the user inputted the discharge rating as 0, then size discharge rating
             self.ch_max_rated = cvx.Variable(name='charge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
-            # self.size_constraints += [cvx.NonPos(self.ch_max_rated - 100000)]
+            self.optimization_variables['ch_max_rated'] = self.ch_max_rated
+
         elif not self.dis_max_rated:  # if the user inputted the charge rating as 0, then size for charge
             self.dis_max_rated = cvx.Variable(name='discharge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.dis_max_rated)]
-            # self.size_constraints += [cvx.NonPos(self.dis_max_rated - 100000)]
+            self.optimization_variables['dis_max_rated'] = self.dis_max_rated
 
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
         self.physical_constraints = {
@@ -348,3 +353,29 @@ class BatterySizing(storagevet.BatteryTech):
                                     'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
                                     'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
         return None
+
+    def add_vars(self, size):
+        """ Adds optimization variables to dictionary
+
+        Variables added:
+            ene (Variable): A cvxpy variable for Energy at the end of the time step
+            dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
+            ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
+            ene_max_slack (Variable): A cvxpy variable for energy max slack
+            ene_min_slack (Variable): A cvxpy variable for energy min slack
+            ch_max_slack (Variable): A cvxpy variable for charging max slack
+            ch_min_slack (Variable): A cvxpy variable for charging min slack
+            dis_max_slack (Variable): A cvxpy variable for discharging max slack
+            dis_min_slack (Variable): A cvxpy variable for discharging min slack
+
+        Args:
+            size (Int): Length of optimization variables to create
+
+        Returns:
+            Dictionary of optimization variables
+        """
+        variables = storagevet.BatteryTech.add_vars(self, size)
+
+        variables.update(self.optimization_variables)
+
+        return variables

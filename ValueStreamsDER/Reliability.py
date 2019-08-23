@@ -21,20 +21,25 @@ class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, tech, load_data, dt):
+    def __init__(self, params, techs, load_data, dt):
         """ Generates the objective function, finds and creates constraints.
 
           Args:
             params (Dict): input parameters
-            tech (Technology): Storage technology object
+            techs (Dict): technology objects after initialization, as saved in a dictionary
             load_data (DataFrame): table of time series load data
             dt (float): optimization timestep (hours)
         """
 
         # generate the generic predispatch service object
-        storagevet.ValueStream.__init__(self, tech, 'Reliability', dt)
+        storagevet.ValueStream.__init__(self, techs['Storage'], 'Reliability', dt)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
+
+        if 'Diesel' in techs:
+            self.ice_rated_power = techs['Diesel'].rated_power
+        # else:
+        #     self.ice_rated_power = 0
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
@@ -77,9 +82,9 @@ class Reliability(storagevet.ValueStream):
             pv_generation = np.zeros(subs.shape[0])
 
         try:
-            ice_generation = variables['ice_gen']  # time series ICE generation optimization variable
+            ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
         except KeyError:
-            ice_generation = np.zeros(subs.shape[0])
+            ice_rated_power = 0
 
         try:
             battery_dis_size = variables['dis_max_rated']  # discharge size parameter for batteries
@@ -88,4 +93,4 @@ class Reliability(storagevet.ValueStream):
 
         # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
         # to ensure that our DER mix can cover peak net load during any outage in the year
-        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_generation)]
+        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_rated_power)]

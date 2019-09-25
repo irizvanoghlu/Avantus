@@ -120,12 +120,17 @@ class ResultDER(Result):
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
 
-    def save_results_csv(self):
+    def save_results_csv(self, instance_key):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
 
+        Args:
+            instance_key (str): string of the instance value that corresponds to the Params instance that was used for
+                this simulation.
+
+        Prints where the results have been saved when completed.
         """
-        Result.save_results_csv(self)
-        savepath = self.results_path
+        Result.save_results_csv(self, instance_key)
+        savepath = self.results_path + "\\" + instance_key
         if 'Reliability' in self.predispatch_services.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))

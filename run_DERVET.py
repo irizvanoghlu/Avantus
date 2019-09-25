@@ -16,6 +16,10 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import sys
 from pathlib import Path
 import os.path
+import logging
+import time
+from datetime import datetime
+import argparse
 
 # ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
 
@@ -27,17 +31,13 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 sys.path.insert(0, storagevet_path)
 print(sys.path)
 
-import logging
-import time
-from datetime import datetime
-import argparse
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
 from ResultDER import ResultDER as Result
 
 # TODO: make multi-platform by using path combine functions
 
-developer_path = '.\logs'
+developer_path = '.\logs'  # TODO: move this path (XENDEE's server requires special access to perform these tasks
 try:
     os.mkdir(developer_path)
 except OSError:
@@ -77,21 +77,33 @@ class DERVET:
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
         self.p = Params
+        self.save_path = ""
+        # list of the Result objects (each object is for an instance of sensitivity analysis)
+        self.results_list = dict()
+
+        # data frame of all the sensitivity instances
+        self.sens_df = self.p.df_analysis
+        self.sens_df['Yearly Net Value'] = 0
+        self.sens_df.index.name = 'Case Number'
 
     def solve(self):
-        active_commands = self.p.instances[0].Command
-        if active_commands["Previsualization"]:
+        verbose = self.p.instances[0].Scenario['verbose']
+        if verbose:
             self.p.class_summary()
             self.p.series_summary()
-        if active_commands["Validation"]:
-            self.p.validate()
-        if active_commands["Simulation"]:
-            self.run()
+        self.p.validate()
+        self.run()
 
     def run(self):
         starts = time.time()
 
         for key, value in self.p.instances.items():
+            # this line can be removed after we finish developing the output files for sensitivity analysis - TN
+            # for testing purposes
+            value.instance_summary()
+
+            ### MOVE THE FOLLOWING INTO STORAGEVET ABSTRACTION BARRIER ###
+            # Move this u_logger path section to Params class - TN
             user_log_path = value.Results['dir_absolute_path']
             try:
                 os.makedirs(user_log_path)
@@ -108,6 +120,8 @@ class DERVET:
             u_logger.addHandler(u_handler)
             u_logger.info('Started logging...')
 
+            ###############################################################
+
             if not value.other_error_checks():
                 continue
             value.prepare_scenario()
@@ -123,11 +137,14 @@ class DERVET:
 
             results = Result(run, value.Results)
             results.post_analysis()
-            results.save_results_csv()
+            results.save_results_csv(str(key))
+
+            self.sens_df['Yearly Net Value'].iloc[key] = results.financials.npv.iloc[0]['Yearly Net Value']
 
         ends = time.time()
-        dLogger.info("runStorageVET runtime: ")
+        dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
+        self.sens_df.to_csv(path_or_buf=Path(self.save_path, 'sensitivity_summary.csv'))
 
 
 if __name__ == '__main__':

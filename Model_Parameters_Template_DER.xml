@@ -2,36 +2,6 @@
 
 <input>
 
-    <Command active="yes">
-        <Previsualization analysis="no">
-            <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Previsualize the inputs for the case defined by this CSV</Description>
-        </Previsualization>
-        <Simulation analysis="no">
-            <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Run the optimization</Description>
-        </Simulation>
-        <Validation analysis="no">
-            <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Validate inputs </Description>
-        </Validation>
-    </Command>
-
     <Scenario active="yes">
         <monthly_data_filename analysis="no">
             <Value>.\dervet\storagevet\Data\Monthly_Data.csv</Value>
@@ -106,7 +76,7 @@
             <Description>last year of analysis</Description>
         </end_year>
         <n analysis="no">
-            <Value>year</Value>
+            <Value>month</Value>
             <Units>hours</Units>
             <Type>string/int</Type>
             <Allowed_Values>{month,year,(0,8760]}</Allowed_Values>
@@ -114,69 +84,6 @@
             <Coupled>None</Coupled>
             <Description>optimization prediction horizon ('month' or number of hours)</Description>
         </n>
-        <incl_site_load analysis="no">
-            <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Flag to include site_load in load calculation (MUST BE ONE IF DCM OR RETAILETS ARE ON)</Description>
-        </incl_site_load>
-        <incl_sys_load analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Flag to include site_load in load calculation (MUST BE ONE IF RA OR DA ARE ON)</Description>
-        </incl_sys_load>
-        <incl_aux_load analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Flag to include aux_load in load calculation</Description>
-        </incl_aux_load>
-        <incl_deferral_load analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Flag to include deferral_load in load calculation</Description>
-        </incl_deferral_load>
-        <def_growth analysis="no">
-            <Value>2</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0,100]</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Default growth rate applied to load and any missing rates</Description>
-        </def_growth>
-        <verbose analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>general feedback flag</Description>
-        </verbose>
-        <verbose_opt analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>optimization feedback flag</Description>
-        </verbose_opt>
         <n_control analysis="no">
             <Value>0</Value>
             <Units>hours</Units>
@@ -186,24 +93,15 @@
             <Coupled>None</Coupled>
             <Description>optimization control horizon ('month' or number of days)</Description>
         </n_control>
-        <slack analysis="no">
-            <Value>0</Value>
+        <incl_site_load analysis="no">
+            <Value>1</Value>
             <Units>y/n</Units>
             <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
+            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Should the optimization use soft constraints (more robust but longer run time)</Description>
-        </slack>
-        <binary analysis="no">
-            <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Should the optimization use binary variables to prevent concurrent charge and discharge? This should be 1 usually</Description>
-        </binary>
+            <Description>Flag to include site_load in load calculation (MUST BE ONE IF DCM OR RETAILETS ARE ON)</Description>
+        </incl_site_load>
         <no_import analysis="no">
             <Value>0</Value>
             <Units>y/n</Units>
@@ -222,6 +120,105 @@
             <Coupled>None</Coupled>
             <Description>Prevent the system from discharging to the grid</Description>
         </no_export>
+        <def_growth analysis="no">
+            <Value>6</Value>
+            <Units>%/yr</Units>
+            <Type>float</Type>
+            <Allowed_Values>[0,100]</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Default growth rate applied to load and any missing rates</Description>
+        </def_growth>
+        <verbose analysis="no">
+            <Value>1</Value>
+            <Units>y/n</Units>
+            <Type>bool</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>general feedback flag</Description>
+        </verbose>
+        <verbose_opt analysis="no">
+            <Value>0</Value>
+            <Units>y/n</Units>
+            <Type>bool</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>optimization feedback flag</Description>
+        </verbose_opt>
+        <binary analysis="no">
+            <Value>1</Value>
+            <Units>y/n</Units>
+            <Type>bool</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Should the optimization use binary variables to prevent concurrent charge and discharge? This should be 1 usually</Description>
+        </binary>
+        <slack analysis="no">
+            <Value>0</Value>
+            <Units>y/n</Units>
+            <Type>bool</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Should the optimization use soft constraints (more robust but longer run time)</Description>
+        </slack>
+        <kappa_ene_max analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing maximum energy</Description>
+        </kappa_ene_max>
+        <kappa_ene_min analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing minimum energy</Description>
+        </kappa_ene_min>
+        <kappa_dis_max analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing maximum charging</Description>
+        </kappa_dis_max>
+        <kappa_dis_min analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing minimum charging</Description>
+        </kappa_dis_min>
+        <kappa_ch_max analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing maximum discharging</Description>
+        </kappa_ch_max>
+        <kappa_ch_min analysis="no">
+            <Value>100000</Value>
+            <Units>nan</Units>
+            <Type>float</Type>
+            <Allowed_Values>nan</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>penalty on relaxing minimum discharging</Description>
+        </kappa_ch_min>
     </Scenario>
 
     <Finance active="yes">
@@ -243,6 +240,24 @@
             <Coupled>None</Coupled>
             <Description>Yearly NPV discount rate for use in the financial analysis</Description>
         </npv_discount_rate>
+        <yearly_data_filename analysis="no">
+            <Value>.\dervet\storagevet\Data\yearly_data.csv</Value>
+            <Units>nan</Units>
+            <Type>string</Type>
+            <Allowed_Values>valid file path to a yearly external incentives data file</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>nan</Description>
+        </yearly_data_filename>
+        <external_incentives analysis="no">
+            <Value>1</Value>
+            <Units>y/n</Units>
+            <Type>bool</Type>
+            <Allowed_Values>{0,1}</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>T or F to consider the external incentives described in 'yearly_data'</Description>
+        </external_incentives>
     </Finance>
 
     <Results active="no">
@@ -340,7 +355,7 @@
             <Description>Variable Operation and Maintenance Costs per MWh of energy delivered by storage system</Description>
         </OMexpenses>
         <ch_max_rated analysis="no">
-            <Value>0</Value>
+            <Value>200</Value>
             <Units>kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ch_max_rated)</Allowed_Values>
@@ -349,7 +364,7 @@
             <Description>Energy Storage Charge Capacity</Description>
         </ch_max_rated>
         <dis_max_rated analysis="no">
-            <Value>0</Value>
+            <Value>200</Value>
             <Units>kW</Units>
             <Type>float</Type>
             <Allowed_Values>[0, dis_max_rated)</Allowed_Values>
@@ -376,7 +391,7 @@
             <Description>Energy Storage Discharge Capacity</Description>
         </dis_min_rated>
         <ene_max_rated analysis="no">
-            <Value>0</Value>
+            <Value>1000</Value>
             <Units>kWh</Units>
             <Type>float</Type>
             <Allowed_Values>[0, ene_max_rated)</Allowed_Values>
@@ -474,72 +489,27 @@
             <Coupled>None</Coupled>
             <Description>Startup cost to start discharging</Description>
         </p_start_dis>
-        <kappa_ene_max analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
+        <daily_cycle_limit analysis="no">
+            <Value>1</Value>
+            <Units>cycles</Units>
             <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
+            <Allowed_Values>[0, daily_cycles_limit]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum energy</Description>
-        </kappa_ene_max>
-        <kappa_ene_min analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
+            <Description>Limit the daily total discharge and ene throughput not to exceed the (number of cycles * max energy storage capacity) (inactive if 0)</Description>
+        </daily_cycle_limit>
+        <hp analysis="no">
+            <Value>100</Value>
+            <Units>kW</Units>
             <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
+            <Allowed_Values>[0, hp)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum energy</Description>
-        </kappa_ene_min>
-        <kappa_dis_max analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum charging</Description>
-        </kappa_dis_max>
-        <kappa_dis_min analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum charging</Description>
-        </kappa_dis_min>
-        <kappa_ch_max analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum discharging</Description>
-        </kappa_ch_max>
-        <kappa_ch_min analysis="no">
-            <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum discharging</Description>
-        </kappa_ch_min>
-        <charge_from_solar analysis="no">
-            <Value>0</Value>
-            <Units>nan</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{1,0}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Prevent the PV+ESS from charging from the grid</Description>
-        </charge_from_solar>
+            <Description>Housekeeping power for Auxiliary load</Description>
+        </hp>
     </Battery>
 
-    <PV active="yes">
+    <PV active="no">
         <name analysis="no">
             <Value>solar1</Value>
             <Units>nan</Units>
@@ -558,6 +528,15 @@
             <Coupled>None</Coupled>
             <Description>Max net import or export power flow through inverter</Description>
         </inv_max>
+        <loc analysis="no">
+            <Value>ac</Value>
+            <Units>nan</Units>
+            <Type>string</Type>
+            <Allowed_Values>{ac, dc}</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Solar plus storage AC or DC coupled system (not case sensitive)</Description>
+        </loc>
         <growth analysis="no">
             <Value>5</Value>
             <Units>%/yr</Units>
@@ -594,6 +573,15 @@
             <Coupled>None</Coupled>
             <Description>Rated capacity of PV system</Description>
         </rated_capacity>
+        <grid_charge analysis="no">
+            <Value>0</Value>
+            <Units>nan</Units>
+            <Type>bool</Type>
+            <Allowed_Values>{1,0}</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Allow the PV+ESS to charge from the grid</Description>
+        </grid_charge>
     </PV>
 
     <Diesel active="no">
@@ -608,16 +596,16 @@
         </name>
         <rated_power analysis="no">
             <Value>4000</Value>
-            <Units>kW</Units>
+            <Units>kW/generator</Units>
             <Type>float</Type>
             <Allowed_Values>[0, rated_capacity)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Maximum power that the entire genset can provide</Description>
+            <Description>Maximum power that a generator can provide</Description>
         </rated_power>
         <min_power analysis="no">
             <Value>100</Value>
-            <Units>kW/genertaor</Units>
+            <Units>kW/generator</Units>
             <Type>float</Type>
             <Allowed_Values>[0, min_power)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -716,7 +704,7 @@
         </n_max>
     </Diesel>
 
-    <DA active="no">
+    <DA active="yes">
         <growth analysis="no">
             <Value>0</Value>
             <Units>%/yr</Units>
@@ -774,6 +762,15 @@
             <Coupled>None</Coupled>
             <Description>Must the storage bid as much reg up as reg down?</Description>
         </CombinedMarket>
+        <duration analysis="no">
+            <Value>1</Value>
+            <Units>hours</Units>
+            <Type>float</Type>
+            <Allowed_Values>[0, 24]</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Duration for energy reservation requirements</Description>
+        </duration>
     </FR>
 
     <SR active="no">
@@ -786,6 +783,15 @@
             <Coupled>None</Coupled>
             <Description>Growth Rate of Spinning Reserve Price</Description>
         </growth>
+        <duration analysis="no">
+            <Value>2</Value>
+            <Units>hrs</Units>
+            <Type>float</Type>
+            <Allowed_Values>(0, 1]</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Energy requirement for providing spinning reserves</Description>
+        </duration>
     </SR>
 
     <NSR active="no">
@@ -798,9 +804,18 @@
             <Coupled>None</Coupled>
             <Description>Growth Rate of Non-Spinning Reserve Price</Description>
         </growth>
+        <duration analysis="no">
+            <Value>2</Value>
+            <Units>hrs</Units>
+            <Type>float</Type>
+            <Allowed_Values>(0, 1]</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Energy requirement for providing non-spinning reserves</Description>
+        </duration>
     </NSR>
 
-    <DCM active="yes">
+    <DCM active="no">
         <growth analysis="no">
             <Value>5</Value>
             <Units>%/yr</Units>
@@ -812,7 +827,7 @@
         </growth>
     </DCM>
 
-    <retailTimeShift active="yes">
+    <retailTimeShift active="no">
         <growth analysis="no">
             <Value>5</Value>
             <Units>%/yr</Units>
@@ -825,12 +840,21 @@
     </retailTimeShift>
 
     <User active="no">
+        <price analysis="no">
+            <Value>10000</Value>
+            <Units>$/yr</Units>
+            <Type>float</Type>
+            <Allowed_Values>[0, price)</Allowed_Values>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Description>Yearly Cost Avoided for meeting the user-defined constraints</Description>
+        </price>
     </User>
 
     <Backup active="no">
     </Backup>
 
-    <Reliability active="yes">
+    <Reliability active="no">
         <target analysis="no">
             <Value>4</Value>
             <Units>hours</Units>
@@ -838,7 +862,7 @@
             <Allowed_Values>[1,24]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Dynamically ensure there is enough power and energy capacity in the DER mix to be able to supply the site load during any grid outage that lasts the target number of hours.</Description>
+            <Description>Dynamically ensure there is enough power and energy capacity in the DER mix </Description>
         </target>
     </Reliability>
 

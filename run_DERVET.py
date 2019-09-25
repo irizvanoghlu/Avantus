@@ -82,12 +82,14 @@ class DERVET:
         self.results_list = dict()
 
         # data frame of all the sensitivity instances
-        self.sens_df = self.p.df_analysis.loc[:, :]  # create a copy of the df, NOT a reference
-        # edit the column names of the sensitivity df to be human readable
-        for col_name in self.sens_df.columns:
-            print(str(type(col_name)))
-        self.sens_df['Yearly Net Value'] = 0
-        self.sens_df.index.name = 'Case Number'
+        self.sensitivity_analysis = (not self.p.df_analysis.empty)
+        if self.sensitivity_analysis:
+            self.sens_df = self.p.df_analysis.loc[:, :]  # create a copy of the df, NOT a reference
+            # edit the column names of the sensitivity df to be human readable
+            for col_name in self.sens_df.columns:
+                print(str(type(col_name)))
+            self.sens_df['Yearly Net Value'] = 0
+            self.sens_df.index.name = 'Case Number'
 
     def solve(self):
         verbose = self.p.instances[0].Scenario['verbose']
@@ -142,12 +144,14 @@ class DERVET:
             results.post_analysis()
             results.save_results_csv(str(key))
 
-            self.sens_df['Yearly Net Value'].iloc[key] = results.financials.npv.iloc[0]['Yearly Net Value']  # errors if not sensitivity "mode"
+            if self.sensitivity_analysis:
+                self.sens_df['Yearly Net Value'].iloc[key] = results.financials.npv.iloc[0]['Yearly Net Value']  # errors if not sensitivity "mode"
 
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
-        self.sens_df.to_csv(path_or_buf=Path(self.save_path, 'sensitivity_summary.csv'))
+        if self.sensitivity_analysis:
+            self.sens_df.to_csv(path_or_buf=Path(self.save_path, 'sensitivity_summary.csv'))
 
 
 if __name__ == '__main__':

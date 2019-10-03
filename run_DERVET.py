@@ -20,6 +20,7 @@ import logging
 import time
 from datetime import datetime
 import argparse
+import pandas as pd
 
 # ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
 
@@ -86,16 +87,18 @@ class DERVET:
         if self.sensitivity_analysis:
             self.sens_df = self.p.df_analysis.loc[:, :]  # create a copy of the df, NOT a reference
             # edit the column names of the sensitivity df to be human readable
-            for col_name in self.sens_df.columns:
-                print(str(type(col_name)))
-            self.sens_df['Yearly Net Value'] = 0
+            human_readable_names = []
+            for i, col_name in enumerate(self.sens_df.columns):
+                human_readable_names.append(col_name[0] + ' ' + col_name[1])
+            # self.sens_df = pd.DataFrame()
+            self.sens_df.columns = human_readable_names
             self.sens_df.index.name = 'Case Number'
 
     def solve(self):
         verbose = self.p.instances[0].Scenario['verbose']
         if verbose:
             self.p.class_summary()
-            self.p.series_summary()
+            # self.p.series_summary()
         self.p.validate()
         self.run()
 
@@ -142,16 +145,21 @@ class DERVET:
 
             results = Result(run, value.Results)
             results.post_analysis()
-            results.save_results_csv(str(key))
+            results.save_results_csv(str(key), self.sensitivity_analysis)
 
             if self.sensitivity_analysis:
-                self.sens_df['Yearly Net Value'].iloc[key] = results.financials.npv.iloc[0]['Yearly Net Value']  # errors if not sensitivity "mode"
+                if not key:
+                    for npv_col in results.financials.npv.columns:
+                        self.sens_df[npv_col] = 0
+                this_npv = results.financials.npv.reset_index(drop=True, inplace=False)
+                this_npv.index = pd.RangeIndex(start=key, stop=key+1, step=1)
+                self.sens_df.update(this_npv)
 
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
         if self.sensitivity_analysis:
-            self.sens_df.to_csv(path_or_buf=Path(self.save_path, 'sensitivity_summary.csv'))
+            self.sens_df.to_csv(path_or_buf=Path(user_log_path, 'sensitivity_summary.csv'))
 
 
 if __name__ == '__main__':

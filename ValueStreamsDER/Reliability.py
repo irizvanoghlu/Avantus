@@ -15,6 +15,7 @@ import storagevet.Constraint as Const
 import numpy as np
 import storagevet
 import cvxpy as cvx
+import pandas as pd
 
 
 class Reliability(storagevet.ValueStream):
@@ -94,3 +95,20 @@ class Reliability(storagevet.ValueStream):
         # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
         # to ensure that our DER mix can cover peak net load during any outage in the year
         return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_rated_power)]
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this Value Stream.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        try:
+            storage_energy_rating = self.storage.ene_max_rated.value
+        except AttributeError:
+            storage_energy_rating = self.storage.ene_max_rated
+        report = pd.DataFrame(index=self.reliability_requirement.index)
+        report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
+        report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
+
+        return report

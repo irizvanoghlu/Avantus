@@ -52,13 +52,19 @@ class ResultDER(Result):
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
         if (self.sizing_df['Duration (hours)'] > 24).any():
             print('The duration of an Energy Storage System is greater than 24 hours!')
+
+        # DESIGN PLOT (peak load day)
+        max_day = self.results['Original Net Load (kW)'].idxmax().date()
+        max_day_data = self.results[self.results.index.date == max_day]
+        time_step = pd.Index(np.arange(0, 24, self.dt), name='Timestep Beginning')
+        self.peak_day_load = pd.DataFrame({'Date': max_day_data.index.date,
+                                           'Load (kW)': max_day_data['Original Net Load (kW)'].values,
+                                           'Net Load (kW)': max_day_data['Net Load (kW)'].values}, index=time_step)
+
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             # TODO: make this more dynamic
-            reliability_requirement = self.predispatch_services['Reliability'].reliability_requirement
-            self.results.loc[:, 'SOC Constraints (%)'] = reliability_requirement / self.technologies['Storage'].ene_max_rated.value
             # calculate RELIABILITY SUMMARY
             outage_energy = self.predispatch_services['Reliability'].reliability_requirement
-            self.results.loc[:, 'Total Outage Requirement (kWh)'] = outage_energy
             sum_outage_requirement = outage_energy.sum()  # sum of energy required to provide x hours of energy if outage occurred at every timestep
             coverage_timestep = self.predispatch_services['Reliability'].coverage_timesteps  # guaranteed power for this many hours in outage
 
@@ -119,7 +125,7 @@ class ResultDER(Result):
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
 
-    def save_results_csv(self, instance_key, sensitivity=False):
+    def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
 
         Args:
@@ -130,7 +136,7 @@ class ResultDER(Result):
 
         Prints where the results have been saved when completed.
         """
-        Result.save_results_csv(self, instance_key, sensitivity)
+        Result.save_as_csv(self, instance_key, sensitivity)
         if sensitivity:
             savepath = self.dir_abs_path + "\\" + str(instance_key)
         else:

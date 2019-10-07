@@ -129,12 +129,11 @@ class DERVET:
 
             Result.add_instance(key, run)
 
-        Result.calculate_results()
+        Result.calculate()
         Result.save_to_disk()
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
-
 
 
 if __name__ == '__main__':

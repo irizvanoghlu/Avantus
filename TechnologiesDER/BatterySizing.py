@@ -200,25 +200,23 @@ class BatterySizing(storagevet.BatteryTech):
         else:
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
-        # Keep energy in bounds determined in the constraints configuration function
+        # Keep energy in bounds determined in the constraints configuration function -- making sure our storage meets control constraints
         constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
+        constraint_list += [cvx.NonPos(ene[:-1] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
-        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
+        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] + reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_min[1:] - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
 
         # Keep charge and discharge power levels within bounds
-        constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c) - variables['ch_max_slack'])]
-        constraint_list += [cvx.NonPos(ch - ch_max + reservations['C_max'] - variables['ch_max_slack'])]
+        constraint_list += [cvx.NonPos(-ch_max + ch - dis + reservations['D_min'] + reservations['C_max'] - variables['ch_max_slack'])]
+        constraint_list += [cvx.NonPos(-ch + dis + reservations['C_min'] + reservations['D_max'] - dis_max - variables['dis_max_slack'])]
 
-        constraint_list += [cvx.NonPos(cvx.multiply(ch_min, on_c) - ch - variables['ch_min_slack'])]
-        constraint_list += [cvx.NonPos(ch_min - ch + reservations['C_min'] - variables['ch_min_slack'])]
+        constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c))]
+        constraint_list += [cvx.NonPos(dis - cvx.multiply(dis_max, on_d))]
 
-        constraint_list += [cvx.NonPos(dis - cvx.multiply(dis_max, on_d) - variables['dis_max_slack'])]
-        constraint_list += [cvx.NonPos(dis - dis_max + reservations['D_max'] - variables['dis_max_slack'])]
-
-        constraint_list += [cvx.NonPos(cvx.multiply(dis_min, on_d) - dis - variables['dis_min_slack'])]
-        constraint_list += [cvx.NonPos(dis_min - dis + reservations['D_min'] - variables['dis_min_slack'])]
+        # removing the band in between ch_min and dis_min that the battery will not operate in
+        constraint_list += [cvx.NonPos(cvx.multiply(ch_min, on_c) - ch + reservations['C_min'])]
+        constraint_list += [cvx.NonPos(cvx.multiply(dis_min, on_d) - dis + reservations['D_min'])]
         # constraints to keep slack variables positive
         if self.incl_slack:
             constraint_list += [cvx.NonPos(-variables['ch_max_slack'])]

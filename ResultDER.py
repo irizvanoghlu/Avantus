@@ -30,14 +30,13 @@ class ResultDER(Result):
 
     """
 
-    def __init__(self, scenario, results_inputs):
+    def __init__(self, scenario):
         """ Initialize all Result objects, given a Scenario object with the following attributes.
 
             Args:
                 scenario (Scenario.Scenario): scenario object after optimization has run to completion
-                results_inputs (Dict): user-defined inputs from the model parameter inputs
         """
-        Result.__init__(self, scenario, results_inputs)
+        Result.__init__(self, scenario)
         self.reliability_df = pd.DataFrame()
         self.sizing_df = pd.DataFrame()
 
@@ -120,18 +119,23 @@ class ResultDER(Result):
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
 
-    def save_results_csv(self, instance_key):
+    def save_results_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
 
         Args:
-            instance_key (str): string of the instance value that corresponds to the Params instance that was used for
+            instance_key (int): string of the instance value that corresponds to the Params instance that was used for
                 this simulation.
+            sensitivity (boolean): logic if sensitivity analysis is active. If yes, save_path should create additional
+                subdirectory
 
         Prints where the results have been saved when completed.
         """
-        Result.save_results_csv(self, instance_key)
-        savepath = self.results_path + "\\" + instance_key
+        Result.save_results_csv(self, instance_key, sensitivity)
+        if sensitivity:
+            savepath = self.dir_abs_path + "\\" + str(instance_key)
+        else:
+            savepath = self.dir_abs_path
         if 'Reliability' in self.predispatch_services.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
-        print('DER results have been saved to: ' + self.results_path)
+        print('DER results have been saved to: ' + self.dir_abs_path)

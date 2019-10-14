@@ -20,6 +20,7 @@ import logging
 import time
 from datetime import datetime
 import argparse
+import pandas as pd
 
 # ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
 
@@ -76,36 +77,22 @@ class DERVET:
         Params.initialize(model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
-        self.p = Params
-        self.save_path = ""
-        # list of the Result objects (each object is for an instance of sensitivity analysis)
-        self.results_list = dict()
-
-        # data frame of all the sensitivity instances
-        self.sensitivity_analysis = (not self.p.df_analysis.empty)
-        if self.sensitivity_analysis:
-            self.sens_df = self.p.df_analysis.loc[:, :]  # create a copy of the df, NOT a reference
-            # edit the column names of the sensitivity df to be human readable
-            for col_name in self.sens_df.columns:
-                print(str(type(col_name)))
-            self.sens_df['Yearly Net Value'] = 0
-            self.sens_df.index.name = 'Case Number'
+        self.model_params = Params
 
     def solve(self):
-        verbose = self.p.instances[0].Scenario['verbose']
+        verbose = self.model_params.instances[0].Scenario['verbose']
         if verbose:
-            self.p.class_summary()
-            self.p.series_summary()
-        self.p.validate()
+            self.model_params.class_summary()
+            self.model_params.series_summary()
+        self.model_params.validate()
         self.run()
 
     def run(self):
         starts = time.time()
 
-        for key, value in self.p.instances.items():
-            # this line can be removed after we finish developing the output files for sensitivity analysis - TN
-            # for testing purposes
-            value.instance_summary()
+        Result.initialize(self.model_params.Results, self.model_params.df_analysis)
+
+        for key, value in self.model_params.instances.items():
 
             ### MOVE THE FOLLOWING INTO STORAGEVET ABSTRACTION BARRIER ###
             # Move this u_logger path section to Params class - TN
@@ -140,18 +127,14 @@ class DERVET:
             run.add_control_constraints()
             run.optimize_problem_loop()
 
-            results = Result(run, value.Results)
-            results.post_analysis()
-            results.save_results_csv(str(key))
+            Result.add_instance(key, run)
 
-            if self.sensitivity_analysis:
-                self.sens_df['Yearly Net Value'].iloc[key] = results.financials.npv.iloc[0]['Yearly Net Value']  # errors if not sensitivity "mode"
-
+        Result.calculate_results()
+        Result.save_to_disk()
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
-        if self.sensitivity_analysis:
-            self.sens_df.to_csv(path_or_buf=Path(self.save_path, 'sensitivity_summary.csv'))
+
 
 
 if __name__ == '__main__':

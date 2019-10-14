@@ -55,7 +55,7 @@ dLogger.info('Started logging...')
 
 
 class DERVET:
-    """ DERVET API. This will eventually allow storagevet to be imported and used like any
+    """ DERVET API. This will eventually allow StorageVET to be imported and used like any
     other python library.
 
     """

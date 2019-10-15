@@ -67,14 +67,16 @@ class DERVET:
 
             Args:
                 model_parameters_path (str): Filename of the model parameters CSV or XML that
-                    describes the case to be analysed
+                    describes the optimization case to be analysed
                 schema_path (str): relative path to the Schema.xml that storagevet uses
         """
         if model_parameters_path.endswith(".csv"):
-            model_parameters_path = Params.csv_to_xml(model_parameters_path)
+            opt_model_parameters_path, _ = Params.csv_to_xml(model_parameters_path)
+        else:
+            opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        Params.initialize(model_parameters_path, schema_path)
+        Params.initialize(opt_model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
         self.model_params = Params

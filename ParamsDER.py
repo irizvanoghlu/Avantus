@@ -130,8 +130,9 @@ class ParamsDER(Params):
         Args:
             name (str): name of root element in xml file
 
-        Returns:
+        Returns: Tuple (dict, list)
                 A dictionary filled with values provided by user that will be used by the CBA class.
+                A list of errors when reading in the values
 
         """
         tag = cls.eval_xml_tree.find(name)
@@ -149,7 +150,7 @@ class ParamsDER(Params):
                 if key.get('active')[0].lower() == "y" or key.get('active')[0] == "1":
 
                     values = cls.extract_data(key.find('Value').text, key.find('Type').text)
-                    error = cls.validate_evaluation(tag.tag, key.tag, values)
+                    error = cls.validate_evaluation(tag.tag, key, values)
 
                     if not len(error):
                         dictionary[key.tag] = values
@@ -157,9 +158,9 @@ class ParamsDER(Params):
                         error_list += error
 
         else:
-            return None
+            return None, error_list
 
-        return dictionary
+        return dictionary, error_list
 
     @classmethod
     def validate_evaluation(cls, tag, key, value):
@@ -169,19 +170,30 @@ class ParamsDER(Params):
 
         Args:
             tag (str): value that corresponds to tag within model param CSV
-            key (str): name of the key within model param CSV
+            key (Element): key XML element
             value (:object): list of values that the user provided, which length should be the same as the sensitivity list
 
         Returns: list, length 1, of the error (if error) else return empty list
 
         """
         # check to make sure the user can provide the evaluation value they provided
-        attribute = cls.xmlTree.find(tag).find(key)
 
         # check to see if the schema
-        in_schema = cls.schema_tree.findall(".//*[@name='"+ tag + "']")[0].findall(".//*[@name='" + key + "']")[0].findall(".//*[@name='eval_value']")
+        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key + "']")[0]
+        in_schema = prop.findall(".//*[@name='eval_value']")
         if len(in_schema):
             # non-zero length then it exists, then continue validation
+            intended_type = in_schema[0].get('yype')
+            intended_max = in_schema[0].get('max')
+            intended_min = in_schema[0].get('min')
+            if key.get('analysis')[0] == 'y':
+                # 1) check to make sure length of values is the same as sensitivity if sensitivity
+                cls.validate_evaluation(tag, key.tag, value)
+                for val in value:
+                    Params.checks_for_validate(val, prop, key.find('Type'), in_schema.find('Type'), intended_min, intended_max, [])
+
+            # 2) checks for validate
+            Params.checks_for_validate()
             pass
         else:
             return False

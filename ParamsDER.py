@@ -12,8 +12,8 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 
+import xml.etree.ElementTree as et
 import logging
-import storagevet
 import pandas as pd
 import numpy as np
 from matplotlib.font_manager import FontProperties
@@ -41,6 +41,8 @@ class ParamsDER(Params):
                   'Results': None,
                   'Battery': ['ccost', 'ccost_kw', 'ccost_kwh', 'startup', 'fixedOM', 'OMexpenses', 'install_date',
                               'p_start_ch', 'p_start_dis']}
+
+    eval_xml_tree = None
 
     @staticmethod
     def csv_to_xml(csv_filename):
@@ -77,6 +79,7 @@ class ParamsDER(Params):
             for ind, row in csv_data[mask].iterrows():
                 if row['Key'] is np.nan:
                     continue
+                # skip adding to XML if no value is given
                 if row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
                     continue
                 xml_data.write('        <' + str(row['Key']) + ' active="' + str(row['Evaluation Active']) + ' analysis="' + str(row['Sensitivity Analysis']) + '">\n')
@@ -88,11 +91,118 @@ class ParamsDER(Params):
 
         return opt_xml_filename, cba_xml_filename
 
+    @classmethod
+    def initialize(cls, filename, schema):
+        """
+            Initialize the class variable of the Params class that will be used to create Params objects for the
+            sensitivity analyses. Specifically, it will preload the needed CSV and/or time series data, identify
+            sensitivity variables, and prepare so-called default Params values as a template for creating objects.
+
+            Args:
+                filename (string): filename of XML file to load for StorageVET sensitivity analysis
+                schema (string): schema file name
+        """
+        Params.initialize(filename, schema)
+        cls.eval_xml_tree = None
+
     def __init__(self):
         """ Initialize these following attributes of the empty Params class object.
         """
         Params.__init__(self)
         self.Reliability = self.read_from_xml_object('Reliability')
+
+    @classmethod
+    def initialize_evaluation(cls, eval_filename):
+        """
+            Initialize the class variable of the Params class that will be used to create Params objects for the
+            sensitivity analyses. Specifically, it will preload the needed CSV and/or time series data, identify
+            sensitivity variables, and prepare so-called default Params values as a template for creating objects.
+
+            Args:
+                eval_filename (str):
+        """
+        cls.eval_xml_tree = et.parse(eval_filename)
+
+    @classmethod
+    def read_evaluation_xml(cls, name):
+        """ Read data from valuation XML file
+
+        Args:
+            name (str): name of root element in xml file
+
+        Returns:
+                A dictionary filled with values provided by user that will be used by the CBA class.
+
+        """
+        tag = cls.eval_xml_tree.find(name)
+        error_list = []
+
+        # this catches a misspelling in the Params 'name' compared to the xml trees spelling of 'name'
+        if tag is None:
+            return None
+
+        # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
+        if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
+            dictionary = {}
+            for key in tag:
+                # check if the first character is 'y' for the active value within each property
+                if key.get('active')[0].lower() == "y" or key.get('active')[0] == "1":
+
+                    values = cls.extract_data(key.find('Value').text, key.find('Type').text)
+                    error = cls.validate_evaluation(tag.tag, key.tag, values)
+
+                    if not len(error):
+                        dictionary[key.tag] = values
+                    else:
+                        error_list += error
+
+        else:
+            return None
+
+        return dictionary
+
+    @classmethod
+    def validate_evaluation(cls, tag, key, value):
+        """ validates the input data. A schema file is used to validate the inputs.
+            if any errors are found they are saved to a dictionary and at the end of the method it will call the error
+            method to print all the input errors
+
+        Args:
+            tag (str): value that corresponds to tag within model param CSV
+            key (str): name of the key within model param CSV
+            value (:object): list of values that the user provided, which length should be the same as the sensitivity list
+
+        Returns: list, length 1, of the error (if error) else return empty list
+
+        """
+        # check to make sure the user can provide the evaluation value they provided
+        attribute = cls.xmlTree.find(tag).find(key)
+
+        # check to see if the schema
+        in_schema = cls.schema_tree.findall(".//*[@name='"+ tag + "']")[0].findall(".//*[@name='" + key + "']")[0].findall(".//*[@name='eval_value']")
+        if len(in_schema):
+            # non-zero length then it exists, then continue validation
+            pass
+        else:
+            return False
+
+
+    @classmethod
+    def validate_value_length(cls, tag, key, lst):
+        """ In the case that sensitivity analysis is turned on:
+        This function makes sure that there are the same number of values to be evaluated within the cba, as there are
+        sensitivity values.
+
+        Args:
+            tag (str): value that corresponds to tag within model param CSV
+            key (str): name of the key within model param CSV
+            lst (list): list of values that the user provided, which length should be the same as the sensitivity list
+
+        Returns: True iff the length of the optimization values and cba evaluation values are the same.
+
+        """
+
+        return True
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
@@ -122,21 +232,6 @@ class ParamsDER(Params):
                             'by turning the binary formulation flag off.')
 
         dLogger.info("Successfully prepared the Scenario and some Finance")
-
-    @staticmethod
-    def validate_value_length(tag, key):
-        """ In the case that sensitivity analysis is turned on:
-        This function makes sure that there are the same number of values to be evaluated within the cba, as there are
-        sensitivity values.
-
-        Args:
-            tag:
-            key:
-
-        Returns: True iff the length of the optimization values and cba evaluation values are the same.
-
-        """
-        return True
 
     # def prepare_finance(self):
     #     """ Interprets user given data and prepares it for Finance.

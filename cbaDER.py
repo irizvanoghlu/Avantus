@@ -26,22 +26,22 @@ uLogger = logging.getLogger('User')
 
 class CostBenDER(Financial, Params):
 
-    eval_xml_tree = None
-
     @classmethod
-    def initialize_evaluation(cls, eval_filename, sensitivity):
+    def initialize_evaluation(cls):
         """
             Initialize the class variable of the Params class that will be used to create Params objects for the
             sensitivity analyses. Specifically, it will preload the needed CSV and/or time series data, identify
             sensitivity variables, and prepare so-called default Params values as a template for creating objects.
 
-            Args:
-                eval_filename (str):
-                sensitivity (dict):
         """
-        cls.eval_xml_tree = et.parse(eval_filename)
-        cls.sensitivity = sensitivity
 
+        # read in and validate XML
+        cls.Scenario = cls.read_evaluation_xml('Scenario')
+        cls.Finance = cls.read_evaluation_xml('Finance')
+        cls.Battery = cls.read_evaluation_xml('Battery')
+        cls.PV = cls.read_evaluation_xml('PV')
+        cls.Diesel = cls.read_evaluation_xml('Diesel')
+        cls.User = cls.read_evaluation_xml('User')
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -55,7 +55,7 @@ class CostBenDER(Financial, Params):
                 A list of errors when reading in the values
 
         """
-        tag = cls.eval_xml_tree.find(name)
+        tag = cls.xmlTree.find(name)
         error_list = []
 
         # this catches a misspelling in the Params 'name' compared to the xml trees spelling of 'name'
@@ -66,10 +66,12 @@ class CostBenDER(Financial, Params):
         if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
             dictionary = {}
             for key in tag:
+                # check if the key can have a cba evaluation value
                 # check if the first character is 'y' for the active value within each property
                 if key.get('active')[0].lower() == "y" or key.get('active')[0] == "1":
 
-                    values = cls.extract_data(key.find('Value').text, key.find('Type').text)
+                    intended_type = cls.xmlTree.find(name).find(key.tag).find('Type').text
+                    values = cls.extract_data(key.find('Evaluation').text, intended_type)
                     error_list = cls.validate_evaluation(tag.tag, key, values)
 
                     if not len(error_list):
@@ -100,7 +102,7 @@ class CostBenDER(Financial, Params):
         # check to make sure the user can provide the evaluation value they provided
 
         # check to see if the schema
-        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key + "']")[0]
+        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key.tag + "']")[0]
         in_schema = prop.findall(".//*[@name='eval_value']")
         if len(in_schema):
             # non-zero length then it exists, then continue validation

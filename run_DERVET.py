@@ -34,6 +34,7 @@ print(sys.path)
 
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
+from cbaDER import CostBenDER
 from ResultDER import ResultDER as Result
 
 # TODO: make multi-platform by using path combine functions
@@ -71,13 +72,16 @@ class DERVET:
                 schema_path (str): relative path to the Schema.xml that storagevet uses
         """
         if model_parameters_path.endswith(".csv"):
-            opt_model_parameters_path, _ = Params.csv_to_xml(model_parameters_path)
+            opt_model_parameters_path = Params.csv_to_xml(model_parameters_path)
         else:
             opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         Params.initialize(opt_model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
+
+        CostBenDER.initialize_evaluation()
+        dLogger.info('Successfully initialized the CBA class with the XML file.')
 
         self.model_params = Params
 

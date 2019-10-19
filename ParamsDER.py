@@ -52,42 +52,34 @@ class ParamsDER(Params):
 
         Returns:
             opt_xml_filename (string): name of xml file with parameter values for optimization evaluation
-            cba_xml_filename (string): name of xml file with parameter values for cba evaluation
 
 
         """
         opt_xml_filename = Params.csv_to_xml(csv_filename)
 
-        # add '_cba' to end of filename, and find .csv in the filename and replace with .xml
-        cba_xml_filename = csv_filename[:csv_filename.rfind('.')] + "_cba.xml"
+        # open and read xml file
+        xml_tree = et.parse(opt_xml_filename)
+        xml_root = xml_tree.getroot()
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
-        xml_data = open(cba_xml_filename, 'w')
-
-        # write the header of the xml file and specify columns to place in xml model parameters template
-        xml_data.write('<?xml version="1.0" encoding="UTF-8"?>' + "\n")
-        xml_data.write('\n<input>\n')
 
         # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
         for obj in csv_data.Tag.unique():
             mask = csv_data.Tag == obj
-            xml_data.write('\n    <' + obj + ' active="' + csv_data[mask].Active.iloc[0] + '">\n')
+            tag = xml_root.find(obj)
             # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
             for ind, row in csv_data[mask].iterrows():
-                if row['Key'] is np.nan:
-                    continue
                 # skip adding to XML if no value is given
-                if row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
+                if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
                     continue
-                xml_data.write('        <' + str(row['Key']) + ' active="' + str(row['Evaluation Active']) + ' analysis="' + str(row['Sensitivity Analysis']) + '">\n')
-                xml_data.write('            <Value>' + str(row['Evaluation Value']) + '</Value>\n')
-                xml_data.write('        </' + str(row['Key']) + '>\n')
-            xml_data.write('    </' + obj + '>\n')
-        xml_data.write('\n</input>')
-        xml_data.close()
+                key = tag.find(row['Key'])
+                cba_eval = et.SubElement(key, 'evaluation')
+                cba_eval.text = str(row['Evaluation Value'])
+                cba_eval.set('active', str(row['Evaluation Active']))
+        xml_tree.write(opt_xml_filename)
 
-        return opt_xml_filename, cba_xml_filename
+        return opt_xml_filename
 
     @classmethod
     def initialize(cls, filename, schema):

@@ -67,21 +67,33 @@ class CostBenDER(Financial, Params):
             dictionary = {}
             for key in tag:
                 # check if the key can have a cba evaluation value
+                cba_eval = key.find('Evaluation')
+                if cba_eval is None:
+                    continue
+
                 # check if the first character is 'y' for the active value within each property
-                if key.get('active')[0].lower() == "y" or key.get('active')[0] == "1":
-
-                    intended_type = cls.xmlTree.find(name).find(key.tag).find('Type').text
+                if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
+                    # convert to correct data type
+                    intended_type = key.find('Type').text
                     values = cls.extract_data(key.find('Evaluation').text, intended_type)
-                    error_list = cls.validate_evaluation(tag.tag, key, values)
 
-                    if not len(error_list):
+                    # validate with schema
+                    error = cls.validate_evaluation(tag.tag, key, values)
+
+                    # if the error list is empty, then save the values within the dictionary
+                    if not len(error):
                         dictionary[key.tag] = values
-                    else:
-                        cls.error(error_list)
 
+                    # else append the error to the list of errors to report to user
+                    else:
+                        error_list.append(error)
         else:
+            # else returns None
             return None
 
+        # if the list of errors is not empty, then report them to the user
+        if len(error_list):
+            cls.error(error_list)
         return dictionary
 
     @classmethod
@@ -103,19 +115,24 @@ class CostBenDER(Financial, Params):
 
         # check to see if the schema
         prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key.tag + "']")[0]
-        in_schema = prop.findall(".//*[@name='eval_value']")
-        if len(in_schema):
-            # non-zero length then it exists, then continue validation
-            intended_type = in_schema[0].get('type')
-            intended_max = in_schema[0].get('max')
-            intended_min = in_schema[0].get('min')
+
+        # 1) check to see if key is in schema -- non-zero length then it exists, then continue validation
+
+        if len(prop):
+            in_schema = prop.find('field')
+            # 2) check to see if key is allowed to define cba values
+
+            intended_type = in_schema.get('type')
+            intended_max = in_schema.get('max')
+            intended_min = in_schema.get('min')
             if key.get('analysis')[0] == 'y':
-                # 1) check to make sure length of values is the same as sensitivity if sensitivity
+                # 3) check to make sure length of values is the same as sensitivity if sensitivity
                 error_list.append(cls.validate_evaluation(tag, key.tag, value))
                 for val in value:
+                    # 4a) checks for validate: make type and range (if applicable) is correct
                     error_list = cls.checks_for_validate(val, prop, key.find('Type'), intended_type, intended_min, intended_max, error_list)
             else:
-                # 2) checks for validate
+                # 4b) checks for validate: make type and range (if applicable) is correct
                 error_list = cls.checks_for_validate(value, prop, key.find('Type'), intended_type, intended_min, intended_max, error_list)
         else:
             pass

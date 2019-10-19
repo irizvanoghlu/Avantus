@@ -74,7 +74,7 @@ class ParamsDER(Params):
                 if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
                     continue
                 key = tag.find(row['Key'])
-                cba_eval = et.SubElement(key, 'evaluation')
+                cba_eval = et.SubElement(key, 'Evaluation')
                 cba_eval.text = str(row['Evaluation Value'])
                 cba_eval.set('active', str(row['Evaluation Active']))
         xml_tree.write(opt_xml_filename)

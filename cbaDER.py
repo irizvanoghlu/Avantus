@@ -75,7 +75,12 @@ class CostBenDER(Financial, Params):
                 if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
                     # convert to correct data type
                     intended_type = key.find('Type').text
-                    values = cls.extract_data(key.find('Evaluation').text, intended_type)
+
+                    if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
+                        # if analysis, then convert each value and save as list
+                        values = cls.extract_data(key.find('Evaluation').text, intended_type)
+                    else:
+                        values = cls.convert_data_type(key.find('Evaluation').text, intended_type)
 
                     # validate with schema
                     error = cls.validate_evaluation(tag.tag, key, values)
@@ -111,31 +116,25 @@ class CostBenDER(Financial, Params):
 
         """
         error_list = []
-        # check to make sure the user can provide the evaluation value they provided
-
-        # check to see if the schema
-        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key.tag + "']")[0]
-
         # 1) check to see if key is in schema -- non-zero length then it exists, then continue validation
-
+        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key.tag + "']")
         if len(prop):
-            in_schema = prop.find('field')
+            in_schema = prop[0].find('field')
             # 2) check to see if key is allowed to define cba values
-
-            intended_type = in_schema.get('type')
-            intended_max = in_schema.get('max')
-            intended_min = in_schema.get('min')
-            if key.get('analysis')[0] == 'y':
-                # 3) check to make sure length of values is the same as sensitivity if sensitivity
-                error_list.append(cls.validate_evaluation(tag, key.tag, value))
-                for val in value:
-                    # 4a) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(val, prop, key.find('Type'), intended_type, intended_min, intended_max, error_list)
-            else:
-                # 4b) checks for validate: make type and range (if applicable) is correct
-                error_list = cls.checks_for_validate(value, prop, key.find('Type'), intended_type, intended_min, intended_max, error_list)
-        else:
-            pass
+            cba_allowed = in_schema.get('cba')
+            if cba_allowed == 'y':
+                intended_type = in_schema.get('type')
+                intended_max = in_schema.get('max')
+                intended_min = in_schema.get('min')
+                if key.get('analysis')[0] == 'y':
+                    # 3a) check to make sure length of values is the same as sensitivity if sensitivity
+                    error_list.append(cls.validate_evaluation(tag, key.tag, value))
+                    for val in value:
+                        # 4) checks for validate: make type and range (if applicable) is correct
+                        error_list = cls.checks_for_validate(val, prop[0], key.find('Type').text, intended_type, intended_min, intended_max, error_list)
+                else:
+                    # 3b) checks for validate: make type and range (if applicable) is correct
+                    error_list = cls.checks_for_validate(value, prop[0], key.find('Type').text, intended_type, intended_min, intended_max, error_list)
 
         return error_list
 

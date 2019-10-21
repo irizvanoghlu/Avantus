@@ -26,6 +26,13 @@ uLogger = logging.getLogger('User')
 
 class CostBenDER(Financial, Params):
 
+    Scenario = None
+    Finance = None
+    Battery = None
+    PV = None
+    Diesel = None
+    User = None
+
     @classmethod
     def initialize_evaluation(cls):
         """
@@ -34,6 +41,10 @@ class CostBenDER(Financial, Params):
             sensitivity variables, and prepare so-called default Params values as a template for creating objects.
 
         """
+        cls.datasets = {"time_series": dict(),
+                        "monthly_data": dict(),
+                        "customer_tariff": dict(),
+                        "yearly_data": dict()}
 
         # read in and validate XML
         cls.Scenario = cls.read_evaluation_xml('Scenario')
@@ -42,6 +53,8 @@ class CostBenDER(Financial, Params):
         cls.PV = cls.read_evaluation_xml('PV')
         cls.Diesel = cls.read_evaluation_xml('Diesel')
         cls.User = cls.read_evaluation_xml('User')
+
+        cls.eval_data_prep()
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -161,6 +174,39 @@ class CostBenDER(Financial, Params):
             error_list.append((key, str(lst), "val_length", str(sensitivity_att)))
         return error_list
 
+    @classmethod
+    def eval_data_prep(cls):
+        """
+            This function makes a unique set of filename(s) based on the results of determine_sensitivity_list function.
+            It applies for time series filename(s), monthly data filename(s), customer tariff filename(s), and cycle
+            life filename(s).
+            For each set, the corresponding class dataset variable (ts, md, ct, cl) is loaded with the data.
+
+            Returns: True after completing
+
+            Notes: TODO: put try catch statments in this function around every read_from_file function
+        """
+        if cls.Scenario:
+            if 'time_series' in cls.Scenario.keys():
+                ts_files = set(cls.Scenario['time_series_filename'])
+                for ts_file in ts_files:
+                    cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)', True)
+            if 'monthly_data' in cls.Scenario.keys():
+                md_files = set(cls.Scenario['monthly_data_filename'])
+                for md_file in md_files:
+                    cls.datasets['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month'], True))
+            if 'customer_tariff' in cls.Scenario.keys():
+                ct_files = set(cls.Scenario['customer_tariff_filename'])
+                for ct_file in ct_files:
+                    cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period', verbose=True)
+
+        if cls.Finance and 'yearly_data' in cls.Finance.keys():
+            yr_files = set(cls.Finance['yearly_data_filename'])
+            for yr_file in yr_files:
+                cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year', True)
+
+        return True
+
     def __init__(self, params):
         """ Initialized Financial object for case
 
@@ -168,6 +214,24 @@ class CostBenDER(Financial, Params):
             params (Dict): input parameters
         """
         Financial.__init__(self, params)
+        self.load_data_sets()
+
+    def load_data_sets(self):
+        """Loads data sets that are allowed to be defined for sensitivity analysis"""
+        # if self.Scenario is not None
+        if self.Scenario:
+            if 'time_series' in self.Scenario.keys():
+                self.Scenario["time_series"], self.Scenario['frequency'] = self.preprocess_timeseries(self.datasets["time_series"][self.Scenario["time_series_filename"]], self.dt)
+            if 'monthly_data' in self.Scenario.keys():
+                self.Scenario["monthly_data"] = self.datasets["monthly_data"][self.Scenario["monthly_data_filename"]]
+            if 'customer_tarriff' in self.Scenario.keys():
+                if self.Finance:
+                    # if self.Finance is None then initialize it as a dictionary
+                    self.Finance = {}
+                self.Finance["customer_tariff"] = self.datasets["customer_tariff"][self.Scenario["customer_tariff_filename"]]
+        # if self.Finance is not None and 'yearly_data' has values
+        if self.Finance and 'yearly_data' in self.Finance.keys():
+            self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
 
     def annuity_scalar(self, start_year, end_year, optimized_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits

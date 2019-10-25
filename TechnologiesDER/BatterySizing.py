@@ -356,15 +356,15 @@ class BatterySizing(storagevet.BatteryTech):
         """ Adds optimization variables to dictionary
 
         Variables added:
-            ene (Variable): A cvxpy variable for Energy at the end of the time step
-            dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
-            ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
-            ene_max_slack (Variable): A cvxpy variable for energy max slack
-            ene_min_slack (Variable): A cvxpy variable for energy min slack
-            ch_max_slack (Variable): A cvxpy variable for charging max slack
-            ch_min_slack (Variable): A cvxpy variable for charging min slack
-            dis_max_slack (Variable): A cvxpy variable for discharging max slack
-            dis_min_slack (Variable): A cvxpy variable for discharging min slack
+            bat_ene (Variable): A cvxpy variable for Energy at the end of the time step
+            bat_dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
+            bat_ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
+            bat_ene_max_slack (Variable): A cvxpy variable for energy max slack
+            bat_ene_min_slack (Variable): A cvxpy variable for energy min slack
+            bat_ch_max_slack (Variable): A cvxpy variable for charging max slack
+            bat_ch_min_slack (Variable): A cvxpy variable for charging min slack
+            bat_dis_max_slack (Variable): A cvxpy variable for discharging max slack
+            bat_dis_min_slack (Variable): A cvxpy variable for discharging min slack
 
         Args:
             size (Int): Length of optimization variables to create
@@ -372,7 +372,36 @@ class BatterySizing(storagevet.BatteryTech):
         Returns:
             Dictionary of optimization variables
         """
-        variables = storagevet.BatteryTech.add_vars(self, size)
+
+        variables = {'bat_ene': cvx.Variable(shape=size, name='bat_ene'),
+                     'bat_dis': cvx.Variable(shape=size, name='bat_dis'),
+                     'bat_ch': cvx.Variable(shape=size, name='bat_ch'),
+                     'bat_ene_max_slack': cvx.Parameter(shape=size, name='bat_ene_max_slack', value=np.zeros(size)),
+                     'bat_ene_min_slack': cvx.Parameter(shape=size, name='bat_ene_min_slack', value=np.zeros(size)),
+                     'bat_dis_max_slack': cvx.Parameter(shape=size, name='bat_dis_max_slack', value=np.zeros(size)),
+                     'bat_dis_min_slack': cvx.Parameter(shape=size, name='bat_dis_min_slack', value=np.zeros(size)),
+                     'bat_ch_max_slack': cvx.Parameter(shape=size, name='bat_ch_max_slack', value=np.zeros(size)),
+                     'bat_ch_min_slack': cvx.Parameter(shape=size, name='bat_ch_min_slack', value=np.zeros(size)),
+                     'bat_on_c': cvx.Parameter(shape=size, name='bat_on_c', value=np.ones(size)),
+                     'bat_on_d': cvx.Parameter(shape=size, name='bat_on_d', value=np.ones(size)),
+                     }
+
+        if self.incl_slack:
+            self.variable_names.update(['bat_ene_max_slack', 'bat_ene_min_slack', 'bat_dis_max_slack', 'bat_dis_min_slack', 'bat_ch_max_slack', 'bat_ch_min_slack'])
+            variables.update({'bat_ene_max_slack': cvx.Variable(shape=size, name='bat_ene_max_slack'),
+                              'bat_ene_min_slack': cvx.Variable(shape=size, name='bat_ene_min_slack'),
+                              'bat_dis_max_slack': cvx.Variable(shape=size, name='bat_dis_max_slack'),
+                              'bat_dis_min_slack': cvx.Variable(shape=size, name='bat_dis_min_slack'),
+                              'bat_ch_max_slack': cvx.Variable(shape=size, name='bat_ch_max_slack'),
+                              'bat_ch_min_slack': cvx.Variable(shape=size, name='bat_ch_min_slack')})
+        if self.incl_binary:
+            self.variable_names.update(['bat_on_c', 'bat_on_d'])
+            variables.update({'bat_on_c': cvx.Variable(shape=size, boolean=True, name='bat_on_c'),
+                              'bat_on_d': cvx.Variable(shape=size, boolean=True, name='bat_on_d')})
+            if self.incl_startup:
+                self.variable_names.update(['bat_start_c', 'bat_start_d'])
+                variables.update({'bat_start_c': cvx.Variable(shape=size, name='bat_start_c'),
+                                  'bat_start_d': cvx.Variable(shape=size, name='bat_start_d')})
 
         variables.update(self.optimization_variables)
 

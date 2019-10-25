@@ -15,6 +15,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import storagevet
 
 from TechnologiesDER.BatterySizing import BatterySizing
+from TechnologiesDER.CAESSizing import CAESSizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
 from TechnologiesDER.DieselSizing import DieselSizing
 from ValueStreamsDER.Reliability import Reliability
@@ -68,6 +69,7 @@ class ScenarioSizing(Scenario):
         """
         ess_action_map = {
             'Battery': BatterySizing,
+            # 'CAES': CAESSizing
             'CAES': storagevet.CAESTech
         }
 

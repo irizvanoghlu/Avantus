@@ -74,6 +74,7 @@ class DERVET:
             model_parameters_path = Params.csv_to_xml(model_parameters_path)
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
+        # should we leave the name as ParamsDER instead of Params for easier identification? - TN
         Params.initialize(model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
@@ -90,12 +91,16 @@ class DERVET:
     def run(self):
         starts = time.time()
 
+        # should we leave the name as ResultDER instead of Params for easier identification? - TN
         Result.initialize(self.model_params.Results, self.model_params.df_analysis)
 
         for key, value in self.model_params.instances.items():
 
             ### MOVE THE FOLLOWING INTO STORAGEVET ABSTRACTION BARRIER ###
-            # Move this u_logger path section to Params class - TN
+            # logs_path for user log files can be created in ParamsDER, if the user wants to save them in the current
+            # development directory (like in Results folder inside dvet-stage directory) instead of the indicated
+            # dir_absolute_path  in the Models Parameter Template
+            # move this u_logger path section to ParamsDER class later?
             user_log_path = value.Results['dir_absolute_path']
             try:
                 os.makedirs(user_log_path)
@@ -129,8 +134,10 @@ class DERVET:
 
             Result.add_instance(key, run)
 
-        #Result.calculate_results()
-        #Result.save_to_disk()
+        # commented out for now because CAES does not have post analysis and validation on its Results yet - TN
+        # feel free to uncomment them if you don't run CAES
+        # Result.calculate_results()
+        # Result.save_to_disk()
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)

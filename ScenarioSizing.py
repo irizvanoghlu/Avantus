@@ -69,8 +69,9 @@ class ScenarioSizing(Scenario):
         """
         ess_action_map = {
             'Battery': BatterySizing,
-            # 'CAES': CAESSizing
+            # temporarily borrow CAESTech from Storagevet until CAESSizing is further developed - TN
             'CAES': storagevet.CAESTech
+            # 'CAES': CAESSizing
         }
 
         active_storage = self.active_objects['storage']

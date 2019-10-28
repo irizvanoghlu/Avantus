@@ -21,7 +21,7 @@ from ValueStreamsDER.Reliability import Reliability
 
 from storagevet.Scenario import Scenario
 
-from cbaDER import CostBenDER
+from cbaDER import CostBenefitAnalysis
 
 import logging
 
@@ -59,7 +59,7 @@ class ScenarioSizing(Scenario):
 
         """
 
-        self.financials = CostBenDER(finance_inputs)
+        self.financials = CostBenefitAnalysis(finance_inputs)
         dLogger.info("Finished adding Financials...")
 
     def add_technology(self):

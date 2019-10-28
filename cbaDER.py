@@ -24,7 +24,7 @@ dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
 
 
-class CostBenDER(Financial, Params):
+class CostBenefitAnalysis(Financial, Params):
 
     Scenario = None
     Finance = None
@@ -184,11 +184,18 @@ class CostBenDER(Financial, Params):
 
             Returns: True after completing
 
-            Notes: TODO: put try catch statments in this function around every read_from_file function
+            Notes: TODO: put try catch statements in this function around every read_from_file function
         """
         if cls.Scenario:
             if 'time_series' in cls.Scenario.keys():
                 ts_files = set(cls.Scenario['time_series_filename'])
+                # validate time series with its corresponding DT:
+                # if the user gives more than 1 DT, it MUST be coupled with its corresponding time_series file, so we must validate with the
+                # correct time step
+
+                if ('Scenario', 'dt') in cls.sensitivity['attributes'].keys():
+                    # there are multiple dt values given
+                    list_dt = cls.sensitivity['attributes'][('Scenario', 'dt')]
                 for ts_file in ts_files:
                     cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)', True)
             if 'monthly_data' in cls.Scenario.keys():

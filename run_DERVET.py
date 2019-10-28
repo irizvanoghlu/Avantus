@@ -34,7 +34,7 @@ print(sys.path)
 
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
-from cbaDER import CostBenDER
+from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER as Result
 
 # TODO: make multi-platform by using path combine functions
@@ -80,7 +80,7 @@ class DERVET:
         Params.initialize(opt_model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
-        CostBenDER.initialize_evaluation()
+        CostBenefitAnalysis.initialize_evaluation()
         dLogger.info('Successfully initialized the CBA class with the XML file.')
 
         self.model_params = Params

@@ -84,7 +84,7 @@ class Reliability(storagevet.ValueStream):
 
         try:
             ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
-        except KeyError:
+        except (KeyError, AttributeError):
             ice_rated_power = 0
 
         try:

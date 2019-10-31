@@ -13,7 +13,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 import logging
 from storagevet.Finances import Financial
-from storagevet.Params import Params
+from ParamsDER import ParamsDER
 import numpy as np
 import xml.etree.ElementTree as et
 
@@ -24,7 +24,7 @@ dLogger = logging.getLogger('Developer')
 uLogger = logging.getLogger('User')
 
 
-class CostBenefitAnalysis(Financial, Params):
+class CostBenefitAnalysis(Financial, ParamsDER):
 
     Scenario = None
     Finance = None

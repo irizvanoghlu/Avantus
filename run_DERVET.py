@@ -30,7 +30,6 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 
 # add storagevet (source root) to PYTHONPATH
 sys.path.insert(0, storagevet_path)
-print(sys.path)
 
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
@@ -80,6 +79,7 @@ class DERVET:
         Params.initialize(opt_model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
+        # Initialize the CBA module
         CostBenefitAnalysis.initialize_evaluation()
         dLogger.info('Successfully initialized the CBA class with the XML file.')
 

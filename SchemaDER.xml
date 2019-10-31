@@ -1,166 +1,130 @@
-<?xml version="1.0" encoding="UTF-16"?>
-
-<schema name="Default schema" vertion="1.0.0">
-    <!-- value-streams -->
-     <Reliability type="pre-dispatch">
-        <target type="float" min="0.0" max="100.0" cba="n" />
-    </Reliability>
-    <Backup type="pre-dispatch" />
-    <User type="pre-dispatch">
-        <price min="0.0" type="float" cba="y"/>
-    </User>
-    <DA type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-    </DA>
-    <FR type="service">
-        <ku max="1.0" min="0.0" type="float" cba="n" />
-        <kd max="1.0" min="0.0" type="float" cba="n" />
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <energyprice_growth max="100.0" min="0.0" type="float" cba="n" />
-        <CombinedMarket type="bool" allowed_values="1|0" cba="n" />
-        <duration max="24" min="0.0" type="float" cba="n" />
-    </FR>
-    <LF type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <CombinedMarket type="bool" allowed_values="1|0" cba="n" />
-        <ku max="1.0" min="0.0" type="float" cba="n" />
-        <kd max="1.0" min="0.0" type="float" cba="n" />
-    </LF>
-    <SR type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <duration max="24" min="0.0" type="float" cba="n" />
-    </SR>
-    <NSR type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <duration max="24" min="0.0" type="float" cba="n" />
-    </NSR>
-    <RT type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <dt max="1.0" min="0.0" type="float" cba="n" />
-    </RT>
-    <DCM type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-    </DCM>
-    <retailTimeShift type="service">
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-    </retailTimeShift>
-    <PV type="generator">
-        <name type="string" cba="n" />
-        <inv_max min="0.0" type="float" cba="n" />
-        <growth max="100.0" min="0.0" type="float" cba="n" />
-        <rated_capacity min="0.0" type="float" cba="n" />
-        <cost_per_kW min="0.0" type="float" cba="y" />
-        <grid_charge type="bool" allowed_values="1|0"/>
-        <loc type="string" allowed_values="ac|dc"/>
-        <construction_date type="Timestamp" />
-        <operation_date type="Timestamp" />
-
-    </PV>
-    <Diesel type="generator">
-        <name type="string" />
-        <marcs_term type="float" />
-        <min_power min="0.0" type="float" />
-        <startup_time min="0" type="int" />
-        <efficiency min="0.0" type="float" />
-        <fuel_cost min="0.0" type="float" />
-        <variable_om_cost min="0.0" type="float" />
-        <fixed_om_cost min="0.0" type="float" />
-        <rated_power min="0.0" type="float" />
-        <ccost min="0.0" type="float" />
-        <ccost_kW min="0.0" type="float" />
-        <n min="0" type="int" />
-        <construction_date type="Timestamp" />
-        <operation_date type="Timestamp" />
-    </Diesel>
-    <Battery type="storage">
-        <name type="string" />
-        <startup type="bool" allowed_values="1|0"/>
-        <ccost min="0.0" type="float" />
-        <ccost_kw min="0.0" type="float" />
-        <ccost_kwh min="0.0" type="float" />
-        <fixedOM min="0.0" type="float" />
-        <OMexpenses min="0.0" type="float" />
-        <ch_max_rated min="0.0" type="float" />
-        <ch_min_rated min="0.0" type="float" />
-        <dis_max_rated min="0.0" type="float" />
-        <dis_min_rated min="0.0" type="float" />
-        <ene_max_rated min="0.0" type="float" />
-        <ulsoc max="100.0" min="0.0" type="float" />
-        <llsoc max="100.0" min="0.0" type="float" />
-        <rte max="100.0" min="0.0" type="float" />
-        <sdr max="99.9" min="0.0" type="float" />
-        <soc_target max="100.0" min="0.0" type="float" />
-        <incl_cycle_degrade type="bool" allowed_values="1|0" optional='bool1'/>
-        <yearly_degrade max="100" min="0" type="int" optional='y1'/>
-        <cycle_life_filename type="string" optional='y1'/>
-        <construction_date type="Timestamp" />
-        <operation_date type="Timestamp" />
-        <p_start_ch min="0" type="float" />
-        <p_start_dis min="0" type="float" />
-        <daily_cycle_limit min="0" type="float" />
-        <hp min="0" type="float" />
-    </Battery>
-    <CAES type="storage">
-        <name type="string" />
-        <daily_cycle_limit min="0" type="float" />
-        <heat_rate_high min="0.0" type="float" />
-        <startup type="bool" allowed_values="1|0"/>
-        <ccost min="0.0" type="float" />
-        <ccost_kw min="0.0" type="float" />
-        <ccost_kwh min="0.0" type="float" />
-        <fixedOM min="0.0" type="float" />
-        <OMexpenses min="0.0" type="float" />
-        <ch_max_rated min="0.0" type="float" />
-        <ch_min_rated min="0.0" type="float" />
-        <dis_max_rated min="0.0" type="float" />
-        <dis_min_rated min="0.0" type="float" />
-        <ene_max_rated min="0.0" type="float" />
-        <ulsoc max="100.0" min="0.0" type="float" />
-        <llsoc max="100.0" min="0.0" type="float" />
-        <rte min="0.0" type="float" />
-        <sdr max="99.9" min="0.0" type="float" />
-        <soc_target max="100.0" min="0.0" type="float" />
-        <construction_date type="Timestamp" />
-        <operation_date type="Timestamp" />
-        <p_start_ch min="0" type="float" />
-        <p_start_dis min="0" type="float" />
-    </CAES>
-    <Scenario type="scenario">
-        <monthly_data_filename type="string" />
-        <time_series_filename type="string" />
-        <dt max="1.0" min="0.0" type="float" />
-        <opt_years max="2100" min="1800" type="list/int" />
-        <start_year type="Period" />
-        <end_year type="Period" />
-        <n max="366" min="0" type="string/int" allowed_values='month\year'/>
-        <incl_site_load type="bool" allowed_values="1|0"/>
-        <no_export type="bool" allowed_values="1|0"/>
-        <no_import type="bool" allowed_values="1|0"/>
-        <def_growth max="100.0" min="0.0" type="float" />
-        <binary type="bool" allowed_values="1|0"/>
-        <slack type="bool" allowed_values="1|0"/>
-        <kappa_ene_max type="float" />
-        <kappa_ene_min type="float" />
-        <kappa_dis_max type="float" />
-        <kappa_dis_min type="float" />
-        <kappa_ch_max type="float" />
-        <kappa_ch_min type="float" />
-        <verbose type="bool" allowed_values="1|0"/>
-        <verbose_opt type="bool" allowed_values="1|0"/>
-        <location type="string" allowed_values="generation|transmission|distribution|customer"/>
-        <ownership type="string" allowed_values="customer|utility|3rd party"/>
-        <analysis_horizon_mode type="int" allowed_values='1|2|3'/>
-    </Scenario>
-    <Finance type="finance">
-        <inflation_rate max="100.0" min="0.0" type="float" />
-        <npv_discount_rate max="100.0" min="0.0" type="float" />
-        <external_incentives type="bool" allowed_values="1|0" optional='bool'/>
-        <yearly_data_filename type="string" optional='y'/>
-        <customer_tariff_filename type="string" />
-    </Finance>
-    <Results type="command">
-        <dir_absolute_path type="string" />
-        <label type="string" />
-        <errors_log_path type="string" />
-    </Results>
+<schema version="1.0.0">
+	<Reliability type="pre-dispatch">
+		<target cba="n" max="100.0" min="0.0" type="float" />
+	</Reliability>
+	<Backup type="pre-dispatch" />
+	<User type="pre-dispatch">
+		<price cba="y" min="0.0" type="float" />
+	</User>
+	<DA type="service">
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+	</DA>
+	<FR type="service">
+		<ku cba="n" max="1.0" min="0.0" type="float" />
+		<kd cba="n" max="1.0" min="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<energyprice_growth cba="n" max="100.0" min="0.0" type="float" />
+		<CombinedMarket allowed_values="1|0" cba="n" type="bool" />
+		<duration cba="n" max="24" min="0.0" type="float" />
+	</FR>
+	<SR type="service">
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<duration cba="n" max="24" min="0.0" type="float" />
+	</SR>
+	<NSR type="service">
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<duration cba="n" max="24" min="0.0" type="float" />
+	</NSR>
+	<DCM type="service">
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+	</DCM>
+	<retailTimeShift type="service">
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+	</retailTimeShift>
+	<PV type="generator">
+		<name cba="n" type="string" />
+		<inv_max cba="n" min="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<rated_capacity cba="n" min="0.0" type="float" />
+		<cost_per_kW cba="y" min="0.0" type="float" />
+		<grid_charge allowed_values="1|0" cba="n" type="bool" />
+		<loc allowed_values="ac|dc" cba="n" type="string" />
+		<construction_date cba="y" type="Timestamp" />
+		<operation_date cba="y" type="Timestamp" />
+		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
+	</PV>
+	<Diesel type="generator">
+		<name cba="n" type="string" />
+		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
+		<min_power cba="n" min="0.0" type="float" />
+		<startup_time cba="n" min="0" type="int" />
+		<efficiency cba="n" min="0.0" type="float" />
+		<fuel_cost cba="y" min="0.0" type="float" />
+		<variable_om_cost cba="y" min="0.0" type="float" />
+		<fixed_om_cost cba="y" min="0.0" type="float" />
+		<rated_power cba="n" min="0.0" type="float" />
+		<ccost cba="y" min="0.0" type="float" />
+		<ccost_kW cba="y" min="0.0" type="float" />
+		<n_min cba="n" min="0" type="int" />
+		<n_max cba="n" min="0" type="int" />
+		<construction_date cba="y" type="Timestamp" />
+		<operation_date cba="y" type="Timestamp" />
+	</Diesel>
+	<Battery type="storage">
+		<name cba="n" type="string" />
+		<startup allowed_values="1|0" cba="y" type="bool" />
+		<ccost cba="y" min="0.0" type="float" />
+		<ccost_kw cba="y" min="0.0" type="float" />
+		<ccost_kwh cba="y" min="0.0" type="float" />
+		<fixedOM cba="y" min="0.0" type="float" />
+		<OMexpenses cba="y" min="0.0" type="float" />
+		<ch_max_rated cba="n" min="0.0" type="float" />
+		<ch_min_rated cba="n" min="0.0" type="float" />
+		<dis_max_rated cba="n" min="0.0" type="float" />
+		<dis_min_rated cba="n" min="0.0" type="float" />
+		<ene_max_rated cba="n" min="0.0" type="float" />
+		<ulsoc cba="n" max="100.0" min="0.0" type="float" />
+		<llsoc cba="n" max="100.0" min="0.0" type="float" />
+		<rte cba="n" max="100.0" min="0.0" type="float" />
+		<sdr cba="n" max="99.9" min="0.0" type="float" />
+		<soc_target cba="n" max="100.0" min="0.0" type="float" />
+		<incl_cycle_degrade allowed_values="1|0" cba="n" optional="bool1" type="bool" />
+		<yearly_degrade cba="n" max="100" min="0" optional="y1" type="int" />
+		<cycle_life_filename optional="y1" type="string" />
+		<construction_date cba="y" type="Timestamp" />
+		<operation_date cba="y" type="Timestamp" />
+		<p_start_ch cba="n" min="0" type="float" />
+		<p_start_dis cba="n" min="0" type="float" />
+		<daily_cycle_limit cba="n" min="0" type="float" />
+		<hp cba="n" min="0" type="float" />
+		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
+	</Battery>
+	<Scenario type="scenario">
+		<monthly_data_filename cba="y" type="string" />
+		<time_series_filename cba="y" type="string" />
+		<dt cba="n" max="1.0" min="0.0" type="float" />
+		<opt_years cba="n" max="2100" min="1800" type="list/int" />
+		<start_year cba="y" type="Period" />
+		<end_year cba="y" type="Period" />
+		<n allowed_values="month\year" cba="n" max="366" min="0" type="string/int" />
+		<incl_site_load allowed_values="1|0" cba="n" type="bool" />
+		<no_export allowed_values="1|0" cba="n" type="bool" />
+		<no_import allowed_values="1|0" cba="n" type="bool" />
+		<def_growth cba="n" max="100.0" min="0.0" type="float" />
+		<binary allowed_values="1|0" cba="n" type="bool" />
+		<slack allowed_values="1|0" cba="n" type="bool" />
+		<kappa_ene_max cba="n" type="float" />
+		<kappa_ene_min cba="n" type="float" />
+		<kappa_dis_max cba="n" type="float" />
+		<kappa_dis_min cba="n" type="float" />
+		<kappa_ch_max cba="n" type="float" />
+		<kappa_ch_min cba="n" type="float" />
+		<verbose allowed_values="1|0" cba="n" type="bool" />
+		<verbose_opt allowed_values="1|0" cba="n" type="bool" />
+		<location cba='y' allowed_values="generation|transmission|distribution|customer" type="string" />
+		<ownership cba="y" allowed_values="customer|utility|3rd party" type="string" />
+	</Scenario>
+	<Finance type="finance">
+		<inflation_rate cba="y" max="100.0" min="0.0" type="float" />
+		<npv_discount_rate cba="y" max="100.0" min="0.0" type="float" />
+		<external_incentives allowed_values="1|0" cba="y" optional="bool" type="bool" />
+		<yearly_data_filename cba="y" optional="y" type="string" />
+		<customer_tariff_filename cba='y' type="string" />
+		<analysis_horizon_mode cba="y" allowed_values="1|2|3" type="int" />
+	</Finance>
+	<Results type="command">
+		<dir_absolute_path cba="n" type="string" />
+		<label cba="n" type="string" />
+		<errors_log_path cba="n" type="string" />
+	</Results>
 </schema>

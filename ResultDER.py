@@ -95,6 +95,10 @@ class ResultDER(Result):
                 battery_outage_ene = np.zeros(len(self.results.index))
                 battery_contribution = 0
 
+            if 'CAES' in self.technologies.keys():
+                print('CAES is not yet implemented in ResultsDER')
+                # waiting to be implemented if needed - TN
+
             if 'Diesel' in self.technologies.keys():
                 # supplies what every energy that cannot be by pv and diesel
                 reverse_diesel_gen = self.results['Diesel Generation (kW)'].iloc[::-1]
@@ -139,3 +143,5 @@ class ResultDER(Result):
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.dir_abs_path)
+
+

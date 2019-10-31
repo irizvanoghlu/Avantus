@@ -85,7 +85,7 @@ class DERVET:
         if verbose:
             self.model_params.class_summary()
             self.model_params.series_summary()
-        self.model_params.validate()
+        self.model_params.validateDER()
         self.run()
 
     def run(self):
@@ -134,10 +134,10 @@ class DERVET:
 
             Result.add_instance(key, run)
 
-        # commented out for now because CAES does not have post analysis and validation on its Results yet - TN
-        # feel free to uncomment them if you don't run CAES
-        # Result.calculate_results()
-        # Result.save_to_disk()
+        # beware that CAES does not have post analysis (and validation?) on its Results yet - TN
+        # so if CAES is active, the calculate() and save_to_disk() methods need to be reviewed
+        Result.calculate()
+        Result.save_to_disk()
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
@@ -146,7 +146,7 @@ class DERVET:
 
 if __name__ == '__main__':
     """
-        the Main section for runStorageVET to run by itself without the GUI 
+        the Main section for runStorageVET to run by itself without the SVETapp GUI 
     """
 
     parser = argparse.ArgumentParser(prog='StorageVET.py',

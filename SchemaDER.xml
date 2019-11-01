@@ -39,8 +39,8 @@
 		<cost_per_kW cba="y" min="0.0" type="float" />
 		<grid_charge allowed_values="1|0" cba="n" type="bool" />
 		<loc allowed_values="ac|dc" cba="n" type="string" />
-		<construction_date cba="y" type="Timestamp" />
-		<operation_date cba="y" type="Timestamp" />
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
 	</PV>
 	<Diesel type="generator">
@@ -57,8 +57,8 @@
 		<ccost_kW cba="y" min="0.0" type="float" />
 		<n_min cba="n" min="0" type="int" />
 		<n_max cba="n" min="0" type="int" />
-		<construction_date cba="y" type="Timestamp" />
-		<operation_date cba="y" type="Timestamp" />
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
 	</Diesel>
 	<Battery type="storage">
 		<name cba="n" type="string" />
@@ -81,12 +81,12 @@
 		<incl_cycle_degrade allowed_values="1|0" cba="n" optional="bool1" type="bool" />
 		<yearly_degrade cba="n" max="100" min="0" optional="y1" type="int" />
 		<cycle_life_filename optional="y1" type="string" />
-		<construction_date cba="y" type="Timestamp" />
-		<operation_date cba="y" type="Timestamp" />
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
 		<p_start_ch cba="n" min="0" type="float" />
 		<p_start_dis cba="n" min="0" type="float" />
 		<daily_cycle_limit cba="n" min="0" type="float" />
-		<hp cba="n" min="0" type="float" />
+		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 	</Battery>
 	<Scenario type="scenario">
@@ -111,7 +111,7 @@
 		<kappa_ch_min cba="n" type="float" />
 		<verbose allowed_values="1|0" cba="n" type="bool" />
 		<verbose_opt allowed_values="1|0" cba="n" type="bool" />
-		<location cba='y' allowed_values="generation|transmission|distribution|customer" type="string" />
+		<location cba='n' allowed_values="generation|transmission|distribution|customer" type="string" />
 		<ownership cba="y" allowed_values="customer|utility|3rd party" type="string" />
 	</Scenario>
 	<Finance type="finance">

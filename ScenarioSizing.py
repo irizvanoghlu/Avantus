@@ -16,7 +16,7 @@ import storagevet
 
 from TechnologiesDER.BatterySizing import BatterySizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
-from TechnologiesDER.DieselSizing import DieselSizing
+from TechnologiesDER.ICESizing import ICESizing
 from ValueStreamsDER.Reliability import Reliability
 
 from storagevet.Scenario import Scenario
@@ -79,7 +79,7 @@ class ScenarioSizing(Scenario):
 
         generator_action_map = {
             'PV': CurtailPVSizing,
-            'Diesel': DieselSizing
+            'ICE': ICESizing
         }
 
         active_gen = self.active_objects['generator']

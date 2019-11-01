@@ -43,7 +43,7 @@
 		<operation_date cba="n" type="Timestamp" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
 	</PV>
-	<Diesel type="generator">
+	<ICE type="generator">
 		<name cba="n" type="string" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
 		<min_power cba="n" min="0.0" type="float" />
@@ -59,7 +59,7 @@
 		<n_max cba="n" min="0" type="int" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
-	</Diesel>
+	</ICE>
 	<Battery type="storage">
 		<name cba="n" type="string" />
 		<startup allowed_values="1|0" cba="y" type="bool" />
@@ -120,7 +120,7 @@
 		<external_incentives allowed_values="1|0" cba="y" optional="bool" type="bool" />
 		<yearly_data_filename cba="y" optional="y" type="string" />
 		<customer_tariff_filename cba='y' type="string" />
-		<analysis_horizon_mode cba="y" allowed_values="1|2|3" type="int" />
+		<analysis_horizon_mode cba="n" allowed_values="1|2|3" type="int" />
 	</Finance>
 	<Results type="command">
 		<dir_absolute_path cba="n" type="string" />

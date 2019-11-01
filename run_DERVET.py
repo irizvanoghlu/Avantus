@@ -80,7 +80,7 @@ class DERVET:
         dLogger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
-        CostBenefitAnalysis.initialize_evaluation()
+        # CostBenefitAnalysis.initialize_evaluation()
         dLogger.info('Successfully initialized the CBA class with the XML file.')
 
         self.model_params = Params

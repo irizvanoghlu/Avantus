@@ -29,7 +29,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
     Finance = None
     Battery = None
     PV = None
-    Diesel = None
+    ICE = None
     User = None
 
     @classmethod
@@ -56,7 +56,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         error_list.append(temp_lst)
         cls.PV, temp_lst = cls.read_evaluation_xml('PV')
         error_list.append(temp_lst)
-        cls.Diesel, temp_lst = cls.read_evaluation_xml('Diesel')
+        cls.ICE, temp_lst = cls.read_evaluation_xml('ICE')
         error_list.append(temp_lst)
         cls.User, temp_lst = cls.read_evaluation_xml('User')
         error_list.append(temp_lst)
@@ -137,7 +137,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         """
         error_list = []
         # 1) check to see if key is in schema -- non-zero length then it exists, then continue validation
-        prop = cls.schema_tree.findall(".//*[@name='" + tag + "']")[0].findall(".//*[@name='" + key.tag + "']")
+        prop = cls.schema_tree.find(tag).find(key.tag)
         if len(prop):
             in_schema = prop[0].find('field')
             # 2) check to see if key is allowed to define cba values

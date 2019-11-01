@@ -3,7 +3,7 @@ Params.py
 
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani',
                'Micah Botkin-Levy', "Thien Nguyen", 'Yekta Yazar']
@@ -12,8 +12,10 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 
+import xml.etree.ElementTree as et
 import logging
-import storagevet
+import pandas as pd
+import numpy as np
 from matplotlib.font_manager import FontProperties
 from storagevet.Params import Params
 
@@ -33,29 +35,53 @@ class ParamsDER(Params):
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
 
+    @staticmethod
+    def csv_to_xml(csv_filename):
+        """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
+        corresponds the values used to evaluate the CBA.
+
+        Args:
+            csv_filename (string): name of csv file
+
+        Returns:
+            opt_xml_filename (string): name of xml file with parameter values for optimization evaluation
+
+
+        """
+        opt_xml_filename = Params.csv_to_xml(csv_filename)
+
+        # open csv to read into dataframe and blank xml file to write to
+        csv_data = pd.read_csv(csv_filename)
+        # check to see if Evaluation rows are included
+        if 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
+            # then add values to XML
+
+            # open and read xml file
+            xml_tree = et.parse(opt_xml_filename)
+            xml_root = xml_tree.getroot()
+
+            # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
+            for obj in csv_data.Tag.unique():
+                mask = csv_data.Tag == obj
+                tag = xml_root.find(obj)
+                # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
+                for ind, row in csv_data[mask].iterrows():
+                    # skip adding to XML if no value is given
+                    if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
+                        continue
+                    key = tag.find(row['Key'])
+                    cba_eval = et.SubElement(key, 'Evaluation')
+                    cba_eval.text = str(row['Evaluation Value'])
+                    cba_eval.set('active', str(row['Evaluation Active']))
+            xml_tree.write(opt_xml_filename)
+
+        return opt_xml_filename
+
     def __init__(self):
         """ Initialize these following attributes of the empty Params class object.
         """
         Params.__init__(self)
         self.Reliability = self.read_from_xml_object('Reliability')
-
-    # def other_error_checks(self):
-    #
-    #     storagevet_checks = Params.other_error_checks(self)
-    #
-    #     if not storagevet_checks:
-    #         return False
-    #
-    #     return True
-
-    # def prepare_technology(self):
-    #     """ Interprets user given data and prepares it for Storage/Storage.
-    #
-    #     Returns: collects required timeseries columns required + collects power growth rates
-    #
-    #     """
-    #     Params.prepare_technology(self)
-    #     dLogger.info("Successfully prepared the Technologies")
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).

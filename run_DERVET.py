@@ -30,10 +30,10 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 
 # add storagevet (source root) to PYTHONPATH
 sys.path.insert(0, storagevet_path)
-print(sys.path)
 
 from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER as Params
+from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER as Result
 
 # TODO: make multi-platform by using path combine functions
@@ -67,16 +67,22 @@ class DERVET:
 
             Args:
                 model_parameters_path (str): Filename of the model parameters CSV or XML that
-                    describes the case to be analysed
+                    describes the optimization case to be analysed
                 schema_path (str): relative path to the Schema.xml that storagevet uses
         """
         if model_parameters_path.endswith(".csv"):
-            model_parameters_path = Params.csv_to_xml(model_parameters_path)
+            opt_model_parameters_path = Params.csv_to_xml(model_parameters_path)
+        else:
+            opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         # should we leave the name as ParamsDER instead of Params for easier identification? - TN
-        Params.initialize(model_parameters_path, schema_path)
+        Params.initialize(opt_model_parameters_path, schema_path)
         dLogger.info('Successfully initialized the Params class with the XML file.')
+
+        # Initialize the CBA module
+        # CostBenefitAnalysis.initialize_evaluation()
+        dLogger.info('Successfully initialized the CBA class with the XML file.')
 
         self.model_params = Params
 
@@ -141,7 +147,6 @@ class DERVET:
         ends = time.time()
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
-
 
 
 if __name__ == '__main__':

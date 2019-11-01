@@ -16,7 +16,7 @@ import pandas as pd
 import storagevet
 
 
-class DieselSizing(storagevet.Diesel):
+class ICESizing(storagevet.ICE):
     """ An ICE generator
 
     """
@@ -29,7 +29,7 @@ class DieselSizing(storagevet.Diesel):
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        storagevet.Diesel.__init__(self, name, params)
+        storagevet.ICE.__init__(self, name, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
         self.n = cvx.Variable(integer=True, name='generators')
@@ -54,7 +54,7 @@ class DieselSizing(storagevet.Diesel):
 
         # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
         # cover that constraint
-        constraint_list = [storagevet.Diesel.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]]
+        constraint_list = [storagevet.ICE.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]]
 
         constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]

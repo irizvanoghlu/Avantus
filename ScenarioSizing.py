@@ -17,12 +17,12 @@ import storagevet
 from TechnologiesDER.BatterySizing import BatterySizing
 from TechnologiesDER.CAESSizing import CAESSizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
-from TechnologiesDER.DieselSizing import DieselSizing
+from TechnologiesDER.ICESizing import ICESizing
 from ValueStreamsDER.Reliability import Reliability
 
 from storagevet.Scenario import Scenario
 
-from cbaDER import CostBenDER
+from cbaDER import CostBenefitAnalysis
 
 import logging
 
@@ -60,7 +60,7 @@ class ScenarioSizing(Scenario):
 
         """
 
-        self.financials = CostBenDER(finance_inputs)
+        self.financials = CostBenefitAnalysis(finance_inputs)
         dLogger.info("Finished adding Financials...")
 
     def add_technology(self):
@@ -83,7 +83,7 @@ class ScenarioSizing(Scenario):
 
         generator_action_map = {
             'PV': CurtailPVSizing,
-            'Diesel': DieselSizing
+            'ICE': ICESizing
         }
 
         active_gen = self.active_objects['generator']

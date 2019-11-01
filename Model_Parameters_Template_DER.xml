@@ -1,854 +1,728 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <input>
 
     <Scenario active="yes">
         <monthly_data_filename analysis="no">
             <Value>.\dervet\storagevet\Data\Monthly_Data.csv</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>valid file path to a monthly data file</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>nan</Description>
-        </monthly_data_filename>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        <Evaluation active="n">.\dervet\storagevet\Data\Monthly_Data.csv</Evaluation></monthly_data_filename>
         <time_series_filename analysis="no">
             <Value>.\dervet\storagevet\Data\hourly_timeseries.csv</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>valid file path to a time series data file</Allowed_Values>
             <Sensitivity_Parameters>.\Data\test1.csv</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>nan</Description>
-        </time_series_filename>
-        <customer_tariff_filename analysis="no">
-            <Value>.\dervet\storagevet\Data\tariff.csv</Value>
-            <Units>nan</Units>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
             <Type>string</Type>
-            <Allowed_Values>valid file path to a customer tariff file</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>nan</Description>
-        </customer_tariff_filename>
-        <cycle_life_filename analysis="no">
-            <Value>.\dervet\storagevet\Data\Battery_Cycle_Life.csv</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>valid file path to a degradation data file</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>nan</Description>
-        </cycle_life_filename>
+        <Evaluation active="n">.\dervet\storagevet\Data\hourly_timeseries.csv</Evaluation></time_series_filename>
         <dt analysis="no">
             <Value>1</Value>
-            <Units>hours</Units>
-            <Type>float</Type>
-            <Allowed_Values>(0,1]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Time step in the time series data file</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </dt>
         <opt_years analysis="no">
             <Value>2017</Value>
-            <Units>year</Units>
-            <Type>list/int</Type>
-            <Allowed_Values>the year number(s) specified here must appear in the time series file</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>which years to run optimization for. You must have data for these years in the time series file.</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>list/int</Type>
         </opt_years>
         <start_year analysis="no">
             <Value>2017</Value>
-            <Units>year</Units>
-            <Type>Period</Type>
-            <Allowed_Values>opt_years must be between start_year and end_year</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>first year of analysis</Description>
-        </start_year>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Period</Type>
+        <Evaluation active="y">2017</Evaluation></start_year>
         <end_year analysis="no">
             <Value>2030</Value>
-            <Units>year</Units>
-            <Type>Period</Type>
-            <Allowed_Values>opt_years must be between start_year and end_year</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>last year of analysis</Description>
-        </end_year>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Period</Type>
+        <Evaluation active="y">2030</Evaluation></end_year>
         <n analysis="no">
             <Value>month</Value>
-            <Units>hours</Units>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
             <Type>string/int</Type>
-            <Allowed_Values>{month,year,(0,8760]}</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>optimization prediction horizon ('month' or number of hours)</Description>
         </n>
-        <n_control analysis="no">
-            <Value>0</Value>
-            <Units>hours</Units>
-            <Type>int</Type>
-            <Allowed_Values>nan</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>optimization control horizon ('month' or number of days)</Description>
-        </n_control>
         <incl_site_load analysis="no">
             <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Flag to include site_load in load calculation (MUST BE ONE IF DCM OR RETAILETS ARE ON)</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </incl_site_load>
         <no_import analysis="no">
             <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{1,0}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Prevent the system from charging from the grid</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </no_import>
         <no_export analysis="no">
             <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{1,0}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Prevent the system from discharging to the grid</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </no_export>
         <def_growth analysis="no">
             <Value>6</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0,100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Default growth rate applied to load and any missing rates</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </def_growth>
         <verbose analysis="no">
             <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>general feedback flag</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </verbose>
         <verbose_opt analysis="no">
             <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>optimization feedback flag</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </verbose_opt>
         <binary analysis="no">
             <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Should the optimization use binary variables to prevent concurrent charge and discharge? This should be 1 usually</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </binary>
         <slack analysis="no">
             <Value>0</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Should the optimization use soft constraints (more robust but longer run time)</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </slack>
+        <ownership analysis="no">
+            <Value>customer</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        <Evaluation active="y">utility</Evaluation></ownership>
+        <location analysis="no">
+            <Value>customer</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        </location>
         <kappa_ene_max analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum energy</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_ene_max>
         <kappa_ene_min analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum energy</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_ene_min>
         <kappa_dis_max analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum charging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_dis_max>
         <kappa_dis_min analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum charging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_dis_min>
         <kappa_ch_max analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing maximum discharging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_ch_max>
         <kappa_ch_min analysis="no">
             <Value>100000</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>penalty on relaxing minimum discharging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kappa_ch_min>
     </Scenario>
 
     <Finance active="yes">
         <inflation_rate analysis="no">
             <Value>3</Value>
-            <Units>%/year</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Yearly inflation rate for use in the financial analysis</Description>
-        </inflation_rate>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="y">3</Evaluation></inflation_rate>
         <npv_discount_rate analysis="no">
             <Value>7</Value>
-            <Units>%/year</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Yearly NPV discount rate for use in the financial analysis</Description>
-        </npv_discount_rate>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="y">7</Evaluation></npv_discount_rate>
         <yearly_data_filename analysis="no">
             <Value>.\dervet\storagevet\Data\yearly_data.csv</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>valid file path to a yearly external incentives data file</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>nan</Description>
-        </yearly_data_filename>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        <Evaluation active="n">.\dervet\storagevet\Data\yearly_data.csv</Evaluation></yearly_data_filename>
         <external_incentives analysis="no">
             <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>T or F to consider the external incentives described in 'yearly_data'</Description>
-        </external_incentives>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
+        <Evaluation active="y">1</Evaluation></external_incentives>
+        <customer_tariff_filename analysis="no">
+            <Value>.\dervet\storagevet\Data\tariff.csv</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        <Evaluation active="n">.\dervet\storagevet\Data\tariff.csv</Evaluation></customer_tariff_filename>
+        <analysis_horizon_mode analysis="no">
+            <Value>1</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
+        </analysis_horizon_mode>
     </Finance>
 
     <Results active="no">
         <dir_absolute_path analysis="no">
             <Value>enter absolute path here</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>{0,enter absolute path here}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Absolute path to location of where to save Results folder</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </dir_absolute_path>
         <label analysis="no">
             <Value>_2MW_5hr</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>{0,_2MW_5hr}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Added on to the end of CSV files saved within dir_absolute_path</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </label>
         <errors_log_path analysis="no">
             <Value>Enter absolute path here  (include the folder name you want the file to be contained inside)</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Absolute path to location of where to save the errors log file (include the folder name you want the file to be contained inside)</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </errors_log_path>
     </Results>
 
     <Battery active="yes">
         <name analysis="no">
             <Value>2MW-5hr</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>User defined name specific to this tag</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </name>
         <ccost analysis="no">
             <Value>0</Value>
-            <Units>$</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ccost)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Capital Cost</Description>
-        </ccost>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="y">0</Evaluation></ccost>
         <ccost_kw analysis="no">
             <Value>100</Value>
-            <Units>$/kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ccost_kw)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Capital Cost in $/kW of storage discharge power capacity</Description>
-        </ccost_kw>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="y">100</Evaluation></ccost_kw>
         <ccost_kwh analysis="no">
             <Value>800</Value>
-            <Units>$/kWh</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ccost_kwh)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Capital Cost in $/kWh of storage Energy capacity</Description>
-        </ccost_kwh>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="y">800</Evaluation></ccost_kwh>
         <startup analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>int</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>T of F to include startup cost in the dispatch optimization</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </startup>
         <fixedOM analysis="no">
             <Value>10</Value>
-            <Units>$/kW-yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, fixedOM)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Fixed Operation and Maintenace Costs per kW of storage discharge power capacity</Description>
-        </fixedOM>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">10</Evaluation></fixedOM>
         <OMexpenses analysis="no">
-            <Value>10</Value>
-            <Units>$/MWh</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, Omexpenses)</Allowed_Values>
+            <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Variable Operation and Maintenance Costs per MWh of energy delivered by storage system</Description>
-        </OMexpenses>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">1</Evaluation></OMexpenses>
         <ch_max_rated analysis="no">
-            <Value>200</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ch_max_rated)</Allowed_Values>
+            <Value>2000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Charge Capacity</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </ch_max_rated>
         <dis_max_rated analysis="no">
-            <Value>200</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, dis_max_rated)</Allowed_Values>
+            <Value>2000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Discharge Capacity</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </dis_max_rated>
         <ch_min_rated analysis="no">
             <Value>0</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ch_min_rated)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Charge Capacity</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </ch_min_rated>
         <dis_min_rated analysis="no">
             <Value>0</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, dis_min_rated)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Discharge Capacity</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </dis_min_rated>
         <ene_max_rated analysis="no">
-            <Value>1000</Value>
-            <Units>kWh</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ene_max_rated)</Allowed_Values>
+            <Value>10000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Energy Capacity</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </ene_max_rated>
         <ulsoc analysis="no">
             <Value>100</Value>
-            <Units>%</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100] (must be more than llsoc)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage SOC Upper Bound</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </ulsoc>
         <llsoc analysis="no">
-            <Value>20</Value>
-            <Units>%</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100] (must be less than ulsoc)</Allowed_Values>
+            <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage SOC Lower Bound</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </llsoc>
         <rte analysis="no">
             <Value>85</Value>
-            <Units>%</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100] </Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy Storage Round Trip Efficiency</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </rte>
         <sdr analysis="no">
             <Value>0</Value>
-            <Units>%/hr</Units>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
             <Type>float</Type>
-            <Allowed_Values>[0, 99]</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Energy Storage Self-Discharge Rate</Description>
         </sdr>
-        <install_date analysis="no">
+        <construction_date analysis="no">
             <Value>1/1/2017</Value>
-            <Units>nan</Units>
-            <Type>Timestamp</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Installation Date of the System</Description>
-        </install_date>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </construction_date>
+        <operation_date analysis="no">
+            <Value>1/1/2017</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </operation_date>
         <soc_target analysis="no">
             <Value>50</Value>
-            <Units>%</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100] </Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>The SOC the storage system will return to after every optimization window</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </soc_target>
         <yearly_degrade analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>int</Type>
-            <Allowed_Values>[0, 100] </Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>% degradation per year. This calendar degradation combines with cycling degradation to get total degradation.</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
         </yearly_degrade>
         <incl_cycle_degrade analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>int</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>T or F to include degradation per year</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </incl_cycle_degrade>
+        <cycle_life_filename analysis="no">
+            <Value>.\dervet\storagevet\Data\Battery_Cycle_Life.csv</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        </cycle_life_filename>
         <p_start_ch analysis="no">
             <Value>0</Value>
-            <Units>$</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, p_start_ch)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Startup cost to start charging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </p_start_ch>
         <p_start_dis analysis="no">
             <Value>0</Value>
-            <Units>$</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, p_start_dis)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Startup cost to start discharging</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </p_start_dis>
         <daily_cycle_limit analysis="no">
             <Value>1</Value>
-            <Units>cycles</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, daily_cycles_limit]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Limit the daily total discharge and ene throughput not to exceed the (number of cycles * max energy storage capacity) (inactive if 0)</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </daily_cycle_limit>
         <hp analysis="no">
             <Value>100</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, hp)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Housekeeping power for Auxiliary load</Description>
-        </hp>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">3</Evaluation></hp>
+        <macrs_term analysis="no">
+            <Value>0</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">7</Evaluation></macrs_term>
     </Battery>
 
     <PV active="no">
         <name analysis="no">
             <Value>solar1</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>nan</Coupled>
-            <Description>User defined name specific to this tag</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </name>
         <inv_max analysis="no">
             <Value>3000</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, inv_max)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Max net import or export power flow through inverter</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </inv_max>
         <loc analysis="no">
             <Value>ac</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>{ac, dc}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Solar plus storage AC or DC coupled system (not case sensitive)</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </loc>
         <growth analysis="no">
             <Value>5</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Annual pv generation growth rate. Useful if using storage to offset reverse power flow on a feeder, for example.</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
         <cost_per_kW analysis="no">
             <Value>200</Value>
-            <Units>$/kW</Units>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
             <Type>float</Type>
-            <Allowed_Values>[0, cost_per_kW)</Allowed_Values>
-            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Coupled>None</Coupled>
-            <Description>Captical cost per kW rated</Description>
-        </cost_per_kW>
-        <marcs_term analysis="no">
+        <Evaluation active="n">200</Evaluation></cost_per_kW>
+        <macrs_term analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>TBA</Description>
-        </marcs_term>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
+        <Evaluation active="n">0</Evaluation></macrs_term>
         <rated_capacity analysis="no">
             <Value>0</Value>
-            <Units>kW</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, rated_capacity)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Rated capacity of PV system</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </rated_capacity>
         <grid_charge analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>bool</Type>
-            <Allowed_Values>{1,0}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Allow the PV+ESS to charge from the grid</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>bool</Type>
         </grid_charge>
+        <construction_date analysis="no">
+            <Value>1/1/2017</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </construction_date>
+        <operation_date analysis="no">
+            <Value>1/1/2017</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </operation_date>
     </PV>
 
-    <Diesel active="no">
+    <ICE active="yes">
         <name analysis="no">
             <Value>ice gen</Value>
-            <Units>nan</Units>
-            <Type>string</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>nan</Coupled>
-            <Description>User defined name specific to this tag</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>string</Type>
         </name>
         <rated_power analysis="no">
             <Value>4000</Value>
-            <Units>kW/generator</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, rated_capacity)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Maximum power that a generator can provide</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </rated_power>
         <min_power analysis="no">
             <Value>100</Value>
-            <Units>kW/generator</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, min_power)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Minimum power a generator can produce</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </min_power>
         <startup_time analysis="no">
             <Value>0</Value>
-            <Units>min</Units>
-            <Type>int</Type>
-            <Allowed_Values>[0, startup_time)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Time (in minutes) it takes to start generating</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
         </startup_time>
         <efficiency analysis="no">
             <Value>0.15</Value>
-            <Units>gal/kWh</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, efficiency)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Rate of fuel consumption per electric energy</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </efficiency>
         <fuel_cost analysis="no">
             <Value>3.5</Value>
-            <Units>$/gal</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, fuel_cost)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>cost of fuel</Description>
-        </fuel_cost>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">3.5</Evaluation></fuel_cost>
         <variable_om_cost analysis="no">
             <Value>10</Value>
-            <Units>$/kWh</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, variable_om_cost)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Internal combustion engine variable operation and management cost</Description>
-        </variable_om_cost>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">10</Evaluation></variable_om_cost>
         <fixed_om_cost analysis="no">
             <Value>12</Value>
-            <Units>$/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, fixed_om_cost)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Internal combustion engine fixed operation and management cost</Description>
-        </fixed_om_cost>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">12</Evaluation></fixed_om_cost>
         <ccost_kW analysis="no">
             <Value>200</Value>
-            <Units>$/kW-generator</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ccost_kW)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Captical cost per kW rated, for each generator</Description>
-        </ccost_kW>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">200</Evaluation></ccost_kW>
         <ccost analysis="no">
             <Value>200</Value>
-            <Units>$/generator</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, ccost)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Capital cost per generator</Description>
-        </ccost>
-        <marcs_term analysis="no">
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">200</Evaluation></ccost>
+        <macrs_term analysis="no">
             <Value>0</Value>
-            <Units>nan</Units>
-            <Type>float</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>TBA</Description>
-        </marcs_term>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">3</Evaluation></macrs_term>
         <n_min analysis="no">
-            <Value>0</Value>
-            <Units>generators</Units>
-            <Type>int</Type>
-            <Allowed_Values>nan</Allowed_Values>
+            <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Minimum number of generators whose combined rated power is p_max</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
         </n_min>
         <n_max analysis="no">
             <Value>2</Value>
-            <Units>generators</Units>
-            <Type>int</Type>
-            <Allowed_Values>nan</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Maximum number of generators whose combined rated power is p_max</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
         </n_max>
-    </Diesel>
+        <construction_date analysis="no">
+            <Value>1/1/2017</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </construction_date>
+        <operation_date analysis="no">
+            <Value>1/1/2017</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Coupled>None</Coupled>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>Timestamp</Type>
+        </operation_date>
+    </ICE>
 
     <DA active="yes">
         <growth analysis="no">
             <Value>0</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of day ahead energy prices</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
     </DA>
 
     <FR active="no">
         <ku analysis="no">
             <Value>0.3</Value>
-            <Units>kWh/kW-hr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 1]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Frequency Regulation Up k-Value</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </ku>
         <kd analysis="no">
             <Value>0.3</Value>
-            <Units>kWh/kW-hr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 1]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Frequency Regulation Down k-Value</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </kd>
         <growth analysis="no">
             <Value>0</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of Frequency Regulation Price</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
         <energyprice_growth analysis="no">
             <Value>5</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Frequency Regulation Energy Price growth rate</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </energyprice_growth>
         <CombinedMarket analysis="no">
             <Value>1</Value>
-            <Units>y/n</Units>
-            <Type>int</Type>
-            <Allowed_Values>{0,1}</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Must the storage bid as much reg up as reg down?</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>int</Type>
         </CombinedMarket>
         <duration analysis="no">
             <Value>1</Value>
-            <Units>hours</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 24]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Duration for energy reservation requirements</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </duration>
     </FR>
 
     <SR active="no">
         <growth analysis="no">
             <Value>0</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of Spinning Reserve Price</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
         <duration analysis="no">
             <Value>2</Value>
-            <Units>hrs</Units>
-            <Type>float</Type>
-            <Allowed_Values>(0, 1]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy requirement for providing spinning reserves</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </duration>
     </SR>
 
     <NSR active="no">
         <growth analysis="no">
             <Value>0</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of Non-Spinning Reserve Price</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
         <duration analysis="no">
             <Value>2</Value>
-            <Units>hrs</Units>
-            <Type>float</Type>
-            <Allowed_Values>(0, 1]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Energy requirement for providing non-spinning reserves</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </duration>
     </NSR>
 
     <DCM active="no">
         <growth analysis="no">
             <Value>5</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of demand charges within the tariff, assuming the same tariff structure applies</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
     </DCM>
 
     <retailTimeShift active="no">
         <growth analysis="no">
             <Value>5</Value>
-            <Units>%/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, 100]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Growth Rate of retail energy charges within the tariff, assuming the same tariff structure applies</Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </growth>
     </retailTimeShift>
 
     <User active="no">
         <price analysis="no">
             <Value>10000</Value>
-            <Units>$/yr</Units>
-            <Type>float</Type>
-            <Allowed_Values>[0, price)</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Yearly Cost Avoided for meeting the user-defined constraints</Description>
-        </price>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
+        <Evaluation active="n">1000</Evaluation></price>
     </User>
 
     <Backup active="no">
@@ -857,12 +731,10 @@
     <Reliability active="no">
         <target analysis="no">
             <Value>4</Value>
-            <Units>hours</Units>
-            <Type>float</Type>
-            <Allowed_Values>[1,24]</Allowed_Values>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Coupled>None</Coupled>
-            <Description>Dynamically ensure there is enough power and energy capacity in the DER mix </Description>
+            <Sensitivity_Analysis>no</Sensitivity_Analysis>
+            <Type>float</Type>
         </target>
     </Reliability>
 

@@ -15,7 +15,6 @@ import logging
 from storagevet.Finances import Financial
 from ParamsDER import ParamsDER
 import numpy as np
-import xml.etree.ElementTree as et
 
 
 SATURDAY = 5
@@ -41,18 +40,26 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             sensitivity variables, and prepare so-called default Params values as a template for creating objects.
 
         """
+
         cls.datasets = {"time_series": dict(),
                         "monthly_data": dict(),
                         "customer_tariff": dict(),
                         "yearly_data": dict()}
 
         # read in and validate XML
-        cls.Scenario = cls.read_evaluation_xml('Scenario')
-        cls.Finance = cls.read_evaluation_xml('Finance')
-        cls.Battery = cls.read_evaluation_xml('Battery')
-        cls.PV = cls.read_evaluation_xml('PV')
-        cls.Diesel = cls.read_evaluation_xml('Diesel')
-        cls.User = cls.read_evaluation_xml('User')
+        error_list = []
+        cls.Scenario, temp_lst = cls.read_evaluation_xml('Scenario')
+        error_list.append(temp_lst)
+        cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
+        error_list.append(temp_lst)
+        cls.Battery, temp_lst = cls.read_evaluation_xml('Battery')
+        error_list.append(temp_lst)
+        cls.PV, temp_lst = cls.read_evaluation_xml('PV')
+        error_list.append(temp_lst)
+        cls.Diesel, temp_lst = cls.read_evaluation_xml('Diesel')
+        error_list.append(temp_lst)
+        cls.User, temp_lst = cls.read_evaluation_xml('User')
+        error_list.append(temp_lst)
 
         cls.eval_data_prep()
 

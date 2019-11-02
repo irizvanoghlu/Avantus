@@ -51,15 +51,15 @@ class CAESSizing(storagevet.CAESTech):
         """ Adds optimization variables to dictionary
 
         Variables added:
-            ene (Variable): A cvxpy variable for Energy at the end of the time step
-            dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
-            ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
-            ene_max_slack (Variable): A cvxpy variable for energy max slack
-            ene_min_slack (Variable): A cvxpy variable for energy min slack
-            ch_max_slack (Variable): A cvxpy variable for charging max slack
-            ch_min_slack (Variable): A cvxpy variable for charging min slack
-            dis_max_slack (Variable): A cvxpy variable for discharging max slack
-            dis_min_slack (Variable): A cvxpy variable for discharging min slack
+            caes_ene (Variable): A cvxpy variable for Energy at the end of the time step
+            caes_dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
+            caes_ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
+            caes_ene_max_slack (Variable): A cvxpy variable for energy max slack
+            caes_ene_min_slack (Variable): A cvxpy variable for energy min slack
+            caes_ch_max_slack (Variable): A cvxpy variable for charging max slack
+            caes_ch_min_slack (Variable): A cvxpy variable for charging min slack
+            caes_dis_max_slack (Variable): A cvxpy variable for discharging max slack
+            caes_dis_min_slack (Variable): A cvxpy variable for discharging min slack
 
         Args:
             size (Int): Length of optimization variables to create
@@ -68,37 +68,73 @@ class CAESSizing(storagevet.CAESTech):
             Dictionary of optimization variables
         """
 
-        variables = {'ene': cvx.Variable(shape=size, name='caes_ene'),
-                     'dis': cvx.Variable(shape=size, name='caes_dis'),
-                     'ch': cvx.Variable(shape=size, name='caes_ch'),
-                     'ene_max_slack': cvx.Parameter(shape=size, name='caes_ene_max_slack', value=np.zeros(size)),
-                     'ene_min_slack': cvx.Parameter(shape=size, name='caes_ene_min_slack', value=np.zeros(size)),
-                     'dis_max_slack': cvx.Parameter(shape=size, name='caes_dis_max_slack', value=np.zeros(size)),
-                     'dis_min_slack': cvx.Parameter(shape=size, name='caes_dis_min_slack', value=np.zeros(size)),
-                     'ch_max_slack': cvx.Parameter(shape=size, name='caes_ch_max_slack', value=np.zeros(size)),
-                     'ch_min_slack': cvx.Parameter(shape=size, name='caes_ch_min_slack', value=np.zeros(size)),
-                     'on_c': cvx.Parameter(shape=size, name='caes_on_c', value=np.ones(size)),
-                     'on_d': cvx.Parameter(shape=size, name='caes_on_d', value=np.ones(size)),
+        variables = {'caes_ene': cvx.Variable(shape=size, name='caes_ene'),
+                     'caes_dis': cvx.Variable(shape=size, name='caes_dis'),
+                     'caes_ch': cvx.Variable(shape=size, name='caes_ch'),
+                     'caes_ene_max_slack': cvx.Parameter(shape=size, name='caes_ene_max_slack', value=np.zeros(size)),
+                     'caes_ene_min_slack': cvx.Parameter(shape=size, name='caes_ene_min_slack', value=np.zeros(size)),
+                     'caes_dis_max_slack': cvx.Parameter(shape=size, name='caes_dis_max_slack', value=np.zeros(size)),
+                     'caes_dis_min_slack': cvx.Parameter(shape=size, name='caes_dis_min_slack', value=np.zeros(size)),
+                     'caes_ch_max_slack': cvx.Parameter(shape=size, name='caes_ch_max_slack', value=np.zeros(size)),
+                     'caes_ch_min_slack': cvx.Parameter(shape=size, name='caes_ch_min_slack', value=np.zeros(size)),
+                     'caes_on_c': cvx.Parameter(shape=size, name='caes_on_c', value=np.ones(size)),
+                     'caes_on_d': cvx.Parameter(shape=size, name='caes_on_d', value=np.ones(size)),
                      }
 
         if self.incl_slack:
             self.variable_names.update(['caes_ene_max_slack', 'caes_ene_min_slack', 'caes_dis_max_slack', 'caes_dis_min_slack', 'caes_ch_max_slack', 'caes_ch_min_slack'])
-            variables.update({'ene_max_slack': cvx.Variable(shape=size, name='caes_ene_max_slack'),
-                              'ene_min_slack': cvx.Variable(shape=size, name='caes_ene_min_slack'),
-                              'dis_max_slack': cvx.Variable(shape=size, name='caes_dis_max_slack'),
-                              'dis_min_slack': cvx.Variable(shape=size, name='caes_dis_min_slack'),
-                              'ch_max_slack': cvx.Variable(shape=size, name='caes_ch_max_slack'),
-                              'ch_min_slack': cvx.Variable(shape=size, name='caes_ch_min_slack')})
+            variables.update({'caes_ene_max_slack': cvx.Variable(shape=size, name='caes_ene_max_slack'),
+                              'caes_ene_min_slack': cvx.Variable(shape=size, name='caes_ene_min_slack'),
+                              'caes_dis_max_slack': cvx.Variable(shape=size, name='caes_dis_max_slack'),
+                              'caes_dis_min_slack': cvx.Variable(shape=size, name='caes_dis_min_slack'),
+                              'caes_ch_max_slack': cvx.Variable(shape=size, name='caes_ch_max_slack'),
+                              'caes_ch_min_slack': cvx.Variable(shape=size, name='caes_ch_min_slack')})
         if self.incl_binary:
-            self.variable_names.update(['on_c', 'on_d'])
-            variables.update({'on_c': cvx.Variable(shape=size, boolean=True, name='caes_on_c'),
-                              'on_d': cvx.Variable(shape=size, boolean=True, name='caes_on_d')})
+            self.variable_names.update(['caes_on_c', 'caes_on_d'])
+            variables.update({'caes_on_c': cvx.Variable(shape=size, boolean=True, name='caes_on_c'),
+                              'caes_on_d': cvx.Variable(shape=size, boolean=True, name='caes_on_d')})
             if self.incl_startup:
                 self.variable_names.update(['bat_start_c', 'bat_start_d'])
-                variables.update({'start_c': cvx.Variable(shape=size, name='caes_start_c'),
-                                  'start_d': cvx.Variable(shape=size, name='caes_start_d')})
+                variables.update({'caes_start_c': cvx.Variable(shape=size, name='caes_start_c'),
+                                  'caes_start_d': cvx.Variable(shape=size, name='caes_start_d')})
 
         variables.update(self.optimization_variables)
+
+    def sizing_summary(self):
+        """
+        TODO: CAESSizing is waiting to be implemented, it is currently mimicking BatterySizing's method
+
+        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+
+        """
+        # obtain the size of the CAES, these may or may not be optimization variable
+        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
+        # If there is an error, then we know that it was user inputted and we just take that value instead.
+        try:
+            energy_rated = self.ene_max_rated.value
+        except AttributeError:
+            energy_rated = self.ene_max_rated
+
+        try:
+            ch_max_rated = self.ch_max_rated.value
+        except AttributeError:
+            ch_max_rated = self.ch_max_rated
+
+        try:
+            dis_max_rated = self.dis_max_rated.value
+        except AttributeError:
+            dis_max_rated = self.dis_max_rated
+
+        index = pd.Index([self.name], name='DER')
+        sizing_results = pd.DataFrame({'CAES Energy Rating (kWh)': energy_rated,
+                                       'CAES Charge Rating (kW)': ch_max_rated,
+                                       'CAES Discharge Rating (kW)': dis_max_rated,
+                                       'CAES Duration (hours)': energy_rated / dis_max_rated,
+                                       'CAES Capital Cost ($)': self.ccost,
+                                       'CAES Capital Cost ($/kW)': self.ccost_kw,
+                                       'CAES Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
+        return sizing_results
+
 
 
 

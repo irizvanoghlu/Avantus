@@ -102,8 +102,8 @@ class ResultDER(Result):
                 battery_contribution = 0
 
             if 'CAES' in self.technologies.keys():
-                print('CAES is not yet implemented in ResultsDER')
-                # waiting to be implemented if needed - TN
+                print('What is CAES output behavior when there is Reliability?')
+                # waiting to be implemented - TN
 
             if 'Diesel' in self.technologies.keys():
                 # supplies what every energy that cannot be by pv and diesel
@@ -125,6 +125,8 @@ class ResultDER(Result):
             self.results.loc[:, 'PV Outage Contribution (kWh)'] = pv_outage_energy
             self.results.loc[:, 'Battery Outage Contribution (kWh)'] = battery_outage_ene
             self.results.loc[:, 'Generator Outage Contribution (kWh)'] = diesel_outage_ene
+            # does CAES have outage contribution?
+            # self.results.loc[:, 'CAES Outage Contribution (kWh)'] = caes_outage_ene
 
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T

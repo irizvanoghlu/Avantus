@@ -140,8 +140,6 @@ class DERVET:
 
             Result.add_instance(key, run)
 
-        # beware that CAES does not have post analysis (and validation?) on its Results yet - TN
-        # so if CAES is active, the calculate() and save_to_disk() methods need to be reviewed
         Result.calculate()
         Result.save_to_disk()
         ends = time.time()

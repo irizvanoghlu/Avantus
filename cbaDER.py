@@ -24,13 +24,13 @@ uLogger = logging.getLogger('User')
 
 
 class CostBenefitAnalysis(Financial, ParamsDER):
-
-    Scenario = None
-    Finance = None
-    Battery = None
-    PV = None
-    ICE = None
-    User = None
+    #
+    # Scenario = None
+    # Finance = None
+    # Battery = None
+    # PV = None
+    # ICE = None
+    # User = None
 
     @classmethod
     def initialize_evaluation(cls):
@@ -60,8 +60,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         error_list.append(temp_lst)
         cls.User, temp_lst = cls.read_evaluation_xml('User')
         error_list.append(temp_lst)
-
-        cls.eval_data_prep()
+    #
+    #     cls.eval_data_prep()
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -80,7 +80,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         # this catches a misspelling in the Params 'name' compared to the xml trees spelling of 'name'
         if tag is None:
-            return None
+            # todo: add this to error list
+            return None, error_list
 
         # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
         if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
@@ -114,12 +115,12 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                         error_list.append(error)
         else:
             # else returns None
-            return None
+            return None, error_list
 
-        # if the list of errors is not empty, then report them to the user
-        if len(error_list):
-            cls.error(error_list)
-        return dictionary
+        # # if the list of errors is not empty, then report them to the user
+        # if len(error_list):
+        #     cls.error(error_list)
+        return dictionary, error_list
 
     @classmethod
     def validate_evaluation(cls, tag, key, value):
@@ -151,10 +152,10 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                     error_list.append(cls.validate_evaluation(tag, key.tag, value))
                     for val in value:
                         # 4) checks for validate: make type and range (if applicable) is correct
-                        error_list = cls.checks_for_validate(val, prop[0], key.find('Type').text, intended_type, intended_min, intended_max, error_list)
+                        error_list = cls.checks_for_validate(val, key.find('Type').text, key, tag)
                 else:
                     # 3b) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(value, prop[0], key.find('Type').text, intended_type, intended_min, intended_max, error_list)
+                    error_list = cls.checks_for_validate(value, key.find('Type').text, key, tag)
 
         return error_list
 
@@ -221,14 +222,21 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         return True
 
-    def __init__(self, params):
-        """ Initialized Financial object for case
+    def __init__(self, financial_params, dispatch_services, predispatch_services, technologies):
+        """ Initialize CBA model and edit any attributes that the user denoted a separate value
+        to evaluate the CBA with
 
-         Args:
-            params (Dict): input parameters
+        Args:
+            financial_params (dict): parameter dictionary as the Params class created
+            dispatch_services (dict): Dict of services to calculate cost avoided or profit
+            predispatch_services (dict): Dict of predispatch services to calculate cost avoided or profit
+            technologies (dict): dictionary of all the DER subclasses that are active
         """
-        Financial.__init__(self, params)
-        self.load_data_sets()
+        Financial.__init__(self, financial_params)
+
+        self.predispatch_services = predispatch_services
+        self.dispatch_services = dispatch_services
+        self.technologies = technologies
 
     def load_data_sets(self):
         """Loads data sets that are allowed to be defined for sensitivity analysis"""
@@ -246,6 +254,38 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         # if self.Finance is not None and 'yearly_data' has values
         if self.Finance and 'yearly_data' in self.Finance.keys():
             self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
+
+    def update_with_evaluation(self, param_name, param_object):
+        """Searches through the class variables (which are dictionaries of the parameters with values to be used in the CBA)
+        and saves that value
+
+        Args:
+            param_name:
+            param_object:
+
+        Returns:
+
+        """
+        pass
+
+    def proforma_report(self, technologies, services, predispatch_services, results, use_inflation=True):
+        """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
+        saved in results and the set of technology and service instances that have (if any) values that the user indicated
+        they wanted to use when evaluating the CBA.
+
+        Instead of using the technologies and services as they are passed in from the call in the Results class, we will pass
+        the technologies and services with the values the user denoted to be used for evaluating the CBA.
+
+        Args:
+            technologies (Dict): Dict of technologies (needed to get capital and om costs)
+            services (Dict): Dict of services to calculate cost avoided or profit
+            predispatch_services (Dict): Dict of predispatch services to calculate cost avoided or profit
+            results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
+                and ValueStream
+            use_inflation (bool): Flag to determine if using inflation rate to determine financials for extrapolation. If false, use extrapolation
+
+        """
+        Financial.proforma_report(self, self.technologies, self.dispatch_services, self.predispatch_services, results, use_inflation)
 
     def annuity_scalar(self, start_year, end_year, optimized_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits

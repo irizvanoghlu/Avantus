@@ -135,6 +135,29 @@ class CAESSizing(storagevet.CAESTech):
                                        'CAES Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
         return sizing_results
 
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = storagevet.CAESTech.timeseries_report(self)
+        results['CAES Discharge (kW)'] = self.variables['caes_dis']
+        results['CAES Charge (kW)'] = self.variables['caes_ch']
+        results['CAES Power (kW)'] = self.variables['caes_dis'] - self.variables['caes_ch']
+        results['CAES State of Energy (kWh)'] = self.variables['caes_ene']
+
+        try:
+            energy_rate = self.ene_max_rated.value
+        except AttributeError:
+            energy_rate = self.ene_max_rated
+
+        results['CAES SOC (%)'] = self.variables['caes_ene'] / energy_rate
+        results['CAES Fuel Price ($)'] = self.fuel_price
+
+        return results
+
 
 
 

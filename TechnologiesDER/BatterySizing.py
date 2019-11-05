@@ -410,3 +410,27 @@ class BatterySizing(storagevet.BatteryTech):
         variables.update(self.optimization_variables)
 
         return variables
+
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = storagevet.BatteryTech.timeseries_report(self)
+        results['Battery Discharge (kW)'] = self.variables['bat_dis']
+        results['Battery Charge (kW)'] = self.variables['bat_ch']
+        results['Battery Power (kW)'] = self.variables['bat_dis'] - self.variables['bat_ch']
+        results['Battery State of Energy (kWh)'] = self.variables['bat_ene']
+
+        try:
+            energy_rate = self.ene_max_rated.value
+        except AttributeError:
+            energy_rate = self.ene_max_rated
+
+        results['Battery SOC (%)'] = self.variables['bat_ene'] / energy_rate
+
+        return results
+

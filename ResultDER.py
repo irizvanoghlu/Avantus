@@ -48,6 +48,7 @@ class ResultDER(Result):
         """
         Result.post_analysis(self)
         for name, tech in self.technologies.items():
+            # sizing_summary for CAES is currently similar to it for Battery
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
         if (self.sizing_df['Duration (hours)'] > 24).any():
@@ -103,7 +104,7 @@ class ResultDER(Result):
 
             if 'CAES' in self.technologies.keys():
                 print('What is CAES output behavior when there is Reliability?')
-                # waiting to be implemented - TN
+                # pending status - TN
 
             if 'Diesel' in self.technologies.keys():
                 # supplies what every energy that cannot be by pv and diesel
@@ -125,7 +126,7 @@ class ResultDER(Result):
             self.results.loc[:, 'PV Outage Contribution (kWh)'] = pv_outage_energy
             self.results.loc[:, 'Battery Outage Contribution (kWh)'] = battery_outage_ene
             self.results.loc[:, 'Generator Outage Contribution (kWh)'] = diesel_outage_ene
-            # does CAES have outage contribution?
+            # does CAES have outage contribution? This depends on if CAES contributes during Reliability
             # self.results.loc[:, 'CAES Outage Contribution (kWh)'] = caes_outage_ene
 
             # TODO: go through each technology/DER (each contribution should sum to 1)

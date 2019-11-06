@@ -15,6 +15,7 @@ import logging
 from storagevet.Finances import Financial
 from ParamsDER import ParamsDER
 import numpy as np
+import copy
 
 
 SATURDAY = 5
@@ -52,14 +53,36 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         error_list.append(temp_lst)
         cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
         error_list.append(temp_lst)
-        cls.Battery, temp_lst = cls.read_evaluation_xml('Battery')
+
+        # load in CBA values for DERs
+        battery, temp_lst = cls.read_evaluation_xml('Battery')
         error_list.append(temp_lst)
-        cls.PV, temp_lst = cls.read_evaluation_xml('PV')
+        pv, temp_lst = cls.read_evaluation_xml('PV')
         error_list.append(temp_lst)
-        cls.ICE, temp_lst = cls.read_evaluation_xml('ICE')
+        ice, temp_lst = cls.read_evaluation_xml('ICE')
         error_list.append(temp_lst)
-        cls.User, temp_lst = cls.read_evaluation_xml('User')
+
+        # create dictionary for CBA values for DERs
+        cls.ders_values = {'Battery': battery,
+                           'PV': pv,
+                           'ICE': ice}
+
+        # load in CBA values for predispatch services
+        user, temp_lst = cls.read_evaluation_xml('User')
         error_list.append(temp_lst)
+
+        # create dictionary for CBA values for predispatch services (from data files)
+        cls.predispatch_values = {'User': user}
+
+        # create dictionary for CBA values for dispatch services (from data files)
+        cls.dispatch_values = {'DA': None,
+                               'FR': None,
+                               # 'LF': None,
+                               'SR': None,
+                               'NSR': None,
+                               'DCM': None,
+                               'retailTimeShift': None
+                               }
     #
     #     cls.eval_data_prep()
 
@@ -232,11 +255,18 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             predispatch_services (dict): Dict of predispatch services to calculate cost avoided or profit
             technologies (dict): dictionary of all the DER subclasses that are active
         """
+        financial_params.update(self.Finance)
+        financial_params.update(self.Scenario)
         Financial.__init__(self, financial_params)
 
-        self.predispatch_services = predispatch_services
-        self.dispatch_services = dispatch_services
-        self.technologies = technologies
+        self.predispatch_services = copy.deepcopy(predispatch_services)
+        self.dispatch_services = copy.deepcopy(dispatch_services)
+        self.technologies = copy.deepcopy(technologies)
+        # TODO: need to deal with the data obtained from CSVs
+
+        # save the evaluation values in the correct places
+        for key, value in self.predispatch_services:
+            self.update_with_evaluation(key, value, )
 
     def load_data_sets(self):
         """Loads data sets that are allowed to be defined for sensitivity analysis"""
@@ -255,18 +285,25 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         if self.Finance and 'yearly_data' in self.Finance.keys():
             self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
 
-    def update_with_evaluation(self, param_name, param_object):
+    @staticmethod
+    def update_with_evaluation(param_name, param_object, evaluation_dict):
         """Searches through the class variables (which are dictionaries of the parameters with values to be used in the CBA)
         and saves that value
 
         Args:
-            param_name:
-            param_object:
+            param_name (str):
+            param_object (DER, ValueStream):
+            evaluation_dict (dict):
 
-        Returns:
+        Returns: the param_object with attributes set to the evaluation values instead of the optimization values
 
         """
-        pass
+        for key, value in evaluation_dict:
+            try:
+                setattr(param_object, key, value)
+            except:
+                print('No attribute: ' + key + 'in ' + param_name)
+        return  param_object
 
     def proforma_report(self, technologies, services, predispatch_services, results, use_inflation=True):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results

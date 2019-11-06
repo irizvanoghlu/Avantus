@@ -112,10 +112,12 @@ class ParamsDER(Params):
 
         dLogger.info("Successfully prepared the Scenario and some Finance")
 
-    # def prepare_finance(self):
-    #     """ Interprets user given data and prepares it for Finance.
-    #
-    #     """
-    #     Params.prepare_finance(self)
-    #
-    #     dLogger.info("Successfully prepared the Finance")
+    def prepare_finance(self):
+        """ Interprets user given data and prepares it for Finance.
+
+        """
+        Params.prepare_finance(self)
+        self.Finance.update({'location': self.Scenario['location'],
+                             'ownership': self.Scenario['ownership']})
+
+        dLogger.info("Successfully prepared the Finance")

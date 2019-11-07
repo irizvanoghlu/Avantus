@@ -143,10 +143,10 @@ class CAESSizing(storagevet.CAESTech):
 
         """
         results = storagevet.CAESTech.timeseries_report(self)
-        results['CAES Discharge (kW)'] = self.variables['caes_dis']
-        results['CAES Charge (kW)'] = self.variables['caes_ch']
-        results['CAES Power (kW)'] = self.variables['caes_dis'] - self.variables['caes_ch']
-        results['CAES State of Energy (kWh)'] = self.variables['caes_ene']
+        results[self.name + ' CAES Discharge (kW)'] = self.variables['caes_dis']
+        results[self.name + ' CAES Charge (kW)'] = self.variables['caes_ch']
+        results[self.name + ' CAES Power (kW)'] = self.variables['caes_dis'] - self.variables['caes_ch']
+        results[self.name + ' CAES State of Energy (kWh)'] = self.variables['caes_ene']
 
         try:
             energy_rate = self.ene_max_rated.value

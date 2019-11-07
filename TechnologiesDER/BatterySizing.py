@@ -420,10 +420,10 @@ class BatterySizing(storagevet.BatteryTech):
 
         """
         results = storagevet.BatteryTech.timeseries_report(self)
-        results['Battery Discharge (kW)'] = self.variables['bat_dis']
-        results['Battery Charge (kW)'] = self.variables['bat_ch']
-        results['Battery Power (kW)'] = self.variables['bat_dis'] - self.variables['bat_ch']
-        results['Battery State of Energy (kWh)'] = self.variables['bat_ene']
+        results[self.name + ' Battery Discharge (kW)'] = self.variables['bat_dis']
+        results[self.name + ' Battery Charge (kW)'] = self.variables['bat_ch']
+        results[self.name + ' Battery Power (kW)'] = self.variables['bat_dis'] - self.variables['bat_ch']
+        results[self.name + ' Battery State of Energy (kWh)'] = self.variables['bat_ene']
 
         try:
             energy_rate = self.ene_max_rated.value

@@ -125,6 +125,17 @@ class ResultDER(Result):
             # TODO: go through each technology/DER (each contribution should sum to 1)
             self.reliability_df = pd.DataFrame(reliability, index=pd.Index(['Reliability contribution'])).T
 
+    def calculate_cba(self):
+        """ Calls all finacial methods that will result in a series of dataframes to describe the cost benefit analysis for the
+        case in question.
+
+        """
+        self.financials.initiate_cost_benefit_analysis()
+        proforma = self.financials.proforma_report(None, None, self.results)
+        self.financials.cost_benefit_report(proforma)
+        self.financials.net_present_value_report(proforma)
+        self.financials.payback_report(proforma)
+
     def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
 

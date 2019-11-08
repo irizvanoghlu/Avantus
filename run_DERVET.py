@@ -130,6 +130,7 @@ class DERVET:
             run = ScenarioSizing(value)
             run.add_technology()
             run.add_services()
+            run.init_financials(value.Finance)
             run.add_control_constraints()
             run.optimize_problem_loop()
 

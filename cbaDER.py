@@ -54,6 +54,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
         error_list.append(temp_lst)
 
+        cls.eval_data_prep()
+
         # load in CBA values for DERs
         battery, temp_lst = cls.read_evaluation_xml('Battery')
         error_list.append(temp_lst)
@@ -61,30 +63,32 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         error_list.append(temp_lst)
         ice, temp_lst = cls.read_evaluation_xml('ICE')
         error_list.append(temp_lst)
+        caes, temp_lst = cls.read_evaluation_xml('CAES')
+        error_list.append(temp_lst)
 
         # create dictionary for CBA values for DERs
-        cls.ders_values = {'Battery': battery,
-                           'PV': pv,
-                           'ICE': ice}
+        cls.ders_values = {'Storage': battery,
+                           'PV': pv,  # cost_per_kW (and then capex)
+                           'ICE': ice}  # fuel_price,
 
         # load in CBA values for predispatch services
         user, temp_lst = cls.read_evaluation_xml('User')
         error_list.append(temp_lst)
+        # reliability, temp_lst = cls.read_evaluation_xml('Reliability')
+        # error_list.append(temp_lst)
 
-        # create dictionary for CBA values for predispatch services (from data files)
-        cls.predispatch_values = {'User': user}
-
-        # create dictionary for CBA values for dispatch services (from data files)
-        cls.dispatch_values = {'DA': None,
-                               'FR': None,
-                               # 'LF': None,
-                               'SR': None,
-                               'NSR': None,
-                               'DCM': None,
-                               'retailTimeShift': None
-                               }
-    #
-    #     cls.eval_data_prep()
+        # create dictionary for CBA values for all services (from data files)
+        cls.valuestream_values = {'DA': None,  # 'DA Price Signal ($/kWh)'
+                              'FR': None,  # "FR Energy Settlement Price Signal ($/kWh)", "Regulation Up Price Signal ($/kW)", "Regulation Down Price Signal ($/kW)"
+                              # 'LF': None,
+                              'SR': None,  # 'SR Price Signal ($/kW)'
+                              'NSR': None,  # 'NSR Price Signal ($/kW)'
+                              'DCM': None,  # billing_period_bill (df) calculated through .tariff and .billing_period
+                              'retailTimeShift': None,  # monthly_bill (df) calculated through .p_energy and .tariff
+                              'User': user,  # price
+                              'Backup': None,  # price (from monthly value)
+                              # 'Reliability': None
+                              }
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -160,25 +164,26 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         """
         error_list = []
-        # 1) check to see if key is in schema -- non-zero length then it exists, then continue validation
+        # 1) check to see if key is in schema, then continue validation
         prop = cls.schema_tree.find(tag).find(key.tag)
-        if len(prop):
-            in_schema = prop[0].find('field')
+        if prop is not None:
             # 2) check to see if key is allowed to define cba values
-            cba_allowed = in_schema.get('cba')
+            cba_allowed = prop.find('cba')
             if cba_allowed == 'y':
-                intended_type = in_schema.get('type')
-                intended_max = in_schema.get('max')
-                intended_min = in_schema.get('min')
+                # 3a) check to make sure length of values is the same as sensitivity if sensitivity
                 if key.get('analysis')[0] == 'y':
-                    # 3a) check to make sure length of values is the same as sensitivity if sensitivity
+                    # 4) loop through checks for validate: make type and range (if applicable) is correct
                     error_list.append(cls.validate_evaluation(tag, key.tag, value))
                     for val in value:
-                        # 4) checks for validate: make type and range (if applicable) is correct
-                        error_list = cls.checks_for_validate(val, key.find('Type').text, key, tag)
+                        error_list = cls.checks_for_validate(val, key.find('Type').text, prop, tag)
+                # 3b) checks for validate: make type and range (if applicable) is correct
                 else:
-                    # 3b) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(value, key.find('Type').text, key, tag)
+
+                    # 4) checks for validate: make type and range (if applicable) is correct
+                    error_list = cls.checks_for_validate(value, key.find('Type').text, prop, tag)
+        else:
+            # todo: error should report that the value was not in the schema (therefore will not be used) but still continue
+            pass
 
         return error_list
 
@@ -227,21 +232,23 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 if ('Scenario', 'dt') in cls.sensitivity['attributes'].keys():
                     # there are multiple dt values given
                     list_dt = cls.sensitivity['attributes'][('Scenario', 'dt')]
+                    # TODO: validate timeseries with dt here
+
                 for ts_file in ts_files:
-                    cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)', True)
+                    cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
             if 'monthly_data' in cls.Scenario.keys():
                 md_files = set(cls.Scenario['monthly_data_filename'])
                 for md_file in md_files:
-                    cls.datasets['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month'], True))
+                    cls.datasets['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
             if 'customer_tariff' in cls.Scenario.keys():
                 ct_files = set(cls.Scenario['customer_tariff_filename'])
                 for ct_file in ct_files:
-                    cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period', verbose=True)
+                    cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
 
         if cls.Finance and 'yearly_data' in cls.Finance.keys():
             yr_files = set(cls.Finance['yearly_data_filename'])
             for yr_file in yr_files:
-                cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year', True)
+                cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year')
 
         return True
 
@@ -255,18 +262,31 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             predispatch_services (dict): Dict of predispatch services to calculate cost avoided or profit
             technologies (dict): dictionary of all the DER subclasses that are active
         """
-        financial_params.update(self.Finance)
-        financial_params.update(self.Scenario)
         Financial.__init__(self, financial_params)
+        self.horizon_mode = financial_params['analysis_horizon_mode']
+        self.location = financial_params['location']
+        self.ownership = financial_params['ownership']
 
-        self.predispatch_services = copy.deepcopy(predispatch_services)
-        self.dispatch_services = copy.deepcopy(dispatch_services)
-        self.technologies = copy.deepcopy(technologies)
+        # we deep copy because we do not want to change the original ValueStream objects
+        self.value_streams = {**copy.deepcopy(dispatch_services), **copy.deepcopy(predispatch_services)}
+        self.ders = copy.deepcopy(technologies)
         # TODO: need to deal with the data obtained from CSVs
 
+    def initiate_cost_benefit_analysis(self):
+        """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
+        This function should be called before any finacial methods so that the user defined evaluation
+        values are used
+
+        """
+        # TODO: need to save cba values and output them back to the user s.t. they know what values were used to get the CBA results
+        self.update_with_evaluation('cbaDER', self, self.Scenario)
+        self.update_with_evaluation('cbaDER', self, self.Finance)
+
         # save the evaluation values in the correct places
-        for key, value in self.predispatch_services:
-            self.update_with_evaluation(key, value, )
+        for key, value in self.value_streams.items():
+            self.update_with_evaluation(key, value, self.valuestream_values[key])
+        for key, value in self.ders.items():
+            self.update_with_evaluation(key, value, self.ders_values[key])
 
     def load_data_sets(self):
         """Loads data sets that are allowed to be defined for sensitivity analysis"""
@@ -291,21 +311,23 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         and saves that value
 
         Args:
-            param_name (str):
-            param_object (DER, ValueStream):
-            evaluation_dict (dict):
+            param_name (str): key of the ValueStream or DER as it is saved in the apporiate dictionary
+            param_object (DER, ValueStream): the actual object that we want to edit
+            evaluation_dict (dict, None): keys are the string representation of the attribute where value is saved, and values
+                are what the attribute value should be
 
         Returns: the param_object with attributes set to the evaluation values instead of the optimization values
 
         """
-        for key, value in evaluation_dict:
-            try:
-                setattr(param_object, key, value)
-            except:
-                print('No attribute: ' + key + 'in ' + param_name)
-        return  param_object
+        if evaluation_dict:  # evaluates true if dict is not empty and the value is not None
+            for key, value in evaluation_dict.items():
+                try:
+                    setattr(param_object, key, value)
+                    print('attribute (' + key + ': ' + param_name + ') set: ' + str(value))
+                except KeyError:
+                    print('No attribute: ' + key + 'in ' + param_name)
 
-    def proforma_report(self, technologies, services, predispatch_services, results, use_inflation=True):
+    def proforma_report(self, technologies, valuestreams, results, use_inflation=True):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
         saved in results and the set of technology and service instances that have (if any) values that the user indicated
         they wanted to use when evaluating the CBA.
@@ -315,14 +337,14 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         Args:
             technologies (Dict): Dict of technologies (needed to get capital and om costs)
-            services (Dict): Dict of services to calculate cost avoided or profit
-            predispatch_services (Dict): Dict of predispatch services to calculate cost avoided or profit
+            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
             use_inflation (bool): Flag to determine if using inflation rate to determine financials for extrapolation. If false, use extrapolation
 
         """
-        Financial.proforma_report(self, self.technologies, self.dispatch_services, self.predispatch_services, results, use_inflation)
+        self.initiate_cost_benefit_analysis()
+        Financial.proforma_report(self, self.ders, self.value_streams, results, use_inflation)
 
     def annuity_scalar(self, start_year, end_year, optimized_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits

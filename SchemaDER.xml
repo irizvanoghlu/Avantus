@@ -124,7 +124,7 @@
 	</Finance>
 	<Results type="command">
 		<dir_absolute_path cba="n" type="string" />
-		<label cba="n" type="string" />
+		<label cba="n" type="string" optional="y"/>
 		<errors_log_path cba="n" type="string" />
 	</Results>
 </schema>

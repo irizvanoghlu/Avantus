@@ -59,7 +59,7 @@ class ScenarioSizing(Scenario):
 
         """
 
-        self.financials = CostBenefitAnalysis(finance_inputs)
+        self.financials = CostBenefitAnalysis(finance_inputs, self.services, self.predispatch_services, self.technologies)
         dLogger.info("Finished adding Financials...")
 
     def add_technology(self):

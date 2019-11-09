@@ -38,22 +38,8 @@ from ResultDER import ResultDER as Result
 
 # TODO: make multi-platform by using path combine functions
 
-developer_path = '.\logs'  # TODO: move this path (XENDEE's server requires special access to perform these tasks
-try:
-    os.mkdir(developer_path)
-except OSError:
-    print("Creation of the developer/error_log directory %s failed. Possibly already created." % developer_path)
-else:
-    print("Successfully created the developer/error_log directory %s " % developer_path)
-
-LOG_FILENAME1 = developer_path + '\\developer_log_' + datetime.now().strftime('%H_%M_%S_%m_%d_%Y.log')
-handler = logging.FileHandler(Path(LOG_FILENAME1))
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-dLogger = logging.getLogger('Developer')
-dLogger.setLevel(logging.DEBUG)
-dLogger.addHandler(handler)
-dLogger.info('Started logging...')
-
+e_logger = logging.getLogger('Error')
+u_logger = logging.getLogger('User')
 
 class DERVET:
     """ DERVET API. This will eventually allow StorageVET to be imported and used like any
@@ -78,11 +64,11 @@ class DERVET:
         # Initialize the Params Object from Model Parameters and Simulation Cases
         # should we leave the name as ParamsDER instead of Params for easier identification? - TN
         Params.initialize(opt_model_parameters_path, schema_path)
-        dLogger.info('Successfully initialized the Params class with the XML file.')
+        u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
         # CostBenefitAnalysis.initialize_evaluation()
-        dLogger.info('Successfully initialized the CBA class with the XML file.')
+        u_logger.info('Successfully initialized the CBA class with the XML file.')
 
         self.model_params = Params
 
@@ -107,21 +93,22 @@ class DERVET:
             # development directory (like in Results folder inside dvet-stage directory) instead of the indicated
             # dir_absolute_path  in the Models Parameter Template
             # move this u_logger path section to ParamsDER class later?
-            user_log_path = value.Results['dir_absolute_path']
-            try:
-                os.makedirs(user_log_path)
-            except OSError:
-                print("Creation of the user_log directory %s failed. Possibly already created." % user_log_path)
-            else:
-                print("Successfully created the user_log directory %s " % user_log_path)
-
-            log_filename2 = user_log_path + "\\user_log.log"
-            u_handler = logging.FileHandler(Path(log_filename2))
-            u_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-            u_logger = logging.getLogger('User')
-            u_logger.setLevel(logging.DEBUG)
-            u_logger.addHandler(u_handler)
-            u_logger.info('Started logging...')
+            
+            # user_log_path = value.Results['dir_absolute_path']
+            # try:
+            #     os.makedirs(user_log_path)
+            # except OSError:
+            #     print("Creation of the user_log directory %s failed. Possibly already created." % user_log_path)
+            # else:
+            #     print("Successfully created the user_log directory %s " % user_log_path)
+            #
+            # log_filename2 = user_log_path + "\\user_log.log"
+            # u_handler = logging.FileHandler(Path(log_filename2))
+            # u_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+            # u_logger = logging.getLogger('User')
+            # u_logger.setLevel(logging.DEBUG)
+            # u_logger.addHandler(u_handler)
+            # u_logger.info('Started logging...')
 
             ###############################################################
 
@@ -143,8 +130,8 @@ class DERVET:
         Result.calculate()
         Result.save_to_disk()
         ends = time.time()
-        dLogger.info("DERVET runtime: ")
-        dLogger.info(ends - starts)
+        print("DERVET runtime: ")
+        print(ends - starts)
 
 
 if __name__ == '__main__':

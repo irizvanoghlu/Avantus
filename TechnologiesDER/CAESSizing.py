@@ -18,8 +18,7 @@ import pandas as pd
 import numpy as np
 import storagevet.Constraint as Const
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 

@@ -19,8 +19,8 @@ import numpy as np
 
 SATURDAY = 5
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
+e_logger = logging.getLogger('Error')
 
 
 class CostBenefitAnalysis(Financial, ParamsDER):

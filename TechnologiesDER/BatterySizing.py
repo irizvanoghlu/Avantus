@@ -21,8 +21,7 @@ import copy
 import re
 import sys
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
@@ -341,7 +340,6 @@ class BatterySizing(storagevet.BatteryTech):
                             if temp_constraints[user_constraint_name].loc[i] < user_constraint.loc[i]:
                                 temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
                     else:
-                        dLogger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
                         e_logger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
                         sys.exit()
 

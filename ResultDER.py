@@ -21,8 +21,8 @@ import os
 import storagevet
 from storagevet.Result import Result
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
+e_logger = logging.getLogger('Error')
 
 
 class ResultDER(Result):

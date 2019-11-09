@@ -19,11 +19,8 @@ import numpy as np
 from matplotlib.font_manager import FontProperties
 from storagevet.Params import Params
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
-fontP = FontProperties()
-fontP.set_size('small')
 
 
 class ParamsDER(Params):
@@ -94,7 +91,7 @@ class ParamsDER(Params):
             self.Reliability["dt"] = self.Scenario["dt"]
             self.Reliability.update({'load': self.Scenario['time_series'].loc[:, 'Site Load (kW)']})
 
-        dLogger.info("Successfully prepared the value-stream (services)")
+        u_logger.info("Successfully prepared the value-stream (services)")
 
     def prepare_scenario(self):
         """ Interprets user given data and prepares it for Scenario.
@@ -106,11 +103,11 @@ class ParamsDER(Params):
             e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
                              'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
                              'by turning the binary formulation flag off.')
-            uLogger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+            u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
                             'by turning the binary formulation flag off.')
 
-        dLogger.info("Successfully prepared the Scenario and some Finance")
+        u_logger.info("Successfully prepared the Scenario and some Finance")
 
     # def prepare_finance(self):
     #     """ Interprets user given data and prepares it for Finance.

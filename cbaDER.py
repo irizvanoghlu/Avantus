@@ -54,6 +54,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
         error_list.append(temp_lst)
 
+        # read in data from CSVs, validate and organize in correct df structure
         cls.eval_data_prep()
 
         # load in CBA values for DERs
@@ -79,16 +80,17 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         # create dictionary for CBA values for all services (from data files)
         cls.valuestream_values = {'DA': None,  # 'DA Price Signal ($/kWh)'
-                              'FR': None,  # "FR Energy Settlement Price Signal ($/kWh)", "Regulation Up Price Signal ($/kW)", "Regulation Down Price Signal ($/kW)"
-                              # 'LF': None,
-                              'SR': None,  # 'SR Price Signal ($/kW)'
-                              'NSR': None,  # 'NSR Price Signal ($/kW)'
-                              'DCM': None,  # billing_period_bill (df) calculated through .tariff and .billing_period
-                              'retailTimeShift': None,  # monthly_bill (df) calculated through .p_energy and .tariff
-                              'User': user,  # price
-                              'Backup': None,  # price (from monthly value)
-                              # 'Reliability': None
-                              }
+                                  'FR': None,  # "FR Energy Settlement Price Signal ($/kWh)", "Regulation Up Price Signal ($/kW)", "Regulation Down Price Signal ($/kW)"
+                                  # 'LF': None,
+                                  'SR': None,  # 'SR Price Signal ($/kW)'
+                                  'NSR': None,  # 'NSR Price Signal ($/kW)'
+                                  'DCM': None,  # billing_period_bill (df) calculated through .tariff and .billing_period
+                                  'retailTimeShift': None,  # monthly_bill (df) calculated through .p_energy and .tariff
+                                  'User': user,  # price
+                                  'Backup': None,  # price (from monthly value)
+                                  # 'Reliability': None
+                                  }
+        # todo: place data from CSVs into the correct dictionary within the valuestream_values dictionary
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -148,6 +150,36 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         # if len(error_list):
         #     cls.error(error_list)
         return dictionary, error_list
+
+    @classmethod
+    def determine_eval_values(cls, element, property):
+        """ Function to determine the list of values for the given element/component.
+            They can have more than 1 values (if sensitivity is yes)
+
+            Notes:
+                This function only used within data_prep() and fetch_sense()  -- HN
+
+            Args:
+                element (string): element is the same as the component
+                property (string): attribute of the element
+
+            Returns: list of values, IF the evaluation value is active else returns None
+
+        """
+        slist = None
+        # looks in schema tree for the element
+        component = cls.xmlTree.find(element)
+        # then look for the property of the element
+        attribute = component.find(property)
+        # check if the key can have a cba evaluation value
+        cba_eval = attribute.find('Evaluation')
+
+        if cba_eval is not None:
+            # check if the first character is 'y' for the active value within each property
+            if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
+                slist = cls.extract_data(attribute.find('Evaluation').text, attribute.find('Type').text)
+
+        return slist
 
     @classmethod
     def validate_evaluation(cls, tag, key, value):
@@ -213,7 +245,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
     @classmethod
     def eval_data_prep(cls):
         """
-            This function makes a unique set of filename(s) based on the results of determine_sensitivity_list function.
+            This function makes a unique set of filename(s) based on the results of determine_eval_values function.
             It applies for time series filename(s), monthly data filename(s), customer tariff filename(s), and cycle
             life filename(s).
             For each set, the corresponding class dataset variable (ts, md, ct, cl) is loaded with the data.
@@ -222,35 +254,48 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
             Notes: TODO: put try catch statements in this function around every read_from_file function
         """
-        if cls.Scenario:
-            if 'time_series' in cls.Scenario.keys():
-                ts_files = set(cls.Scenario['time_series_filename'])
-                # validate time series with its corresponding DT:
-                # if the user gives more than 1 DT, it MUST be coupled with its corresponding time_series file, so we must validate with the
-                # correct time step
-
-                if ('Scenario', 'dt') in cls.sensitivity['attributes'].keys():
-                    # there are multiple dt values given
-                    list_dt = cls.sensitivity['attributes'][('Scenario', 'dt')]
-                    # TODO: validate timeseries with dt here
-
+        # READ IN EVALUATION VALUE FOR: TIME_SERIES_FILENAME
+        ts_files = set(cls.determine_eval_values('Scenario', 'time_series_filename'))
+        if None not in ts_files:
+            # validate time series with its corresponding DT:
+            # if the user gives more than 1 DT, it MUST be coupled with its corresponding time_series file, so we must validate with the
+            # correct time step
+            if ('Scenario', 'dt') in cls.sensitivity['attributes'].keys():
+                # there are multiple dt values given
+                list_dt = cls.sensitivity['attributes'][('Scenario', 'dt')]
+                # TODO: validate timeseries with dt here
+            else:
+                # there is only one dt -- which can be found with the XML
+                dt_subelement = cls.xmlTree.find('Scenario').find('dt')
+                dt_value = cls.extract_data(dt_subelement.find('Value').text, dt_subelement.find('Type').text)
                 for ts_file in ts_files:
-                    cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
-            if 'monthly_data' in cls.Scenario.keys():
-                md_files = set(cls.Scenario['monthly_data_filename'])
-                for md_file in md_files:
-                    cls.datasets['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
-            if 'customer_tariff' in cls.Scenario.keys():
-                ct_files = set(cls.Scenario['customer_tariff_filename'])
-                for ct_file in ct_files:
-                    cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
+                    cls.datasets['time_series'][ts_file] = cls.preprocess_timeseries(cls.read_from_file('time_series', ts_file, 'Datetime (he)'), dt_value)
 
-        if cls.Finance and 'yearly_data' in cls.Finance.keys():
-            yr_files = set(cls.Finance['yearly_data_filename'])
-            for yr_file in yr_files:
-                cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year')
+        # READ IN EVALUATION VALUE FOR: MONTHLY_DATA_FILENAME
+        md_files = set(cls.determine_eval_values('Scenario', 'monthly_data_filename'))
+        if None not in md_files:
+            for md_file in md_files:
+                cls.datasets['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
+
+        # READ IN EVALUATION VALUE FOR: CUSTOMER_TARIFF_FILENAME
+        ct_files = set(cls.determine_eval_values('Finance', 'customer_tariff_filename'))
+        if None not in ct_files:
+            for ct_file in ct_files:
+                cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
+
+        # # READ IN EVALUATION VALUE FOR: YEARLY_DATA_FILENAME
+        # yr_files = set(cls.determine_eval_values('Finance', 'customer_tariff_filename'))
+        # if None not in yr_files:
+        #     for yr_file in yr_files:
+        #         cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year')
 
         return True
+
+    def distribute_monthly_data(self, valuestream_dic, der_dic):
+        pass
+
+    def distribute_timeseries_data(self, valuestream_dic):
+        pass
 
     def __init__(self, financial_params, dispatch_services, predispatch_services, technologies):
         """ Initialize CBA model and edit any attributes that the user denoted a separate value

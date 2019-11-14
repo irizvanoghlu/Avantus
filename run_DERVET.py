@@ -83,35 +83,10 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        # should we leave the name as ResultDER instead of Params for easier identification? - TN
+        # should we leave the name as ResultDER instead of Result for easier identification? - TN
         Result.initialize(self.model_params.Results, self.model_params.df_analysis)
 
         for key, value in self.model_params.instances.items():
-
-            ### MOVE THE FOLLOWING INTO STORAGEVET ABSTRACTION BARRIER ###
-            # logs_path for user log files can be created in ParamsDER, if the user wants to save them in the current
-            # development directory (like in Results folder inside dvet-stage directory) instead of the indicated
-            # dir_absolute_path  in the Models Parameter Template
-            # move this u_logger path section to ParamsDER class later?
-            
-            # user_log_path = value.Results['dir_absolute_path']
-            # try:
-            #     os.makedirs(user_log_path)
-            # except OSError:
-            #     print("Creation of the user_log directory %s failed. Possibly already created." % user_log_path)
-            # else:
-            #     print("Successfully created the user_log directory %s " % user_log_path)
-            #
-            # log_filename2 = user_log_path + "\\user_log.log"
-            # u_handler = logging.FileHandler(Path(log_filename2))
-            # u_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-            # u_logger = logging.getLogger('User')
-            # u_logger.setLevel(logging.DEBUG)
-            # u_logger.addHandler(u_handler)
-            # u_logger.info('Started logging...')
-
-            ###############################################################
-
             if not value.other_error_checks():
                 continue
             value.prepare_scenario()

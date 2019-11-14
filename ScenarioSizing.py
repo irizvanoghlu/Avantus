@@ -68,8 +68,6 @@ class ScenarioSizing(Scenario):
         """
         ess_action_map = {
             'Battery': BatterySizing,
-            # temporarily borrow CAESTech from Storagevet until CAESSizing is further developed - TN
-            # 'CAES': storagevet.CAESTech
             'CAES': CAESSizing
         }
 

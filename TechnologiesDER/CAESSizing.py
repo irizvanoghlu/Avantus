@@ -99,6 +99,8 @@ class CAESSizing(storagevet.CAESTech):
 
         variables.update(self.optimization_variables)
 
+        return variables
+
     def sizing_summary(self):
         """
         TODO: CAESSizing is waiting to be implemented, it is currently mimicking BatterySizing's method

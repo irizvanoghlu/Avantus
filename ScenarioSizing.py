@@ -108,8 +108,9 @@ class ScenarioSizing(Scenario):
 
         # dictionary of storage inputs to handle multiple storage technologies
         storage_inputs = dict()
-        for tech in self.technologies:
-            storage_inputs[tech] = self.technologies[tech]
+        for tech_name in self.technologies.keys():
+            if tech_name == 'CAES' or tech_name == 'Battery':
+                storage_inputs[tech_name] = self.technologies[tech_name]
 
         predispatch_service_action_map = {
             'Backup': storagevet.Backup,
@@ -141,7 +142,7 @@ class ScenarioSizing(Scenario):
             service_func = service_action_map[service]
 
             # dictionary of new service to handle multiple technologies
-            # assuming all technologies participate these services
+            # assuming all storage technologies participate these services
             new_service = {}
             for input in storage_inputs:
                 new_service[input] = service_func(inputs, storage_inputs[input], self.dt)

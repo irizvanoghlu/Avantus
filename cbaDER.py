@@ -20,8 +20,8 @@ import copy
 
 SATURDAY = 5
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
+e_logger = logging.getLogger('Error')
 
 
 class CostBenefitAnalysis(Financial, ParamsDER):
@@ -129,6 +129,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                     if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                         # if analysis, then convert each value and save as list
                         values = cls.extract_data(key.find('Evaluation').text, intended_type)
+                        # TODO: incomplete
                     else:
                         values = cls.convert_data_type(key.find('Evaluation').text, intended_type)
 
@@ -192,32 +193,36 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             key (Element): key XML element
             value (:object): list of values that the user provided, which length should be the same as the sensitivity list
 
-        Returns: list, length 1, of the error (if error) else return empty list
+        Returns: list, length 1 or length of sensitivity, of the error (if error) else return empty list
+                tuple, length 3, of warning to the user (if any) else return None
 
         """
         error_list = []
+        warning = None
         # 1) check to see if key is in schema, then continue validation
         prop = cls.schema_tree.find(tag).find(key.tag)
         if prop is not None:
             # 2) check to see if key is allowed to define cba values
             cba_allowed = prop.find('cba')
             if cba_allowed == 'y':
-                # 3a) check to make sure length of values is the same as sensitivity if sensitivity
+                # IF SENSITIVITY
                 if key.get('analysis')[0] == 'y':
-                    # 4) loop through checks for validate: make type and range (if applicable) is correct
-                    error_list.append(cls.validate_evaluation(tag, key.tag, value))
+                    # 3a) loop through checks for validate: make type and range (if applicable) is correct
                     for val in value:
-                        error_list = cls.checks_for_validate(val, key.find('Type').text, prop, tag)
-                # 3b) checks for validate: make type and range (if applicable) is correct
+                        error_list.append(cls.checks_for_validate(val, key.find('Type').text, prop, tag))
+                # IF ONLY ONE VALUE (BASE CASE)
                 else:
 
-                    # 4) checks for validate: make type and range (if applicable) is correct
+                    # 3b) checks for validate: make type and range (if applicable) is correct
                     error_list = cls.checks_for_validate(value, key.find('Type').text, prop, tag)
+            else:
+                # report to the user that the given evaluation value cannot be separately evaulated in the cba (will not be used) but still continue
+                warning = (tag, prop.tag, 'cba value not allowed')
         else:
-            # todo: error should report that the value was not in the schema (therefore will not be used) but still continue
-            pass
+            # report that the value was not in the schema (therefore will not be used) but still continue
+            warning = (tag, prop.tag, 'not found in schema')
 
-        return error_list
+        return error_list, warning
 
     @classmethod
     def validate_value_length(cls, tag, key, lst):
@@ -337,17 +342,17 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         """Loads data sets that are allowed to be defined for sensitivity analysis"""
         # if self.Scenario is not None
         if self.Scenario:
-            if 'time_series' in self.Scenario.keys():
+            if 'time_series_filename' in self.Scenario.keys():
                 self.Scenario["time_series"], self.Scenario['frequency'] = self.preprocess_timeseries(self.datasets["time_series"][self.Scenario["time_series_filename"]], self.dt)
-            if 'monthly_data' in self.Scenario.keys():
+            if 'monthly_data_filename' in self.Scenario.keys():
                 self.Scenario["monthly_data"] = self.datasets["monthly_data"][self.Scenario["monthly_data_filename"]]
-            if 'customer_tarriff' in self.Scenario.keys():
+            if 'customer_tariff_filename' in self.Scenario.keys():
                 if self.Finance:
                     # if self.Finance is None then initialize it as a dictionary
                     self.Finance = {}
                 self.Finance["customer_tariff"] = self.datasets["customer_tariff"][self.Scenario["customer_tariff_filename"]]
         # if self.Finance is not None and 'yearly_data' has values
-        if self.Finance and 'yearly_data' in self.Finance.keys():
+        if self.Finance and 'yearly_data_filename' in self.Finance.keys():
             self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
 
     @staticmethod

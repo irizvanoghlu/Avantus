@@ -74,14 +74,14 @@ class BatterySizing(storagevet.BatteryTech):
 
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
         self.physical_constraints = {
-            'ene_min_rated': Const.Constraint('ene_min_rated', self.name, self.llsoc * self.ene_max_rated),
-            'ene_max_rated': Const.Constraint('ene_max_rated', self.name, self.ulsoc * self.ene_max_rated),
-            'ch_min_rated': Const.Constraint('ch_min_rated', self.name, self.ch_min_rated),
-            'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
-            'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
-            'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
+            'bat_ene_min_rated': Const.Constraint('bat_ene_min_rated', self.name, self.llsoc * self.ene_max_rated),
+            'bat_ene_max_rated': Const.Constraint('bat_ene_max_rated', self.name, self.ulsoc * self.ene_max_rated),
+            'bat_ch_min_rated': Const.Constraint('bat_ch_min_rated', self.name, self.ch_min_rated),
+            'bat_ch_max_rated': Const.Constraint('bat_ch_max_rated', self.name, self.ch_max_rated),
+            'bat_dis_min_rated': Const.Constraint('bat_dis_min_rated', self.name, self.dis_min_rated),
+            'bat_dis_max_rated': Const.Constraint('bat_dis_max_rated', self.name, self.dis_max_rated)}
 
-    def objective_function(self, variables, mask, annuity_scalar=1):
+    def objective_function(self, variables, mask, tech_id, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
         Args:
@@ -95,7 +95,7 @@ class BatterySizing(storagevet.BatteryTech):
         """
         storagevet.BatteryTech.objective_function(self, variables, mask, annuity_scalar)
 
-        self.costs.update({'capex': self.capex})
+        self.costs.update({'bat_capex': self.capex})
         return self.costs
 
     def sizing_summary(self):
@@ -174,12 +174,12 @@ class BatterySizing(storagevet.BatteryTech):
         # ch_min = cvx.Parameter(size, value=self.control_constraints['ch_min'].value[mask].values, name='ch_min')
         # dis_max = cvx.Parameter(size, value=self.control_constraints['dis_max'].value[mask].values, name='dis_max')
         # dis_min = cvx.Parameter(size, value=self.control_constraints['dis_min'].value[mask].values, name='dis_min')
-        ene_max = self.physical_constraints['ene_max_rated'].value
-        ene_min = self.control_constraints['ene_min'].value[mask].values
-        ch_max = self.physical_constraints['ch_max_rated'].value  #TODO: this will break if we have any max charge/discharge constraints
-        ch_min = self.control_constraints['ch_min'].value[mask].values
-        dis_max = self.physical_constraints['dis_max_rated'].value
-        dis_min = self.control_constraints['dis_min'].value[mask].values
+        ene_max = self.physical_constraints['bat_ene_max_rated'].value
+        ene_min = self.control_constraints['bat_ene_min'].value[mask].values
+        ch_max = self.physical_constraints['bat_ch_max_rated'].value  #TODO: this will break if we have any max charge/discharge constraints
+        ch_min = self.control_constraints['bat_ch_min'].value[mask].values
+        dis_max = self.physical_constraints['bat_dis_max_rated'].value
+        dis_min = self.control_constraints['bat_dis_min'].value[mask].values
 
         # ene_max = self.ene_max_rated
         # ch_max = self.ch_max_rated
@@ -188,10 +188,10 @@ class BatterySizing(storagevet.BatteryTech):
         # dis_min = 0
 
         # energy at the end of the last time step
-        constraint_list += [cvx.Zero((ene_target - ene[-1]) - (self.dt * ch[-1] * self.rte) + (self.dt * dis[-1]) - reservations['E'][-1] + (self.dt * ene[-1] * self.sdr * 0.01))]
+        constraint_list += [cvx.Zero((ene_target - ene[-1]) - (self.dt * ch[-1] * self.rte) + (self.dt * dis[-1]) - reservations['Battery']['Battery E'][-1] + (self.dt * ene[-1] * self.sdr * 0.01))]
 
         # energy generally for every time step
-        constraint_list += [cvx.Zero(ene[1:] - ene[:-1] - (self.dt * ch[:-1] * self.rte) + (self.dt * dis[:-1]) - reservations['E'][:-1] + (self.dt * ene[:-1] * self.sdr * 0.01))]
+        constraint_list += [cvx.Zero(ene[1:] - ene[:-1] - (self.dt * ch[:-1] * self.rte) + (self.dt * dis[:-1]) - reservations['Battery']['Battery E'][:-1] + (self.dt * ene[:-1] * self.sdr * 0.01))]
 
         # energy at the beginning of the optimization window
         if mpc_ene is None:
@@ -200,24 +200,24 @@ class BatterySizing(storagevet.BatteryTech):
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
         # Keep energy in bounds determined in the constraints configuration function
-        constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['bat_ene_max_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['bat_ne_max_slack'][:-1])]
+        constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['Battery']['Battery E_upper'][-1] - variables['bat_ene_max_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['Battery']['Battery E_upper'][:-1] - variables['bat_ene_max_slack'][:-1])]
 
-        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['bat_ene_min_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['bat_ene_min_slack'][:-1])]
+        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['Battery']['Battery E_lower'][-1] - variables['bat_ene_min_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['Battery']['Battery E_lower'][:-1] - variables['bat_ene_min_slack'][:-1])]
 
         # Keep charge and discharge power levels within bounds
         constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c) - variables['bat_ch_max_slack'])]
-        constraint_list += [cvx.NonPos(ch - ch_max + reservations['C_max'] - variables['bat_ch_max_slack'])]
+        constraint_list += [cvx.NonPos(ch - ch_max + reservations['Battery']['Battery C_max'] - variables['bat_ch_max_slack'])]
 
         constraint_list += [cvx.NonPos(cvx.multiply(ch_min, on_c) - ch - variables['bat_ch_min_slack'])]
-        constraint_list += [cvx.NonPos(ch_min - ch + reservations['C_min'] - variables['bat_ch_min_slack'])]
+        constraint_list += [cvx.NonPos(ch_min - ch + reservations['Battery']['Battery C_min'] - variables['bat_ch_min_slack'])]
 
         constraint_list += [cvx.NonPos(dis - cvx.multiply(dis_max, on_d) - variables['bat_dis_max_slack'])]
-        constraint_list += [cvx.NonPos(dis - dis_max + reservations['D_max'] - variables['bat_dis_max_slack'])]
+        constraint_list += [cvx.NonPos(dis - dis_max + reservations['Battery']['Battery D_max'] - variables['bat_dis_max_slack'])]
 
         constraint_list += [cvx.NonPos(cvx.multiply(dis_min, on_d) - dis - variables['bat_dis_min_slack'])]
-        constraint_list += [cvx.NonPos(dis_min - dis + reservations['D_min'] - variables['bat_dis_min_slack'])]
+        constraint_list += [cvx.NonPos(dis_min - dis + reservations['Battery']['Battery D_min'] - variables['bat_dis_min_slack'])]
         # constraints to keep slack variables positive
         if self.incl_slack:
             constraint_list += [cvx.NonPos(-variables['bat_ch_max_slack'])]
@@ -230,8 +230,8 @@ class BatterySizing(storagevet.BatteryTech):
         if self.incl_binary:
             # when dis_min or ch_min has been overwritten (read: increased) by predispatch services, need to force technology to be on
             # TODO better way to do this???
-            ind_d = [i for i in range(size) if self.control_constraints['dis_min'].value[mask].values[i] > self.physical_constraints['dis_min_rated'].value]
-            ind_c = [i for i in range(size) if self.control_constraints['ch_min'].value[mask].values[i] > self.physical_constraints['ch_min_rated'].value]
+            ind_d = [i for i in range(size) if self.control_constraints['bat_dis_min'].value[mask].values[i] > self.physical_constraints['bat_dis_min_rated'].value]
+            ind_c = [i for i in range(size) if self.control_constraints['bat_ch_min'].value[mask].values[i] > self.physical_constraints['bat_ch_min_rated'].value]
             if len(ind_d) > 0:
                 constraint_list += [on_d[ind_d] == 1]  # np.ones(len(ind_d))
             if len(ind_c) > 0:
@@ -344,12 +344,12 @@ class BatterySizing(storagevet.BatteryTech):
                         sys.exit()
 
         # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
-        self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),
-                                    'ene_max': Const.Constraint('ene_max', self.name, temp_constraints['ene_max']),
-                                    'ch_min': Const.Constraint('ch_min', self.name, temp_constraints['ch_min']),
-                                    'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
-                                    'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
-                                    'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
+        self.control_constraints = {'bat_ene_min': Const.Constraint('bat_ene_min', self.name, temp_constraints['bat_ene_min']),
+                                    'bat_ene_max': Const.Constraint('bat_ene_max', self.name, temp_constraints['bat_ene_max']),
+                                    'bat_ch_min': Const.Constraint('bat_ch_min', self.name, temp_constraints['bat_ch_min']),
+                                    'bat_ch_max': Const.Constraint('bat_ch_max', self.name, temp_constraints['bat_ch_max']),
+                                    'bat_dis_min': Const.Constraint('bat_dis_min', self.name, temp_constraints['bat_dis_min']),
+                                    'bat_dis_max': Const.Constraint('bat_dis_max', self.name, temp_constraints['bat_dis_max'])}
         return None
 
     def add_vars(self, size):
@@ -432,3 +432,45 @@ class BatterySizing(storagevet.BatteryTech):
 
         return results
 
+
+    def objective_function(self, variables, mask, tech_id, annuity_scalar=1):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
+
+        Args:
+            variables (Dict): dictionary of variables being optimized
+            mask (Series): Series of booleans used, the same length as case.power_kw
+            tech_id (str): name of the technology associated with the active service
+                        (lower case letters identifying the optimization variables identified in the technology)
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                    the entire project lifetime (only to be set iff sizing, else annuity_scalar should not affect the aobject function)
+
+        Returns:
+            self.costs (Dict): Dict of objective costs
+        """
+
+        self.costs = storagevet.BatteryTech.objective_function(self, variables, mask, tech_id, annuity_scalar=1)
+
+        # create objective expression for variable om based on discharge activity
+        var_om = cvx.sum(variables[tech_id + '_dis']) * self.OMexpenses * self.dt * 1e-3 * annuity_scalar
+
+        self.costs = {
+            tech_id + '_fixed_om': self.fixed_om * annuity_scalar,
+            tech_id + '_var_om': var_om}
+
+        # add slack objective costs. These try to keep the slack variables as close to 0 as possible
+        if self.incl_slack:
+            self.costs.update({
+                tech_id + '_ene_max_slack': cvx.sum(self.kappa_ene_max * variables[tech_id + '_ene_max_slack']),
+                tech_id + '_ene_min_slack': cvx.sum(self.kappa_ene_min * variables[tech_id + '_ene_min_slack']),
+                tech_id + '_dis_max_slack': cvx.sum(self.kappa_dis_max * variables[tech_id + '_dis_max_slack']),
+                tech_id + '_dis_min_slack': cvx.sum(self.kappa_dis_min * variables[tech_id + '_dis_min_slack']),
+                tech_id + '_ch_max_slack': cvx.sum(self.kappa_ch_max * variables[tech_id + '_ch_max_slack']),
+                tech_id + '_ch_min_slack': cvx.sum(self.kappa_ch_min * variables[tech_id + '_ch_min_slack'])})
+
+        # add startup objective costs
+        if self.incl_startup:
+            self.costs.update({
+                          tech_id + '_ch_startup': cvx.sum(variables[tech_id + '_start_c']) * self.p_start_ch * annuity_scalar,
+                          tech_id + '_dis_startup': cvx.sum(variables[tech_id + '_start_d']) * self.p_start_dis * annuity_scalar})
+
+        return self.costs

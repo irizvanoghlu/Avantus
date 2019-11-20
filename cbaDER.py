@@ -25,13 +25,6 @@ e_logger = logging.getLogger('Error')
 
 
 class CostBenefitAnalysis(Financial, ParamsDER):
-    #
-    # Scenario = None
-    # Finance = None
-    # Battery = None
-    # PV = None
-    # ICE = None
-    # User = None
 
     @classmethod
     def initialize_evaluation(cls):
@@ -69,7 +62,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         # create dictionary for CBA values for DERs
         cls.ders_values = {'Storage': battery,
-                           'PV': pv,  # cost_per_kW (and then capex)
+                           'PV': pv,  # cost_per_kW (and then recalculate capex)
                            'ICE': ice}  # fuel_price,
 
         # load in CBA values for predispatch services
@@ -77,6 +70,11 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         error_list.append(temp_lst)
         # reliability, temp_lst = cls.read_evaluation_xml('Reliability')
         # error_list.append(temp_lst)
+
+        # after reading all the tags in from the provided XML, check
+        # if the list of errors is not empty --> then report them to the user
+        if len(error_list):
+            cls.error(error_list)
 
         # create dictionary for CBA values for all services (from data files)
         cls.valuestream_values = {'DA': None,  # 'DA Price Signal ($/kWh)'
@@ -88,7 +86,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                                   'retailTimeShift': None,  # monthly_bill (df) calculated through .p_energy and .tariff
                                   'User': user,  # price
                                   'Backup': None,  # price (from monthly value)
-                                  # 'Reliability': None
+                                  'Reliability': None
                                   }
         # todo: place data from CSVs into the correct dictionary within the valuestream_values dictionary
 
@@ -107,9 +105,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         tag = cls.xmlTree.find(name)
         error_list = []
 
-        # this catches a misspelling in the Params 'name' compared to the xml trees spelling of 'name'
+        # check to see if user includes the tag within the provided xml
         if tag is None:
-            # todo: add this to error list
             return None, error_list
 
         # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
@@ -131,7 +128,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                         values = cls.extract_data(key.find('Evaluation').text, intended_type)
                         # TODO: incomplete
                     else:
-                        values = cls.convert_data_type(key.find('Evaluation').text, intended_type)
+                        values = ParamsDER.convert_data_type(key.find('Evaluation').text, intended_type)
 
                     # validate with schema
                     error = cls.validate_evaluation(tag.tag, key, values)
@@ -147,10 +144,46 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             # else returns None
             return None, error_list
 
-        # # if the list of errors is not empty, then report them to the user
-        # if len(error_list):
-        #     cls.error(error_list)
         return dictionary, error_list
+
+    @classmethod
+    def validate_evaluation(cls, tag, key, value):
+        """ validates the input data. A schema file is used to validate the inputs.
+            if any errors are found they are saved to a dictionary and at the end of the method it will call the error
+            method to print all the input errors
+
+        Args:
+            tag (str): value that corresponds to tag within model param CSV
+            key (Element): key XML element
+            value (:object): list of values that the user provided, which length should be the same as the sensitivity list
+
+        Returns: list, length 1 or length of sensitivity, of the error (if error) else return empty list
+
+        """
+        error_list = []
+        # 1) check to see if key is in schema, then continue validation
+        prop = cls.schema_tree.find(tag).find(key.tag)
+        if prop is not None:
+            # 2) check to see if key is allowed to define cba values
+            cba_allowed = prop.find('cba')
+            if cba_allowed == 'y':
+                # IF SENSITIVITY
+                if key.get('analysis')[0] == 'y':
+                    # 3a) loop through checks for validate: make type and range (if applicable) is correct
+                    for val in value:
+                        error_list.append(cls.checks_for_validate(val, key.find('Type').text, prop, tag))
+                # IF ONLY ONE VALUE (BASE CASE)
+                else:
+                    # 3b) checks for validate: make type and range (if applicable) is correct
+                    error_list = cls.checks_for_validate(value, key.find('Type').text, prop, tag)
+            else:
+                # report to the user that the given evaluation value cannot be separately evaulated in the cba (will not be used) but still continue
+                cls.report_warning(tag, key.tag, 'cba value not allowed')
+        else:
+            # report that the value was not in the schema (therefore will not be used) but still continue
+            cls.report_warning(tag, key.tag, 'key not in schema')
+
+        return error_list
 
     @classmethod
     def determine_eval_values(cls, element, property):
@@ -181,48 +214,6 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 slist = cls.extract_data(attribute.find('Evaluation').text, attribute.find('Type').text)
 
         return slist
-
-    @classmethod
-    def validate_evaluation(cls, tag, key, value):
-        """ validates the input data. A schema file is used to validate the inputs.
-            if any errors are found they are saved to a dictionary and at the end of the method it will call the error
-            method to print all the input errors
-
-        Args:
-            tag (str): value that corresponds to tag within model param CSV
-            key (Element): key XML element
-            value (:object): list of values that the user provided, which length should be the same as the sensitivity list
-
-        Returns: list, length 1 or length of sensitivity, of the error (if error) else return empty list
-                tuple, length 3, of warning to the user (if any) else return None
-
-        """
-        error_list = []
-        warning = None
-        # 1) check to see if key is in schema, then continue validation
-        prop = cls.schema_tree.find(tag).find(key.tag)
-        if prop is not None:
-            # 2) check to see if key is allowed to define cba values
-            cba_allowed = prop.find('cba')
-            if cba_allowed == 'y':
-                # IF SENSITIVITY
-                if key.get('analysis')[0] == 'y':
-                    # 3a) loop through checks for validate: make type and range (if applicable) is correct
-                    for val in value:
-                        error_list.append(cls.checks_for_validate(val, key.find('Type').text, prop, tag))
-                # IF ONLY ONE VALUE (BASE CASE)
-                else:
-
-                    # 3b) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(value, key.find('Type').text, prop, tag)
-            else:
-                # report to the user that the given evaluation value cannot be separately evaulated in the cba (will not be used) but still continue
-                warning = (tag, prop.tag, 'cba value not allowed')
-        else:
-            # report that the value was not in the schema (therefore will not be used) but still continue
-            warning = (tag, prop.tag, 'not found in schema')
-
-        return error_list, warning
 
     @classmethod
     def validate_value_length(cls, tag, key, lst):
@@ -262,19 +253,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         # READ IN EVALUATION VALUE FOR: TIME_SERIES_FILENAME
         ts_files = set(cls.determine_eval_values('Scenario', 'time_series_filename'))
         if None not in ts_files:
-            # validate time series with its corresponding DT:
-            # if the user gives more than 1 DT, it MUST be coupled with its corresponding time_series file, so we must validate with the
-            # correct time step
-            if ('Scenario', 'dt') in cls.sensitivity['attributes'].keys():
-                # there are multiple dt values given
-                list_dt = cls.sensitivity['attributes'][('Scenario', 'dt')]
-                # TODO: validate timeseries with dt here
-            else:
-                # there is only one dt -- which can be found with the XML
-                dt_subelement = cls.xmlTree.find('Scenario').find('dt')
-                dt_value = cls.extract_data(dt_subelement.find('Value').text, dt_subelement.find('Type').text)
-                for ts_file in ts_files:
-                    cls.datasets['time_series'][ts_file] = cls.preprocess_timeseries(cls.read_from_file('time_series', ts_file, 'Datetime (he)'), dt_value)
+            for ts_file in ts_files:
+                cls.datasets['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
 
         # READ IN EVALUATION VALUE FOR: MONTHLY_DATA_FILENAME
         md_files = set(cls.determine_eval_values('Scenario', 'monthly_data_filename'))
@@ -287,20 +267,6 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         if None not in ct_files:
             for ct_file in ct_files:
                 cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
-
-        # # READ IN EVALUATION VALUE FOR: YEARLY_DATA_FILENAME
-        # yr_files = set(cls.determine_eval_values('Finance', 'customer_tariff_filename'))
-        # if None not in yr_files:
-        #     for yr_file in yr_files:
-        #         cls.datasets['yearly_data'][yr_file] = cls.read_from_file('yearly_data', yr_file, 'Year')
-
-        return True
-
-    def distribute_monthly_data(self, valuestream_dic, der_dic):
-        pass
-
-    def distribute_timeseries_data(self, valuestream_dic):
-        pass
 
     def __init__(self, financial_params, dispatch_services, predispatch_services, technologies):
         """ Initialize CBA model and edit any attributes that the user denoted a separate value
@@ -328,6 +294,8 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         values are used
 
         """
+        self.load_data_sets()
+
         # TODO: need to save cba values and output them back to the user s.t. they know what values were used to get the CBA results
         self.update_with_evaluation('cbaDER', self, self.Scenario)
         self.update_with_evaluation('cbaDER', self, self.Finance)
@@ -339,21 +307,21 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             self.update_with_evaluation(key, value, self.ders_values[key])
 
     def load_data_sets(self):
-        """Loads data sets that are allowed to be defined for sensitivity analysis"""
+        """Loads data sets that are specified by the '_filename' parameters """
         # if self.Scenario is not None
         if self.Scenario:
             if 'time_series_filename' in self.Scenario.keys():
-                self.Scenario["time_series"], self.Scenario['frequency'] = self.preprocess_timeseries(self.datasets["time_series"][self.Scenario["time_series_filename"]], self.dt)
+                time_series = self.datasets['time_series_filename'][self.Scenario['time_series_filename']]
+                self.Scenario["time_series"], self.Scenario['frequency'] = self.preprocess_timeseries(time_series, self.dt)
             if 'monthly_data_filename' in self.Scenario.keys():
                 self.Scenario["monthly_data"] = self.datasets["monthly_data"][self.Scenario["monthly_data_filename"]]
-            if 'customer_tariff_filename' in self.Scenario.keys():
-                if self.Finance:
-                    # if self.Finance is None then initialize it as a dictionary
-                    self.Finance = {}
+
+        # if self.Finance is not None
+        if self.Finance:
+            if 'yearly_data_filename' in self.Finance.keys():
+                self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
+            if 'customer_tariff_filename' in self.Finance.keys():
                 self.Finance["customer_tariff"] = self.datasets["customer_tariff"][self.Scenario["customer_tariff_filename"]]
-        # if self.Finance is not None and 'yearly_data' has values
-        if self.Finance and 'yearly_data_filename' in self.Finance.keys():
-            self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
 
     @staticmethod
     def update_with_evaluation(param_name, param_object, evaluation_dict):
@@ -421,3 +389,28 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             yr_index -= 1
         lifetime_npv_alpha = np.npv(self.npv_discount_rate, dollar_per_year)
         return lifetime_npv_alpha
+
+    def prepare_services(self):
+        """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
+
+        Returns: collects required power timeseries
+
+        """
+        try:
+            monthly_data = self.Scenario['monthly_data']
+        except KeyError:
+            monthly_data = None
+
+        try:
+            time_series = self.Scenario['time_series']
+        except KeyError:
+            time_series = None
+
+        if time_series is not None or monthly_data is not None:
+            for value_stream in self.value_streams.values():
+                value_stream.update_price_signals(monthly_data, time_series)
+
+        if 'customer_tariff' in self.Finance:
+            retail_prices = self.calc_retail_energy_price(self.Finance['customer_tariff'], self.frequency, self.opt_years)
+            for value_stream in self.value_streams.values():
+                value_stream.update_tariff_rate(self.Finance['customer_tariff'], retail_prices)

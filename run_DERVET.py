@@ -32,31 +32,18 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 sys.path.insert(0, storagevet_path)
 
 from ScenarioSizing import ScenarioSizing
-from ParamsDER import ParamsDER as Params
+from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
-from ResultDER import ResultDER as Result
+from ResultDER import ResultDER
 
 # TODO: make multi-platform by using path combine functions
 
-developer_path = '.\logs'  # TODO: move this path (XENDEE's server requires special access to perform these tasks
-try:
-    os.mkdir(developer_path)
-except OSError:
-    print("Creation of the developer/error_log directory %s failed. Possibly already created." % developer_path)
-else:
-    print("Successfully created the developer/error_log directory %s " % developer_path)
-
-LOG_FILENAME1 = developer_path + '\\developer_log_' + datetime.now().strftime('%H_%M_%S_%m_%d_%Y.log')
-handler = logging.FileHandler(Path(LOG_FILENAME1))
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-dLogger = logging.getLogger('Developer')
-dLogger.setLevel(logging.DEBUG)
-dLogger.addHandler(handler)
-dLogger.info('Started logging...')
+e_logger = logging.getLogger('Error')
+u_logger = logging.getLogger('User')
 
 
 class DERVET:
-    """ DERVET API. This will eventually allow storagevet to be imported and used like any
+    """ DERVET API. This will eventually allow StorageVET to be imported and used like any
     other python library.
 
     """
@@ -77,55 +64,37 @@ class DERVET:
             Notes: kwargs is in place for testing purposes
         """
         if model_parameters_path.endswith(".csv"):
-            opt_model_parameters_path = Params.csv_to_xml(model_parameters_path, **kwargs)
+            opt_model_parameters_path = ParamsDER.csv_to_xml(model_parameters_path, **kwargs)
         else:
             opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        Params.initialize(opt_model_parameters_path, schema_path)
-        dLogger.info('Successfully initialized the Params class with the XML file.')
+        ParamsDER.initialize(opt_model_parameters_path, schema_path)
+        u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
         CostBenefitAnalysis.initialize_evaluation()
-        dLogger.info('Successfully initialized the CBA class with the XML file.')
+        u_logger.info('Successfully initialized the CBA class with the XML file.')
 
-        self.model_params = Params
+        self.model_params = ParamsDER
 
     def solve(self):
         verbose = self.model_params.instances[0].Scenario['verbose']
         if verbose:
             self.model_params.class_summary()
             self.model_params.series_summary()
-        self.model_params.validate()
+        self.model_params.validate()  # i know that all the functionality of this
+        # function is not meant for dervet, but we still need parts of it to validate,
+        # and the validateDER() function has nothing in it. -HN
+        self.model_params.validate_der()  # renamed from validateDER() to follow PEP 8 rules. Please follow them -HN
         return self.run()
 
     def run(self):
         starts = time.time()
 
-        Result.initialize(self.model_params.Results, self.model_params.df_analysis)
+        ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
 
         for key, value in self.model_params.instances.items():
-
-            ### MOVE THE FOLLOWING INTO STORAGEVET ABSTRACTION BARRIER ###
-            # Move this u_logger path section to Params class - TN
-            user_log_path = value.Results['dir_absolute_path']
-            try:
-                os.makedirs(user_log_path)
-            except OSError:
-                print("Creation of the user_log directory %s failed. Possibly already created." % user_log_path)
-            else:
-                print("Successfully created the user_log directory %s " % user_log_path)
-
-            log_filename2 = user_log_path + "\\user_log.log"
-            u_handler = logging.FileHandler(Path(log_filename2))
-            u_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-            u_logger = logging.getLogger('User')
-            u_logger.setLevel(logging.DEBUG)
-            u_logger.addHandler(u_handler)
-            u_logger.info('Started logging...')
-
-            ###############################################################
-
             if not value.other_error_checks():
                 continue
             value.prepare_scenario()
@@ -140,23 +109,23 @@ class DERVET:
             run.add_control_constraints()
             run.optimize_problem_loop()
 
-            Result.add_instance(key, run)
+            ResultDER.add_instance(key, run)
 
-        Result.calculate()
-        Result.save_to_disk()
+        ResultDER.calculate()
+        ResultDER.save_to_disk()
         ends = time.time()
-        dLogger.info("DERVET runtime: ")
-        dLogger.info(ends - starts)
+        print("DERVET runtime: ")
+        print(ends - starts)
 
-        return Result
+        return ResultDER
 
 
 if __name__ == '__main__':
     """
-        the Main section for runStorageVET to run by itself without the GUI 
+        This section is run when the file is called from the command line.
     """
 
-    parser = argparse.ArgumentParser(prog='StorageVET.py',
+    parser = argparse.ArgumentParser(prog='run_DERVET.py',
                                      description='The Electric Power Research Institute\'s energy storage system ' +
                                                  'analysis, dispatch, modelling, optimization, and valuation tool' +
                                                  '. Should be used with Python 3.6.x, pandas 0.19+.x, and CVXPY' +

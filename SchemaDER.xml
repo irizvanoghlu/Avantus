@@ -89,6 +89,29 @@
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 	</Battery>
+	<CAES type="storage">
+		<name type="string" />
+		<daily_cycle_limit min="0" type="float" />
+		<heat_rate_high min="0.0" type="float" />
+		<startup type="bool" allowed_values="1|0"/>
+		<ccost min="0.0" type="float" />
+		<ccost_kw min="0.0" type="float" />
+		<ccost_kwh min="0.0" type="float" />
+		<fixedOM min="0.0" type="float" />
+		<OMexpenses min="0.0" type="float" />
+		<ch_max_rated min="0.0" type="float" />
+		<ch_min_rated min="0.0" type="float" />
+		<dis_max_rated min="0.0" type="float" />
+		<dis_min_rated min="0.0" type="float" />
+		<ene_max_rated min="0.0" type="float" />
+		<ulsoc max="100.0" min="0.0" type="float" />
+		<llsoc max="100.0" min="0.0" type="float" />
+		<rte min="0.0" type="float" />
+		<sdr max="99.9" min="0.0" type="float" />
+		<soc_target max="100.0" min="0.0" type="float" />
+		<p_start_ch min="0" type="float" />
+		<p_start_dis min="0" type="float" />
+	</CAES>
 	<Scenario type="scenario">
 		<monthly_data_filename cba="y" type="string" />
 		<time_series_filename cba="y" type="string" />

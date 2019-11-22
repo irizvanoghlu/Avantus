@@ -21,8 +21,7 @@ import copy
 import re
 import sys
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
@@ -154,11 +153,11 @@ class BatterySizing(storagevet.BatteryTech):
         ene_target = self.soc_target * self.ene_max_rated
 
         # optimization variables
-        ene = variables['ene']
-        dis = variables['dis']
-        ch = variables['ch']
-        on_c = variables['on_c']
-        on_d = variables['on_d']
+        ene = variables['bat_ene']
+        dis = variables['bat_dis']
+        ch = variables['bat_ch']
+        on_c = variables['bat_on_c']
+        on_d = variables['bat_on_d']
         try:
             pv_gen = variables['pv_out']
         except KeyError:
@@ -201,32 +200,32 @@ class BatterySizing(storagevet.BatteryTech):
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
         # Keep energy in bounds determined in the constraints configuration function
-        constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
+        constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['bat_ene_max_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['bat_ne_max_slack'][:-1])]
 
-        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
+        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['bat_ene_min_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['bat_ene_min_slack'][:-1])]
 
         # Keep charge and discharge power levels within bounds
-        constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c) - variables['ch_max_slack'])]
-        constraint_list += [cvx.NonPos(ch - ch_max + reservations['C_max'] - variables['ch_max_slack'])]
+        constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c) - variables['bat_ch_max_slack'])]
+        constraint_list += [cvx.NonPos(ch - ch_max + reservations['C_max'] - variables['bat_ch_max_slack'])]
 
-        constraint_list += [cvx.NonPos(cvx.multiply(ch_min, on_c) - ch - variables['ch_min_slack'])]
-        constraint_list += [cvx.NonPos(ch_min - ch + reservations['C_min'] - variables['ch_min_slack'])]
+        constraint_list += [cvx.NonPos(cvx.multiply(ch_min, on_c) - ch - variables['bat_ch_min_slack'])]
+        constraint_list += [cvx.NonPos(ch_min - ch + reservations['C_min'] - variables['bat_ch_min_slack'])]
 
-        constraint_list += [cvx.NonPos(dis - cvx.multiply(dis_max, on_d) - variables['dis_max_slack'])]
-        constraint_list += [cvx.NonPos(dis - dis_max + reservations['D_max'] - variables['dis_max_slack'])]
+        constraint_list += [cvx.NonPos(dis - cvx.multiply(dis_max, on_d) - variables['bat_dis_max_slack'])]
+        constraint_list += [cvx.NonPos(dis - dis_max + reservations['D_max'] - variables['bat_dis_max_slack'])]
 
-        constraint_list += [cvx.NonPos(cvx.multiply(dis_min, on_d) - dis - variables['dis_min_slack'])]
-        constraint_list += [cvx.NonPos(dis_min - dis + reservations['D_min'] - variables['dis_min_slack'])]
+        constraint_list += [cvx.NonPos(cvx.multiply(dis_min, on_d) - dis - variables['bat_dis_min_slack'])]
+        constraint_list += [cvx.NonPos(dis_min - dis + reservations['D_min'] - variables['bat_dis_min_slack'])]
         # constraints to keep slack variables positive
         if self.incl_slack:
-            constraint_list += [cvx.NonPos(-variables['ch_max_slack'])]
-            constraint_list += [cvx.NonPos(-variables['ch_min_slack'])]
-            constraint_list += [cvx.NonPos(-variables['dis_max_slack'])]
-            constraint_list += [cvx.NonPos(-variables['dis_min_slack'])]
-            constraint_list += [cvx.NonPos(-variables['ene_max_slack'])]
-            constraint_list += [cvx.NonPos(-variables['ene_min_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_ch_max_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_ch_min_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_dis_max_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_dis_min_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_ene_max_slack'])]
+            constraint_list += [cvx.NonPos(-variables['bat_ene_min_slack'])]
 
         if self.incl_binary:
             # when dis_min or ch_min has been overwritten (read: increased) by predispatch services, need to force technology to be on
@@ -241,11 +240,11 @@ class BatterySizing(storagevet.BatteryTech):
             # note: cannot operate startup without binary
             if self.incl_startup:
                 # startup variables are positive
-                constraint_list += [cvx.NonPos(-variables['start_d'])]
-                constraint_list += [cvx.NonPos(-variables['start_c'])]
+                constraint_list += [cvx.NonPos(-variables['bat_start_d'])]
+                constraint_list += [cvx.NonPos(-variables['bat_start_c'])]
                 # difference between binary variables determine if started up in previous interval
-                constraint_list += [cvx.NonPos(cvx.diff(on_d) - variables['start_d'][1:])]  # first variable not constrained
-                constraint_list += [cvx.NonPos(cvx.diff(on_c) - variables['start_c'][1:])]  # first variable not constrained
+                constraint_list += [cvx.NonPos(cvx.diff(on_d) - variables['bat_start_d'][1:])]  # first variable not constrained
+                constraint_list += [cvx.NonPos(cvx.diff(on_c) - variables['bat_start_c'][1:])]  # first variable not constrained
 
         constraint_list += self.size_constraints
 
@@ -341,7 +340,6 @@ class BatterySizing(storagevet.BatteryTech):
                             if temp_constraints[user_constraint_name].loc[i] < user_constraint.loc[i]:
                                 temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
                     else:
-                        dLogger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
                         e_logger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
                         sys.exit()
 
@@ -358,15 +356,15 @@ class BatterySizing(storagevet.BatteryTech):
         """ Adds optimization variables to dictionary
 
         Variables added:
-            ene (Variable): A cvxpy variable for Energy at the end of the time step
-            dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
-            ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
-            ene_max_slack (Variable): A cvxpy variable for energy max slack
-            ene_min_slack (Variable): A cvxpy variable for energy min slack
-            ch_max_slack (Variable): A cvxpy variable for charging max slack
-            ch_min_slack (Variable): A cvxpy variable for charging min slack
-            dis_max_slack (Variable): A cvxpy variable for discharging max slack
-            dis_min_slack (Variable): A cvxpy variable for discharging min slack
+            bat_ene (Variable): A cvxpy variable for Energy at the end of the time step
+            bat_dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
+            bat_ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
+            bat_ene_max_slack (Variable): A cvxpy variable for energy max slack
+            bat_ene_min_slack (Variable): A cvxpy variable for energy min slack
+            bat_ch_max_slack (Variable): A cvxpy variable for charging max slack
+            bat_ch_min_slack (Variable): A cvxpy variable for charging min slack
+            bat_dis_max_slack (Variable): A cvxpy variable for discharging max slack
+            bat_dis_min_slack (Variable): A cvxpy variable for discharging min slack
 
         Args:
             size (Int): Length of optimization variables to create
@@ -374,8 +372,63 @@ class BatterySizing(storagevet.BatteryTech):
         Returns:
             Dictionary of optimization variables
         """
+
         variables = storagevet.BatteryTech.add_vars(self, size)
+
+        variables = {'bat_ene': cvx.Variable(shape=size, name='bat_ene'),
+                     'bat_dis': cvx.Variable(shape=size, name='bat_dis'),
+                     'bat_ch': cvx.Variable(shape=size, name='bat_ch'),
+                     'bat_ene_max_slack': cvx.Parameter(shape=size, name='bat_ene_max_slack', value=np.zeros(size)),
+                     'bat_ene_min_slack': cvx.Parameter(shape=size, name='bat_ene_min_slack', value=np.zeros(size)),
+                     'bat_dis_max_slack': cvx.Parameter(shape=size, name='bat_dis_max_slack', value=np.zeros(size)),
+                     'bat_dis_min_slack': cvx.Parameter(shape=size, name='bat_dis_min_slack', value=np.zeros(size)),
+                     'bat_ch_max_slack': cvx.Parameter(shape=size, name='bat_ch_max_slack', value=np.zeros(size)),
+                     'bat_ch_min_slack': cvx.Parameter(shape=size, name='bat_ch_min_slack', value=np.zeros(size)),
+                     'bat_on_c': cvx.Parameter(shape=size, name='bat_on_c', value=np.ones(size)),
+                     'bat_on_d': cvx.Parameter(shape=size, name='bat_on_d', value=np.ones(size)),
+                     }
+
+        if self.incl_slack:
+            self.variable_names.update(['bat_ene_max_slack', 'bat_ene_min_slack', 'bat_dis_max_slack', 'bat_dis_min_slack', 'bat_ch_max_slack', 'bat_ch_min_slack'])
+            variables.update({'bat_ene_max_slack': cvx.Variable(shape=size, name='bat_ene_max_slack'),
+                              'bat_ene_min_slack': cvx.Variable(shape=size, name='bat_ene_min_slack'),
+                              'bat_dis_max_slack': cvx.Variable(shape=size, name='bat_dis_max_slack'),
+                              'bat_dis_min_slack': cvx.Variable(shape=size, name='bat_dis_min_slack'),
+                              'bat_ch_max_slack': cvx.Variable(shape=size, name='bat_ch_max_slack'),
+                              'bat_ch_min_slack': cvx.Variable(shape=size, name='bat_ch_min_slack')})
+        if self.incl_binary:
+            self.variable_names.update(['bat_on_c', 'bat_on_d'])
+            variables.update({'bat_on_c': cvx.Variable(shape=size, boolean=True, name='bat_on_c'),
+                              'bat_on_d': cvx.Variable(shape=size, boolean=True, name='bat_on_d')})
+            if self.incl_startup:
+                self.variable_names.update(['bat_start_c', 'bat_start_d'])
+                variables.update({'bat_start_c': cvx.Variable(shape=size, name='bat_start_c'),
+                                  'bat_start_d': cvx.Variable(shape=size, name='bat_start_d')})
 
         variables.update(self.optimization_variables)
 
         return variables
+
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = storagevet.BatteryTech.timeseries_report(self)
+        results[self.name + ' Battery Discharge (kW)'] = self.variables['bat_dis']
+        results[self.name + ' Battery Charge (kW)'] = self.variables['bat_ch']
+        results[self.name + ' Battery Power (kW)'] = self.variables['bat_dis'] - self.variables['bat_ch']
+        results[self.name + ' Battery State of Energy (kWh)'] = self.variables['bat_ene']
+
+        try:
+            energy_rate = self.ene_max_rated.value
+        except AttributeError:
+            energy_rate = self.ene_max_rated
+
+        results['Battery SOC (%)'] = self.variables['bat_ene'] / energy_rate
+
+        return results
+

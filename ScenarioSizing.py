@@ -75,7 +75,7 @@ class ScenarioSizing(Scenario):
         for storage in active_storage:
             inputs = self.technology_inputs_map[storage]
             tech_func = ess_action_map[storage]
-            self.technologies[storage] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
+            self.technologies['Storage'] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
             u_logger.info("Finished adding storage...")
 
         generator_action_map = {
@@ -106,10 +106,12 @@ class ScenarioSizing(Scenario):
         TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
 
-        # dictionary of storage inputs to handle multiple storage technologies
-        storage_inputs = dict()
-        for tech in self.technologies:
-            storage_inputs[tech] = self.technologies[tech]
+        # # dictionary of storage inputs to handle multiple storage technologies
+        # storage_inputs = dict()
+        # for tech in self.technologies:
+        #     storage_inputs[tech] = self.technologies[tech]
+
+        storage_inputs = self.technologies['Storage']
 
         predispatch_service_action_map = {
             'Backup': storagevet.Backup,
@@ -139,13 +141,8 @@ class ScenarioSizing(Scenario):
             u_logger.info("Using: " + str(service))
             inputs = self.service_input_map[service]
             service_func = service_action_map[service]
-
-            # dictionary of new service to handle multiple technologies
-            # assuming all technologies participate these services
-            new_service = {}
-            for input in storage_inputs:
-                new_service[input] = service_func(inputs, storage_inputs[input], self.dt)
-                new_service[input].estimate_year_data(self.opt_years, self.frequency)
+            new_service = service_func(inputs, storage_inputs, self.dt)
+            new_service.estimate_year_data(self.opt_years, self.frequency)
             self.services[service] = new_service
 
         u_logger.info("Finished adding Services for Value Stream")

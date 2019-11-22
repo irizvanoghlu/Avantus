@@ -16,6 +16,7 @@ from storagevet.Finances import Financial
 from ParamsDER import ParamsDER
 import numpy as np
 import copy
+import pandas as pd
 
 
 SATURDAY = 5
@@ -43,31 +44,26 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         # read in and validate XML
         error_list = []
         cls.Scenario, temp_lst = cls.read_evaluation_xml('Scenario')
-        error_list.append(temp_lst)
+        error_list += temp_lst
         cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
-        error_list.append(temp_lst)
+        error_list += temp_lst
 
         # read in data from CSVs, validate and organize in correct df structure
         cls.eval_data_prep()
 
         # load in CBA values for DERs
         battery, temp_lst = cls.read_evaluation_xml('Battery')
-        error_list.append(temp_lst)
+        error_list += temp_lst
         pv, temp_lst = cls.read_evaluation_xml('PV')
-        error_list.append(temp_lst)
+        error_list += temp_lst
         ice, temp_lst = cls.read_evaluation_xml('ICE')
-        error_list.append(temp_lst)
+        error_list += temp_lst
         caes, temp_lst = cls.read_evaluation_xml('CAES')
-        error_list.append(temp_lst)
-
-        # create dictionary for CBA values for DERs
-        cls.ders_values = {'Storage': battery,
-                           'PV': pv,  # cost_per_kW (and then recalculate capex)
-                           'ICE': ice}  # fuel_price,
+        error_list += temp_lst
 
         # load in CBA values for predispatch services
         user, temp_lst = cls.read_evaluation_xml('User')
-        error_list.append(temp_lst)
+        error_list += temp_lst
         # reliability, temp_lst = cls.read_evaluation_xml('Reliability')
         # error_list.append(temp_lst)
 
@@ -76,19 +72,19 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         if len(error_list):
             cls.error(error_list)
 
+        # create dictionary for CBA values for DERs
+        cls.ders_values = {'Storage': battery,
+                           'PV': pv,  # cost_per_kW (and then recalculate capex)
+                           'ICE': ice}  # fuel_price,
+
         # create dictionary for CBA values for all services (from data files)
-        cls.valuestream_values = {'DA': None,  # 'DA Price Signal ($/kWh)'
-                                  'FR': None,  # "FR Energy Settlement Price Signal ($/kWh)", "Regulation Up Price Signal ($/kW)", "Regulation Down Price Signal ($/kW)"
-                                  # 'LF': None,
-                                  'SR': None,  # 'SR Price Signal ($/kW)'
-                                  'NSR': None,  # 'NSR Price Signal ($/kW)'
-                                  'DCM': None,  # billing_period_bill (df) calculated through .tariff and .billing_period
-                                  'retailTimeShift': None,  # monthly_bill (df) calculated through .p_energy and .tariff
-                                  'User': user,  # price
-                                  'Backup': None,  # price (from monthly value)
-                                  'Reliability': None
-                                  }
-        # todo: place data from CSVs into the correct dictionary within the valuestream_values dictionary
+        cls.valuestream_values = {'User': user}  # USER will only have one entry in it (key = price)
+
+    @classmethod
+    def look_for_sensitivity(cls):
+        sensitivity_to_evaluation_map = pd.DataFrame()
+        if cls.sensitivity['attributes']:
+            pass
 
     @classmethod
     def read_evaluation_xml(cls, name):
@@ -197,10 +193,10 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 element (string): element is the same as the component
                 property (string): attribute of the element
 
-            Returns: list of values, IF the evaluation value is active else returns None
+            Returns: list of values (empty list if not active)
 
         """
-        slist = None
+        slist = []
         # looks in schema tree for the element
         component = cls.xmlTree.find(element)
         # then look for the property of the element
@@ -283,28 +279,30 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         self.location = financial_params['location']
         self.ownership = financial_params['ownership']
 
-        # we deep copy because we do not want to change the original ValueStream objects
-        self.value_streams = {**copy.deepcopy(dispatch_services), **copy.deepcopy(predispatch_services)}
-        self.ders = copy.deepcopy(technologies)
+        self.value_streams = {}
+        self.ders = {}
         # TODO: need to deal with the data obtained from CSVs
 
-    def initiate_cost_benefit_analysis(self):
+    def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
         This function should be called before any finacial methods so that the user defined evaluation
         values are used
 
+        Args:
+            technologies (Dict): Dict of technologies (needed to get capital and om costs)
+            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
+
         """
+        # we deep copy because we do not want to change the original ValueStream objects
+        self.value_streams = copy.deepcopy(valuestreams)
+        self.ders = copy.deepcopy(technologies)
         self.load_data_sets()
 
         # TODO: need to save cba values and output them back to the user s.t. they know what values were used to get the CBA results
         self.update_with_evaluation('cbaDER', self, self.Scenario)
         self.update_with_evaluation('cbaDER', self, self.Finance)
 
-        # save the evaluation values in the correct places
-        for key, value in self.value_streams.items():
-            self.update_with_evaluation(key, value, self.valuestream_values[key])
-        for key, value in self.ders.items():
-            self.update_with_evaluation(key, value, self.ders_values[key])
+        self.place_evaluation_data()
 
     def load_data_sets(self):
         """Loads data sets that are specified by the '_filename' parameters """
@@ -360,9 +358,12 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 and ValueStream
             use_inflation (bool): Flag to determine if using inflation rate to determine financials for extrapolation. If false, use extrapolation
 
+        Returns: dataframe proforma
+
         """
-        self.initiate_cost_benefit_analysis()
-        Financial.proforma_report(self, self.ders, self.value_streams, results, use_inflation)
+        self.initiate_cost_benefit_analysis(technologies, valuestreams)
+        proforma = Financial.proforma_report(self, self.ders, self.value_streams, results, use_inflation)
+        return proforma
 
     def annuity_scalar(self, start_year, end_year, optimized_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
@@ -390,10 +391,10 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         lifetime_npv_alpha = np.npv(self.npv_discount_rate, dollar_per_year)
         return lifetime_npv_alpha
 
-    def prepare_services(self):
-        """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
-
-        Returns: collects required power timeseries
+    def place_evaluation_data(self):
+        """ Place the data specified in the evaluation column into the correct places. This means all the monthly data,
+        timeseries data, and single values are saved in their corresponding attributes within whatever ValueStream and DER
+        that is active and has different values specified to evaluate the CBA with.
 
         """
         try:
@@ -414,3 +415,12 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             retail_prices = self.calc_retail_energy_price(self.Finance['customer_tariff'], self.frequency, self.opt_years)
             for value_stream in self.value_streams.values():
                 value_stream.update_tariff_rate(self.Finance['customer_tariff'], retail_prices)
+
+        if 'User' in self.value_streams.keys():
+            self.value_streams['User'].update_yearly_value(self.valuestream_values['User']['price'])
+
+        for key, value in self.ders.items():
+            self.update_with_evaluation(key, value, self.ders_values[key])
+
+    def grab_evaluation_value(self):
+        pass

@@ -36,28 +36,30 @@ class ParamsDER(Params):
     """
 
     @staticmethod
-    def csv_to_xml(csv_filename):
+    def csv_to_xml(csv_filename, ignore_cba_valuation=False):
         """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
         corresponds the values used to evaluate the CBA.
 
         Args:
             csv_filename (string): name of csv file
+            ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
+                testing purposes)
 
         Returns:
             opt_xml_filename (string): name of xml file with parameter values for optimization evaluation
 
 
         """
-        opt_xml_filename = Params.csv_to_xml(csv_filename)
+        xml_filename = Params.csv_to_xml(csv_filename)
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
         # check to see if Evaluation rows are included
-        if 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
+        if not ignore_cba_valuation and 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
             # then add values to XML
 
             # open and read xml file
-            xml_tree = et.parse(opt_xml_filename)
+            xml_tree = et.parse(xml_filename)
             xml_root = xml_tree.getroot()
 
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
@@ -73,21 +75,21 @@ class ParamsDER(Params):
                     cba_eval = et.SubElement(key, 'Evaluation')
                     cba_eval.text = str(row['Evaluation Value'])
                     cba_eval.set('active', str(row['Evaluation Active']))
-            xml_tree.write(opt_xml_filename)
+            xml_tree.write(xml_filename)
 
-        return opt_xml_filename
+        return xml_filename
 
     def __init__(self):
         """ Initialize these following attributes of the empty Params class object.
         """
-        Params.__init__(self)
+        super().__init__()
         self.Reliability = self.read_from_xml_object('Reliability')
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
 
         """
-        Params.prepare_services(self)
+        super().prepare_services()
         pre_dispatch_serv = self.active_components['pre-dispatch']
 
         if 'Reliability' in pre_dispatch_serv:
@@ -116,7 +118,7 @@ class ParamsDER(Params):
         """ Interprets user given data and prepares it for Finance.
 
         """
-        Params.prepare_finance(self)
+        super().prepare_finance()
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 

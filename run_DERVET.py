@@ -61,7 +61,11 @@ class DERVET:
 
     """
 
-    def __init__(self, model_parameters_path, schema_path):
+    @classmethod
+    def load_case(cls, model_parameters_path, schema_path, **kwargs):
+        return cls(model_parameters_path, schema_path, **kwargs)
+
+    def __init__(self, model_parameters_path, schema_path, **kwargs):
         """
             Constructor to initialize the parameters and data needed to run StorageVET\
 
@@ -69,9 +73,11 @@ class DERVET:
                 model_parameters_path (str): Filename of the model parameters CSV or XML that
                     describes the optimization case to be analysed
                 schema_path (str): relative path to the Schema.xml that storagevet uses
+
+            Notes: kwargs is in place for testing purposes
         """
         if model_parameters_path.endswith(".csv"):
-            opt_model_parameters_path = Params.csv_to_xml(model_parameters_path)
+            opt_model_parameters_path = Params.csv_to_xml(model_parameters_path, **kwargs)
         else:
             opt_model_parameters_path = model_parameters_path
 
@@ -91,7 +97,7 @@ class DERVET:
             self.model_params.class_summary()
             self.model_params.series_summary()
         self.model_params.validate()
-        self.run()
+        return self.run()
 
     def run(self):
         starts = time.time()
@@ -142,6 +148,8 @@ class DERVET:
         dLogger.info("DERVET runtime: ")
         dLogger.info(ends - starts)
 
+        return Result
+
 
 if __name__ == '__main__':
     """
@@ -167,7 +175,7 @@ if __name__ == '__main__':
     dir_rel_path = script_rel_path[:-len('run_DERVET.py')]
     schema_rel_path = dir_rel_path + "SchemaDER.xml"
 
-    case = DERVET(arguments.parameters_filename, schema_rel_path)
+    case = DERVET(arguments.parameters_filename, schema_rel_path, ignore_cba_valuation=True)
     case.solve()
 
     # print("Program is done.")

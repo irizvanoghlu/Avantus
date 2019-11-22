@@ -264,7 +264,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             for ct_file in ct_files:
                 cls.datasets['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
 
-    def __init__(self, financial_params, dispatch_services, predispatch_services, technologies):
+    def __init__(self, financial_params):
         """ Initialize CBA model and edit any attributes that the user denoted a separate value
         to evaluate the CBA with
 

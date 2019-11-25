@@ -75,7 +75,7 @@ class ScenarioSizing(Scenario):
         for storage in active_storage:
             inputs = self.technology_inputs_map[storage]
             tech_func = ess_action_map[storage]
-            self.technologies['Storage'] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
+            self.technologies['Storage'] = tech_func(self.power_kw['opt_agg'], inputs, self.cycle_life)
             u_logger.info("Finished adding storage...")
 
         generator_action_map = {
@@ -86,8 +86,7 @@ class ScenarioSizing(Scenario):
         active_gen = self.active_objects['generator']
         for gen in active_gen:
             inputs = self.technology_inputs_map[gen]
-            tech_func = generator_action_map[gen]
-            new_gen = tech_func(gen, inputs)
+            new_gen = generator_action_map[gen](inputs)
             new_gen.estimate_year_data(self.opt_years, self.frequency)
             self.technologies[gen] = new_gen
             u_logger.info("Finished adding generators...")

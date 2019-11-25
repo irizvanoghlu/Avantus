@@ -38,9 +38,14 @@ class Reliability(storagevet.ValueStream):
         self.dt = params['dt']
 
         if 'Diesel' in techs:
-            self.ice_rated_power = techs['Diesel'].rated_power
-        # else:
-        #     self.ice_rated_power = 0
+            self.ice_combined_rating = techs['Diesel'].rated_power * techs['Diesel'].n
+        self.ess_combined_rating = 0
+        if 'Battery' in techs:
+            self.ess_combined_rating += techs['Battery'].dis_max_rated
+        if 'CAES' in techs:
+            self.ess_combined_rating += techs['CAES'].dis_max_rated
+        if 'Storage' in techs:  # delete this
+            self.ess_combined_rating += techs['Storage'].dis_max_rated
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
@@ -63,18 +68,16 @@ class Reliability(storagevet.ValueStream):
 
         self.constraints = {'ene_min_add': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
-    def objective_constraints(self, variables, subs, generation, reservations=None):
+    def objective_constraints(self, variables, subs, net_power, reservations=None):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
             variables (Dict): dictionary of variables being optimized
             subs (DataFrame): Subset of time_series data that is being optimized
-            generation (list, Expression): the sum of generation within the system for the subset of time
-                being optimized
+            net_power (Expression): the sum of all power flows in the system. flow out into the grid is negative
             reservations (Dict): power reservations from dispatch services
 
-        Returns:
-            An empty list
+        Returns: power constraint
         """
 
         try:
@@ -82,19 +85,9 @@ class Reliability(storagevet.ValueStream):
         except KeyError:
             pv_generation = np.zeros(subs.shape[0])
 
-        try:
-            ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
-        except (KeyError, AttributeError):
-            ice_rated_power = 0
-
-        try:
-            battery_dis_size = variables['dis_max_rated']  # discharge size parameter for batteries
-        except KeyError:
-            battery_dis_size = 0
-
         # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
         # to ensure that our DER mix can cover peak net load during any outage in the year
-        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_rated_power)]
+        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_combined_rating - self.ice_combined_rating)]
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.

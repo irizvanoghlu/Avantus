@@ -21,19 +21,17 @@ class ICESizing(storagevet.ICE):
 
     """
 
-    def __init__(self, name, params):
+    def __init__(self, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            name (str): A unique string name for the technology being added, also works as category.
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        storagevet.ICE.__init__(self, name, params)
+        storagevet.ICE.__init__(self, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
         self.n = cvx.Variable(integer=True, name='generators')
-        self.capex = self.capital_cost * self.n + self.capital_cost * self.rated_power
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

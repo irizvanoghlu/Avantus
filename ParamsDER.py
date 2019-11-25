@@ -45,7 +45,7 @@ class ParamsDER(Params):
 
 
         """
-        opt_xml_filename = Params.csv_to_xml(csv_filename)
+        xml_filename = Params.csv_to_xml(csv_filename)
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
@@ -54,7 +54,7 @@ class ParamsDER(Params):
             # then add values to XML
 
             # open and read xml file
-            xml_tree = et.parse(opt_xml_filename)
+            xml_tree = et.parse(xml_filename)
             xml_root = xml_tree.getroot()
 
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
@@ -70,9 +70,9 @@ class ParamsDER(Params):
                     cba_eval = et.SubElement(key, 'Evaluation')
                     cba_eval.text = str(row['Evaluation Value'])
                     cba_eval.set('active', str(row['Evaluation Active']))
-            xml_tree.write(opt_xml_filename)
+            xml_tree.write(xml_filename)
 
-        return opt_xml_filename
+        return xml_filename
 
     def __init__(self):
         """ Initialize these following attributes of the empty Params class object.

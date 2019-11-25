@@ -21,24 +21,22 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
     """
 
-    def __init__(self, name, params):
+    def __init__(self, params):
         """ Initializes a PV class where perfect foresight of generation is assumed.
         It inherits from the technology class. Additionally, it sets the type and physical constraints of the
         technology.
 
         Args:
-            name (str): A unique string name for the technology being added, also works as category.
             params (dict): Dict of parameters
         """
         # create generic technology object
-        storagevet.CurtailPV.__init__(self, name, params)
+        storagevet.CurtailPV.__init__(self, params)
 
         self.size_constraints = []
 
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
-            self.capex = self.cost_per_kW * self.rated_capacity
 
     def sizing_summary(self):
         """
@@ -56,7 +54,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': rated_capacity,
-                                       'Capital Cost ($/kW)': self.cost_per_kW}, index=index)
+                                       'Capital Cost ($/kW)': self.capital_costs['/kW']}, index=index)
         return sizing_results
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):

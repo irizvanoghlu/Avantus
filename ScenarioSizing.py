@@ -15,18 +15,18 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import storagevet
 
 from TechnologiesDER.BatterySizing import BatterySizing
+from TechnologiesDER.CAESSizing import CAESSizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
-from TechnologiesDER.DieselSizing import DieselSizing
+from TechnologiesDER.ICESizing import ICESizing
 from ValueStreamsDER.Reliability import Reliability
 
 from storagevet.Scenario import Scenario
 
-from cbaDER import CostBenDER
+from cbaDER import CostBenefitAnalysis
 
 import logging
 
-dLogger = logging.getLogger('Developer')
-uLogger = logging.getLogger('User')
+u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
@@ -48,7 +48,7 @@ class ScenarioSizing(Scenario):
 
         self.sizing_optimization = False
 
-        dLogger.info("ScenarioDER initialized ...")
+        u_logger.info("ScenarioDER initialized ...")
 
     def init_financials(self, finance_inputs):
         """ Initializes the financial class with a copy of all the price data from timeseries, the tariff data, and any
@@ -59,8 +59,8 @@ class ScenarioSizing(Scenario):
 
         """
 
-        self.financials = CostBenDER(finance_inputs)
-        dLogger.info("Finished adding Financials...")
+        self.financials = CostBenefitAnalysis(finance_inputs)
+        u_logger.info("Finished adding Financials...")
 
     def add_technology(self):
         """ Reads params and adds technology. Each technology gets initialized and their physical constraints are found.
@@ -68,18 +68,19 @@ class ScenarioSizing(Scenario):
         """
         ess_action_map = {
             'Battery': BatterySizing,
+            'CAES': CAESSizing
         }
 
         active_storage = self.active_objects['storage']
         for storage in active_storage:
             inputs = self.technology_inputs_map[storage]
             tech_func = ess_action_map[storage]
-            self.technologies['Storage'] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
-            dLogger.info("Finished adding storage...")
+            self.technologies["Storage"] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
+            u_logger.info("Finished adding storage...")
 
         generator_action_map = {
             'PV': CurtailPVSizing,
-            'Diesel': DieselSizing
+            'ICE': ICESizing
         }
 
         active_gen = self.active_objects['generator']
@@ -89,9 +90,9 @@ class ScenarioSizing(Scenario):
             new_gen = tech_func(gen, inputs)
             new_gen.estimate_year_data(self.opt_years, self.frequency)
             self.technologies[gen] = new_gen
-            dLogger.info("Finished adding generators...")
+            u_logger.info("Finished adding generators...")
 
-        dLogger.info("Finished adding active Technologies...")
+        u_logger.info("Finished adding active Technologies...")
 
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding
@@ -104,6 +105,8 @@ class ScenarioSizing(Scenario):
 
         TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
+
+        # dictionary of storage inputs to handle multiple storage technologies
         storage_inputs = self.technologies['Storage']
 
         predispatch_service_action_map = {
@@ -112,14 +115,14 @@ class ScenarioSizing(Scenario):
             'Reliability': Reliability
         }
         for service in self.active_objects['pre-dispatch']:
-            dLogger.info("Using: " + str(service))
+            u_logger.info("Using: " + str(service))
             inputs = self.predispatch_service_inputs_map[service]
             service_func = predispatch_service_action_map[service]
             new_service = service_func(inputs, self.technologies, self.power_kw, self.dt)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.predispatch_services[service] = new_service
 
-        dLogger.info("Finished adding Predispatch Services for Value Stream")
+        u_logger.info("Finished adding Predispatch Services for Value Stream")
 
         service_action_map = {
             'DA': storagevet.DAEnergyTimeShift,
@@ -131,14 +134,14 @@ class ScenarioSizing(Scenario):
         }
 
         for service in self.active_objects['service']:
-            dLogger.info("Using: " + str(service))
+            u_logger.info("Using: " + str(service))
             inputs = self.service_input_map[service]
             service_func = service_action_map[service]
             new_service = service_func(inputs, storage_inputs, self.dt)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.services[service] = new_service
 
-        dLogger.info("Finished adding Services for Value Stream")
+        u_logger.info("Finished adding Services for Value Stream")
 
     def optimize_problem_loop(self, annuity_scalar=1):
         """This function selects on opt_agg of data in self.time_series and calls optimization_problem on it. We determine if the

@@ -417,7 +417,9 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 value_stream.update_tariff_rate(self.Finance['customer_tariff'], retail_prices)
 
         if 'User' in self.value_streams.keys():
-            self.value_streams['User'].update_yearly_value(self.valuestream_values['User']['price'])
+            user_object = self.value_streams['User']
+            if 'price' in user_object.keys():
+                self.value_streams['User'].update_yearly_value(self.valuestream_values['User']['price'])
 
         for key, value in self.ders.items():
             self.update_with_evaluation(key, value, self.ders_values[key])

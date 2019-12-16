@@ -286,7 +286,7 @@ class BatterySizing(storagevet.BatteryTech):
                     if const_type == "min":
                         # if minimum constraint, choose higher constraint value
                         try:
-                            temp_constraints.loc[absolute_index, name] = np.max(absolute_const, current_const)
+                            temp_constraints.loc[absolute_index, name] = np.maximum(absolute_const, current_const)
                         except TypeError:
                             temp_constraints.loc[absolute_index, name] = absolute_const
                         # temp_constraints.loc[constraint.value.index, name] += constraint.value.values
@@ -303,7 +303,7 @@ class BatterySizing(storagevet.BatteryTech):
                     else:
                         # if maximum constraint, choose lower constraint value
                         try:
-                            temp_constraints.loc[absolute_index, name] = np.min(absolute_const, current_const)
+                            temp_constraints.loc[absolute_index, name] = np.minimum(absolute_const, current_const)
                         except TypeError:
                             temp_constraints.loc[absolute_index, name] = absolute_const
                         # temp_constraints.loc[constraint.value.index, name] -= constraint.value.values
@@ -311,7 +311,7 @@ class BatterySizing(storagevet.BatteryTech):
                         # if the maximum energy needed is less than the physical minimum, infeasible scenario
                         min_value = self.physical_constraints[const_name + '_min' + '_rated'].value
                         try:
-                            constraint_violation = any(temp_constraints[name] > min_value)
+                            constraint_violation = any(temp_constraints[name] < min_value)
                         except (ValueError, TypeError):
                             constraint_violation = False
                         if (const_name == 'ene') & constraint_violation:
@@ -321,27 +321,6 @@ class BatterySizing(storagevet.BatteryTech):
                             # it is ok to floor at zero since negative power max values will be handled in power min
                             # i.e negative ch_max means dis_min should be positive and ch_max should be 0)
                             temp_constraints[name] = temp_constraints[name].clip(lower=0)
-            if service.name == 'UserConstraints':
-                user_inputted_constraint = service.user_constraints
-                for user_constraint_name in user_inputted_constraint:
-                    # determine if the user inputted constraint is a max or min constraint
-                    user_constraint = user_inputted_constraint[user_constraint_name]
-                    const_type = user_constraint_name.split('_')[1]
-                    if const_type == 'max':
-                        # iterate through user inputted constraint Series
-                        for i in user_constraint.index:
-                            # update temp_constraints df if user inputted a lower max constraint
-                            if temp_constraints[user_constraint_name].loc[i] > user_constraint.loc[i]:
-                                temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
-                    elif const_type == 'min':
-                        # iterate through user inputted constraint Series
-                        for i in user_constraint.index:
-                            # update temp_constraints df if user inputted a higher min constraint
-                            if temp_constraints[user_constraint_name].loc[i] < user_constraint.loc[i]:
-                                temp_constraints[user_constraint_name].loc[i] = user_constraint.loc[i]
-                    else:
-                        e_logger.error("User has inputted an invalid constraint for Storage. Please change and run again.")
-                        sys.exit()
 
         # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
         self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),

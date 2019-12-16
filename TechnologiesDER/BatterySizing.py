@@ -80,6 +80,7 @@ class BatterySizing(storagevet.BatteryTech):
             'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
             'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
             'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
+        self.being_sized = bool(len(self.size_constraints))
 
     def objective_function(self, variables, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
@@ -146,6 +147,8 @@ class BatterySizing(storagevet.BatteryTech):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
+        if not self.being_sized:
+            return super(BatterySizing, self).objective_constraints(variables, mask, reservations, mpc_ene)
 
         constraint_list = []
 
@@ -167,25 +170,12 @@ class BatterySizing(storagevet.BatteryTech):
         except KeyError:
             ice_gen = np.zeros(size)
 
-        # create cvx parameters of control constraints (this improves readability in cvx costs and better handling)
-        # ene_max = cvx.Parameter(size, value=self.control_constraints['ene_max'].value[mask].values, name='ene_max')
-        # ene_min = cvx.Parameter(size, value=self.control_constraints['ene_min'].value[mask].values, name='ene_min')
-        # ch_max = cvx.Parameter(size, value=self.control_constraints['ch_max'].value[mask].values, name='ch_max')
-        # ch_min = cvx.Parameter(size, value=self.control_constraints['ch_min'].value[mask].values, name='ch_min')
-        # dis_max = cvx.Parameter(size, value=self.control_constraints['dis_max'].value[mask].values, name='dis_max')
-        # dis_min = cvx.Parameter(size, value=self.control_constraints['dis_min'].value[mask].values, name='dis_min')
         ene_max = self.physical_constraints['ene_max_rated'].value
         ene_min = self.control_constraints['ene_min'].value[mask].values
         ch_max = self.physical_constraints['ch_max_rated'].value  #TODO: this will break if we have any max charge/discharge constraints
         ch_min = self.control_constraints['ch_min'].value[mask].values
         dis_max = self.physical_constraints['dis_max_rated'].value
         dis_min = self.control_constraints['dis_min'].value[mask].values
-
-        # ene_max = self.ene_max_rated
-        # ch_max = self.ch_max_rated
-        # dis_max = self.dis_max_rated
-        # ch_min = 0
-        # dis_min = 0
 
         # energy at the end of the last time step
         constraint_list += [cvx.Zero((ene_target - ene[-1]) - (self.dt * ch[-1] * self.rte) + (self.dt * dis[-1]) - reservations['E'][-1] + (self.dt * ene[-1] * self.sdr * 0.01))]
@@ -203,7 +193,7 @@ class BatterySizing(storagevet.BatteryTech):
         constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
         constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
-        constraint_list += [cvx.NonPos(-ene_target + ene_min[-1] - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
+        constraint_list += [cvx.NonPos(-ene_target + ene_min - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
         constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
 
         # Keep charge and discharge power levels within bounds

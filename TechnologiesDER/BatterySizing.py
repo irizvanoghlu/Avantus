@@ -277,7 +277,7 @@ class BatterySizing(storagevet.BatteryTech):
                         # if minimum constraint, choose higher constraint value
                         try:
                             temp_constraints.loc[absolute_index, name] = np.maximum(absolute_const, current_const)
-                        except TypeError:
+                        except (TypeError, SystemError):
                             temp_constraints.loc[absolute_index, name] = absolute_const
                         # temp_constraints.loc[constraint.value.index, name] += constraint.value.values
 
@@ -285,7 +285,7 @@ class BatterySizing(storagevet.BatteryTech):
                         max_value = self.physical_constraints[const_name + '_max' + '_rated'].value
                         try:
                             constraint_violation = any(temp_constraints[name] > max_value)
-                        except (ValueError, TypeError):
+                        except (ValueError, TypeError, SystemError):
                             constraint_violation = False
                         if constraint_violation:
                             return temp_constraints[temp_constraints[name] > max_value].index
@@ -294,7 +294,7 @@ class BatterySizing(storagevet.BatteryTech):
                         # if maximum constraint, choose lower constraint value
                         try:
                             temp_constraints.loc[absolute_index, name] = np.minimum(absolute_const, current_const)
-                        except TypeError:
+                        except (TypeError, SystemError):
                             temp_constraints.loc[absolute_index, name] = absolute_const
                         # temp_constraints.loc[constraint.value.index, name] -= constraint.value.values
 

@@ -85,15 +85,15 @@ class ResultDER(Result):
 
                 # the energy a battery will provide in an outage is whatever that is not being provided by pv
                 remaining_outage_ene = outage_energy.values - pv_rolsum
-                remaining_outage_ene = remaining_outage_ene.clip(min=0)
+                remaining_outage_ene = remaining_outage_ene.clip(lower=0)
             else:
                 remaining_outage_ene = outage_energy.values
                 pv_outage_energy = np.zeros(len(self.results.index))
                 pv_contribution = 0
 
-            if 'Battery' in self.technologies.keys():
-                battery_energy = self.opt_results['ene'].values
-                extra_energy = (battery_energy - remaining_outage_ene).clip(min=0)
+            if 'Storage' in self.technologies.keys():
+                battery_energy = self.results[self.technologies['Storage'].name + ' State of Energy (kWh)']
+                extra_energy = (battery_energy - remaining_outage_ene).clip(lower=0)
                 battery_outage_ene = battery_energy - extra_energy
                 remaining_outage_ene -= battery_outage_ene
                 battery_contribution = np.sum(battery_outage_ene) / sum_outage_requirement

@@ -115,17 +115,53 @@ class Reliability(storagevet.ValueStream):
 
         return report
 
-    def load_coverage_probability(self, outage_length, technologies):
+    def load_coverage_probability(self, max_outage, critical_load, technologies, dt):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
         OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
-            outage_length (int): the outage we want to cover
+            max_outage (int): the max outage we want to cover
+            critical_load (DataFrame): the load that must be covered to be considered reliable
             technologies (dict): dictionary of technologies (from Scenario)
+            dt (float): delta time of the timeseries
 
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
+        Notes: This function assumes dt=1 (TODO)
+                This function assumes only 1 storage (TODO)
         """
+        # initialize a list to track the frequency of the results of the simulate_outage method
+        frequency_simulate_outage = np.zeros(int(max_outage/dt))
+        # 1) simulate an outage that starts at every timestep
+        outage_init = 0
+        # collect technology specs required to call simulate_outage
+        tech_specs = {}
+        soc = None
+        if 'Storage' in technologies:
+            storage = technologies['Storage']
+            ess_properties ={'charge max': storage.ch_max_rated,
+                             'discharge max': storage.dis_max_rated,
+                             'rte': storage.rte,
+                             'energy cap': storage.ene_max_rated,
+                             'operation soc min': storage.llsoc,
+                             'operation soc max': storage.ulsoc}
+            tech_specs['ess_properties'] = ess_properties
+            # save the state of charge
+            soc = storage.variables.loc['ene', :]/storage.ene_max_rated
+        if 'PV' in technologies:
+            pv = technologies['PV']
+            tech_specs['pv_generation'] = pv.max_generation()
+        if 'ICE' in technologies:
+            ice = technologies['ICE']
+            tech_specs['fuel_generation'] = ice.max_power_out()
+        while outage_init < len(critical_load):
+            if soc is not None:
+                tech_specs['init_soc'] = soc.iloc[outage_init]
+            longest_covered_outage = self.simulate_outage(critical_load[outage_init], dt, max_outage, **tech_specs)
+            # record value of foo in frequency count
+            frequency_simulate_outage[int(longest_covered_outage/dt)] += 1
+            # start outage on next timestep
+            outage_init += 1
 
         return pd.DataFrame
 

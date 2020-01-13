@@ -31,7 +31,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
             params (dict): Dict of parameters
         """
         # create generic technology object
-        storagevet.CurtailPV.__init__(self, name, params)
+        super().__init__(name, params)
 
         self.size_constraints = []
 
@@ -73,7 +73,19 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = storagevet.CurtailPV.objective_constraints(self, variables, mask, reservations, mpc_ene)
+        constraints = super().objective_constraints(variables, mask, reservations, mpc_ene)
 
         constraints += self.size_constraints
         return constraints
+
+    def max_generation(self):
+        """
+
+        Returns: the maximum generation that the pv can produce
+
+        """
+        try:
+            max_gen = self.generation.value
+        except AttributeError:
+            max_gen = self.generation
+        return max_gen

@@ -115,18 +115,21 @@ class Reliability(storagevet.ValueStream):
 
         return report
 
-    def load_coverage_probability(self, fuel_generation, pv_generation, load, init_soc, max_outage_length, derate_pv_by):
-        """Iterate through each scenario that an outage can occur, changing when the outage began
+    def load_coverage_probability(self, outage_length, technologies):
+        """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
+        OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
             outage_length (int): the outage we want to cover
-            scenario (ScenarioSizing):
+            technologies (dict): dictionary of technologies (from Scenario)
 
-        Returns: the probability (as a percent) that a DER mix will be able to successfully cover the load in an outage
+        Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
         """
 
-    def simulate_outage(self, fuel_generation, pv_generation, critical_load, dt, outage_left, duration=0, ess_properties=None, init_soc=None):
+        return pd.DataFrame
+
+    def simulate_outage(self, critical_load, dt, outage_left, fuel_generation=0, pv_generation=None, ess_properties=None, init_soc=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH
         or the iteration loop hits the end of any of the array arguments.
         Updates and tracks the SOC throughout the outage
@@ -138,7 +141,6 @@ class Reliability(storagevet.ValueStream):
             dt (float): the delta time
             init_soc (float, None): the soc of the ESS (if included in analysis) at the beginning of time t
             outage_left (int): the length of outage yet to be simulated
-            duration (int): the current duration length being tested
             ess_properties (dict): dictionary that describes the physical properties of the ess in the analysis
                 includes 'charge max', 'discharge max, 'operation soc min', 'operation soc max', 'rte', 'energy cap'
 
@@ -146,7 +148,7 @@ class Reliability(storagevet.ValueStream):
 
         """
         # base case: when to terminate recursion
-        if outage_left == 0 or pv_generation is None or critical_load is None:
+        if outage_left == 0 or critical_load is None:
             return 0
         # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
         # generation you are confident will be delivered (usually 20% of PV forecast)
@@ -178,9 +180,7 @@ class Reliability(storagevet.ValueStream):
                 # an outage cannot be reliably covered at this timestep, nor will it be covered beyond
                 return 0
         # CHECK NEXT TIMESTEP
-        # update duration
-        duration += dt
         # drop the first index of each array (so we can check the next timestep)
         new_pv = pv_generation.iloc[1:]
         new_cl = critical_load.iloc[1:]
-        return duration + self.simulate_outage(fuel_generation, new_pv, new_cl, dt, outage_left - 1, duration, ess_properties, next_soc)
+        return dt + self.simulate_outage(new_cl, dt, outage_left - 1, fuel_generation, new_pv, ess_properties, next_soc)

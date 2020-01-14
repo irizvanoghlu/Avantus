@@ -131,7 +131,7 @@ class Reliability(storagevet.ValueStream):
                 This function assumes only 1 storage (TODO)
         """
         # initialize a list to track the frequency of the results of the simulate_outage method
-        frequency_simulate_outage = np.zeros(int(max_outage/dt))
+        frequency_simulate_outage = np.zeros(int(max_outage/dt)+1)
         # 1) simulate an outage that starts at every timestep
         outage_init = 0
         # collect technology specs required to call simulate_outage
@@ -157,13 +157,22 @@ class Reliability(storagevet.ValueStream):
         while outage_init < len(critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
-            longest_covered_outage = self.simulate_outage(critical_load[outage_init], dt, max_outage, **tech_specs)
+            longest_covered_outage = self.simulate_outage(critical_load[outage_init:], dt, max_outage, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_covered_outage/dt)] += 1
             # start outage on next timestep
             outage_init += 1
 
-        return pd.DataFrame
+        # 2) calculate probabilities
+        outage_lengths = np.arange(1, max_outage+1, dt)
+        outage_coverage = {'Outage Length (hrs)': outage_lengths,
+                           'Load Coverage Probability (%)': []}
+        for length in outage_lengths:
+            scenarios_covered = frequency_simulate_outage[int(length/dt):].sum()
+            total_possible_scenarios = len(critical_load) - (length/dt) + 1
+            percentage = scenarios_covered/total_possible_scenarios
+            outage_coverage['Load Coverage Probability (%)'].append(percentage)
+        return pd.DataFrame(outage_coverage)
 
     def simulate_outage(self, critical_load, dt, outage_left, fuel_generation=0, pv_generation=None, ess_properties=None, init_soc=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH

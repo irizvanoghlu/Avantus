@@ -321,4 +321,32 @@ class BatterySizing(storagevet.BatteryTech):
                                     'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
         return None
 
+    def physical_properties(self):
+        """
 
+        Returns: a dictionary of physical properties that define the ess
+            includes 'charge max', 'discharge max, 'operation soc min', 'operation soc max', 'rte', 'energy cap'
+
+        """
+        try:
+            energy_rated = self.ene_max_rated.value
+        except AttributeError:
+            energy_rated = self.ene_max_rated
+
+        try:
+            ch_max_rated = self.ch_max_rated.value
+        except AttributeError:
+            ch_max_rated = self.ch_max_rated
+
+        try:
+            dis_max_rated = self.dis_max_rated.value
+        except AttributeError:
+            dis_max_rated = self.dis_max_rated
+
+        ess_properties = {'charge max': ch_max_rated,
+                          'discharge max': dis_max_rated,
+                          'rte': self.rte,
+                          'energy cap': energy_rated,
+                          'operation soc min': self.llsoc,
+                          'operation soc max': self.ulsoc}
+        return ess_properties

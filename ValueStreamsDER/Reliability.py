@@ -139,15 +139,9 @@ class Reliability(storagevet.ValueStream):
         soc = None
         if 'Storage' in technologies:
             storage = technologies['Storage']
-            ess_properties ={'charge max': storage.ch_max_rated,
-                             'discharge max': storage.dis_max_rated,
-                             'rte': storage.rte,
-                             'energy cap': storage.ene_max_rated,
-                             'operation soc min': storage.llsoc,
-                             'operation soc max': storage.ulsoc}
-            tech_specs['ess_properties'] = ess_properties
+            tech_specs['ess_properties'] = storage.physical_properties()
             # save the state of charge
-            soc = storage.variables.loc['ene', :]/storage.ene_max_rated
+            soc = storage.variables.loc[:, 'ene']/storage.ene_max_rated
         if 'PV' in technologies:
             pv = technologies['PV']
             tech_specs['pv_generation'] = pv.max_generation()
@@ -197,12 +191,18 @@ class Reliability(storagevet.ValueStream):
             return 0
         # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
         # generation you are confident will be delivered (usually 20% of PV forecast)
-        reliability_check1 = np.round(critical_load.iloc[0] - (0.2 * pv_generation.iloc[0]) - fuel_generation)
-        extra_generation = fuel_generation - critical_load + pv_generation
-        demand_left = -extra_generation
+        reliability_check1 = critical_load.iloc[0]
+        demand_left = critical_load.iloc[0]
+        if pv_generation is not None:
+            reliability_check1 -= 0.2 * pv_generation.iloc[0]
+            demand_left -= pv_generation
+        if fuel_generation:
+            reliability_check1 -= fuel_generation
+            demand_left -= fuel_generation
+        extra_generation = -demand_left
         if 0 >= reliability_check1:
             # check to see if there is space to storage energy in the ESS to save extra generation
-            if ess_properties['operation soc max'] >= init_soc:
+            if ess_properties is not None and ess_properties['operation soc max'] >= init_soc:
                 # the amount we can charge based on its current SOC
                 soc_charge = (ess_properties['operation soc max'] - init_soc) * ess_properties['energy cap'] / (ess_properties['rte'] * dt)
                 charge = min(soc_charge, extra_generation, ess_properties['charge max'])
@@ -214,7 +214,7 @@ class Reliability(storagevet.ValueStream):
             # can reliably meet the outage in that timestep: CHECK NEXT TIMESTEP
         else:
             # check that there is enough SOC in the ESS to satisfy worst case
-            if 0 >= (reliability_check1*0.43/ess_properties['energy cap']) - init_soc:
+            if ess_properties is not None and 0 >= (reliability_check1*0.43/ess_properties['energy cap']) - init_soc:
                 # so discharge to meet the load offset by all generation
                 soc_discharge = (init_soc - ess_properties['operation soc min']) * ess_properties['energy cap'] / dt
                 discharge = min(soc_discharge, demand_left, ess_properties['discharge max'])

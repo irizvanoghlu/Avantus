@@ -35,6 +35,7 @@ from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
+from storagevet.ValueStreams import Deferral
 
 # TODO: make multi-platform by using path combine functions
 
@@ -79,6 +80,11 @@ class DERVET:
         self.model_params = ParamsDER
 
     def solve(self):
+        # TODO: Using the Deferral.py methods:
+        # TODO: 1) Check if Deferral Only case: if so, SKIP OPTIMIZATION AND Launch alternate subroutine
+        # TODO: 2) Precheck Failure **(get clarification on how to just report the financial outputs)**
+        # TODO: 3) get dict of activation statuses from params (read ParamsDER.py class more in depth)
+
         verbose = self.model_params.instances[0].Scenario['verbose']
         if verbose:
             self.model_params.class_summary()

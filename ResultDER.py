@@ -66,7 +66,7 @@ class ResultDER(Result):
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             reliability = self.predispatch_services['Reliability']
             # save/calculate load coverage
-            # self.load_coverage_prob = reliability.load_coverage_probability(168, self.results.loc[:, 'Total Load (kW)'], self.technologies, self.dt)
+            self.load_coverage_prob = reliability.load_coverage_probability(168, self.results.loc[:, 'Total Load (kW)'], self.technologies, self.dt)
 
             # TODO: make this more dynamic
             # calculate RELIABILITY SUMMARY if not post-facto calulation only
@@ -156,7 +156,7 @@ class ResultDER(Result):
             savepath = self.dir_abs_path
         if 'Reliability' in self.predispatch_services.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
-            self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'))
+            self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.dir_abs_path)
 

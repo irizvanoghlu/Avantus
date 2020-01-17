@@ -18,6 +18,9 @@ import cvxpy as cvx
 import pandas as pd
 
 
+DEBUG = False
+
+
 class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
@@ -33,15 +36,19 @@ class Reliability(storagevet.ValueStream):
         """
 
         # generate the generic predispatch service object
-        storagevet.ValueStream.__init__(self, techs['Storage'], 'Reliability', dt)
+        super().__init__(techs['Storage'], 'Reliability', dt)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
 
-        if 'Diesel' in techs:
+        if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
         # else:
         #     self.ice_rated_power = 0
+        if 'Storage' in techs.keys():
+            self.ess_rated_power = techs['Storage'].dis_max_rated
+        else:
+            self.ess_rated_power = 0
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
@@ -57,13 +64,14 @@ class Reliability(storagevet.ValueStream):
         self.reliability_requirement = reverse.iloc[::-1]  # set it back the right way
 
         if not self.post_facto_only:
+            if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kW')
             ####self.reliability_pwr_requirement =
             # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
             # there will be 2 constraints: one for power, one for energy
-            ene_min_add = Const.Constraint('ene_min_add', self.name, self.reliability_requirement)
+            ene_min_add = Const.Constraint('ene_min', self.name, self.reliability_requirement)
             ###dis_min = Const.Constraint('dis_min',self.name,)
 
-            self.constraints = {'ene_min_add': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
+            self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
     def objective_constraints(self, variables, subs, generation, reservations=None):
         """Default build constraint list method. Used by services that do not have constraints.
@@ -78,25 +86,23 @@ class Reliability(storagevet.ValueStream):
         Returns:
             An empty list
         """
+        if not self.post_facto_only:
+            try:
+                pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
+            except KeyError:
+                pv_generation = np.zeros(subs.shape[0])
 
-        try:
-            pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
-        except KeyError:
-            pv_generation = np.zeros(subs.shape[0])
+            try:
+                ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
+            except (KeyError, AttributeError):
+                ice_rated_power = 0
 
-        try:
-            ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
-        except (KeyError, AttributeError):
-            ice_rated_power = 0
-
-        try:
-            battery_dis_size = variables['dis_max_rated']  # discharge size parameter for batteries
-        except KeyError:
-            battery_dis_size = 0
-
-        # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
-        # to ensure that our DER mix can cover peak net load during any outage in the year
-        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - battery_dis_size - ice_rated_power)]
+            # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
+            # to ensure that our DER mix can cover peak net load during any outage in the year
+            if DEBUG: print(f'combined max power output > {subs.loc[:, "load"].max()} kW')
+            return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
+        else:
+            return super().objective_constraints(variables, subs, generation, reservations)
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.
@@ -139,9 +145,10 @@ class Reliability(storagevet.ValueStream):
         soc = None
         if 'Storage' in technologies:
             storage = technologies['Storage']
-            tech_specs['ess_properties'] = storage.physical_properties()
+            ess_prop = storage.physical_properties()
+            tech_specs['ess_properties'] = ess_prop
             # save the state of charge
-            soc = storage.variables.loc[:, 'ene']/storage.ene_max_rated
+            soc = storage.variables.loc[:, 'ene']/ess_prop['energy cap']
         if 'PV' in technologies:
             pv = technologies['PV']
             tech_specs['pv_generation'] = pv.max_generation()
@@ -158,7 +165,7 @@ class Reliability(storagevet.ValueStream):
             outage_init += 1
 
         # 2) calculate probabilities
-        outage_lengths = np.arange(1, max_outage+1, dt)
+        outage_lengths = list(np.arange(1, max_outage+1, dt))
         outage_coverage = {'Outage Length (hrs)': outage_lengths,
                            'Load Coverage Probability (%)': []}
         for length in outage_lengths:
@@ -185,9 +192,10 @@ class Reliability(storagevet.ValueStream):
 
         Returns: the length of the outage that starts at the begining of the array that can be reliabily covered
 
+        Notes: assumes that fuel generators can ramp up SUPER DUPER fast
         """
         # base case: when to terminate recursion
-        if outage_left == 0 or critical_load is None:
+        if outage_left == 0 or not len(critical_load):
             return 0
         # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
         # generation you are confident will be delivered (usually 20% of PV forecast)
@@ -226,6 +234,9 @@ class Reliability(storagevet.ValueStream):
                 return 0
         # CHECK NEXT TIMESTEP
         # drop the first index of each array (so we can check the next timestep)
-        new_pv = pv_generation.iloc[1:]
+        if pv_generation is not None:
+            new_pv = pv_generation.iloc[1:]
+        else:
+            new_pv = pv_generation
         new_cl = critical_load.iloc[1:]
         return dt + self.simulate_outage(new_cl, dt, outage_left - 1, fuel_generation, new_pv, ess_properties, next_soc)

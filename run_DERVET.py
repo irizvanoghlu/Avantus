@@ -92,7 +92,7 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        if not ScenarioSizing.execute_deferral_subroutine(self.model_params):
+        if not ScenarioSizing.Scenario.execute_deferral_subroutine(self.model_params):
             # self.model_params contains the dict of technologies/services/predispatch services
             ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
 

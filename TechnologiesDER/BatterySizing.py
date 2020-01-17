@@ -255,12 +255,14 @@ class BatterySizing(storagevet.BatteryTech):
         if self.incl_binary:
             # when dis_min or ch_min has been overwritten (read: increased) by predispatch services, need to force technology to be on
             # TODO better way to do this???
-            ind_d = [i for i in range(size) if self.control_constraints['dis_min'].value[mask].values[i] > self.physical_constraints['dis_min_rated'].value]
-            ind_c = [i for i in range(size) if self.control_constraints['ch_min'].value[mask].values[i] > self.physical_constraints['ch_min_rated'].value]
-            if len(ind_d) > 0:
-                constraint_list += [on_d[ind_d] == 1]  # np.ones(len(ind_d))
-            if len(ind_c) > 0:
-                constraint_list += [on_c[ind_c] == 1]  # np.ones(len(ind_c))
+            if 'dis_min' in self.control_constraints.keys():
+                ind_d = [i for i in range(size) if self.control_constraints['dis_min'].value[mask].values[i] > self.physical_constraints['dis_min_rated'].value]
+                if len(ind_d) > 0:
+                    constraint_list += [on_d[ind_d] == 1]  # np.ones(len(ind_d))
+            if 'ch_min' in self.control_constraints.keys():
+                ind_c = [i for i in range(size) if self.control_constraints['ch_min'].value[mask].values[i] > self.physical_constraints['ch_min_rated'].value]
+                if len(ind_c) > 0:
+                    constraint_list += [on_c[ind_c] == 1]  # np.ones(len(ind_c))
 
             # note: cannot operate startup without binary
             if self.incl_startup:

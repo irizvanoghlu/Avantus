@@ -35,7 +35,6 @@ from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
-from storagevet.ValueStreams import Deferral
 
 # TODO: make multi-platform by using path combine functions
 
@@ -80,11 +79,6 @@ class DERVET:
         self.model_params = ParamsDER
 
     def solve(self):
-        # TODO: Using the Deferral.py methods:
-        # TODO: 1) Check if Deferral Only case: if so, SKIP OPTIMIZATION AND Launch alternate subroutine
-        # TODO: 2) Precheck Failure **(get clarification on how to just report the financial outputs)**
-        # TODO: 3) get dict of activation statuses from params (read ParamsDER.py class more in depth)
-
         verbose = self.model_params.instances[0].Scenario['verbose']
         if verbose:
             self.model_params.class_summary()
@@ -98,32 +92,41 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
+        if not ScenarioSizing.execute_deferral_subroutine(self.model_params):
+            # self.model_params contains the dict of technologies/services/predispatch services
+            ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
 
-        for key, value in self.model_params.instances.items():
-            if not value.other_error_checks():
-                continue
-            value.prepare_scenario()
-            value.prepare_technology()
-            value.prepare_services()
-            value.prepare_finance()
+            for key, value in self.model_params.instances.items():
+                if not value.other_error_checks():
+                    continue
+                value.prepare_scenario()
+                value.prepare_technology()
+                value.prepare_services()
+                value.prepare_finance()
 
-            run = ScenarioSizing(value)
-            run.add_technology()
-            run.add_services()
-            run.init_financials(value.Finance)
-            run.add_control_constraints()
-            run.optimize_problem_loop()
+                run = ScenarioSizing(value)
+                run.add_technology()
+                run.add_services()
+                run.init_financials(value.Finance)
+                run.add_control_constraints()
+                run.optimize_problem_loop()
 
-            ResultDER.add_instance(key, run)
+                ResultDER.add_instance(key, run)
 
-        ResultDER.calculate()
-        ResultDER.save_to_disk()
-        ends = time.time()
-        print("DERVET runtime: ")
-        print(ends - starts)
+            ResultDER.calculate()
+            ResultDER.save_to_disk()
+            ends = time.time()
+            print("DERVET runtime: ")
+            print(ends - starts)
 
-        return ResultDER
+            return ResultDER
+        else:
+            # this is the case of the deferral only subroutine. We do not run optimization and instead:
+            # 1) output the year of deferral failure and
+            # 2) display the yearly DER requirements
+            ScenarioSizing.check_for_deferral_failure()
+            # TODO: display the yearly DER requirements for the deferral
+
 
 
 if __name__ == '__main__':

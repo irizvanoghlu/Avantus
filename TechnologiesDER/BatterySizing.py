@@ -295,7 +295,7 @@ class BatterySizing(storagevet.BatteryTech):
 
         # create a df with all physical constraint values
         for constraint in self.physical_constraints.values():
-            temp_constraints[constraint.name[:-6]] = copy.deepcopy(constraint.value)
+            temp_constraints[re.search('^.+_.+_', constraint.name).group(0)[0:-1]] = copy.deepcopy(constraint.value)
 
         # change physical constraint with predispatch service constraints at each timestep
         # predispatch service constraints should be absolute constraints

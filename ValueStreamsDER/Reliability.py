@@ -113,14 +113,16 @@ class Reliability(storagevet.ValueStream):
             pertaining to this instance
 
         """
-        try:
-            storage_energy_rating = self.storage.ene_max_rated.value
-        except AttributeError:
-            storage_energy_rating = self.storage.ene_max_rated
-        report = pd.DataFrame(index=self.reliability_requirement.index)
-        report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
-        report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
-
+        if not self.post_facto_only:
+            try:
+                storage_energy_rating = self.storage.ene_max_rated.value
+            except AttributeError:
+                storage_energy_rating = self.storage.ene_max_rated
+            report = pd.DataFrame(index=self.reliability_requirement.index)
+            report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
+            report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
+        else:
+            report = super().timeseries_report()
         return report
 
     def load_coverage_probability(self, max_outage, results_df, dt, size_df, technology_summary_df):

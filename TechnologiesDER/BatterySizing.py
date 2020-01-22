@@ -153,9 +153,6 @@ class BatterySizing(storagevet.BatteryTech):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        if not self.being_sized:
-            return super(BatterySizing, self).objective_constraints(variables, mask, reservations, mpc_ene)
-
         constraint_list = []
 
         size = int(np.sum(mask))

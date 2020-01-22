@@ -64,7 +64,9 @@ class Reliability(storagevet.ValueStream):
         self.reliability_requirement = reverse.iloc[::-1]  # set it back the right way
 
         if not self.post_facto_only:
-            if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kW')
+            if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kWh')
+            if DEBUG: print(f'max the system has to be able to charge bc energy req: {np.min(np.diff(self.reliability_requirement))} kW')
+            if DEBUG: print(f'max the system has to be able to discharge bc energy req: {np.max(np.diff(self.reliability_requirement))} kW')
             ####self.reliability_pwr_requirement =
             # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
             # there will be 2 constraints: one for power, one for energy
@@ -121,57 +123,85 @@ class Reliability(storagevet.ValueStream):
 
         return report
 
-    def load_coverage_probability(self, max_outage, critical_load, technologies, dt):
+    def load_coverage_probability(self, max_outage, results_df, dt, size_df, technology_summary_df):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
         OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
             max_outage (int): the max outage we want to cover
-            critical_load (DataFrame): the load that must be covered to be considered reliable
-            technologies (dict): dictionary of technologies (from Scenario)
+            results_df (DataFrame): the dataframe that consoidates all results
             dt (float): delta time of the timeseries
+            size_df (DataFrame): the dataframe that describes the physical capabilities of the DERs
+            technology_summary_df(DataFrame): maps DER type to user inputted name that indexes the size df
 
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
         Notes: This function assumes dt=1 (TODO)
                 This function assumes only 1 storage (TODO)
         """
+        if dt != 1:
+            print(f"load coverage probability algorithm assumes dt = 1 hr, not {dt}")
+            return
+        # create a list of tuples with the active technologies and their names (in that order)
+        technologies = []
+        for name, row in technology_summary_df.iterrows():
+            technologies.append((row.Type, name))
+
         # initialize a list to track the frequency of the results of the simulate_outage method
-        frequency_simulate_outage = np.zeros(int(max_outage/dt)+1)
+        frequency_simulate_outage = np.zeros(int(max_outage / dt) + 1)
         # 1) simulate an outage that starts at every timestep
-        outage_init = 0
+
         # collect technology specs required to call simulate_outage
         tech_specs = {}
         soc = None
-        if 'Storage' in technologies:
-            storage = technologies['Storage']
-            ess_prop = storage.physical_properties()
-            tech_specs['ess_properties'] = ess_prop
+        storage_tups = [item for item in technologies if item[0] == 'Energy Storage System']
+        if len(storage_tups) == 1:
+            ess_properties = {'charge max': size_df.loc[storage_tups[0][1], 'Charge Rating (kW)'],
+                              'discharge max': size_df.loc[storage_tups[0][1], 'Discharge Rating (kW)'],
+                              'rte': size_df.loc[storage_tups[0][1], 'Round Trip Efficiency (%)'],
+                              'energy cap': size_df.loc[storage_tups[0][1], 'Energy Rating (kWh)'],
+                              'operation soc min': size_df.loc[storage_tups[0][1], 'Lower Limit on SOC (%)'],
+                              'operation soc max': size_df.loc[storage_tups[0][1], 'Upper Limit on SOC (%)']}
+            tech_specs['ess_properties'] = ess_properties
             # save the state of charge
-            soc = storage.variables.loc[:, 'ene']/ess_prop['energy cap']
-        if 'PV' in technologies:
-            pv = technologies['PV']
-            tech_specs['pv_generation'] = pv.max_generation()
-        if 'ICE' in technologies:
-            ice = technologies['ICE']
-            tech_specs['fuel_generation'] = ice.max_power_out()
+            soc = results_df.loc[:, 'Battery SOC (%)']
+        elif len(storage_tups):
+            print(f'{len(storage_tups)} storage instances included, coverage probability algorithm assumes only 1')
+            return
+
+        pv_tups = [item for item in technologies if item[0] == 'PV']
+        if len(pv_tups) == 1:
+            tech_specs['pv_generation'] = results_df.loc[:, 'PV Maximum (kW)']
+        elif len(pv_tups):
+            print(f'{len(pv_tups)} pv instances included, coverage probability algorithm assumes only 1')
+            return
+
+        ice_tups = [item for item in technologies if item[0] == 'ICE']
+        if len(ice_tups) == 1:
+            tech_specs['fuel_generation'] = size_df.loc[ice_tups[0][1], 'Quantity'] * size_df.loc[ice_tups[0][1], 'Power Capacity (kW)']
+        elif len(ice_tups):
+            print(f'{len(ice_tups)} ice instances included, coverage probability algorithm assumes only 1')
+            return
+
+        critical_load = results_df.loc[:, 'Total Load (kW)']
+        outage_init = 0
         while outage_init < len(critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
-            longest_covered_outage = self.simulate_outage(critical_load[outage_init:], dt, max_outage, **tech_specs)
+            # print(len(critical_load.iloc[outage_init:]))
+            longest_covered_outage = self.simulate_outage(critical_load.iloc[outage_init:], dt, max_outage, **tech_specs)
             # record value of foo in frequency count
-            frequency_simulate_outage[int(longest_covered_outage/dt)] += 1
+            frequency_simulate_outage[int(longest_covered_outage / dt)] += 1
             # start outage on next timestep
             outage_init += 1
-
         # 2) calculate probabilities
-        outage_lengths = list(np.arange(1, max_outage+1, dt))
+        outage_lengths = list(np.arange(1, max_outage + 1, dt))
         outage_coverage = {'Outage Length (hrs)': outage_lengths,
                            'Load Coverage Probability (%)': []}
         for length in outage_lengths:
-            scenarios_covered = frequency_simulate_outage[int(length/dt):].sum()
-            total_possible_scenarios = len(critical_load) - (length/dt) + 1
-            percentage = scenarios_covered/total_possible_scenarios
+            scenarios_covered = frequency_simulate_outage[int(length / dt):].sum()
+            total_possible_scenarios = len(critical_load) - (length / dt) + 1
+            percentage = scenarios_covered / total_possible_scenarios
             outage_coverage['Load Coverage Probability (%)'].append(percentage)
         return pd.DataFrame(outage_coverage)
 
@@ -215,19 +245,19 @@ class Reliability(storagevet.ValueStream):
                 soc_charge = (ess_properties['operation soc max'] - init_soc) * ess_properties['energy cap'] / (ess_properties['rte'] * dt)
                 charge = min(soc_charge, extra_generation, ess_properties['charge max'])
                 # update the state of charge of the ESS
-                next_soc = init_soc + charge*ess_properties['rte']*dt
+                next_soc = init_soc + (charge * ess_properties['rte'] * dt)
             else:
                 # there is no space to save the extra generation, so the ess will not do anything
                 next_soc = init_soc
             # can reliably meet the outage in that timestep: CHECK NEXT TIMESTEP
         else:
             # check that there is enough SOC in the ESS to satisfy worst case
-            if ess_properties is not None and 0 >= (reliability_check1*0.43/ess_properties['energy cap']) - init_soc:
+            if ess_properties is not None and 0 >= (reliability_check1 * 0.43 / ess_properties['energy cap']) - init_soc:
                 # so discharge to meet the load offset by all generation
                 soc_discharge = (init_soc - ess_properties['operation soc min']) * ess_properties['energy cap'] / dt
                 discharge = min(soc_discharge, demand_left, ess_properties['discharge max'])
                 # update the state of charge of the ESS
-                next_soc = init_soc - discharge * dt
+                next_soc = init_soc - (discharge * dt / ess_properties['energy cap'])
                 # we can reliably meet the outage in that timestep: CHECK NEXT TIMESTEP
             else:
                 # an outage cannot be reliably covered at this timestep, nor will it be covered beyond

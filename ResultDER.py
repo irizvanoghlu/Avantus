@@ -52,8 +52,8 @@ class ResultDER(Result):
             # sizing_summary for CAES is currently similar to it for Battery
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
-        if (self.sizing_df['Duration (hours)'] > 24).any():
-            print('The duration of an Energy Storage System is greater than 24 hours!')
+        # if (self.sizing_df['Duration (hours)'] > 24).any():
+        #     print('The duration of an Energy Storage System is greater than 24 hours!')
 
         # DESIGN PLOT (peak load day)
         max_day = self.results['Original Net Load (kW)'].idxmax().date()
@@ -66,7 +66,7 @@ class ResultDER(Result):
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             reliability = self.predispatch_services['Reliability']
             # save/calculate load coverage
-            self.load_coverage_prob = reliability.load_coverage_probability(168, self.results.loc[:, 'Total Load (kW)'], self.technologies, self.dt)
+            self.load_coverage_prob = reliability.load_coverage_probability(168, self.results, self.dt, self.sizing_df, self.technology_summary)
 
             # TODO: make this more dynamic
             # calculate RELIABILITY SUMMARY if not post-facto calulation only

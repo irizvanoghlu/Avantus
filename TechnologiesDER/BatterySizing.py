@@ -128,10 +128,15 @@ class BatterySizing(storagevet.BatteryTech):
         sizing_results = pd.DataFrame({'Energy Rating (kWh)': energy_rated,
                                        'Charge Rating (kW)': ch_max_rated,
                                        'Discharge Rating (kW)': dis_max_rated,
+                                       'Round Trip Efficiency (%)': self.rte,
+                                       'Lower Limit on SOC (%)': self.llsoc,
+                                       'Upper Limit on SOC (%)': self.ulsoc,
                                        'Duration (hours)': energy_rated/dis_max_rated,
                                        'Capital Cost ($)': self.ccost,
                                        'Capital Cost ($/kW)': self.ccost_kw,
                                        'Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
+        if (sizing_results['Duration (hours)'] > 24).any():
+            print('The duration of an Energy Storage System is greater than 24 hours!')
         return sizing_results
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
@@ -208,9 +213,6 @@ class BatterySizing(storagevet.BatteryTech):
             dis_min = self.control_constraints['dis_min'].value[mask].values
         else:
             dis_min = self.physical_constraints['dis_min_rated'].value
-
-        # if DEBUG: print(f'energy start: {ene_target} > {ene_min[0]} \nenergy end: {ene_target} - ch*rte + dis > {ene_min[-1]}')
-        if DEBUG: print(f'energy start: {ene_target} > {ene_min_n} \nenergy end: {ene_target} - ch*rte + dis > {ene_min_t}')
 
         # energy at the end of the last time step
         constraint_list += [cvx.Zero((ene_target - ene[-1]) - (self.dt * ch[-1] * self.rte) + (self.dt * dis[-1]) - reservations['E'][-1] + (self.dt * ene[-1] * self.sdr * 0.01))]
@@ -360,32 +362,32 @@ class BatterySizing(storagevet.BatteryTech):
         #                             'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
         return None
 
-    def physical_properties(self):
-        """
-
-        Returns: a dictionary of physical properties that define the ess
-            includes 'charge max', 'discharge max, 'operation soc min', 'operation soc max', 'rte', 'energy cap'
-
-        """
-        try:
-            energy_rated = self.ene_max_rated.value
-        except AttributeError:
-            energy_rated = self.ene_max_rated
-
-        try:
-            ch_max_rated = self.ch_max_rated.value
-        except AttributeError:
-            ch_max_rated = self.ch_max_rated
-
-        try:
-            dis_max_rated = self.dis_max_rated.value
-        except AttributeError:
-            dis_max_rated = self.dis_max_rated
-
-        ess_properties = {'charge max': ch_max_rated,
-                          'discharge max': dis_max_rated,
-                          'rte': self.rte,
-                          'energy cap': energy_rated,
-                          'operation soc min': self.llsoc,
-                          'operation soc max': self.ulsoc}
-        return ess_properties
+    # def physical_properties(self):
+    #     """
+    #
+    #     Returns: a dictionary of physical properties that define the ess
+    #         includes 'charge max', 'discharge max, 'operation soc min', 'operation soc max', 'rte', 'energy cap'
+    #
+    #     """
+    #     try:
+    #         energy_rated = self.ene_max_rated.value
+    #     except AttributeError:
+    #         energy_rated = self.ene_max_rated
+    #
+    #     try:
+    #         ch_max_rated = self.ch_max_rated.value
+    #     except AttributeError:
+    #         ch_max_rated = self.ch_max_rated
+    #
+    #     try:
+    #         dis_max_rated = self.dis_max_rated.value
+    #     except AttributeError:
+    #         dis_max_rated = self.dis_max_rated
+    #
+    #     ess_properties = {'charge max': ch_max_rated,
+    #                       'discharge max': dis_max_rated,
+    #                       'rte': self.rte,
+    #                       'energy cap': energy_rated,
+    #                       'operation soc min': self.llsoc,
+    #                       'operation soc max': self.ulsoc}
+    #     return ess_properties

@@ -121,7 +121,7 @@ class ScenarioSizing(Scenario):
             u_logger.info("Using: " + str(service))
             inputs = self.predispatch_service_inputs_map[service]
             service_func = predispatch_service_action_map[service]
-            new_service = service_func(inputs, self.technologies, self.power_kw, self.dt)
+            new_service = service_func(inputs, self.technologies)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.predispatch_services[service] = new_service
 
@@ -140,7 +140,7 @@ class ScenarioSizing(Scenario):
             u_logger.info("Using: " + str(service))
             inputs = self.service_input_map[service]
             service_func = service_action_map[service]
-            new_service = service_func(inputs, storage_inputs, self.dt)
+            new_service = service_func(inputs, storage_inputs)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.services[service] = new_service
 

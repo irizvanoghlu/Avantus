@@ -22,18 +22,16 @@ class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, techs, load_data, dt):
+    def __init__(self, params, techs):
         """ Generates the objective function, finds and creates constraints.
 
           Args:
             params (Dict): input parameters
             techs (Dict): technology objects after initialization, as saved in a dictionary
-            load_data (DataFrame): table of time series load data
-            dt (float): optimization timestep (hours)
         """
 
         # generate the generic predispatch service object
-        storagevet.ValueStream.__init__(self, techs['Storage'], 'Reliability', dt)
+        storagevet.ValueStream.__init__(self, techs['Storage'], 'Reliability', params)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
 

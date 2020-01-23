@@ -105,13 +105,6 @@ class ScenarioSizing(Scenario):
         TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
 
-        # # dictionary of storage inputs to handle multiple storage technologies
-        # storage_inputs = dict()
-        # for tech in self.technologies:
-        #     storage_inputs[tech] = self.technologies[tech]
-
-        storage_inputs = self.technologies['Storage']
-
         predispatch_service_action_map = {
             'Backup': storagevet.Backup,
             'User': storagevet.UserConstraints,

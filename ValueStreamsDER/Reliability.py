@@ -31,10 +31,10 @@ class Reliability(storagevet.ValueStream):
         """
 
         # generate the generic predispatch service object
-        storagevet.ValueStream.__init__(self, techs['Storage'], 'Reliability', params)
+        storagevet.ValueStream.__init__(self, 'Reliability', params)
         self.outage_duration_coverage = params['target']  # must be in hours
-        self.dt = params['dt']
 
+        self.storage = techs['Storage']
         if 'Diesel' in techs:
             self.ice_combined_rating = techs['Diesel'].rated_power * techs['Diesel'].n
         self.ess_combined_rating = 0
@@ -61,10 +61,10 @@ class Reliability(storagevet.ValueStream):
         ####self.reliability_pwr_requirement =
         # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
         # there will be 2 constraints: one for power, one for energy
-        ene_min_add = Const.Constraint('ene_min_add', self.name, self.reliability_requirement)
+        ene_min_add = Const.Constraint('ene_min', self.name, self.reliability_requirement)
         ###dis_min = Const.Constraint('dis_min',self.name,)
 
-        self.constraints = {'ene_min_add': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
+        self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
     def objective_constraints(self, variables, subs, net_power, reservations=None):
         """Default build constraint list method. Used by services that do not have constraints.

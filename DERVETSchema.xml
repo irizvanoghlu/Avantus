@@ -117,6 +117,12 @@
 		<dis_max_rated cba="n" min="0.0" type="float" />
 		<dis_min_rated cba="n" min="0.0" type="float" />
 		<ene_max_rated cba="n" min="0.0" type="float" />
+		<user_ch_rated_max cba="n" min="0.0" type="float" />
+		<user_ch_rated_min cba="n" min="0.0" type="float" />
+		<user_dis_rated_max cba="n" min="0.0" type="float" />
+		<user_dis_rated_min cba="n" min="0.0" type="float" />
+		<user_ene_rated_max cba="n" min="0.0" type="float" />
+		<user_ene_rated_min cba="n" min="0.0" type="float" />
 		<ulsoc cba="n" max="100.0" min="0.0" type="float" />
 		<llsoc cba="n" max="100.0" min="0.0" type="float" />
 		<rte cba="n" max="100.0" min="0.0" type="float" />

@@ -100,9 +100,7 @@ class ScenarioSizing(Scenario):
 
         Notes:
             This method needs to be applied after the technology has been initialized.
-            ALL SERVICES ARE CONNECTED TO THE TECH
 
-        TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
 
         predispatch_service_action_map = {

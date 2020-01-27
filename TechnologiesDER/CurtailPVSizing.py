@@ -89,3 +89,11 @@ class CurtailPVSizing(storagevet.CurtailPV):
         except AttributeError:
             max_gen = self.generation
         return max_gen
+
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return bool(len(self.size_constraints))

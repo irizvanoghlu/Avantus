@@ -81,7 +81,6 @@ class BatterySizing(storagevet.BatteryTech):
             'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
             'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
             'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
-        self.being_sized = bool(len(self.size_constraints))
 
     def objective_function(self, variables, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
@@ -388,3 +387,11 @@ class BatterySizing(storagevet.BatteryTech):
     #                       'operation soc min': self.llsoc,
     #                       'operation soc max': self.ulsoc}
     #     return ess_properties
+
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return bool(len(self.size_constraints))

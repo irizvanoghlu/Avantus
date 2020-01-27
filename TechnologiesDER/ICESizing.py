@@ -96,3 +96,11 @@ class ICESizing(storagevet.ICE):
         except AttributeError:
             power_out = self.n * self.rated_power
         return power_out
+
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return self.n_min == self.n_max

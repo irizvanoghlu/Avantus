@@ -32,6 +32,7 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 sys.path.insert(0, storagevet_path)
 
 from ScenarioSizing import ScenarioSizing
+from Scenario import Scenario
 from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
@@ -92,9 +93,16 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        if not ScenarioSizing.Scenario.execute_deferral_subroutine(self.model_params):
-            # self.model_params contains the dict of technologies/services/predispatch services
+        curr_scenario = ScenarioSizing.Scenario(self.model_params)
+        all_components_dict = curr_scenario.unravel_active_objects()
+        deferral_only_scenario = curr_scenario.check_to_execute_deferral_only_subroutine(all_components_dict)
+
+        # This checks for whether or not the deferral_subroutine should be run
+        if not deferral_only_scenario:
+            # If not Deferral Only, run program normally
+
             ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
+            # self.model_params contains the dict of technologies/services/predispatch services
 
             for key, value in self.model_params.instances.items():
                 if not value.other_error_checks():
@@ -121,11 +129,10 @@ class DERVET:
 
             return ResultDER
         else:
-            # this is the case of the deferral only subroutine. We do not run optimization and instead:
-            # 1) output the year of deferral failure and
-            # 2) display the yearly DER requirements
-            ScenarioSizing.check_for_deferral_failure()
-            # TODO: display the yearly DER requirements for the deferral
+            # This is the case of the Deferral Only Scenario. We do not run optimization and instead run the Subroutine"
+            #   1) output the year of deferral failure
+            #   2) display the yearly DER requirements
+            ScenarioSizing.Scenario.check_for_deferral_failure()
 
 
 

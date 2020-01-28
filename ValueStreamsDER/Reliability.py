@@ -39,7 +39,6 @@ class Reliability(storagevet.ValueStream):
         super().__init__(techs['Storage'], 'Reliability', dt)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
-        self.post_facto_only = params['post_facto_only']
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
@@ -63,17 +62,16 @@ class Reliability(storagevet.ValueStream):
         reverse = reverse.rolling(self.coverage_timesteps, min_periods=1).sum()*self.dt  # rolling function looks back, so reversing looks forward
         self.reliability_requirement = reverse.iloc[::-1]  # set it back the right way
 
-        if not self.post_facto_only:
-            if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kWh')
-            if DEBUG: print(f'max the system has to be able to charge bc energy req: {np.min(np.diff(self.reliability_requirement))} kW')
-            if DEBUG: print(f'max the system has to be able to discharge bc energy req: {np.max(np.diff(self.reliability_requirement))} kW')
-            ####self.reliability_pwr_requirement =
-            # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
-            # there will be 2 constraints: one for power, one for energy
-            ene_min_add = Const.Constraint('ene_min', self.name, self.reliability_requirement)
-            ###dis_min = Const.Constraint('dis_min',self.name,)
+        if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kWh')
+        if DEBUG: print(f'max the system has to be able to charge bc energy req: {np.min(np.diff(self.reliability_requirement))} kW')
+        if DEBUG: print(f'max the system has to be able to discharge bc energy req: {np.max(np.diff(self.reliability_requirement))} kW')
+        ####self.reliability_pwr_requirement =
+        # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
+        # there will be 2 constraints: one for power, one for energy
+        ene_min_add = Const.Constraint('ene_min', self.name, self.reliability_requirement)
+        ###dis_min = Const.Constraint('dis_min',self.name,)
 
-            self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
+        self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
     def objective_constraints(self, variables, subs, generation, reservations=None):
         """Default build constraint list method. Used by services that do not have constraints.
@@ -88,23 +86,20 @@ class Reliability(storagevet.ValueStream):
         Returns:
             An empty list
         """
-        if not self.post_facto_only:
-            try:
-                pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
-            except KeyError:
-                pv_generation = np.zeros(subs.shape[0])
+        try:
+            pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
+        except KeyError:
+            pv_generation = np.zeros(subs.shape[0])
 
-            try:
-                ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
-            except (KeyError, AttributeError):
-                ice_rated_power = 0
+        try:
+            ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
+        except (KeyError, AttributeError):
+            ice_rated_power = 0
 
-            # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
-            # to ensure that our DER mix can cover peak net load during any outage in the year
-            if DEBUG: print(f'combined max power output > {subs.loc[:, "load"].max()} kW')
-            return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
-        else:
-            return super().objective_constraints(variables, subs, generation, reservations)
+        # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
+        # to ensure that our DER mix can cover peak net load during any outage in the year
+        if DEBUG: print(f'combined max power output > {subs.loc[:, "load"].max()} kW')
+        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.
@@ -113,16 +108,13 @@ class Reliability(storagevet.ValueStream):
             pertaining to this instance
 
         """
-        if not self.post_facto_only:
-            try:
-                storage_energy_rating = self.storage.ene_max_rated.value
-            except AttributeError:
-                storage_energy_rating = self.storage.ene_max_rated
-            report = pd.DataFrame(index=self.reliability_requirement.index)
-            report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
-            report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
-        else:
-            report = super().timeseries_report()
+        try:
+            storage_energy_rating = self.storage.ene_max_rated.value
+        except AttributeError:
+            storage_energy_rating = self.storage.ene_max_rated
+        report = pd.DataFrame(index=self.reliability_requirement.index)
+        report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
+        report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
         return report
 
     def load_coverage_probability(self, max_outage, results_df, dt, size_df, technology_summary_df):

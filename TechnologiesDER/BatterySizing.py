@@ -45,11 +45,16 @@ class BatterySizing(storagevet.BatteryTech):
         # create generic storage object
         storagevet.BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
 
+        try:
+            self.user_duration = params['duration']
+        except KeyError:
+            self.user_duration = 0
+
         self.size_constraints = []
 
         self.optimization_variables = {}
 
-        # if the user inputted the energy rating as 0, then size for duration
+        # if the user inputted the energy rating as 0, then size for energy rating
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
@@ -73,6 +78,9 @@ class BatterySizing(storagevet.BatteryTech):
             self.size_constraints += [cvx.NonPos(-self.dis_max_rated)]
             self.optimization_variables['dis_max_rated'] = self.dis_max_rated
 
+        if self.user_duration:
+            self.size_constraints += [cvx.Zero(self.user_duration - (self.ene_max_rated / self.dis_max_rated))]
+
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
         self.physical_constraints = {
             'ene_min_rated': Const.Constraint('ene_min_rated', self.name, self.llsoc * self.ene_max_rated),
@@ -81,6 +89,18 @@ class BatterySizing(storagevet.BatteryTech):
             'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
             'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
             'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
+
+    def calculate_duration(self):
+        try:
+            energy_rated = self.ene_max_rated.value
+        except AttributeError:
+            energy_rated = self.ene_max_rated
+
+        try:
+            dis_max_rated = self.dis_max_rated.value
+        except AttributeError:
+            dis_max_rated = self.dis_max_rated
+        return energy_rated/dis_max_rated
 
     def objective_function(self, variables, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0

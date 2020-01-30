@@ -16,8 +16,11 @@ import numpy as np
 import storagevet
 import cvxpy as cvx
 import pandas as pd
+import time
+import logging
 
 
+u_logger = logging.getLogger('User')
 DEBUG = False
 
 
@@ -141,8 +144,9 @@ class Reliability(storagevet.ValueStream):
         Notes: This function assumes dt=1 (TODO)
                 This function assumes only 1 storage (TODO)
         """
+        start = time.time()
         if dt != 1:
-            print(f"load coverage probability algorithm assumes dt = 1 hr, not {dt}")
+            u_logger.error(f"load coverage probability algorithm assumes dt = 1 hr, not {dt}")
             return
         # create a list of tuples with the active technologies and their names (in that order)
         technologies = []
@@ -168,23 +172,25 @@ class Reliability(storagevet.ValueStream):
             # save the state of charge
             soc = results_df.loc[:, 'Battery SOC (%)']
         elif len(storage_tups):
-            print(f'{len(storage_tups)} storage instances included, coverage probability algorithm assumes only 1')
+            u_logger.error(f'{len(storage_tups)} storage instances included, coverage probability algorithm assumes only 1')
             return
 
         pv_tups = [item for item in technologies if item[0] == 'PV']
         if len(pv_tups) == 1:
             tech_specs['pv_generation'] = results_df.loc[:, 'PV Maximum (kW)']
         elif len(pv_tups):
-            print(f'{len(pv_tups)} pv instances included, coverage probability algorithm assumes only 1')
+            u_logger.error(f'{len(pv_tups)} pv instances included, coverage probability algorithm assumes only 1')
             return
 
         ice_tups = [item for item in technologies if item[0] == 'ICE']
         if len(ice_tups) == 1:
             tech_specs['fuel_generation'] = size_df.loc[ice_tups[0][1], 'Quantity'] * size_df.loc[ice_tups[0][1], 'Power Capacity (kW)']
         elif len(ice_tups):
-            print(f'{len(ice_tups)} ice instances included, coverage probability algorithm assumes only 1')
+            u_logger.error(f'{len(ice_tups)} ice instances included, coverage probability algorithm assumes only 1')
             return
-
+        end = time.time()
+        u_logger.info(f'Critical Load Coverage Curve overhead time: {start - end}')
+        start = time.time()
         critical_load = results_df.loc[:, 'Total Load (kW)']
         outage_init = 0
         while outage_init < len(critical_load):
@@ -205,6 +211,8 @@ class Reliability(storagevet.ValueStream):
             total_possible_scenarios = len(critical_load) - (length / dt) + 1
             percentage = scenarios_covered / total_possible_scenarios
             outage_coverage['Load Coverage Probability (%)'].append(percentage)
+        end = time.time()
+        u_logger.info(f'Critical Load Coverage Curve calculation time: {start - end}')
         return pd.DataFrame(outage_coverage)
 
     def simulate_outage(self, critical_load, dt, outage_left, fuel_generation=0, pv_generation=None, ess_properties=None, init_soc=None):

@@ -66,8 +66,9 @@ class ResultDER(Result):
         if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
             reliability = self.predispatch_services['Reliability']
             # save/calculate load coverage
+            u_logger.info('Starting load coverage calculation. This may take a while.')
             self.load_coverage_prob = reliability.load_coverage_probability(168, self.results, self.dt, self.sizing_df, self.technology_summary)
-
+            u_logger.info('Finished load coverage calculation.')
             # TODO: make this more dynamic
             # calculate RELIABILITY SUMMARY if not post-facto calulation only
             if not reliability.post_facto_only:
@@ -91,7 +92,7 @@ class ResultDER(Result):
 
                     # the energy a battery will provide in an outage is whatever that is not being provided by pv
                     remaining_outage_ene = outage_energy.values - pv_rolsum
-                    remaining_outage_ene = remaining_outage_ene.clip(lower=0)
+                    remaining_outage_ene = remaining_outage_ene.clip(min=0)
                 else:
                     remaining_outage_ene = outage_energy.values
                     pv_outage_energy = np.zeros(len(self.results.index))
@@ -159,5 +160,6 @@ class ResultDER(Result):
             self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.dir_abs_path)
+        u_logger.info('DER results have been saved to: ' + self.dir_abs_path)
 
 

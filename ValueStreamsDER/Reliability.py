@@ -235,7 +235,7 @@ class Reliability(storagevet.ValueStream):
         demand_left = critical_load.iloc[0]
         if pv_generation is not None:
             reliability_check1 -= 0.2 * pv_generation.iloc[0]
-            demand_left -= pv_generation
+            demand_left -= pv_generation.iloc[0]
         if fuel_generation:
             reliability_check1 -= fuel_generation
             demand_left -= fuel_generation

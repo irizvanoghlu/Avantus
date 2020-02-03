@@ -79,7 +79,7 @@ class BatterySizing(storagevet.BatteryTech):
             self.optimization_variables['dis_max_rated'] = self.dis_max_rated
 
         if self.user_duration:
-            self.size_constraints += [cvx.Zero(self.user_duration - (self.ene_max_rated / self.dis_max_rated))]
+            self.size_constraints += [cvx.NonPos((self.ene_max_rated / self.dis_max_rated) - self.user_duration)]
 
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
         self.physical_constraints = {

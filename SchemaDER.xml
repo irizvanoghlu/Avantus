@@ -1,6 +1,7 @@
 <schema version="1.0.0">
 	<Reliability type="pre-dispatch">
 		<target cba="n" max="100.0" min="0.0" type="float" />
+		<post_facto_only  allowed_values="1|0" cba="n" type="bool" />
 	</Reliability>
 	<Backup type="pre-dispatch" />
 	<User type="pre-dispatch">
@@ -88,6 +89,7 @@
 		<daily_cycle_limit cba="n" min="0" type="float" />
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
+		<duration min="0" type="int" optional="y"/>
 	</Battery>
 	<CAES type="storage">
 		<name type="string" />

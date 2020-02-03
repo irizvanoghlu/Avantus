@@ -377,9 +377,9 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         Returns: the NPV multiplier
 
         """
-        n = end_year - start_year.year
+        n = end_year.year - start_year.year
         dollar_per_year = np.ones(n)
-        base_year = optimized_years[0]
+        base_year = min(optimized_years)
         yr_index = base_year - start_year.year
         while yr_index < n - 1:
             dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + self.inflation_rate / 100)
@@ -388,7 +388,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         while yr_index > 0:
             dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + self.inflation_rate))
             yr_index -= 1
-        lifetime_npv_alpha = np.npv(self.npv_discount_rate, dollar_per_year)
+        lifetime_npv_alpha = np.npv(self.npv_discount_rate/100, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
     def place_evaluation_data(self):

@@ -106,8 +106,8 @@ class ParamsDER(Params):
                              'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
                              'by turning the binary formulation flag off.')
             u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                            'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                            'by turning the binary formulation flag off.')
+                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+                             'by turning the binary formulation flag off.')
 
         u_logger.info("Successfully prepared the Scenario and some Finance")
 
@@ -186,3 +186,41 @@ class ParamsDER(Params):
         # checks if error_list is not empty.
         # if error_list:
         #     Params.error(error_list)
+
+    def other_error_checks(self):
+        """ Used to collect any other errors that was not specifically detected before.
+            The errors is printed in the errors log.
+            Including: errors in opt_years, opt_window, validation check for Battery and CAES's parameters.
+
+        Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
+
+        """
+        sizing_optimization = False
+        if self.Battery:
+            battery = self.Battery
+            if not battery['ch_max_rated'] or not battery['dis_max_rated']:
+                sizing_optimization = True
+                # if sizing for power, with ...
+                if self.Scenario['binary']:
+                    # the binary formulation
+                    e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
+                    return False
+                if self.DA or self.SR or self.NSR or self.FR:
+                    # whole sale markets
+                    e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
+                    return False
+            if not battery['ene_max_rated']:
+                sizing_optimization = True
+
+        if self.PV and not self.PV['rated_capacity']:
+            sizing_optimization = True
+        if self.ICE:
+            if self.ICE['n_min'] != self.ICE['n_max']:
+                sizing_optimization = True
+                if self.ICE['n_min'] < self.ICE['n_max']:
+                    e_logger.error('Params Error: ICE must have n_min < n_max')
+                    return False
+        if sizing_optimization and not self.Scenario['n'] == 'year':
+            e_logger.error('Params Error: trying to size without setting the optimization window to \'year\'')
+            return False
+        return super().other_error_checks()

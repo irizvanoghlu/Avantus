@@ -84,3 +84,23 @@ class ICESizing(storagevet.ICE):
                                        'Capital Cost ($/kW)': self.ccost_kw,
                                        'Quantity': n}, index=index)
         return sizing_results
+
+    def max_power_out(self):
+        """
+
+        Returns: the maximum power that can be outputted by this genset
+
+        """
+        try:
+            power_out = self.n.value * self.rated_power
+        except AttributeError:
+            power_out = self.n * self.rated_power
+        return power_out
+
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return self.n_min == self.n_max

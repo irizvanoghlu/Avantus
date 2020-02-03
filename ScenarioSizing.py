@@ -62,6 +62,22 @@ class ScenarioSizing(Scenario):
         self.financials = CostBenefitAnalysis(finance_inputs)
         u_logger.info("Finished adding Financials...")
 
+    def check_if_sizing_ders(self):
+        """ This method will iterate through the initialized DER instances and return a logical OR of all of their
+        'being_sized' methods.
+
+        Returns: True if ANY DER is getting sized
+
+        """
+        for der in self.technologies.values():
+            try:
+                solve_for_size = der.being_sized()
+            except AttributeError:
+                solve_for_size = False
+            if solve_for_size:
+                return True
+        return False
+
     def add_technology(self):
         """ Reads params and adds technology. Each technology gets initialized and their physical constraints are found.
 
@@ -93,6 +109,8 @@ class ScenarioSizing(Scenario):
             u_logger.info("Finished adding generators...")
 
         u_logger.info("Finished adding active Technologies...")
+
+        self.sizing_optimization = self.check_if_sizing_ders()
 
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding
@@ -155,4 +173,4 @@ class ScenarioSizing(Scenario):
         if self.sizing_optimization:
             annuity_scalar = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
-        Scenario.optimize_problem_loop(self, annuity_scalar)
+        super().optimize_problem_loop(annuity_scalar)

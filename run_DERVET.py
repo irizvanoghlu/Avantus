@@ -69,7 +69,7 @@ class DERVET:
             opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        ParamsDER.initialize(opt_model_parameters_path, schema_path)
+        ParamsDER.initialize(opt_model_parameters_path, schema_path, kwargs['verbose'])
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     dir_rel_path = script_rel_path[:-len('run_DERVET.py')]
     schema_rel_path = dir_rel_path + "SchemaDER.xml"
 
-    case = DERVET(arguments.parameters_filename, schema_rel_path, ignore_cba_valuation=True)
+    case = DERVET(arguments.parameters_filename, schema_rel_path, verbose=arguments.verbose, ignore_cba_valuation=True)
     case.solve()
 
     # print("Program is done.")

@@ -75,7 +75,10 @@ class ScenarioSizing(Scenario):
         for storage in active_storage:
             inputs = self.technology_inputs_map[storage]
             tech_func = ess_action_map[storage]
-            self.technologies['Storage'] = tech_func(self.power_kw['opt_agg'], inputs, self.cycle_life)
+            if storage == 'Battery':
+                self.technologies['Storage'] = tech_func(storage, self.power_kw['opt_agg'], inputs, self.cycle_life)
+            elif storage == 'CAES':
+                self.technologies['Storage'] = tech_func(storage, self.power_kw['opt_agg'], inputs)
             u_logger.info("Finished adding storage...")
 
         generator_action_map = {
@@ -131,7 +134,7 @@ class ScenarioSizing(Scenario):
             u_logger.info("Using: " + str(service))
             inputs = self.service_input_map[service]
             service_func = service_action_map[service]
-            new_service = service_func(inputs, storage_inputs)
+            new_service = service_func(inputs, self.technologies)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.services[service] = new_service
 

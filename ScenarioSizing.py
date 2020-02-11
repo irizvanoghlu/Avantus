@@ -62,6 +62,22 @@ class ScenarioSizing(Scenario):
         self.financials = CostBenefitAnalysis(finance_inputs)
         u_logger.info("Finished adding Financials...")
 
+    def check_if_sizing_ders(self):
+        """ This method will iterate through the initialized DER instances and return a logical OR of all of their
+        'being_sized' methods.
+
+        Returns: True if ANY DER is getting sized
+
+        """
+        for der in self.technologies.values():
+            try:
+                solve_for_size = der.being_sized()
+            except AttributeError:
+                solve_for_size = False
+            if solve_for_size:
+                return True
+        return False
+
     def add_technology(self):
         """ Reads params and adds technology. Each technology gets initialized and their physical constraints are found.
 
@@ -94,6 +110,8 @@ class ScenarioSizing(Scenario):
 
         u_logger.info("Finished adding active Technologies...")
 
+        self.sizing_optimization = self.check_if_sizing_ders()
+
     def add_services(self):
         """ Reads through params to determine which services are turned on or off. Then creates the corresponding
         service object and adds it to the list of services. Also generates a list of growth functions that apply to each
@@ -103,45 +121,17 @@ class ScenarioSizing(Scenario):
             This method needs to be applied after the technology has been initialized.
             ALL SERVICES ARE CONNECTED TO THE TECH
 
-        TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
 
-        # dictionary of storage inputs to handle multiple storage technologies
-        storage_inputs = self.technologies['Storage']
-
-        predispatch_service_action_map = {
-            'Backup': storagevet.Backup,
-            'User': storagevet.UserConstraints,
-            'Reliability': Reliability
-        }
-        for service in self.active_objects['pre-dispatch']:
-            u_logger.info("Using: " + str(service))
-            inputs = self.predispatch_service_inputs_map[service]
-            service_func = predispatch_service_action_map[service]
-            new_service = service_func(inputs, self.technologies, self.power_kw, self.dt)
+        if self.predispatch_service_inputs_map['Reliability']:
+            u_logger.info("Using: Reliability")
+            inputs = self.predispatch_service_inputs_map['Reliability']
+            new_service = Reliability(inputs, self.technologies, self.power_kw, self.dt)
             new_service.estimate_year_data(self.opt_years, self.frequency)
-            self.predispatch_services[service] = new_service
+            self.predispatch_services['Reliability'] = new_service
+            self.predispatch_service_inputs_map.pop('Reliability')
 
-        u_logger.info("Finished adding Predispatch Services for Value Stream")
-
-        service_action_map = {
-            'DA': storagevet.DAEnergyTimeShift,
-            'FR': storagevet.FrequencyRegulation,
-            'SR': storagevet.SpinningReserve,
-            'NSR': storagevet.NonspinningReserve,
-            'DCM': storagevet.DemandChargeReduction,
-            'retailTimeShift': storagevet.EnergyTimeShift,
-        }
-
-        for service in self.active_objects['service']:
-            u_logger.info("Using: " + str(service))
-            inputs = self.service_input_map[service]
-            service_func = service_action_map[service]
-            new_service = service_func(inputs, storage_inputs, self.dt)
-            new_service.estimate_year_data(self.opt_years, self.frequency)
-            self.services[service] = new_service
-
-        u_logger.info("Finished adding Services for Value Stream")
+        super().add_services()
 
     def optimize_problem_loop(self, annuity_scalar=1):
         """This function selects on opt_agg of data in self.time_series and calls optimization_problem on it. We determine if the
@@ -155,4 +145,4 @@ class ScenarioSizing(Scenario):
         if self.sizing_optimization:
             annuity_scalar = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
-        Scenario.optimize_problem_loop(self, annuity_scalar)
+        super().optimize_problem_loop(annuity_scalar)

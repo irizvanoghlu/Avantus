@@ -23,6 +23,7 @@ import sys
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
+DEBUG = False
 
 
 class BatterySizing(storagevet.BatteryTech):
@@ -44,11 +45,16 @@ class BatterySizing(storagevet.BatteryTech):
         # create generic storage object
         storagevet.BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
 
+        try:
+            self.user_duration = params['duration']
+        except KeyError:
+            self.user_duration = 0
+
         self.size_constraints = []
 
         self.optimization_variables = {}
 
-        # if the user inputted the energy rating as 0, then size for duration
+        # if the user inputted the energy rating as 0, then size for energy rating
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
@@ -72,6 +78,9 @@ class BatterySizing(storagevet.BatteryTech):
             self.size_constraints += [cvx.NonPos(-self.dis_max_rated)]
             self.optimization_variables['dis_max_rated'] = self.dis_max_rated
 
+        if self.user_duration:
+            self.size_constraints += [cvx.NonPos((self.ene_max_rated / self.dis_max_rated) - self.user_duration)]
+
         self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
         self.physical_constraints = {
             'ene_min_rated': Const.Constraint('ene_min_rated', self.name, self.llsoc * self.ene_max_rated),
@@ -80,7 +89,18 @@ class BatterySizing(storagevet.BatteryTech):
             'ch_max_rated': Const.Constraint('ch_max_rated', self.name, self.ch_max_rated),
             'dis_min_rated': Const.Constraint('dis_min_rated', self.name, self.dis_min_rated),
             'dis_max_rated': Const.Constraint('dis_max_rated', self.name, self.dis_max_rated)}
-        self.being_sized = bool(len(self.size_constraints))
+
+    def calculate_duration(self):
+        try:
+            energy_rated = self.ene_max_rated.value
+        except AttributeError:
+            energy_rated = self.ene_max_rated
+
+        try:
+            dis_max_rated = self.dis_max_rated.value
+        except AttributeError:
+            dis_max_rated = self.dis_max_rated
+        return energy_rated/dis_max_rated
 
     def objective_function(self, variables, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
@@ -127,10 +147,15 @@ class BatterySizing(storagevet.BatteryTech):
         sizing_results = pd.DataFrame({'Energy Rating (kWh)': energy_rated,
                                        'Charge Rating (kW)': ch_max_rated,
                                        'Discharge Rating (kW)': dis_max_rated,
+                                       'Round Trip Efficiency (%)': self.rte,
+                                       'Lower Limit on SOC (%)': self.llsoc,
+                                       'Upper Limit on SOC (%)': self.ulsoc,
                                        'Duration (hours)': energy_rated/dis_max_rated,
                                        'Capital Cost ($)': self.ccost,
                                        'Capital Cost ($/kW)': self.ccost_kw,
                                        'Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
+        if (sizing_results['Duration (hours)'] > 24).any():
+            print('The duration of an Energy Storage System is greater than 24 hours!')
         return sizing_results
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
@@ -147,9 +172,6 @@ class BatterySizing(storagevet.BatteryTech):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        if not self.being_sized:
-            return super(BatterySizing, self).objective_constraints(variables, mask, reservations, mpc_ene)
-
         constraint_list = []
 
         size = int(np.sum(mask))
@@ -170,12 +192,43 @@ class BatterySizing(storagevet.BatteryTech):
         except KeyError:
             ice_gen = np.zeros(size)
 
-        ene_max = self.physical_constraints['ene_max_rated'].value
-        ene_min = self.control_constraints['ene_min'].value[mask].values
-        ch_max = self.physical_constraints['ch_max_rated'].value  #TODO: this will break if we have any max charge/discharge constraints
-        ch_min = self.control_constraints['ch_min'].value[mask].values
-        dis_max = self.physical_constraints['dis_max_rated'].value
-        dis_min = self.control_constraints['dis_min'].value[mask].values
+        if 'ene_max' in self.control_constraints.keys():
+            ene_max = self.control_constraints['ene_max'].value[mask].values
+            ene_max_t = ene_max[:-1]
+            ene_max_n = ene_max[-1]
+        else:
+            ene_max = self.physical_constraints['ene_max_rated'].value
+            ene_max_t = ene_max
+            ene_max_n = ene_max
+
+        if 'ene_min' in self.control_constraints.keys():
+            ene_min = self.control_constraints['ene_min'].value[mask].values
+            ene_min_t = ene_min[1:]
+            ene_min_n = ene_min[-1]
+        else:
+            ene_min = self.physical_constraints['ene_min_rated'].value
+            ene_min_t = ene_min
+            ene_min_n = ene_min
+
+        if 'ch_max' in self.control_constraints.keys():
+            ch_max = self.control_constraints['ch_max'].value[mask].values
+        else:
+            ch_max = self.physical_constraints['ch_max_rated'].value
+
+        if 'ch_min' in self.control_constraints.keys():
+            ch_min = self.control_constraints['ch_min'].value[mask].values
+        else:
+            ch_min = self.physical_constraints['ch_min_rated'].value
+
+        if 'dis_max' in self.control_constraints.keys():
+            dis_max = self.control_constraints['dis_max'].value[mask].values
+        else:
+            dis_max = self.physical_constraints['dis_max_rated'].value
+
+        if 'dis_min' in self.control_constraints.keys():
+            dis_min = self.control_constraints['dis_min'].value[mask].values
+        else:
+            dis_min = self.physical_constraints['dis_min_rated'].value
 
         # energy at the end of the last time step
         constraint_list += [cvx.Zero((ene_target - ene[-1]) - (self.dt * ch[-1] * self.rte) + (self.dt * dis[-1]) - reservations['E'][-1] + (self.dt * ene[-1] * self.sdr * 0.01))]
@@ -190,11 +243,11 @@ class BatterySizing(storagevet.BatteryTech):
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
         # Keep energy in bounds determined in the constraints configuration function
-        constraint_list += [cvx.NonPos(ene_target - ene_max + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene[1:] - ene_max + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
+        constraint_list += [cvx.NonPos(ene_target - ene_max_n + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene[:-1] - ene_max_t + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
-        constraint_list += [cvx.NonPos(-ene_target + ene_min - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
-        constraint_list += [cvx.NonPos(ene_min[1:] - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
+        constraint_list += [cvx.NonPos(-ene_target + ene_min_n - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_min_t - (pv_gen[1:]*self.dt) - (ice_gen[1:]*self.dt) - ene[1:] + reservations['E_lower'][:-1] - variables['ene_min_slack'][:-1])]
 
         # Keep charge and discharge power levels within bounds
         constraint_list += [cvx.NonPos(ch - cvx.multiply(ch_max, on_c) - variables['ch_max_slack'])]
@@ -220,12 +273,14 @@ class BatterySizing(storagevet.BatteryTech):
         if self.incl_binary:
             # when dis_min or ch_min has been overwritten (read: increased) by predispatch services, need to force technology to be on
             # TODO better way to do this???
-            ind_d = [i for i in range(size) if self.control_constraints['dis_min'].value[mask].values[i] > self.physical_constraints['dis_min_rated'].value]
-            ind_c = [i for i in range(size) if self.control_constraints['ch_min'].value[mask].values[i] > self.physical_constraints['ch_min_rated'].value]
-            if len(ind_d) > 0:
-                constraint_list += [on_d[ind_d] == 1]  # np.ones(len(ind_d))
-            if len(ind_c) > 0:
-                constraint_list += [on_c[ind_c] == 1]  # np.ones(len(ind_c))
+            if 'dis_min' in self.control_constraints.keys():
+                ind_d = [i for i in range(size) if self.control_constraints['dis_min'].value[mask].values[i] > self.physical_constraints['dis_min_rated'].value]
+                if len(ind_d) > 0:
+                    constraint_list += [on_d[ind_d] == 1]  # np.ones(len(ind_d))
+            if 'ch_min' in self.control_constraints.keys():
+                ind_c = [i for i in range(size) if self.control_constraints['ch_min'].value[mask].values[i] > self.physical_constraints['ch_min_rated'].value]
+                if len(ind_c) > 0:
+                    constraint_list += [on_c[ind_c] == 1]  # np.ones(len(ind_c))
 
             # note: cannot operate startup without binary
             if self.incl_startup:
@@ -255,6 +310,7 @@ class BatterySizing(storagevet.BatteryTech):
         """
         # create temp dataframe with values from physical_constraints
         temp_constraints = pd.DataFrame(index=datetimes)
+
         # create a df with all physical constraint values
         for constraint in self.physical_constraints.values():
             temp_constraints[re.search('^.+_.+_', constraint.name).group(0)[0:-1]] = copy.deepcopy(constraint.value)
@@ -311,14 +367,51 @@ class BatterySizing(storagevet.BatteryTech):
                             # it is ok to floor at zero since negative power max values will be handled in power min
                             # i.e negative ch_max means dis_min should be positive and ch_max should be 0)
                             temp_constraints[name] = temp_constraints[name].clip(lower=0)
+                    self.control_constraints.update({constraint.name: Const.Constraint(constraint.name, self.name, temp_constraints[constraint.name])})
 
-        # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
-        self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),
-                                    'ene_max': Const.Constraint('ene_max', self.name, temp_constraints['ene_max']),
-                                    'ch_min': Const.Constraint('ch_min', self.name, temp_constraints['ch_min']),
-                                    'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
-                                    'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
-                                    'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
+        # # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
+        # self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),
+        #                             'ene_max': Const.Constraint('ene_max', self.name, temp_constraints['ene_max']),
+        #                             'ch_min': Const.Constraint('ch_min', self.name, temp_constraints['ch_min']),
+        #                             'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
+        #                             'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
+        #                             'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
         return None
 
+    # def physical_properties(self):
+    #     """
+    #
+    #     Returns: a dictionary of physical properties that define the ess
+    #         includes 'charge max', 'discharge max, 'operation soc min', 'operation soc max', 'rte', 'energy cap'
+    #
+    #     """
+    #     try:
+    #         energy_rated = self.ene_max_rated.value
+    #     except AttributeError:
+    #         energy_rated = self.ene_max_rated
+    #
+    #     try:
+    #         ch_max_rated = self.ch_max_rated.value
+    #     except AttributeError:
+    #         ch_max_rated = self.ch_max_rated
+    #
+    #     try:
+    #         dis_max_rated = self.dis_max_rated.value
+    #     except AttributeError:
+    #         dis_max_rated = self.dis_max_rated
+    #
+    #     ess_properties = {'charge max': ch_max_rated,
+    #                       'discharge max': dis_max_rated,
+    #                       'rte': self.rte,
+    #                       'energy cap': energy_rated,
+    #                       'operation soc min': self.llsoc,
+    #                       'operation soc max': self.ulsoc}
+    #     return ess_properties
 
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return bool(len(self.size_constraints))

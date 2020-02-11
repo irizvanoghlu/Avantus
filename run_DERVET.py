@@ -92,32 +92,36 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        input_tree = self.model_params.instances[0]
-        curr_scenario = ScenarioSizing(input_tree)
-        deferral_only_scenario = curr_scenario.check_to_execute_deferral_only_subroutine()
+        ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
+        # self.model_params contains the dict of technologies/services/predispatch services
 
-        # If not Deferral Only, run program normally
-        if not deferral_only_scenario:
+        for key, value in self.model_params.instances.items():
+            if not value.other_error_checks():
+                continue
+            value.prepare_scenario()
+            value.prepare_technology()
+            value.prepare_services()
+            value.prepare_finance()
 
-            ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
-            # self.model_params contains the dict of technologies/services/predispatch services
+            run = ScenarioSizing(value)
+            run.add_technology()  # adds all technologies from
+            run.add_services()  # inits all services from input maps  (input_tree)
 
-            for key, value in self.model_params.instances.items():
-                if not value.other_error_checks():
-                    continue
-                value.prepare_scenario()
-                value.prepare_technology()
-                value.prepare_services()
-                value.prepare_finance()
+            deferral_only_scenario = run.check_to_execute_deferral_only_subroutine()
 
-                run = ScenarioSizing(value)
-                run.add_technology()
-                run.add_services()
-                run.init_financials(value.Finance)
-                run.add_control_constraints()
+            run.init_financials(value.Finance)
+            run.add_control_constraints()
+
+            # If not Deferral Only, run program normally through optimization
+            if not deferral_only_scenario:
                 run.optimize_problem_loop()
+            else:
+                # This is the case of the Deferral Only Scenario. We do not run optimization and instead run the Subroutine
+                #   1) output the year of deferral failure
+                #   2) display the yearly DER requirements
+                run.check_for_deferral_failure()
 
-                ResultDER.add_instance(key, run)
+            ResultDER.add_instance(key, run)
 
             ResultDER.calculate()
             ResultDER.save_to_disk()
@@ -126,12 +130,6 @@ class DERVET:
             print(ends - starts)
 
             return ResultDER
-        else:
-            # This is the case of the Deferral Only Scenario. We do not run optimization and instead run the Subroutine"
-            #   1) output the year of deferral failure
-            #   2) display the yearly DER requirements
-            ScenarioSizing.Scenario.check_for_deferral_failure()
-
 
 
 if __name__ == '__main__':

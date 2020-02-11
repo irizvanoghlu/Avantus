@@ -32,7 +32,6 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 sys.path.insert(0, storagevet_path)
 
 from ScenarioSizing import ScenarioSizing
-from Scenario import Scenario
 from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
@@ -93,13 +92,12 @@ class DERVET:
     def run(self):
         starts = time.time()
 
-        curr_scenario = ScenarioSizing.Scenario(self.model_params)
-        all_components_dict = curr_scenario.unravel_active_objects()
-        deferral_only_scenario = curr_scenario.check_to_execute_deferral_only_subroutine(all_components_dict)
+        input_tree = self.model_params.instances[0]
+        curr_scenario = ScenarioSizing(input_tree)
+        deferral_only_scenario = curr_scenario.check_to_execute_deferral_only_subroutine()
 
-        # This checks for whether or not the deferral_subroutine should be run
+        # If not Deferral Only, run program normally
         if not deferral_only_scenario:
-            # If not Deferral Only, run program normally
 
             ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
             # self.model_params contains the dict of technologies/services/predispatch services

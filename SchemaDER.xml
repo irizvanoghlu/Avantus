@@ -10,8 +10,8 @@
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</DA>
 	<FR type="service">
-		<ku cba="n" max="1.0" min="0.0" type="float" />
-		<kd cba="n" max="1.0" min="0.0" type="float" />
+		<eou cba="n" max="1.0" min="0.0" type="float" />
+		<eod cba="n" max="1.0" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<energyprice_growth cba="n" max="100.0" min="0.0" type="float" />
 		<CombinedMarket allowed_values="1|0" cba="n" type="bool" />

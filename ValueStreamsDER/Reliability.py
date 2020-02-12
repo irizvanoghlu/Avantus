@@ -189,7 +189,7 @@ class Reliability(storagevet.ValueStream):
             u_logger.error(f'{len(ice_tups)} ice instances included, coverage probability algorithm assumes only 1')
             return
         end = time.time()
-        u_logger.info(f'Critical Load Coverage Curve overhead time: {start - end}')
+        u_logger.info(f'Critical Load Coverage Curve overhead time: {end - start}')
         start = time.time()
         critical_load = results_df.loc[:, 'Total Load (kW)']
         outage_init = 0
@@ -212,7 +212,7 @@ class Reliability(storagevet.ValueStream):
             percentage = scenarios_covered / total_possible_scenarios
             outage_coverage['Load Coverage Probability (%)'].append(percentage)
         end = time.time()
-        u_logger.info(f'Critical Load Coverage Curve calculation time: {start - end}')
+        u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         return pd.DataFrame(outage_coverage)
 
     def simulate_outage(self, critical_load, dt, outage_left, fuel_generation=0, pv_generation=None, ess_properties=None, init_soc=None):
@@ -266,6 +266,9 @@ class Reliability(storagevet.ValueStream):
                 # so discharge to meet the load offset by all generation
                 soc_discharge = (init_soc - ess_properties['operation soc min']) * ess_properties['energy cap'] / dt
                 discharge = min(soc_discharge, demand_left, ess_properties['discharge max'])
+                if discharge < demand_left:
+                    # can't discharge enough to meet demand
+                    return 0
                 # update the state of charge of the ESS
                 next_soc = init_soc - (discharge * dt / ess_properties['energy cap'])
                 # we can reliably meet the outage in that timestep: CHECK NEXT TIMESTEP

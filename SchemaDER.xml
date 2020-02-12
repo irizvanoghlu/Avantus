@@ -152,4 +152,10 @@
 		<label cba="n" type="string" optional="y"/>
 		<errors_log_path cba="n" type="string" />
 	</Results>
+	<Deferral type="pre-dispatch">
+		<planned_load_limit cba="n" min="0.0" type="float" />
+		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<price cba="y" min="0.0" type="float" />
+	</Deferral>
 </schema>

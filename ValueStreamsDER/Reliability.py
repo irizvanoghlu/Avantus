@@ -22,28 +22,16 @@ class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, techs):
+    def __init__(self, params):
         """ Generates the objective function, finds and creates constraints.
 
           Args:
             params (Dict): input parameters
-            techs (Dict): technology objects after initialization, as saved in a dictionary
         """
 
         # generate the generic predispatch service object
         storagevet.ValueStream.__init__(self, 'Reliability', params)
         self.outage_duration_coverage = params['target']  # must be in hours
-
-        self.storage = techs['Storage']
-        if 'Diesel' in techs:
-            self.ice_combined_rating = techs['Diesel'].rated_power * techs['Diesel'].n
-        self.ess_combined_rating = 0
-        if 'Battery' in techs:
-            self.ess_combined_rating += techs['Battery'].dis_max_rated
-        if 'CAES' in techs:
-            self.ess_combined_rating += techs['CAES'].dis_max_rated
-        if 'Storage' in techs:  # delete this
-            self.ess_combined_rating += techs['Storage'].dis_max_rated
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
@@ -66,26 +54,21 @@ class Reliability(storagevet.ValueStream):
 
         self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
-    def objective_constraints(self, variables, subs, net_power, reservations=None):
+    def objective_constraints(self, load, net_power, combined_rating, critical_load):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
-            variables (Dict): dictionary of variables being optimized
-            subs (DataFrame): Subset of time_series data that is being optimized
+            load (DataFrame): Subset of time_series load data that is being optimized
             net_power (Expression): the sum of all power flows in the system. flow out into the grid is negative
-            reservations (Dict): power reservations from dispatch services
+            combined_rating (Dictionary): the combined rating of each DER class type
+            critical_load (pd.Expression): the load that must be met in an outage (usually load - pv generation)
 
         Returns: power constraint
         """
 
-        try:
-            pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
-        except KeyError:
-            pv_generation = np.zeros(subs.shape[0])
-
         # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
         # to ensure that our DER mix can cover peak net load during any outage in the year
-        return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_combined_rating - self.ice_combined_rating)]
+        return [cvx.NonPos(cvx.max(critical_load) - combined_rating)]
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.
@@ -94,12 +77,6 @@ class Reliability(storagevet.ValueStream):
             pertaining to this instance
 
         """
-        try:
-            storage_energy_rating = self.storage.ene_max_rated.value
-        except AttributeError:
-            storage_energy_rating = self.storage.ene_max_rated
         report = pd.DataFrame(index=self.reliability_requirement.index)
-        report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
         report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
-
         return report

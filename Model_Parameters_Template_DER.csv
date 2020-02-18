@@ -99,3 +99,7 @@ retailTimeShift,growth,5,%/yr,float,"[0, 100]",N/A,None,"Growth Rate of retail e
 User,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for meeting the user-defined constraints,no,no,1000,n,
 Backup,,,,,,,,Reserve a fixed amount of energy capacity (SOC in a battery or generation capability) that will only be used in case of an outage to supply the site load.,no,no,.,.,
 Reliability,target,4,hours,float,"[1,24]",N/A,None,Dynamically ensure there is enough power and energy capacity in the DER mix ,no,no,.,.,
+FR,eou,0.3,kWh/kW-hr,float,"[0, 1]",N/A,None,Frequency Regulation Energy Option Up,no,no,.,.,
+FR,eod,0.3,kWh/kW-hr,float,"[0, 1]",N/A,None,Frequency Regulation Energy Option Down,.,no,.,.,
+FR,growth,0,%/yr,float,"[0, 100]",N/A,None,Growth Rate of Frequency Regulation Price,.,no,.,.,
+FR,CombinedMarket,1,y/n,int,"{0,1}",N/A,None,Must the storage bid as much reg up as reg down?,.,no,.,.,

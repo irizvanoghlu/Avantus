@@ -110,7 +110,7 @@ class Reliability(storagevet.ValueStream):
             # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
             # to ensure that our DER mix can cover peak net load during any outage in the year
             if DEBUG: print(f'combined max power output > {subs.loc[:, "load"].max()} kW')
-            return [cvx.NonPos(cvx.max(subs.loc[:, "load"].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
+            return [cvx.NonPos(cvx.max(self.critical_load.loc[subs.index].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
         else:
             return super().objective_constraints(variables, subs, generation, reservations)
 

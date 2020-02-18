@@ -67,7 +67,7 @@ class ResultDER(Result):
             reliability = self.predispatch_services['Reliability']
             # save/calculate load coverage
             u_logger.info('Starting load coverage calculation. This may take a while.')
-            self.load_coverage_prob = reliability.load_coverage_probability(self.results, self.dt, self.sizing_df, self.technology_summary)
+            self.load_coverage_prob = reliability.load_coverage_probability(self.results, self.sizing_df, self.technology_summary)
             u_logger.info('Finished load coverage calculation.')
             # TODO: make this more dynamic
             # calculate RELIABILITY SUMMARY if not post-facto calulation only

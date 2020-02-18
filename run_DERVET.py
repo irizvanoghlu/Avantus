@@ -104,7 +104,7 @@ class DERVET:
             value.prepare_finance()
 
             run = ScenarioSizing(value)
-            run.add_technology()  # adds all technologies from
+            run.add_technology()  # adds all technologies from input maps (input_tree)
             run.add_services()  # inits all services from input maps  (input_tree)
 
             deferral_only_scenario = run.check_to_execute_deferral_only_subroutine()
@@ -122,9 +122,9 @@ class DERVET:
                 run.check_for_deferral_failure()
 
             ResultDER.add_instance(key, run)
-
             ResultDER.calculate()
             ResultDER.save_to_disk()
+
             ends = time.time()
             print("DERVET runtime: ")
             print(ends - starts)

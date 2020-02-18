@@ -54,10 +54,12 @@ class Reliability(storagevet.ValueStream):
 
         self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
-    def objective_constraints(self, load, net_power, combined_rating, critical_load):
+    def objective_constraints(self, mask, load, net_power, combined_rating, critical_load):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                    in the subs data set
             load (DataFrame): Subset of time_series load data that is being optimized
             net_power (Expression): the sum of all power flows in the system. flow out into the grid is negative
             combined_rating (Dictionary): the combined rating of each DER class type

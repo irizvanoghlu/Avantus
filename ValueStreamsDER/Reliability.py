@@ -43,6 +43,8 @@ class Reliability(storagevet.ValueStream):
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
+        self.nu = params['nu']
+        self.gamma = params['gamma']
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
@@ -141,8 +143,7 @@ class Reliability(storagevet.ValueStream):
 
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
-        Notes: This function assumes dt=1 (TODO)
-                This function assumes only 1 storage (TODO)
+        Notes:  This function assumes only 1 storage (TODO)
         """
         start = time.time()
         if dt != 1:
@@ -242,7 +243,7 @@ class Reliability(storagevet.ValueStream):
         reliability_check1 = critical_load.iloc[0]
         demand_left = critical_load.iloc[0]
         if pv_generation is not None:
-            reliability_check1 -= 0.2 * pv_generation.iloc[0]
+            reliability_check1 -= self.nu * pv_generation.iloc[0]
             demand_left -= pv_generation.iloc[0]
         if fuel_generation:
             reliability_check1 -= fuel_generation
@@ -262,7 +263,7 @@ class Reliability(storagevet.ValueStream):
             # can reliably meet the outage in that timestep: CHECK NEXT TIMESTEP
         else:
             # check that there is enough SOC in the ESS to satisfy worst case
-            if ess_properties is not None and 0 >= (reliability_check1 * 0.43 / ess_properties['energy cap']) - init_soc:
+            if ess_properties is not None and 0 >= (reliability_check1 * self.gamma / ess_properties['energy cap']) - init_soc:
                 # so discharge to meet the load offset by all generation
                 soc_discharge = (init_soc - ess_properties['operation soc min']) * ess_properties['energy cap'] / dt
                 discharge = min(soc_discharge, demand_left, ess_properties['discharge max'])

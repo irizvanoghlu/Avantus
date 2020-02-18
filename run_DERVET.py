@@ -109,15 +109,9 @@ class DERVET:
             run.add_control_constraints()
             run.optimize_problem_loop()
 
-            instance_result = ResultDER(run)
-            instance_result.post_analysis()
-            instance_result.calculate_cba()
-            instance_result.save_as_csv(key, instance_result.sensitivity)
+            ResultDER.add_instance(key, run)
 
-            ResultDER.add_instance(key, instance_result)
-
-        if len(ResultDER.instances) > 1:
-            ResultDER.sensitivity_summary()
+        ResultDER.sensitivity_summary()
 
         ends = time.time()
         print("DERVET runtime: ")

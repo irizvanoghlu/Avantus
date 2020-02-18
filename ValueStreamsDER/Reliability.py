@@ -62,6 +62,8 @@ class Reliability(storagevet.ValueStream):
         self.reliability_requirement = params['load'].dropna()  # band aid, though dropna cause it to be a deep copy
         # TODO: atm this load is only the site load, should consider aux load if included by user  --HN
 
+        self.critical_load = params['critical load']
+
         # set frequency gap between time data, thought this might not be necessary
         self.reliability_requirement.index.freq = self.reliability_requirement.index[1] - self.reliability_requirement.index[0]
 
@@ -129,6 +131,7 @@ class Reliability(storagevet.ValueStream):
             report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
         else:
             report = super().timeseries_report()
+        report.loc[:, 'Critical Load (kW)'] = self.critical_load
         return report
 
     def load_coverage_probability(self, results_df, dt, size_df, technology_summary_df):
@@ -192,13 +195,12 @@ class Reliability(storagevet.ValueStream):
         end = time.time()
         u_logger.info(f'Critical Load Coverage Curve overhead time: {end - start}')
         start = time.time()
-        critical_load = results_df.loc[:, 'Total Load (kW)']
         outage_init = 0
-        while outage_init < len(critical_load):
+        while outage_init < len(self.critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
             # print(len(critical_load.iloc[outage_init:]))
-            longest_covered_outage = self.simulate_outage(critical_load.iloc[outage_init:], dt, self.max_outage_duration, **tech_specs)
+            longest_covered_outage = self.simulate_outage(self.critical_load.iloc[outage_init:], dt, self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_covered_outage / dt)] += 1
             # start outage on next timestep
@@ -209,7 +211,7 @@ class Reliability(storagevet.ValueStream):
                            'Load Coverage Probability (%)': []}
         for length in outage_lengths:
             scenarios_covered = frequency_simulate_outage[int(length / dt):].sum()
-            total_possible_scenarios = len(critical_load) - (length / dt) + 1
+            total_possible_scenarios = len(self.critical_load) - (length / dt) + 1
             percentage = scenarios_covered / total_possible_scenarios
             outage_coverage['Load Coverage Probability (%)'].append(percentage)
         end = time.time()

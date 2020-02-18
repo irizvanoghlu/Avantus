@@ -45,6 +45,7 @@ class Reliability(storagevet.ValueStream):
         self.post_facto_only = params['post_facto_only']
         self.nu = params['nu']
         self.gamma = params['gamma']
+        self.max_outage_duration = params['max_outage_duration']
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
@@ -130,12 +131,11 @@ class Reliability(storagevet.ValueStream):
             report = super().timeseries_report()
         return report
 
-    def load_coverage_probability(self, max_outage, results_df, dt, size_df, technology_summary_df):
+    def load_coverage_probability(self, results_df, dt, size_df, technology_summary_df):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
         OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
-            max_outage (int): the max outage we want to cover
             results_df (DataFrame): the dataframe that consoidates all results
             dt (float): delta time of the timeseries
             size_df (DataFrame): the dataframe that describes the physical capabilities of the DERs
@@ -155,7 +155,7 @@ class Reliability(storagevet.ValueStream):
             technologies.append((row.Type, name))
 
         # initialize a list to track the frequency of the results of the simulate_outage method
-        frequency_simulate_outage = np.zeros(int(max_outage / dt) + 1)
+        frequency_simulate_outage = np.zeros(int(self.max_outage_duration / dt) + 1)
         # 1) simulate an outage that starts at every timestep
 
         # collect technology specs required to call simulate_outage
@@ -198,13 +198,13 @@ class Reliability(storagevet.ValueStream):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
             # print(len(critical_load.iloc[outage_init:]))
-            longest_covered_outage = self.simulate_outage(critical_load.iloc[outage_init:], dt, max_outage, **tech_specs)
+            longest_covered_outage = self.simulate_outage(critical_load.iloc[outage_init:], dt, self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_covered_outage / dt)] += 1
             # start outage on next timestep
             outage_init += 1
         # 2) calculate probabilities
-        outage_lengths = list(np.arange(1, max_outage + 1, dt))
+        outage_lengths = list(np.arange(1, self.max_outage_duration + 1, dt))
         outage_coverage = {'Outage Length (hrs)': outage_lengths,
                            'Load Coverage Probability (%)': []}
         for length in outage_lengths:

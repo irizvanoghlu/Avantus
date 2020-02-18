@@ -33,7 +33,7 @@ class ParamsDER(Params):
     """
 
     @staticmethod
-    def csv_to_xml(csv_filename, ignore_cba_valuation=False):
+    def csv_to_xml(csv_filename, verbose=False, ignore_cba_valuation=False):
         """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
         corresponds the values used to evaluate the CBA.
 
@@ -47,7 +47,7 @@ class ParamsDER(Params):
 
 
         """
-        xml_filename = Params.csv_to_xml(csv_filename)
+        xml_filename = Params.csv_to_xml(csv_filename, verbose)
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
@@ -91,7 +91,8 @@ class ParamsDER(Params):
 
         if 'Reliability' in pre_dispatch_serv:
             self.Reliability["dt"] = self.Scenario["dt"]
-            self.Reliability.update({'load': self.Scenario['time_series'].loc[:, 'Site Load (kW)']})
+            self.Reliability.update({'load': self.Scenario['time_series'].loc[:, 'Site Load (kW)'],
+                                     'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
 
         u_logger.info("Successfully prepared the value-stream (services)")
 

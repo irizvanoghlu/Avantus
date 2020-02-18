@@ -121,45 +121,17 @@ class ScenarioSizing(Scenario):
             This method needs to be applied after the technology has been initialized.
             ALL SERVICES ARE CONNECTED TO THE TECH
 
-        TODO [multi-tech] need dynamic mapping of services to tech in RIVET
         """
 
-        # dictionary of storage inputs to handle multiple storage technologies
-        storage_inputs = self.technologies['Storage']
-
-        predispatch_service_action_map = {
-            'Backup': storagevet.Backup,
-            'User': storagevet.UserConstraints,
-            'Reliability': Reliability
-        }
-        for service in self.active_objects['pre-dispatch']:
-            u_logger.info("Using: " + str(service))
-            inputs = self.predispatch_service_inputs_map[service]
-            service_func = predispatch_service_action_map[service]
-            new_service = service_func(inputs, self.technologies, self.power_kw, self.dt)
+        if self.predispatch_service_inputs_map['Reliability']:
+            u_logger.info("Using: Reliability")
+            inputs = self.predispatch_service_inputs_map['Reliability']
+            new_service = Reliability(inputs, self.technologies, self.power_kw, self.dt)
             new_service.estimate_year_data(self.opt_years, self.frequency)
-            self.predispatch_services[service] = new_service
+            self.predispatch_services['Reliability'] = new_service
+            self.predispatch_service_inputs_map.pop('Reliability')
 
-        u_logger.info("Finished adding Predispatch Services for Value Stream")
-
-        service_action_map = {
-            'DA': storagevet.DAEnergyTimeShift,
-            'FR': storagevet.FrequencyRegulation,
-            'SR': storagevet.SpinningReserve,
-            'NSR': storagevet.NonspinningReserve,
-            'DCM': storagevet.DemandChargeReduction,
-            'retailTimeShift': storagevet.EnergyTimeShift,
-        }
-
-        for service in self.active_objects['service']:
-            u_logger.info("Using: " + str(service))
-            inputs = self.service_input_map[service]
-            service_func = service_action_map[service]
-            new_service = service_func(inputs, storage_inputs, self.dt)
-            new_service.estimate_year_data(self.opt_years, self.frequency)
-            self.services[service] = new_service
-
-        u_logger.info("Finished adding Services for Value Stream")
+        super().add_services()
 
     def optimize_problem_loop(self, annuity_scalar=1):
         """This function selects on opt_agg of data in self.time_series and calls optimization_problem on it. We determine if the

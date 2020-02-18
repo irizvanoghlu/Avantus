@@ -59,10 +59,10 @@ class Reliability(storagevet.ValueStream):
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
 
-        self.reliability_requirement = params['load'].dropna()  # band aid, though dropna cause it to be a deep copy
-        # TODO: atm this load is only the site load, should consider aux load if included by user  --HN
+        self.critical_load = params['critical load'].copy()
 
-        self.critical_load = params['critical load']
+        self.reliability_requirement = params['critical load'].copy()
+        # TODO: atm this load is only the site load, should consider aux load if included by user  --HN
 
         # set frequency gap between time data, thought this might not be necessary
         self.reliability_requirement.index.freq = self.reliability_requirement.index[1] - self.reliability_requirement.index[0]

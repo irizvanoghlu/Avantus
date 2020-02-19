@@ -69,7 +69,7 @@ class DERVET:
             opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        ParamsDER.initialize(opt_model_parameters_path, schema_path)
+        ParamsDER.initialize(opt_model_parameters_path, schema_path, kwargs['verbose'])
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
@@ -93,7 +93,6 @@ class DERVET:
         starts = time.time()
 
         ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
-        # self.model_params contains the dict of technologies/services/predispatch services
 
         for key, value in self.model_params.instances.items():
             if not value.other_error_checks():
@@ -122,14 +121,14 @@ class DERVET:
                 run.check_for_deferral_failure()
 
             ResultDER.add_instance(key, run)
-            ResultDER.calculate()
-            ResultDER.save_to_disk()
 
-            ends = time.time()
-            print("DERVET runtime: ")
-            print(ends - starts)
+        ResultDER.sensitivity_summary()
 
-            return ResultDER
+        ends = time.time()
+        print("DERVET runtime: ")
+        print(ends - starts)
+
+        return ResultDER
 
 
 if __name__ == '__main__':
@@ -156,7 +155,7 @@ if __name__ == '__main__':
     dir_rel_path = script_rel_path[:-len('run_DERVET.py')]
     schema_rel_path = dir_rel_path + "SchemaDER.xml"
 
-    case = DERVET(arguments.parameters_filename, schema_rel_path, ignore_cba_valuation=True)
+    case = DERVET(arguments.parameters_filename, schema_rel_path, verbose=arguments.verbose, ignore_cba_valuation=True)
     case.solve()
 
     # print("Program is done.")

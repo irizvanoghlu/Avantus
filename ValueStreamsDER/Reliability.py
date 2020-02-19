@@ -43,8 +43,8 @@ class Reliability(storagevet.ValueStream):
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
-        self.nu = params['nu']
-        self.gamma = params['gamma']
+        self.nu = params['nu'] / 100
+        self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
 
         if 'Diesel' in techs.keys():
@@ -143,7 +143,7 @@ class Reliability(storagevet.ValueStream):
 
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
-        Notes:  This function assumes only 1 storage (TODO)
+        Notes:  This function assumes only 1 storage (TODO) and 1 of each DER
         """
         start = time.time()
 

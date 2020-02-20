@@ -103,8 +103,8 @@ class DERVET:
             value.prepare_finance()
 
             run = ScenarioSizing(value)
-            run.add_technology()
-            run.add_services()
+            run.add_technology()  # adds all technologies from input maps (input_tree)
+            run.add_services()  # inits all services from input maps  (input_tree)
             run.init_financials(value.Finance)
             run.add_control_constraints()
             run.optimize_problem_loop()

@@ -105,20 +105,9 @@ class DERVET:
             run = ScenarioSizing(value)
             run.add_technology()  # adds all technologies from input maps (input_tree)
             run.add_services()  # inits all services from input maps  (input_tree)
-
-            deferral_only_scenario = run.check_to_execute_deferral_only_subroutine()
-
             run.init_financials(value.Finance)
             run.add_control_constraints()
-
-            # If not Deferral Only, run program normally through optimization
-            if not deferral_only_scenario:
-                run.optimize_problem_loop()
-            else:
-                # This is the case of the Deferral Only Scenario. We do not run optimization and instead run the Subroutine
-                #   1) output the year of deferral failure
-                #   2) display the yearly DER requirements
-                run.check_for_deferral_failure()
+            run.optimize_problem_loop()
 
             ResultDER.add_instance(key, run)
 

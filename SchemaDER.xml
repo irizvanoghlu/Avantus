@@ -1,7 +1,10 @@
 <schema version="1.0.0">
 	<Reliability type="pre-dispatch">
-		<target cba="n" max="100.0" min="0.0" type="float" />
+		<target cba="n" min="1.0" type="float" />
 		<post_facto_only  allowed_values="1|0" cba="n" type="bool" />
+		<nu cba="n" max="100.0" min="0.0" type="float" />
+		<gamma cba="n" max="100.0" min="0.0" type="float" />
+		<max_outage_duration cba="n" min="1" type="int" />
 	</Reliability>
 	<Backup type="pre-dispatch" />
 	<User type="pre-dispatch">

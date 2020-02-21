@@ -153,8 +153,8 @@ class Reliability(storagevet.ValueStream):
         # 1) simulate an outage that starts at every timestep
         # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
         # generation you are confident will be delivered (usually 20% of PV forecast)
-        reliability_check = self.critical_load
-        demand_left = self.critical_load
+        reliability_check = self.critical_load.copy()
+        demand_left = self.critical_load.copy()
 
         # collect information required to call simulate_outage
         tech_specs = {}

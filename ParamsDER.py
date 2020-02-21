@@ -16,8 +16,8 @@ import xml.etree.ElementTree as et
 import logging
 import pandas as pd
 import numpy as np
-from matplotlib.font_manager import FontProperties
 from storagevet.Params import Params
+import os
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -31,6 +31,8 @@ class ParamsDER(Params):
         Notes:
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
+    # set schema loction based on the location of this file (this should override the global value within Params.py
+    schema_location = os.path.abspath(__file__)[:-len('ParamsDER.py')] + "SchemaDER.xml"
 
     @staticmethod
     def csv_to_xml(csv_filename, verbose=False, ignore_cba_valuation=False):
@@ -41,6 +43,8 @@ class ParamsDER(Params):
             csv_filename (string): name of csv file
             ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
                 testing purposes)
+            verbose (bool): whether or not to print to console for more feedback
+
 
         Returns:
             opt_xml_filename (string): name of xml file with parameter values for optimization evaluation

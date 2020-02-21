@@ -36,7 +36,6 @@ from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
 
-# TODO: make multi-platform by using path combine functions
 
 e_logger = logging.getLogger('Error')
 u_logger = logging.getLogger('User')
@@ -49,27 +48,27 @@ class DERVET:
     """
 
     @classmethod
-    def load_case(cls, model_parameters_path, schema_path, **kwargs):
-        return cls(model_parameters_path, schema_path, **kwargs)
+    def load_case(cls, model_parameters_path, **kwargs):
+        return cls(model_parameters_path, **kwargs)
 
-    def __init__(self, model_parameters_path, schema_path, **kwargs):
+    def __init__(self, model_parameters_path, verbose=False, **kwargs):
         """
             Constructor to initialize the parameters and data needed to run StorageVET\
 
             Args:
                 model_parameters_path (str): Filename of the model parameters CSV or XML that
                     describes the optimization case to be analysed
-                schema_path (str): relative path to the Schema.xml that storagevet uses
 
             Notes: kwargs is in place for testing purposes
         """
+        self.verbose = verbose
         if model_parameters_path.endswith(".csv"):
             opt_model_parameters_path = ParamsDER.csv_to_xml(model_parameters_path, **kwargs)
         else:
             opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        ParamsDER.initialize(opt_model_parameters_path, schema_path, kwargs['verbose'])
+        ParamsDER.initialize(opt_model_parameters_path, self.verbose)
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
@@ -79,8 +78,7 @@ class DERVET:
         self.model_params = ParamsDER
 
     def solve(self):
-        verbose = self.model_params.instances[0].Scenario['verbose']
-        if verbose:
+        if self.verbose:
             self.model_params.class_summary()
             self.model_params.series_summary()
         self.model_params.validate()  # i know that all the functionality of this
@@ -114,8 +112,8 @@ class DERVET:
         ResultDER.sensitivity_summary()
 
         ends = time.time()
-        print("DERVET runtime: ")
-        print(ends - starts)
+        print("DERVET runtime: ") if self.verbose else None
+        print(ends - starts) if self.verbose else None
 
         return ResultDER
 
@@ -140,11 +138,7 @@ if __name__ == '__main__':
                         help='specify this flag for gitlab-ci testing to skip user input')
     arguments = parser.parse_args()
 
-    script_rel_path = sys.argv[0]
-    dir_rel_path = script_rel_path[:-len('run_DERVET.py')]
-    schema_rel_path = dir_rel_path + "SchemaDER.xml"
-
-    case = DERVET(arguments.parameters_filename, schema_rel_path, verbose=arguments.verbose, ignore_cba_valuation=True)
+    case = DERVET(arguments.parameters_filename, verbose=arguments.verbose, ignore_cba_valuation=True)
     case.solve()
 
     # print("Program is done.")

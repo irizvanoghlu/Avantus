@@ -82,9 +82,9 @@
 		<rte cba="n" max="100.0" min="0.0" type="float" />
 		<sdr cba="n" max="99.9" min="0.0" type="float" />
 		<soc_target cba="n" max="100.0" min="0.0" type="float" />
-		<incl_cycle_degrade allowed_values="1|0" cba="n" optional="bool1" type="bool" />
-		<yearly_degrade cba="n" max="100" min="0" optional="y1" type="int" />
-		<cycle_life_filename optional="y1" type="string" />
+		<incl_cycle_degrade allowed_values="1|0" cba="n" type="bool" />
+		<yearly_degrade cba="n" max="100" min="0" type="int" />
+		<cycle_life_filename type="string" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
 		<p_start_ch cba="n" min="0" type="float" />
@@ -92,7 +92,7 @@
 		<daily_cycle_limit cba="n" min="0" type="float" />
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
-		<duration min="0" type="int" optional="y"/>
+		<duration_max min="0" type="int" optional="y"/>
 	</Battery>
 	<CAES type="storage">
 		<name type="string" />

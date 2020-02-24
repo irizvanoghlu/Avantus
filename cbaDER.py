@@ -70,7 +70,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         # after reading all the tags in from the provided XML, check
         # if the list of errors is not empty --> then report them to the user
         if len(error_list):
-            cls.error(error_list)
+            cls.report_error(error_list)
 
         # create dictionary for CBA values for DERs
         cls.ders_values = {'Storage': battery,
@@ -109,38 +109,37 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
             dictionary = {}
             for key in tag:
+
                 # check if the key can have a cba evaluation value
                 cba_eval = key.find('Evaluation')
                 if cba_eval is None:
                     continue
-
                 # check if the first character is 'y' for the active value within each property
                 if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
                     # convert to correct data type
                     intended_type = key.find('Type').text
-
                     if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                         # if analysis, then convert each value and save as list
-                        values = cls.extract_data(key.find('Evaluation').text, intended_type)
+                        tag_key = (tag.tag, key.tag)
+                        cls.sensitivity['attributes'][tag_key] = cls.extract_data(key.find('Evaluation').text, intended_type)
                         # TODO: incomplete
+                        # check to make sure the length match
                     else:
-                        values = ParamsDER.convert_data_type(key.find('Evaluation').text, intended_type)
-
-                    # validate with schema
-                    error = cls.validate_evaluation(tag.tag, key, values)
-
-                    # if the error list is empty, then save the values within the dictionary
-                    if not len(error):
-                        dictionary[key.tag] = values
-
-                    # else append the error to the list of errors to report to user
-                    else:
-                        error_list.append(error)
-        else:
-            # else returns None
-            return None, error_list
-
-        return dictionary, error_list
+                        dictionary[key.tag] = cls.convert_data_type(key.find('Evaluation').text, intended_type)
+        #             # validate with schema
+        #             error = cls.validate_evaluation(tag.tag, key, values)
+        #
+        #             # if the error list is empty, then save the values within the dictionary
+        #             if not len(error):
+        #                 dictionary[key.tag] = values
+        #
+        #             # else append the error to the list of errors to report to user
+        #             else:
+        #                 error_list.append(error)
+        # else:
+        #     # else returns None
+        #     return None, error_list
+            return dictionary
 
     @classmethod
     def validate_evaluation(cls, tag, key, value):
@@ -167,17 +166,17 @@ class CostBenefitAnalysis(Financial, ParamsDER):
                 if key.get('analysis')[0] == 'y':
                     # 3a) loop through checks for validate: make type and range (if applicable) is correct
                     for val in value:
-                        error_list.append(cls.checks_for_validate(val, key.find('Type').text, prop, tag))
+                        error_list.append(cls.checks_for_validate(val, prop, tag))
                 # IF ONLY ONE VALUE (BASE CASE)
                 else:
                     # 3b) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(value, key.find('Type').text, prop, tag)
+                    error_list = cls.checks_for_validate(value, prop, tag)
             else:
                 # report to the user that the given evaluation value cannot be separately evaulated in the cba (will not be used) but still continue
-                cls.report_warning(tag, key.tag, 'cba value not allowed')
+                cls.report_warning('cba', tag=tag, key=key.tag,)
         else:
             # report that the value was not in the schema (therefore will not be used) but still continue
-            cls.report_warning(tag, key.tag, 'key not in schema')
+            cls.report_warning('key', tag=tag, key=key.tag,)
 
         return error_list
 

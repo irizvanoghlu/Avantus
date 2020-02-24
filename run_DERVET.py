@@ -62,37 +62,28 @@ class DERVET:
             Notes: kwargs is in place for testing purposes
         """
         self.verbose = verbose
-        if model_parameters_path.endswith(".csv"):
-            opt_model_parameters_path = ParamsDER.csv_to_xml(model_parameters_path, **kwargs)
-        else:
-            opt_model_parameters_path = model_parameters_path
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
-        ParamsDER.initialize(opt_model_parameters_path, self.verbose)
+        self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
         # Initialize the CBA module
         CostBenefitAnalysis.initialize_evaluation()
         u_logger.info('Successfully initialized the CBA class with the XML file.')
 
-        self.model_params = ParamsDER
-
     def solve(self):
         if self.verbose:
-            self.model_params.class_summary()
-            self.model_params.series_summary()
-        self.model_params.validate()  # i know that all the functionality of this
-        # function is not meant for dervet, but we still need parts of it to validate,
-        # and the validateDER() function has nothing in it. -HN
-        self.model_params.validate_der()  # renamed from validateDER() to follow PEP 8 rules. Please follow them -HN
+            ParamsDER.class_summary()
+        ParamsDER.validate()
+        ParamsDER.validate_der()
         return self.run()
 
     def run(self):
         starts = time.time()
 
-        ResultDER.initialize(self.model_params.Results, self.model_params.df_analysis)
+        ResultDER.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
 
-        for key, value in self.model_params.instances.items():
+        for key, value in self.cases.items():
             if not value.other_error_checks():
                 continue
             value.prepare_scenario()

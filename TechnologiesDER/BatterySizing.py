@@ -31,7 +31,7 @@ class BatterySizing(storagevet.BatteryTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params, cycle_life):
+    def __init__(self, name,  opt_agg, params):
         """ Initializes a battery class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
@@ -39,16 +39,12 @@ class BatterySizing(storagevet.BatteryTech):
             name (string): name of technology
             opt_agg (DataFrame): Initalized Financial Class
             params (dict): params dictionary from dataframe for one case
-            cycle_life (DataFrame): Cycle life information
         """
 
         # create generic storage object
-        storagevet.BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
+        storagevet.BatteryTech.__init__(self, name,  opt_agg, params)
 
-        try:
-            self.user_duration = params['duration']
-        except KeyError:
-            self.user_duration = 0
+        self.user_duration = params['duration_max']
 
         self.size_constraints = []
 

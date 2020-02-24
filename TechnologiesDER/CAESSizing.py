@@ -27,7 +27,7 @@ class CAESSizing(storagevet.CAESTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params, cycle_life):
+    def __init__(self, name,  opt_agg, params):
         """ Initializes CAES class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
@@ -35,16 +35,14 @@ class CAESSizing(storagevet.CAESTech):
             name (string): name of technology
             opt_agg (DataFrame): Initialized Financial Class
             params (dict): params dictionary from dataframe for one case
-            cycle_life (DataFrame): Cycle life information
         """
 
         # create generic storage object
-        storagevet.CAESTech.__init__(self, name,  opt_agg, params, cycle_life)
+        storagevet.CAESTech.__init__(self, name,  opt_agg, params)
 
         self.size_constraints = []
 
         self.optimization_variables = {}
-
 
     def add_vars(self, size):
         """ Adds optimization variables to dictionary

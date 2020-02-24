@@ -87,11 +87,11 @@ class ScenarioSizing(Scenario):
             'CAES': CAESSizing
         }
 
-        active_storage = self.active_objects['storage']
-        for storage in active_storage:
+        for storage in ess_action_map.keys():  # this will cause merging errors -HN
             inputs = self.technology_inputs_map[storage]
-            tech_func = ess_action_map[storage]
-            self.technologies["Storage"] = tech_func('Storage', self.power_kw['opt_agg'], inputs, self.cycle_life)
+            if inputs is not None:
+                tech_func = ess_action_map[storage]
+                self.technologies["Storage"] = tech_func('Storage', self.power_kw['opt_agg'], inputs)
             u_logger.info("Finished adding storage...")
 
         generator_action_map = {
@@ -99,16 +99,14 @@ class ScenarioSizing(Scenario):
             'ICE': ICESizing
         }
 
-        active_gen = self.active_objects['generator']
-        for gen in active_gen:
+        for gen in generator_action_map.keys():
             inputs = self.technology_inputs_map[gen]
-            tech_func = generator_action_map[gen]
-            new_gen = tech_func(gen, inputs)
-            new_gen.estimate_year_data(self.opt_years, self.frequency)
-            self.technologies[gen] = new_gen
-            u_logger.info("Finished adding generators...")
-
-        u_logger.info("Finished adding active Technologies...")
+            if inputs is not None:
+                tech_func = generator_action_map[gen]
+                new_gen = tech_func(gen, inputs)
+                new_gen.estimate_year_data(self.opt_years, self.frequency)
+                self.technologies[gen] = new_gen
+        u_logger.info("Finished adding generators...")
 
         self.sizing_optimization = self.check_if_sizing_ders()
 

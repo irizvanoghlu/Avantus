@@ -4,628 +4,628 @@
 
     <Scenario active="yes">
         <monthly_data_filename analysis="no">
-            <Coupled>None</Coupled>
             <Value>.\dervet\storagevet\Data\Monthly_Data.csv</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </monthly_data_filename>
         <time_series_filename analysis="no">
-            <Coupled>None</Coupled>
             <Value>.\dervet\storagevet\Data\hourly_timeseries.csv</Value>
             <Sensitivity_Parameters>.\Data\test1.csv</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </time_series_filename>
         <dt analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </dt>
         <opt_years analysis="no">
-            <Coupled>None</Coupled>
             <Value>2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>list/int</Type>
+            <Coupled>None</Coupled>
         </opt_years>
         <start_year analysis="no">
-            <Coupled>None</Coupled>
             <Value>2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Period</Type>
+            <Coupled>None</Coupled>
         </start_year>
         <end_year analysis="no">
-            <Coupled>None</Coupled>
             <Value>2030</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Period</Type>
+            <Coupled>None</Coupled>
         </end_year>
         <n analysis="no">
-            <Coupled>None</Coupled>
             <Value>month</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string/int</Type>
+            <Coupled>None</Coupled>
         </n>
         <incl_site_load analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </incl_site_load>
         <no_import analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </no_import>
         <no_export analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </no_export>
         <def_growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>6</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </def_growth>
         <verbose analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </verbose>
         <verbose_opt analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </verbose_opt>
         <binary analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </binary>
         <slack analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </slack>
         <ownership analysis="no">
-            <Coupled>None</Coupled>
             <Value>customer</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </ownership>
         <location analysis="no">
-            <Coupled>None</Coupled>
             <Value>customer</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </location>
         <kappa_ene_max analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_ene_max>
         <kappa_ene_min analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_ene_min>
         <kappa_dis_max analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_dis_max>
         <kappa_dis_min analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_dis_min>
         <kappa_ch_max analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_ch_max>
         <kappa_ch_min analysis="no">
-            <Coupled>None</Coupled>
             <Value>100000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kappa_ch_min>
     </Scenario>
 
     <Finance active="yes">
         <inflation_rate analysis="no">
-            <Coupled>None</Coupled>
             <Value>3</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </inflation_rate>
         <npv_discount_rate analysis="no">
-            <Coupled>None</Coupled>
             <Value>7</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </npv_discount_rate>
         <yearly_data_filename analysis="no">
-            <Coupled>None</Coupled>
             <Value>.\dervet\storagevet\Data\yearly_data.csv</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </yearly_data_filename>
         <external_incentives analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </external_incentives>
         <customer_tariff_filename analysis="no">
-            <Coupled>None</Coupled>
             <Value>.\dervet\storagevet\Data\tariff.csv</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </customer_tariff_filename>
         <analysis_horizon_mode analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </analysis_horizon_mode>
     </Finance>
 
     <Results active="no">
         <dir_absolute_path analysis="no">
-            <Coupled>None</Coupled>
             <Value>enter absolute path here</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </dir_absolute_path>
         <label analysis="no">
-            <Coupled>None</Coupled>
             <Value>_2MW_5hr</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </label>
         <errors_log_path analysis="no">
-            <Coupled>None</Coupled>
             <Value>Enter absolute path here  (include the folder name you want the file to be contained inside)</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </errors_log_path>
     </Results>
 
     <Battery active="yes">
         <name analysis="no">
-            <Coupled>None</Coupled>
             <Value>2MW-5hr</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </name>
         <ccost analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ccost>
         <ccost_kw analysis="no">
-            <Coupled>None</Coupled>
             <Value>100</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ccost_kw>
         <ccost_kwh analysis="no">
-            <Coupled>None</Coupled>
             <Value>800</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ccost_kwh>
         <startup analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </startup>
         <fixedOM analysis="no">
-            <Coupled>None</Coupled>
             <Value>10</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </fixedOM>
         <OMexpenses analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </OMexpenses>
         <ch_max_rated analysis="no">
-            <Coupled>None</Coupled>
             <Value>2000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ch_max_rated>
         <dis_max_rated analysis="no">
-            <Coupled>None</Coupled>
             <Value>2000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </dis_max_rated>
         <ch_min_rated analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ch_min_rated>
         <dis_min_rated analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </dis_min_rated>
         <ene_max_rated analysis="no">
-            <Coupled>None</Coupled>
             <Value>10000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ene_max_rated>
         <ulsoc analysis="no">
-            <Coupled>None</Coupled>
             <Value>100</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ulsoc>
         <llsoc analysis="no">
-            <Coupled>None</Coupled>
             <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </llsoc>
         <rte analysis="no">
-            <Coupled>None</Coupled>
             <Value>85</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </rte>
         <sdr analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </sdr>
         <construction_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </construction_date>
         <operation_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </operation_date>
         <soc_target analysis="no">
-            <Coupled>None</Coupled>
             <Value>50</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </soc_target>
         <yearly_degrade analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </yearly_degrade>
         <incl_cycle_degrade analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </incl_cycle_degrade>
         <cycle_life_filename analysis="no">
-            <Coupled>None</Coupled>
             <Value>.\dervet\storagevet\Data\Battery_Cycle_Life.csv</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </cycle_life_filename>
         <p_start_ch analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </p_start_ch>
         <p_start_dis analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </p_start_dis>
         <daily_cycle_limit analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </daily_cycle_limit>
         <hp analysis="no">
-            <Coupled>None</Coupled>
             <Value>100</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </hp>
         <macrs_term analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </macrs_term>
     </Battery>
 
     <PV active="yes">
         <name analysis="no">
-            <Coupled>nan</Coupled>
             <Value>solar1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>nan</Coupled>
         </name>
         <inv_max analysis="no">
-            <Coupled>None</Coupled>
             <Value>3000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </inv_max>
         <loc analysis="no">
-            <Coupled>None</Coupled>
             <Value>ac</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>None</Coupled>
         </loc>
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
         <cost_per_kW analysis="no">
-            <Coupled>None</Coupled>
             <Value>200</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </cost_per_kW>
         <macrs_term analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </macrs_term>
         <rated_capacity analysis="no">
-            <Coupled>None</Coupled>
             <Value>100</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </rated_capacity>
         <grid_charge analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </grid_charge>
         <construction_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </construction_date>
         <operation_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </operation_date>
     </PV>
 
     <ICE active="no">
         <name analysis="no">
-            <Coupled>nan</Coupled>
             <Value>ice gen</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
+            <Coupled>nan</Coupled>
         </name>
         <rated_power analysis="no">
-            <Coupled>None</Coupled>
             <Value>4000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </rated_power>
         <min_power analysis="no">
-            <Coupled>None</Coupled>
             <Value>100</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </min_power>
         <startup_time analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </startup_time>
         <efficiency analysis="no">
-            <Coupled>None</Coupled>
             <Value>0.15</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </efficiency>
         <fuel_cost analysis="no">
-            <Coupled>None</Coupled>
             <Value>3.5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </fuel_cost>
         <variable_om_cost analysis="no">
-            <Coupled>None</Coupled>
             <Value>10</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </variable_om_cost>
         <fixed_om_cost analysis="no">
-            <Coupled>None</Coupled>
             <Value>12</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </fixed_om_cost>
         <ccost_kW analysis="no">
-            <Coupled>None</Coupled>
             <Value>200</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ccost_kW>
         <ccost analysis="no">
-            <Coupled>None</Coupled>
             <Value>200</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ccost>
         <macrs_term analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </macrs_term>
         <n_min analysis="no">
-            <Coupled>None</Coupled>
             <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </n_min>
         <n_max analysis="no">
-            <Coupled>None</Coupled>
             <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </n_max>
         <construction_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </construction_date>
         <operation_date analysis="no">
-            <Coupled>None</Coupled>
             <Value>1/1/2017</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>Timestamp</Type>
+            <Coupled>None</Coupled>
         </operation_date>
     </ICE>
 
     <DA active="yes">
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
     </DA>
 
     <FR active="no">
         <ku analysis="no">
-            <Coupled>None</Coupled>
             <Value>0.3</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </ku>
         <kd analysis="no">
-            <Coupled>None</Coupled>
             <Value>0.3</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </kd>
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
         <energyprice_growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </energyprice_growth>
         <CombinedMarket analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </CombinedMarket>
         <duration analysis="no">
-            <Coupled>None</Coupled>
             <Value>1</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </duration>
     </FR>
 
     <SR active="no">
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
         <duration analysis="no">
-            <Coupled>None</Coupled>
             <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </duration>
     </SR>
 
     <NSR active="no">
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
         <duration analysis="no">
-            <Coupled>None</Coupled>
             <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </duration>
     </NSR>
 
     <DCM active="no">
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
     </DCM>
 
     <retailTimeShift active="no">
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>5</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
     </retailTimeShift>
 
     <User active="no">
         <price analysis="no">
-            <Coupled>None</Coupled>
             <Value>10000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </price>
     </User>
 
@@ -634,61 +634,61 @@
 
     <Reliability active="yes">
         <target analysis="no">
-            <Coupled>None</Coupled>
             <Value>4</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </target>
         <post_facto_only analysis="no">
-            <Coupled>None</Coupled>
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>bool</Type>
+            <Coupled>None</Coupled>
         </post_facto_only>
         <nu analysis="no">
-            <Coupled>None</Coupled>
             <Value>20</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </nu>
         <gamma analysis="no">
-            <Coupled>None</Coupled>
             <Value>43</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </gamma>
         <max_outage_duration analysis="no">
-            <Coupled>None</Coupled>
             <Value>80</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>int</Type>
+            <Coupled>None</Coupled>
         </max_outage_duration>
     </Reliability>
 
     <Deferral active="no">
         <planned_load_limit analysis="no">
-            <Coupled>None</Coupled>
             <Value>15000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </planned_load_limit>
         <reverse_power_flow_limit analysis="no">
-            <Coupled>None</Coupled>
             <Value>-15000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </reverse_power_flow_limit>
         <growth analysis="no">
-            <Coupled>None</Coupled>
             <Value>6</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </growth>
         <price analysis=".">
-            <Coupled>None</Coupled>
             <Value>10000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>float</Type>
+            <Coupled>None</Coupled>
         </price>
     </Deferral>
 

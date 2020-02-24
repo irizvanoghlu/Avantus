@@ -50,6 +50,8 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
         self.user_ene_rated_max = params['user_ene_rated_max']
         self.user_ene_rated_min = params['user_ene_rated_min']
 
+        # TODO: move these user-defined optimization constraints to objective constraints method of BatterySizing
+        #  instead of setting up them in the class initialization
         # if the user inputted the energy rating as 0, then size for energy rating
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)

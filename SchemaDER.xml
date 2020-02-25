@@ -92,7 +92,7 @@
 		<daily_cycle_limit cba="n" min="0" type="float" />
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="y" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
-		<duration_max min="0" type="int" optional="y"/>
+		<duration_max min="0" type="float" optional="y"/>
 	</Battery>
 	<CAES type="storage">
 		<name type="string" />
@@ -116,6 +116,7 @@
 		<soc_target max="100.0" min="0.0" type="float" />
 		<p_start_ch min="0" type="float" />
 		<p_start_dis min="0" type="float" />
+		<duration_max min="0" type="float" optional="y"/>
 	</CAES>
 	<Scenario type="scenario">
 		<monthly_data_filename cba="y" type="string" />
@@ -124,7 +125,7 @@
 		<opt_years cba="n" max="2100" min="1800" type="list/int" />
 		<start_year cba="y" type="Period" />
 		<end_year cba="y" type="Period" />
-		<n allowed_values="month\year" cba="n" max="366" min="0" type="string/int" />
+		<n allowed_values="month|year" cba="n" max="366" min="0" type="string/int" />
 		<incl_site_load allowed_values="1|0" cba="n" type="bool" />
 		<no_export allowed_values="1|0" cba="n" type="bool" />
 		<no_import allowed_values="1|0" cba="n" type="bool" />

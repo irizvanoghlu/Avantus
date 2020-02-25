@@ -79,6 +79,31 @@ class ParamsDER(Params):
 
         return xml_filename
 
+    @classmethod
+    def initialize(cls, filename, verbose):
+        """ In addition to everything that initialize does in Params, this class will look at
+        Evaluation Value to - 1) determine if cba value can be given and validate; 2) convert
+        any referenced data into direct data 3) if sensitivity analysis, then make sure enough
+        cba values are given 4) build a dictionary of CBA inputs that match with the instances
+        that need to be run
+
+            Args:
+                filename (string): filename of XML or CSV model parameter
+                verbose (bool): whether or not to print to console for more feedback
+
+            Returns dictionary of instances of Params, each key is a number
+        """
+        cls.instances = super().initialize(filename, verbose)
+        # 1) determine if cba value can be given and validate
+
+        # 2) convert any referenced data into direct data
+
+        # 3) if sensitivity analysis, then make sure enough cba values are given
+
+        # 4) build a dictionary of CBA inputs that match with the instances that need to be run
+
+        return cls.instances
+
     def __init__(self):
         """ Initialize these following attributes of the empty Params class object.
         """

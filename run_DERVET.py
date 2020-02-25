@@ -35,6 +35,7 @@ from ScenarioSizing import ScenarioSizing
 from ParamsDER import ParamsDER
 from cbaDER import CostBenefitAnalysis
 from ResultDER import ResultDER
+from storagevet.Visualization import Visualization
 
 
 e_logger = logging.getLogger('Error')
@@ -65,23 +66,18 @@ class DERVET:
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
+        self.results = ResultDER.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
-        # Initialize the CBA module
-        CostBenefitAnalysis.initialize_evaluation()
-        u_logger.info('Successfully initialized the CBA class with the XML file.')
+        # # Initialize the CBA module
+        # CostBenefitAnalysis.initialize_evaluation()
+        # u_logger.info('Successfully initialized the CBA class with the XML file.')
+
+        if self.verbose:
+            Visualization(ParamsDER).class_summary()
 
     def solve(self):
-        if self.verbose:
-            ParamsDER.class_summary()
-        ParamsDER.validate()
-        ParamsDER.validate_der()
-        return self.run()
-
-    def run(self):
         starts = time.time()
-
-        ResultDER.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
 
         for key, value in self.cases.items():
             if not value.other_error_checks():

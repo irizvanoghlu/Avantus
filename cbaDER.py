@@ -26,53 +26,40 @@ u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class CostBenefitAnalysis(Financial, ParamsDER):
+class CostBenefitAnalysis(Financial):
 
     @classmethod
-    def initialize_evaluation(cls):
+    def initialize_evaluation(cls, schema, xml_tree):
         """
             Initialize the class variable of the Params class that will be used to create Params objects for the
             sensitivity analyses. Specifically, it will preload the needed CSV and/or time series data, identify
             sensitivity variables, and prepare so-called default Params values as a template for creating objects.
 
         """
-
+        cls.schema_tree = schema
+        cls.xml_tree = xml_tree
         cls.datasets = {"time_series": dict(),
                         "monthly_data": dict(),
                         "customer_tariff": dict(),
                         "yearly_data": dict()}
 
-        # read in and validate XML
-        error_list = []
-        cls.Scenario, temp_lst = cls.read_evaluation_xml('Scenario')
-        error_list += temp_lst
-        cls.Finance, temp_lst = cls.read_evaluation_xml('Finance')
-        error_list += temp_lst
+        cls.cba_input_error_raised = False
 
-        # read in data from CSVs, validate and organize in correct df structure
-        cls.eval_data_prep()
+        # read in and validate XML
+        cls.Scenario = cls.read_and_validate_cba('Scenario')
+        cls.Finance = cls.read_and_validate_cba('Finance')
 
         # load in CBA values for DERs
-        battery, temp_lst = cls.read_evaluation_xml('Battery')
-        error_list += temp_lst
-        pv, temp_lst = cls.read_evaluation_xml('PV')
-        error_list += temp_lst
-        ice, temp_lst = cls.read_evaluation_xml('ICE')
-        error_list += temp_lst
-        caes, temp_lst = cls.read_evaluation_xml('CAES')
-        error_list += temp_lst
+        battery = cls.read_and_validate_cba('Battery')
+        pv = cls.read_and_validate_cba('PV')
+        ice = cls.read_and_validate_cba('ICE')
+        caes = cls.read_and_validate_cba('CAES')
 
         # load in CBA values for predispatch services
-        user, temp_lst = cls.read_evaluation_xml('User')
-        error_list += temp_lst
-        # reliability, temp_lst = cls.read_evaluation_xml('Reliability')
-        # error_list.append(temp_lst)
+        user = cls.read_and_validate_cba('User')
 
-        # after reading all the tags in from the provided XML, check
-        # if the list of errors is not empty --> then report them to the user
-        if len(error_list):
-            cls.report_error(error_list)
-
+        if cls.cba_input_error_raised:
+            raise AssertionError("The model parameter has some errors associated to it in the CBA column. Please fix and rerun.")
         # create dictionary for CBA values for DERs
         cls.ders_values = {'Storage': battery,
                            'PV': pv,  # cost_per_kW (and then recalculate capex)
@@ -82,13 +69,7 @@ class CostBenefitAnalysis(Financial, ParamsDER):
         cls.valuestream_values = {'User': user}  # USER will only have one entry in it (key = price)
 
     @classmethod
-    def look_for_sensitivity(cls):
-        sensitivity_to_evaluation_map = pd.DataFrame()
-        if cls.sensitivity['attributes']:
-            pass
-
-    @classmethod
-    def read_evaluation_xml(cls, name):
+    def read_and_validate_cba(cls, name):
         """ Read data from valuation XML file
 
         Args:
@@ -100,86 +81,53 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         """
         tag = cls.xmlTree.find(name)
-        error_list = []
+        schema_tag = cls.schema_tree.find(name)
 
         # check to see if user includes the tag within the provided xml
         if tag is None:
-            return None, error_list
+            return
 
         # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
         if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
+            # Check if tag is in schema
+            if schema_tag is None:
+                cls.report_warning("missing tag", tag=name, raise_input_error=False)
+                # warn user that the tag given is not in the schema
+                return
             dictionary = {}
-            for key in tag:
-
-                # check if the key can have a cba evaluation value
-                cba_eval = key.find('Evaluation')
-                if cba_eval is None:
+            # iterate through each tag required by the schema
+            for schema_key in schema_tag:
+                # Check if attribute is in the schema
+                try:
+                    key = tag.find(schema_key.tag)
+                    cba_value = key.find('Evaluation')
+                except (KeyError, AttributeError):
+                    cls.report_warning("missing key", tag=name, key=schema_key.tag)
+                    continue
+                # if we dont have a cba_value, skip to next key
+                if cba_value is None:
                     continue
                 # check if the first character is 'y' for the active value within each property
-                if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
+                if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
                     # convert to correct data type
                     intended_type = key.find('Type').text
                     if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                         # if analysis, then convert each value and save as list
                         tag_key = (tag.tag, key.tag)
-                        cls.sensitivity['attributes'][tag_key] = cls.extract_data(key.find('Evaluation').text, intended_type)
-                        # TODO: incomplete
-                        # check to make sure the length match
+                        sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
+                        # validate each value
+                        for values in sensitivity_values:
+                            cls.checks_for_validate(values, schema_key, name)
+                        #  check to make sure the length match with sensitivity analysis value set length
+                        required_values = len(cls.sensitivity['attributes'][tag_key])
+                        if required_values != len(sensitivity_values):
+                            cls.report_warning('sa length', tag=name, key=key.tag, required_num=required_values)
+                        cls.sensitivity['cba_values'][tag_key] = sensitivity_values
                     else:
                         dictionary[key.tag] = cls.convert_data_type(key.find('Evaluation').text, intended_type)
-        #             # validate with schema
-        #             error = cls.validate_evaluation(tag.tag, key, values)
-        #
-        #             # if the error list is empty, then save the values within the dictionary
-        #             if not len(error):
-        #                 dictionary[key.tag] = values
-        #
-        #             # else append the error to the list of errors to report to user
-        #             else:
-        #                 error_list.append(error)
-        # else:
-        #     # else returns None
-        #     return None, error_list
-            return dictionary
-
-    @classmethod
-    def validate_evaluation(cls, tag, key, value):
-        """ validates the input data. A schema file is used to validate the inputs.
-            if any errors are found they are saved to a dictionary and at the end of the method it will call the error
-            method to print all the input errors
-
-        Args:
-            tag (str): value that corresponds to tag within model param CSV
-            key (Element): key XML element
-            value (:object): list of values that the user provided, which length should be the same as the sensitivity list
-
-        Returns: list, length 1 or length of sensitivity, of the error (if error) else return empty list
-
-        """
-        error_list = []
-        # 1) check to see if key is in schema, then continue validation
-        prop = cls.schema_tree.find(tag).find(key.tag)
-        if prop is not None:
-            # 2) check to see if key is allowed to define cba values
-            cba_allowed = prop.find('cba')
-            if cba_allowed == 'y':
-                # IF SENSITIVITY
-                if key.get('analysis')[0] == 'y':
-                    # 3a) loop through checks for validate: make type and range (if applicable) is correct
-                    for val in value:
-                        error_list.append(cls.checks_for_validate(val, prop, tag))
-                # IF ONLY ONE VALUE (BASE CASE)
                 else:
-                    # 3b) checks for validate: make type and range (if applicable) is correct
-                    error_list = cls.checks_for_validate(value, prop, tag)
-            else:
-                # report to the user that the given evaluation value cannot be separately evaulated in the cba (will not be used) but still continue
-                cls.report_warning('cba', tag=tag, key=key.tag,)
-        else:
-            # report that the value was not in the schema (therefore will not be used) but still continue
-            cls.report_warning('key', tag=tag, key=key.tag,)
-
-        return error_list
+                    cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
+            return dictionary
 
     @classmethod
     def report_warning(cls, warning_type, raise_input_error=True, **kwargs):
@@ -194,68 +142,20 @@ class CostBenefitAnalysis(Financial, ParamsDER):
 
         """
 
-        if warning_type == 'cba':
-            e_logger.warning(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +
-                             "CBA module of the program. Value is ignored.")
+        if warning_type == 'cba not allowed':
+            e_logger.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +
+                           "CBA module of the program. Value is ignored.")
+        if warning_type == "sa length":
+            e_logger.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} has not enough CBA evaluatino values to "
+                           f"successfully complete sensitivity analsysis. Please include {kwargs['required_num']} "
+                           f"values, each corresponding to the Sensitivity Analysis value given")
         super().report_warning(warning_type, raise_input_error, **kwargs)
+        cls.cba_input_error_raised = raise_input_error or cls.cba_input_error_raised
 
     @classmethod
-    def determine_eval_values(cls, element, property):
-        """ Function to determine the list of values for the given element/component.
-            They can have more than 1 values (if sensitivity is yes)
-
-            Notes:
-                This function only used within data_prep() and fetch_sense()  -- HN
-
-            Args:
-                element (string): element is the same as the component
-                property (string): attribute of the element
-
-            Returns: list of values (empty list if not active)
-
+    def read_referenced_data_for_cba(cls):
         """
-        slist = []
-        # looks in schema tree for the element
-        component = cls.xmlTree.find(element)
-        # then look for the property of the element
-        attribute = component.find(property)
-        # check if the key can have a cba evaluation value
-        cba_eval = attribute.find('Evaluation')
-
-        if cba_eval is not None:
-            # check if the first character is 'y' for the active value within each property
-            if cba_eval.get('active')[0].lower() == "y" or cba_eval.get('active')[0] == "1":
-                slist = cls.extract_data(attribute.find('Evaluation').text, attribute.find('Type').text)
-
-        return slist
-
-    @classmethod
-    def validate_value_length(cls, tag, key, lst):
-        """ In the case that sensitivity analysis is turned on:
-        This function makes sure that there are the same number of values to be evaluated within the cba, as there are
-        sensitivity values.
-
-        Args:
-            tag (Element): value that corresponds to tag within model param CSV
-            key (str): name of the key within model param CSV
-            lst (list): list of values that the user provided, which length should be the same as the sensitivity list
-
-        Returns: list of the error, if one exists. Else just an empty list
-
-        """
-        error_list = []
-        try:
-            sensitivity_att = cls.sensitivity['attributes'][(tag.tag, key)]
-        except AttributeError:
-            sensitivity_att = []
-        if len(lst) != len(sensitivity_att):
-            error_list.append((key, str(lst), "val_length", str(sensitivity_att)))
-        return error_list
-
-    @classmethod
-    def eval_data_prep(cls):
-        """
-            This function makes a unique set of filename(s) based on the results of determine_eval_values function.
+            This function makes a unique set of filename(s) based on the results of grab_value_set function.
             It applies for time series filename(s), monthly data filename(s), customer tariff filename(s), and cycle
             life filename(s).
             For each set, the corresponding class dataset variable (ts, md, ct, cl) is loaded with the data.

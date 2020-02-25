@@ -4,12 +4,13 @@ CAESSizing.py
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Thien Nguyen'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Thien Nguyen', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import storagevet
 import cvxpy as cvx

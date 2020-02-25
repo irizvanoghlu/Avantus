@@ -6,10 +6,11 @@ This Python class contains methods and attributes vital for completing financial
 
 __author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy']
+__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import logging
 from storagevet.Finances import Financial
@@ -179,6 +180,24 @@ class CostBenefitAnalysis(Financial, ParamsDER):
             cls.report_warning('key', tag=tag, key=key.tag,)
 
         return error_list
+
+    @classmethod
+    def report_warning(cls, warning_type, raise_input_error=True, **kwargs):
+        """ Print a warning to the user log. Warnings are reported, but do not result in exiting.
+
+        Args:
+            warning_type (str): the classification of the warning to be reported to the user
+            raise_input_error (bool): raise this warning as an error instead back to the user and stop running
+                the program
+            kwargs: elements about the warning that need to be reported to the user (like the tag and key that
+                caused the error
+
+        """
+
+        if warning_type == 'cba':
+            e_logger.warning(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +
+                             "CBA module of the program. Value is ignored.")
+        super().report_warning(warning_type, raise_input_error, **kwargs)
 
     @classmethod
     def determine_eval_values(cls, element, property):

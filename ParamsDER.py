@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 from storagevet.Params import Params
 import os
+import copy
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -32,8 +33,9 @@ class ParamsDER(Params):
     """
     # set schema loction based on the location of this file (this should override the global value within Params.py
     schema_location = os.path.abspath(__file__)[:-len('ParamsDER.py')] + "SchemaDER.xml"
-    cba_input_error_raised = False
 
+    sensitivity = {"attributes": dict(), "coupled": list(), 'cba_value': dict()}
+    cba_input_error_raised = False
     cba_input_template = None
 
     @staticmethod
@@ -97,6 +99,8 @@ class ParamsDER(Params):
             Returns dictionary of instances of Params, each key is a number
         """
         cls.instances = super().initialize(filename, verbose)  # everything that initialize does in Params (steps 1-4)
+        # 1) INITIALIZE ALL MUTABLE CLASS VARIABLES
+        cls.sensitivity = {"attributes": dict(), "coupled": list(), 'cba_value': dict()}
 
         # 5) load direct data and create input template
         # determine if cba value can be given and validate
@@ -113,10 +117,9 @@ class ParamsDER(Params):
         cls.add_evaluation_to_case_definitions()
 
         # 7) build a dictionary of CBA inputs that matches with the instance Params that the inputs should be paired with and
-        # load up datasets that correspond with referenced data in respective cba_input_instance
-
+        # load up datasets that correspond with referenced data in respective cba_input_instance (as defined by CASE_DEFINITIONS)
         # distribute CBA dictionary of inputs to the corresponding Param instance (so its value can be passed on to Scenario)
-
+        cls.cba_input_builder()
 
         return cls.instances
 
@@ -299,12 +302,58 @@ class ParamsDER(Params):
             num_cba_values = len(value_lst)
             # for each index in VALUE_LST
             for index in range(num_cba_values):
+                corresponding_opt_value = cls.sensitivity['attributes'][tag_key][index]
                 # find the row(s) that contain the optimization value that was also the INDEX-th value in the Sensitivity Parameters entry
-                cls.case_definitions.loc[cls.case_definitions[tag_key] == cls.sensitivity['attributes'][tag_key][index], f"CBA {tag_key}"] = value_lst[index]
+                cls.case_definitions.loc[cls.case_definitions[tag_key] == corresponding_opt_value, f"CBA {tag_key}"] = value_lst[index]
 
         # check for any entries w/ NaN to make sure everything went fine
         if np.any(cls.case_definitions == np.NAN):
             print('There are some left over Nans in the case definition. Something went wrong.')
+
+    @classmethod
+    def cba_input_builder(cls):
+        """
+            Function to create all the possible combinations of inputs to correspond to the sensitivity analysis case being run
+
+        """
+
+        dictionary = {}
+        index = 0
+        case = copy.deepcopy(cls.cba_input_template)
+        # while case definitions is not an empty df (there is SA) or if it is the last row in case definitions
+        while len(cls.sensitivity['cba_values']) and index < len(cls.case_definitions):
+            row = cls.case_definitions.iloc[index]
+            # check to see if there are any CBA values included in case definition OTHERWISE just read in any referenced data
+            for tag_key in cls.sensitivity['cba_values'].keys():
+                # modify the case dictionary
+                case[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+            cls.load_evaluation_datasets(case)
+            dictionary.update({index: case})
+
+            case = copy.deepcopy(cls.cba_input_template)
+            index += 1
+        else:
+            cls.load_evaluation_datasets(case)
+            dictionary.update({index: case})
+            cls.cba_input_instances = dictionary
+
+    @classmethod
+    def load_evaluation_datasets(cls, cba_value_dic):
+        """Loads data sets that are specified by the '_filename' parameters """
+        if 'Scenario' in cba_value_dic.keys():
+            scenario = cba_value_dic['Scenario']
+            if 'time_series_filename' in scenario.keys():
+                time_series = cls.referenced_data['time_series_filename'][scenario['time_series_filename']]
+                cba_value_dic['Scenario']["time_series"], scenario['frequency'] = cls.preprocess_timeseries(time_series, cba_value_dic['Scenario']['dt'])
+            if 'monthly_data_filename' in scenario.keys():
+                cba_value_dic['Scenario']["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
+
+        if 'Finance' in cba_value_dic.keys():
+            finance = cba_value_dic['Finance']
+            if 'yearly_data_filename' in finance.keys():
+                cba_value_dic['Finance']["yearly_data"] = cls.referenced_data["yearly_data"][finance["yearly_data_filename"]]
+            if 'customer_tariff_filename' in finance.keys():
+                cba_value_dic['Finance']["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).

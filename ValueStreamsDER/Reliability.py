@@ -153,8 +153,8 @@ class Reliability(storagevet.ValueStream):
         # 1) simulate an outage that starts at every timestep
         # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
         # generation you are confident will be delivered (usually 20% of PV forecast)
-        reliability_check = self.critical_load
-        demand_left = self.critical_load
+        reliability_check = self.critical_load.copy()
+        demand_left = self.critical_load.copy()
 
         # collect information required to call simulate_outage
         tech_specs = {}
@@ -251,7 +251,7 @@ class Reliability(storagevet.ValueStream):
                 soc_charge = (ess_properties['operation soc max'] - init_soc) * ess_properties['energy cap'] / (ess_properties['rte'] * self.dt)
                 charge = min(soc_charge, -current_demand_left, ess_properties['charge max'])
                 # update the state of charge of the ESS
-                next_soc = init_soc + (charge * ess_properties['rte'] * self.dt)
+                next_soc = init_soc + (charge * ess_properties['rte'] * self.dt / ess_properties['energy cap'])
             else:
                 # there is no space to save the extra generation, so the ess will not do anything
                 next_soc = init_soc

@@ -34,7 +34,7 @@ class ParamsDER(Params):
     # set schema loction based on the location of this file (this should override the global value within Params.py
     schema_location = os.path.abspath(__file__)[:-len('ParamsDER.py')] + "SchemaDER.xml"
 
-    sensitivity = {"attributes": dict(), "coupled": list(), 'cba_value': dict()}
+    sensitivity = {"attributes": dict(), "coupled": list(), 'cba_values': dict()}
     cba_input_error_raised = False
     cba_input_template = None
 
@@ -100,7 +100,7 @@ class ParamsDER(Params):
         """
         cls.instances = super().initialize(filename, verbose)  # everything that initialize does in Params (steps 1-4)
         # 1) INITIALIZE ALL MUTABLE CLASS VARIABLES
-        cls.sensitivity = {"attributes": dict(), "coupled": list(), 'cba_value': dict()}
+        cls.sensitivity['cba_values'] = dict()
 
         # 5) load direct data and create input template
         # determine if cba value can be given and validate
@@ -149,6 +149,7 @@ class ParamsDER(Params):
 
         # create dictionary for CBA values for all services (from data files)
         template['valuestream_values'] = {'User': cls.read_and_validate_cba('User')}  # USER will only have one entry in it (key = price)
+        # TODO add deferral to template
         return template
 
     @classmethod
@@ -250,10 +251,10 @@ class ParamsDER(Params):
 
         """
 
-        ts_files = cls.grab_evaluation_lst('Scenario', 'time_series_filename') - {cls.referenced_data['time_series'].keys()}
-        md_files = cls.grab_evaluation_lst('Scenario', 'monthly_data_filename') - {cls.referenced_data['monthly_data'].keys()}
-        ct_files = cls.grab_evaluation_lst('Finance', 'customer_tariff_filename') - {cls.referenced_data['customer_tariff'].keys()}
-        yr_files = cls.grab_evaluation_lst('Finance', 'yearly_data_filename') - {cls.referenced_data['yearly_data'].keys()}
+        ts_files = cls.grab_evaluation_lst('Scenario', 'time_series_filename') - set(cls.referenced_data['time_series'].keys())
+        md_files = cls.grab_evaluation_lst('Scenario', 'monthly_data_filename') - set(cls.referenced_data['monthly_data'].keys())
+        ct_files = cls.grab_evaluation_lst('Finance', 'customer_tariff_filename') - set(cls.referenced_data['customer_tariff'].keys())
+        yr_files = cls.grab_evaluation_lst('Finance', 'yearly_data_filename') - set(cls.referenced_data['yearly_data'].keys())
 
         for ts_file in ts_files:
             cls.referenced_data['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
@@ -283,8 +284,8 @@ class ParamsDER(Params):
         except KeyError:
             try:
                 values = {cls.cba_input_template[tag][key]}
-            except TypeError:
-                values = {}
+            except (TypeError, KeyError):
+                values = set()
         return values
 
     @classmethod
@@ -326,7 +327,12 @@ class ParamsDER(Params):
             # check to see if there are any CBA values included in case definition OTHERWISE just read in any referenced data
             for tag_key in cls.sensitivity['cba_values'].keys():
                 # modify the case dictionary
-                case[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                if tag_key[0] in cls.cba_input_template['ders_values'].keys():
+                    case['ders_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                elif tag_key[0] in cls.cba_input_template['valuestream_values'].keys():
+                    case['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                else:
+                    case[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
             cls.load_evaluation_datasets(case)
             dictionary.update({index: case})
 

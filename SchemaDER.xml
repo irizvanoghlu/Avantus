@@ -125,7 +125,7 @@
 		<opt_years cba="n" max="2100" min="1800" type="list/int" />
 		<start_year cba="y" type="Period" />
 		<end_year cba="y" type="Period" />
-		<n allowed_values="month|year" cba="n" max="366" min="0" type="string/int" />
+		<n allowed_values="month|year|BOUND" cba="n" max="366" min="0" type="string/int" />
 		<incl_site_load allowed_values="1|0" cba="n" type="bool" />
 		<no_export allowed_values="1|0" cba="n" type="bool" />
 		<no_import allowed_values="1|0" cba="n" type="bool" />

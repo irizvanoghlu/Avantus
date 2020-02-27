@@ -34,18 +34,46 @@ class CostBenefitAnalysis(Financial):
 
         Args:
             financial_params (dict): parameter dictionary as the Params class created
-            dispatch_services (dict): Dict of services to calculate cost avoided or profit
-            predispatch_services (dict): Dict of predispatch services to calculate cost avoided or profit
-            technologies (dict): dictionary of all the DER subclasses that are active
         """
-        Financial.__init__(self, financial_params)
+        super().__init__(financial_params)
         self.horizon_mode = financial_params['analysis_horizon_mode']
         self.location = financial_params['location']
         self.ownership = financial_params['ownership']
 
+        self.Scenario = financial_params['CBA']['Scenario']
+        self.Finance = financial_params['CBA']['Finance']
+        self.valuestream_values = financial_params['CBA']['valuestream_values']
+        self.ders_values = financial_params['CBA']['ders_values']
+
         self.value_streams = {}
         self.ders = {}
         # TODO: need to deal with the data obtained from CSVs
+
+    def annuity_scalar(self, start_year, end_year, optimized_years):
+        """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
+
+
+        Args:
+            start_year (pd.Period): First year of project (from model parameter input)
+            end_year (pd.Period): Last year of project (from model parameter input)
+            optimized_years (list): List of years that the user wants to optimize--should be length=1
+
+        Returns: the NPV multiplier
+
+        """
+        n = end_year.year - start_year.year
+        dollar_per_year = np.ones(n)
+        base_year = min(optimized_years)
+        yr_index = base_year - start_year.year
+        while yr_index < n - 1:
+            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + self.inflation_rate / 100)
+            yr_index += 1
+        yr_index = base_year - start_year.year
+        while yr_index > 0:
+            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + self.inflation_rate))
+            yr_index -= 1
+        lifetime_npv_alpha = np.npv(self.npv_discount_rate/100, [0] + dollar_per_year)
+        return lifetime_npv_alpha
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -60,30 +88,8 @@ class CostBenefitAnalysis(Financial):
         # we deep copy because we do not want to change the original ValueStream objects
         self.value_streams = copy.deepcopy(valuestreams)
         self.ders = copy.deepcopy(technologies)
-        self.load_data_sets()
-
-        # TODO: need to save cba values and output them back to the user s.t. they know what values were used to get the CBA results
-        self.update_with_evaluation('cbaDER', self, self.Scenario)
-        self.update_with_evaluation('cbaDER', self, self.Finance)
 
         self.place_evaluation_data()
-
-    def load_data_sets(self):
-        """Loads data sets that are specified by the '_filename' parameters """
-        # if self.Scenario is not None
-        if self.Scenario:
-            if 'time_series_filename' in self.Scenario.keys():
-                time_series = self.datasets['time_series_filename'][self.Scenario['time_series_filename']]
-                self.Scenario["time_series"], self.Scenario['frequency'] = self.preprocess_timeseries(time_series, self.dt)
-            if 'monthly_data_filename' in self.Scenario.keys():
-                self.Scenario["monthly_data"] = self.datasets["monthly_data"][self.Scenario["monthly_data_filename"]]
-
-        # if self.Finance is not None
-        if self.Finance:
-            if 'yearly_data_filename' in self.Finance.keys():
-                self.Finance["yearly_data"] = self.datasets["yearly_data"][self.Finance["yearly_data_filename"]]
-            if 'customer_tariff_filename' in self.Finance.keys():
-                self.Finance["customer_tariff"] = self.datasets["customer_tariff"][self.Scenario["customer_tariff_filename"]]
 
     @staticmethod
     def update_with_evaluation(param_name, param_object, evaluation_dict):
@@ -126,34 +132,8 @@ class CostBenefitAnalysis(Financial):
 
         """
         self.initiate_cost_benefit_analysis(technologies, valuestreams)
-        proforma = Financial.proforma_report(self, self.ders, self.value_streams, results, use_inflation)
+        proforma = super().proforma_report(self.ders, self.value_streams, results, use_inflation)
         return proforma
-
-    def annuity_scalar(self, start_year, end_year, optimized_years):
-        """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
-
-
-        Args:
-            start_year (pd.Period): First year of project (from model parameter input)
-            end_year (pd.Period): Last year of project (from model parameter input)
-            optimized_years (list): List of years that the user wants to optimize--should be length=1
-
-        Returns: the NPV multiplier
-
-        """
-        n = end_year.year - start_year.year
-        dollar_per_year = np.ones(n)
-        base_year = min(optimized_years)
-        yr_index = base_year - start_year.year
-        while yr_index < n - 1:
-            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + self.inflation_rate / 100)
-            yr_index += 1
-        yr_index = base_year - start_year.year
-        while yr_index > 0:
-            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + self.inflation_rate))
-            yr_index -= 1
-        lifetime_npv_alpha = np.npv(self.npv_discount_rate/100, [0] + dollar_per_year)
-        return lifetime_npv_alpha
 
     def place_evaluation_data(self):
         """ Place the data specified in the evaluation column into the correct places. This means all the monthly data,
@@ -185,6 +165,3 @@ class CostBenefitAnalysis(Financial):
 
         for key, value in self.ders.items():
             self.update_with_evaluation(key, value, self.ders_values[key])
-
-    def grab_evaluation_value(self):
-        pass

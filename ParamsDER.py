@@ -142,14 +142,14 @@ class ParamsDER(Params):
 
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
-            'Battery': cls.read_and_validate_cba('Battery'),
+            'Storage': cls.read_and_validate_cba('Battery'),
             'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
             'ICE': cls.read_and_validate_cba('ICE')  # fuel_price,
         }
 
         # create dictionary for CBA values for all services (from data files)
-        template['valuestream_values'] = {'User': cls.read_and_validate_cba('User')}  # USER will only have one entry in it (key = price)
-        # TODO add deferral to template
+        template['valuestream_values'] = {'User': cls.read_and_validate_cba('User'),  # USER will only have one entry in it (key = price)
+                                          'Deferral': cls.read_and_validate_cba('Deferral')}
         return template
 
     @classmethod
@@ -318,30 +318,31 @@ class ParamsDER(Params):
 
         """
 
-        dictionary = {}
+        # dictionary = {}
         index = 0
-        case = copy.deepcopy(cls.cba_input_template)
+        cba_dict = copy.deepcopy(cls.cba_input_template)
         # while case definitions is not an empty df (there is SA) or if it is the last row in case definitions
-        while len(cls.sensitivity['cba_values']) and index < len(cls.case_definitions):
+        while not cls.case_definitions.empty and index < len(cls.case_definitions):
             row = cls.case_definitions.iloc[index]
             # check to see if there are any CBA values included in case definition OTHERWISE just read in any referenced data
             for tag_key in cls.sensitivity['cba_values'].keys():
                 # modify the case dictionary
                 if tag_key[0] in cls.cba_input_template['ders_values'].keys():
-                    case['ders_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                    cba_dict['ders_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 elif tag_key[0] in cls.cba_input_template['valuestream_values'].keys():
-                    case['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                    cba_dict['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 else:
-                    case[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
-            cls.load_evaluation_datasets(case)
-            dictionary.update({index: case})
-
-            case = copy.deepcopy(cls.cba_input_template)
+                    cba_dict[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+            cls.load_evaluation_datasets(cba_dict)
+            # dictionary.update({index: case})
+            cls.instances[index].Finance['CBA'] = cba_dict
+            cba_dict = copy.deepcopy(cls.cba_input_template)
             index += 1
         else:
-            cls.load_evaluation_datasets(case)
-            dictionary.update({index: case})
-            cls.cba_input_instances = dictionary
+            cls.load_evaluation_datasets(cba_dict)
+            # dictionary.update({index: cba_dict})
+            cls.instances[index].Finance['CBA'] = cba_dict
+        # cls.cba_input_instances = dictionary
 
     @classmethod
     def load_evaluation_datasets(cls, cba_value_dic):

@@ -80,13 +80,6 @@ class DERVET:
         starts = time.time()
 
         for key, value in self.cases.items():
-            if not value.other_error_checks():
-                continue
-            value.prepare_scenario()
-            value.prepare_technology()
-            value.prepare_services()
-            value.prepare_finance()
-
             run = ScenarioSizing(value)
             run.add_technology()  # adds all technologies from input maps (input_tree)
             run.add_services()  # inits all services from input maps  (input_tree)

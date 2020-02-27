@@ -6,10 +6,11 @@ This Python class contains methods and attributes specific for technology analys
 
 __author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
+__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import storagevet
 import logging
@@ -31,7 +32,7 @@ class BatterySizing(storagevet.BatteryTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params, cycle_life):
+    def __init__(self, name,  opt_agg, params):
         """ Initializes a battery class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
@@ -39,16 +40,12 @@ class BatterySizing(storagevet.BatteryTech):
             name (string): name of technology
             opt_agg (DataFrame): Initalized Financial Class
             params (dict): params dictionary from dataframe for one case
-            cycle_life (DataFrame): Cycle life information
         """
 
         # create generic storage object
-        storagevet.BatteryTech.__init__(self, name,  opt_agg, params, cycle_life)
+        storagevet.BatteryTech.__init__(self, name,  opt_agg, params)
 
-        try:
-            self.user_duration = params['duration']
-        except KeyError:
-            self.user_duration = 0
+        self.user_duration = params['duration_max']
 
         self.size_constraints = []
 

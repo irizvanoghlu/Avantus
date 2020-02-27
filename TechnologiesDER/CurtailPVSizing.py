@@ -6,10 +6,11 @@ This Python class contains methods and attributes specific for technology analys
 
 __author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
+__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 import pandas as pd

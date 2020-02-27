@@ -43,6 +43,7 @@ Battery,dis_max_rated,2000,kW,float,"[0, dis_max_rated)",N/A,None,Energy Storage
 Battery,ch_min_rated,0,kW,float,"[0, ch_min_rated)",N/A,None,Energy Storage Charge Capacity,.,no,.,.,
 Battery,dis_min_rated,0,kW,float,"[0, dis_min_rated)",N/A,None,Energy Storage Discharge Capacity,.,no,.,.,
 Battery,ene_max_rated,10000,kWh,float,"[0, ene_max_rated)",N/A,None,Energy Storage Energy Capacity,.,no,.,.,
+Battery,duration_max,0,hr,float,"[0, hr)",N/A,None,Energy Storage duration maximum (set to 0 to abstain from applying),.,no,.,.,
 Battery,ulsoc,100,%,float,"[0, 100] (must be more than llsoc)",N/A,None,Energy Storage SOC Upper Bound,.,no,.,.,
 Battery,llsoc,5,%,float,"[0, 100] (must be less than ulsoc)",N/A,None,Energy Storage SOC Lower Bound,.,no,.,.,
 Battery,rte,85,%,float,"[0, 100] ",N/A,None,Energy Storage Round Trip Efficiency,.,no,.,.,

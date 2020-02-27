@@ -4,12 +4,13 @@ CAESSizing.py
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Thien Nguyen'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Thien Nguyen', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import storagevet
 import cvxpy as cvx
@@ -27,7 +28,7 @@ class CAESSizing(storagevet.CAESTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params, cycle_life):
+    def __init__(self, name,  opt_agg, params):
         """ Initializes CAES class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
@@ -35,16 +36,14 @@ class CAESSizing(storagevet.CAESTech):
             name (string): name of technology
             opt_agg (DataFrame): Initialized Financial Class
             params (dict): params dictionary from dataframe for one case
-            cycle_life (DataFrame): Cycle life information
         """
 
         # create generic storage object
-        storagevet.CAESTech.__init__(self, name,  opt_agg, params, cycle_life)
+        storagevet.CAESTech.__init__(self, name,  opt_agg, params)
 
         self.size_constraints = []
 
         self.optimization_variables = {}
-
 
     def add_vars(self, size):
         """ Adds optimization variables to dictionary

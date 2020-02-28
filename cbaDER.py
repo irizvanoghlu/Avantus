@@ -92,7 +92,7 @@ class CostBenefitAnalysis(Financial):
         self.place_evaluation_data()
 
     @staticmethod
-    def update_with_evaluation(param_name, param_object, evaluation_dict):
+    def update_with_evaluation(param_name, param_object, evaluation_dict, verbose):
         """Searches through the class variables (which are dictionaries of the parameters with values to be used in the CBA)
         and saves that value
 
@@ -109,9 +109,9 @@ class CostBenefitAnalysis(Financial):
             for key, value in evaluation_dict.items():
                 try:
                     setattr(param_object, key, value)
-                    print('attribute (' + key + ': ' + param_name + ') set: ' + str(value))
+                    print('attribute (' + param_name + ': ' + key + ') set: ' + str(value)) if verbose else None
                 except KeyError:
-                    print('No attribute: ' + key + 'in ' + param_name)
+                    print('No attribute ' + param_name + ': ' + key) if verbose else None
 
     def proforma_report(self, technologies, valuestreams, results, use_inflation=True):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
@@ -161,7 +161,7 @@ class CostBenefitAnalysis(Financial):
                 value_stream.update_tariff_rate(self.Finance['customer_tariff'], retail_prices)
 
         if 'User' in self.value_streams.keys():
-            self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'])
+            self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'], self.verbose)
 
         for key, value in self.ders.items():
-            self.update_with_evaluation(key, value, self.ders_values[key])
+            self.update_with_evaluation(key, value, self.ders_values[key], self.verbose)

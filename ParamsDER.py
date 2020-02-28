@@ -333,34 +333,33 @@ class ParamsDER(Params):
                     cba_dict['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 else:
                     cba_dict[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
-            cls.load_evaluation_datasets(cba_dict)
-            # dictionary.update({index: case})
+            cls.load_evaluation_datasets(cba_dict, cls.instances[index].Scenario['frequency'])
             cls.instances[index].Finance['CBA'] = cba_dict
             cba_dict = copy.deepcopy(cls.cba_input_template)
             index += 1
         else:
-            cls.load_evaluation_datasets(cba_dict)
-            # dictionary.update({index: cba_dict})
+            cls.load_evaluation_datasets(cba_dict, cls.instances[index].Scenario['frequency'])
             cls.instances[index].Finance['CBA'] = cba_dict
-        # cls.cba_input_instances = dictionary
 
     @classmethod
-    def load_evaluation_datasets(cls, cba_value_dic):
+    def load_evaluation_datasets(cls, cba_value_dic, freq):
         """Loads data sets that are specified by the '_filename' parameters """
         if 'Scenario' in cba_value_dic.keys():
             scenario = cba_value_dic['Scenario']
+            # freq = cls.timeseries_frequency(scenario['dt'])
+            scenario['frequency'] = freq
             if 'time_series_filename' in scenario.keys():
                 time_series = cls.referenced_data['time_series_filename'][scenario['time_series_filename']]
-                cba_value_dic['Scenario']["time_series"], scenario['frequency'] = cls.preprocess_timeseries(time_series, cba_value_dic['Scenario']['dt'])
+                scenario["time_series"] = cls.preprocess_timeseries(time_series, freq)
             if 'monthly_data_filename' in scenario.keys():
-                cba_value_dic['Scenario']["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
+                scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
 
         if 'Finance' in cba_value_dic.keys():
             finance = cba_value_dic['Finance']
             if 'yearly_data_filename' in finance.keys():
-                cba_value_dic['Finance']["yearly_data"] = cls.referenced_data["yearly_data"][finance["yearly_data_filename"]]
+                finance["yearly_data"] = cls.referenced_data["yearly_data"][finance["yearly_data_filename"]]
             if 'customer_tariff_filename' in finance.keys():
-                cba_value_dic['Finance']["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
+                finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
 
     def prepare_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).

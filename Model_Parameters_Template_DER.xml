@@ -225,9 +225,21 @@
         <ccost_kwh analysis="no">
             <Value>800</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Type>float</Type>
+            <Type>int</Type>
             <Coupled>None</Coupled>
         </ccost_kwh>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </sr_response_time>
         <startup analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -399,6 +411,18 @@
             <Type>float</Type>
             <Coupled>None</Coupled>
         </cost_per_kW>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </sr_response_time>
         <macrs_term analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -450,6 +474,18 @@
             <Type>float</Type>
             <Coupled>None</Coupled>
         </min_power>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </sr_response_time>
         <startup_time analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>

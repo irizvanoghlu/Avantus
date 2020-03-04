@@ -23,6 +23,7 @@
 	</FR>
 	<SR type="service">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<response_time cba="n" max="30" min="10" type="int" />
 		<duration cba="n" max="24" min="0.0" type="float" />
 	</SR>
 	<NSR type="service">

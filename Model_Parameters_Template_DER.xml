@@ -615,6 +615,12 @@
             <Type>float</Type>
             <Coupled>None</Coupled>
         </growth>
+        <response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>None</Coupled>
+        </response_time>
         <duration analysis="no">
             <Value>2</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>

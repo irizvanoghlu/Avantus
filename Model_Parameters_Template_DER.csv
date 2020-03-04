@@ -98,6 +98,7 @@ FR,energyprice_growth,5,%/yr,float,"[0, 100]",N/A,None,Frequency Regulation Ener
 FR,CombinedMarket,1,y/n,bool,"{0,1}",N/A,None,Must the storage bid as much reg up as reg down?,.,no,.,.,
 FR,duration,1,hours,float,"[0, 24]",N/A,None,Duration for energy reservation requirements,.,no,.,.,
 SR,growth,0,%/yr,float,"[0, 100]",N/A,None,Growth Rate of Spinning Reserve Price,no,no,.,.,
+SR,response_time,10,minutes,int,"[10, 30)",N/A,None,SR Response Time for generation to come online,.,no,.,.,
 SR,duration,2,hrs,float,"(0, 1]",N/A,None,Energy requirement for providing spinning reserves,.,no,.,.,
 NSR,growth,0,%/yr,float,"[0, 100]",N/A,None,Growth Rate of Non-Spinning Reserve Price,no,no,.,.,
 NSR,duration,2,hrs,float,"(0, 1]",N/A,None,Energy requirement for providing non-spinning reserves,.,no,.,.,

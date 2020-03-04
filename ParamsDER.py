@@ -142,7 +142,7 @@ class ParamsDER(Params):
 
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
-            'Storage': cls.read_and_validate_cba('Battery'),
+            'Battery': cls.read_and_validate_cba('Battery'),
             'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
             'ICE': cls.read_and_validate_cba('ICE')  # fuel_price,
         }
@@ -296,7 +296,7 @@ class ParamsDER(Params):
         """
         cba_sensi = cls.sensitivity['cba_values']
         # for each tag-key cba value that sensitivity analysis applies to
-        for tag_key, value_lst in cba_sensi:
+        for tag_key, value_lst in cba_sensi.items():
             # initialize the new column with 'NaN'
             cls.case_definitions[f"CBA {tag_key}"] = np.NAN
             # get the number of values that you will need to iterate through
@@ -317,15 +317,12 @@ class ParamsDER(Params):
             Function to create all the possible combinations of inputs to correspond to the sensitivity analysis case being run
 
         """
-
-        # dictionary = {}
-        index = 0
-        cba_dict = copy.deepcopy(cls.cba_input_template)
         # while case definitions is not an empty df (there is SA) or if it is the last row in case definitions
-        while not cls.case_definitions.empty and index < len(cls.case_definitions):
-            row = cls.case_definitions.iloc[index]
+        for index in cls.instances.keys():
+            cba_dict = copy.deepcopy(cls.cba_input_template)
             # check to see if there are any CBA values included in case definition OTHERWISE just read in any referenced data
             for tag_key in cls.sensitivity['cba_values'].keys():
+                row = cls.case_definitions.iloc[index]
                 # modify the case dictionary
                 if tag_key[0] in cls.cba_input_template['ders_values'].keys():
                     cba_dict['ders_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
@@ -333,11 +330,6 @@ class ParamsDER(Params):
                     cba_dict['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 else:
                     cba_dict[tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
-            cls.load_evaluation_datasets(cba_dict, cls.instances[index].Scenario['frequency'])
-            cls.instances[index].Finance['CBA'] = cba_dict
-            cba_dict = copy.deepcopy(cls.cba_input_template)
-            index += 1
-        else:
             cls.load_evaluation_datasets(cba_dict, cls.instances[index].Scenario['frequency'])
             cls.instances[index].Finance['CBA'] = cba_dict
 

@@ -44,6 +44,12 @@ class CostBenefitAnalysis(Financial):
         self.Finance = financial_params['CBA']['Finance']
         self.valuestream_values = financial_params['CBA']['valuestream_values']
         self.ders_values = financial_params['CBA']['ders_values']
+        # replace 'Battery' key w/ 'Storage' key
+        if 'Battery' in self.ders_values.keys():
+            self.ders_values['Storage'] = self.ders_values.pop('Battery')
+        # replace 'CAES' key w/ 'Storage' key
+        if 'CAES' in self.ders_values.keys():
+            self.ders_values['Storage'] = self.ders_values.pop('CAES')
 
         self.value_streams = {}
         self.ders = {}

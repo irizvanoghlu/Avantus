@@ -341,7 +341,7 @@ class ParamsDER(Params):
             # freq = cls.timeseries_frequency(scenario['dt'])
             scenario['frequency'] = freq
             if 'time_series_filename' in scenario.keys():
-                time_series = cls.referenced_data['time_series_filename'][scenario['time_series_filename']]
+                time_series = cls.referenced_data['time_series'][scenario['time_series_filename']]
                 scenario["time_series"] = cls.preprocess_timeseries(time_series, freq)
             if 'monthly_data_filename' in scenario.keys():
                 scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]

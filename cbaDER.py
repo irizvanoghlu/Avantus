@@ -119,7 +119,7 @@ class CostBenefitAnalysis(Financial):
                 except KeyError:
                     print('No attribute ' + param_name + ': ' + key) if verbose else None
 
-    def proforma_report(self, technologies, valuestreams, results, use_inflation=True):
+    def preform_cost_benefit_analysis(self, technologies, value_streams, results):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
         saved in results and the set of technology and service instances that have (if any) values that the user indicated
         they wanted to use when evaluating the CBA.
@@ -129,17 +129,13 @@ class CostBenefitAnalysis(Financial):
 
         Args:
             technologies (Dict): Dict of technologies (needed to get capital and om costs)
-            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
+            value_streams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
-            use_inflation (bool): Flag to determine if using inflation rate to determine financials for extrapolation. If false, use extrapolation
-
-        Returns: dataframe proforma
 
         """
-        self.initiate_cost_benefit_analysis(technologies, valuestreams)
-        proforma = super().proforma_report(self.ders, self.value_streams, results, use_inflation)
-        return proforma
+        self.initiate_cost_benefit_analysis(technologies, value_streams)
+        super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
 
     def place_evaluation_data(self):
         """ Place the data specified in the evaluation column into the correct places. This means all the monthly data,
@@ -162,9 +158,7 @@ class CostBenefitAnalysis(Financial):
                 value_stream.update_price_signals(monthly_data, time_series)
 
         if 'customer_tariff' in self.Finance:
-            retail_prices = self.calc_retail_energy_price(self.Finance['customer_tariff'], self.frequency, self.opt_years)
-            for value_stream in self.value_streams.values():
-                value_stream.update_tariff_rate(self.Finance['customer_tariff'], retail_prices)
+            self.tariff = self.Finance['customer_tariff']
 
         if 'User' in self.value_streams.keys():
             self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'], self.verbose)

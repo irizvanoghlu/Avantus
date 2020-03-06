@@ -4,7 +4,7 @@ Reliability.py
 This Python class contains methods and attributes specific for service analysis within StorageVet.
 """
 
-__author__ = 'Halley Nathwani and Miles Evans'
+__author__ = 'Suma Jothibasu, Halley Nathwani and Miles Evans'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
@@ -47,6 +47,7 @@ class Reliability(storagevet.ValueStream):
         self.nu = params['nu'] / 100
         self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
+        self.n_2 = params['n-2']
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
@@ -73,15 +74,13 @@ class Reliability(storagevet.ValueStream):
         self.reliability_requirement = reverse.iloc[::-1]  # set it back the right way
 
         if not self.post_facto_only:
-            if DEBUG: print(f'max the system is required to store: {self.reliability_requirement.max()} kWh')
-            if DEBUG: print(f'max the system has to be able to charge bc energy req: {np.min(np.diff(self.reliability_requirement))} kW')
-            if DEBUG: print(f'max the system has to be able to discharge bc energy req: {np.max(np.diff(self.reliability_requirement))} kW')
-            ####self.reliability_pwr_requirement =
+            print(f'max the system is required to store: {self.reliability_requirement.max()} kWh') if DEBUG else None
+            print(f'max the system has to be able to charge bc energy req: {np.min(np.diff(self.reliability_requirement))} kW') if DEBUG else None
+            print(f'max the system has to be able to discharge bc energy req: {np.max(np.diff(self.reliability_requirement))} kW') if DEBUG else None
+
             # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
             # there will be 2 constraints: one for power, one for energy
             ene_min_add = Const.Constraint('ene_min', self.name, self.reliability_requirement)
-            ###dis_min = Const.Constraint('dis_min',self.name,)
-
             self.constraints = {'ene_min': ene_min_add}  # this should be the constraint that makes sure the next x hours have enough energy
 
     def objective_constraints(self, variables, subs, generation, reservations=None):
@@ -104,13 +103,17 @@ class Reliability(storagevet.ValueStream):
                 pv_generation = np.zeros(subs.shape[0])
 
             try:
-                ice_rated_power = variables['n']*self.ice_rated_power  # ICE generator max rated power
+                # ICE generator max rated power
+                if self.n_2:
+                    ice_rated_power = cvx.max(variables['n'] - 1, 0)*self.ice_rated_power
+                else:
+                    ice_rated_power = variables['n'] * self.ice_rated_power
             except (KeyError, AttributeError):
                 ice_rated_power = 0
 
             # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
             # to ensure that our DER mix can cover peak net load during any outage in the year
-            if DEBUG: print(f'combined max power output > {subs.loc[:, "load"].max()} kW')
+            print(f'combined max power output > {subs.loc[:, "load"].max()} kW') if DEBUG else None
             return [cvx.NonPos(cvx.max(self.critical_load.loc[subs.index].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
         else:
             return super().objective_constraints(variables, subs, generation, reservations)
@@ -193,7 +196,11 @@ class Reliability(storagevet.ValueStream):
         ice_tups = [item for item in technologies if item[0] == 'ICE']
         combined_ice_rating = 0  # for multiple ICE
         if len(ice_tups) == 1:
-            combined_ice_rating = size_df.loc[ice_tups[0][1], 'Quantity'] * size_df.loc[ice_tups[0][1], 'Power Capacity (kW)']
+            if self.n_2:
+                combined_ice_rating = np.max([size_df.loc[ice_tups[0][1], 'Quantity']-1, 0]) * size_df.loc[ice_tups[0][1], 'Power Capacity (kW)']
+            else:
+                combined_ice_rating = size_df.loc[ice_tups[0][1], 'Quantity'] * size_df.loc[ice_tups[0][1], 'Power Capacity (kW)']
+
             reliability_check -= combined_ice_rating
             demand_left -= combined_ice_rating
         elif len(ice_tups):

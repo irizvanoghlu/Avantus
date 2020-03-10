@@ -124,11 +124,11 @@ class Reliability(storagevet.ValueStream):
         """
         report = pd.DataFrame(index=self.reliability_requirement.index)
         if not self.post_facto_only:
-            try:
-                storage_energy_rating = self.storage.ene_max_rated.value
-            except AttributeError:
-                storage_energy_rating = self.storage.ene_max_rated
-            report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
+            # try:
+            #     storage_energy_rating = self.storage.ene_max_rated.value
+            # except AttributeError:
+            #     storage_energy_rating = self.storage.ene_max_rated
+            # report.loc[:, 'SOC Constraints (%)'] = self.reliability_requirement / storage_energy_rating
             report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
         return report

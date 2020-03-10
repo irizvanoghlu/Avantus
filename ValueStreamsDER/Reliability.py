@@ -40,7 +40,7 @@ class Reliability(storagevet.ValueStream):
         """
 
         # generate the generic predispatch service object
-        super().__init__(techs['Storage'], 'Reliability', dt)
+        super().__init__(None, 'Reliability', dt)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
@@ -65,9 +65,6 @@ class Reliability(storagevet.ValueStream):
 
         self.reliability_requirement = params['critical load'].copy()
         # TODO: atm this load is only the site load, should consider aux load if included by user  --HN
-
-        # set frequency gap between time data, thought this might not be necessary
-        self.reliability_requirement.index.freq = self.reliability_requirement.index[1] - self.reliability_requirement.index[0]
 
         reverse = self.reliability_requirement.iloc[::-1]  # reverse the time series to use rolling function
         reverse = reverse.rolling(self.coverage_timesteps, min_periods=1).sum()*self.dt  # rolling function looks back, so reversing looks forward
@@ -105,7 +102,7 @@ class Reliability(storagevet.ValueStream):
             try:
                 # ICE generator max rated power
                 if self.n_2:
-                    ice_rated_power = cvx.max(variables['n'] - 1, 0)*self.ice_rated_power
+                    ice_rated_power = cvx.max(variables['n'] - 1, 0) * self.ice_rated_power
                 else:
                     ice_rated_power = variables['n'] * self.ice_rated_power
             except (KeyError, AttributeError):
@@ -213,20 +210,27 @@ class Reliability(storagevet.ValueStream):
         while outage_init < len(self.critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
+            if outage_init == 52:
+                print("at hour 37")
             longest_outage = self.simulate_outage(reliability_check.iloc[outage_init:], demand_left.iloc[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1
             # start outage on next timestep
             outage_init += 1
         # 2) calculate probabilities
-        outage_lengths = list(np.arange(1, self.max_outage_duration + 1, self.dt))
-        outage_coverage = {'Outage Length (hrs)': outage_lengths,
-                           'Load Coverage Probability (%)': []}
-        for length in outage_lengths:
+        load_coverage_prob = []
+        length = self.dt
+        while length <= self.max_outage_duration:
             scenarios_covered = frequency_simulate_outage[int(length / self.dt):].sum()
             total_possible_scenarios = len(self.critical_load) - (length / self.dt) + 1
             percentage = scenarios_covered / total_possible_scenarios
-            outage_coverage['Load Coverage Probability (%)'].append(percentage)
+            load_coverage_prob.append(percentage)
+            length += self.dt
+        # 3) build DataFrame to return
+        outage_lengths = list(np.arange(0, self.max_outage_duration + self.dt, self.dt))
+        outage_coverage = {'Outage Length (hrs)': outage_lengths,
+                           '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
+                           'Load Coverage Probability (%)': [1] + load_coverage_prob}  # first index is prob of covering outage of 0 hours (P=100%)
         end = time.time()
         u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         return pd.DataFrame(outage_coverage)

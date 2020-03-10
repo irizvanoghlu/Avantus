@@ -240,7 +240,7 @@ class BatterySizing(storagevet.BatteryTech):
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
         # Keep energy in bounds determined in the constraints configuration function
-        constraint_list += [cvx.NonPos(ene_target - ene_max_n + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_target - ene_max_n + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]  # TODO: comment out if putting energy user constraint and infeasible result
         constraint_list += [cvx.NonPos(ene[:-1] - ene_max_t + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
         constraint_list += [cvx.NonPos(-ene_target + ene_min_n - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]

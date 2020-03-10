@@ -381,6 +381,30 @@ class ParamsDER(Params):
             finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
         return cba_dict
 
+        if self.FR is not None:
+            if self.FR['u_ts_constraints']:
+                self.FR.update({'regu_max': self.Scenario['time_series'].loc[:, 'Reg Up Max (kW)'],
+                                'regu_min': self.Scenario['time_series'].loc[:, 'Reg Up Min (kW)']})
+            if self.FR['u_ts_constraints']:
+                self.FR.update({'regd_max': self.Scenario['time_series'].loc[:, 'Reg Down Max (kW)'],
+                                'regd_min': self.Scenario['time_series'].loc[:, 'Reg Down Min (kW)']})
+
+        if self.SR is not None:
+            if self.SR['ts_constraints']:
+                self.SR.update({'max': self.Scenario['time_series'].loc[:, 'SR Max (kW)'],
+                                'min': self.Scenario['time_series'].loc[:, 'SR Min (kW)']})
+
+        if self.NSR is not None:
+            if self.NSR['ts_constraints']:
+                self.NSR.update({'max': self.Scenario['time_series'].loc[:, 'NSR Max (kW)'],
+                                 'min': self.Scenario['time_series'].loc[:, 'NSR Min (kW)']})
+
+        if self.LF is not None:
+            if self.LF['ts_constraints']:
+                self.LF.update({'max': self.Scenario['time_series'].loc[:, 'LF Max (kW)'],
+                                'min': self.Scenario['time_series'].loc[:, 'LF Min (kW)']})
+        u_logger.info("Successfully prepared the value-stream (services)")
+
     def load_scenario(self):
         """ Interprets user given data and prepares it for Scenario.
 

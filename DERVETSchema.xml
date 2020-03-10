@@ -38,6 +38,8 @@
 		<energyprice_growth cba="n" max="100.0" min="0.0" type="float" />
 		<CombinedMarket allowed_values="1|0" cba="n" type="bool" />
 		<duration cba="n" max="24" min="0.0" type="float" />
+    <u_ts_constraints allowed_values="1|0" cba="n" type="bool" />
+    <d_ts_constraints allowed_values="1|0" cba="n" type="bool" />
 	</FR>
 	<LF type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
@@ -47,10 +49,12 @@
 	<SR type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<duration cba="n" max="24" min="0.0" type="float" />
+    <ts_constraints allowed_values="1|0" cba="n" type="bool" />
 	</SR>
 	<NSR type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<duration cba="n" max="24" min="0.0" type="float" />
+    <ts_constraints allowed_values="1|0" cba="n" type="bool" />
 	</NSR>
 	<DCM type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />

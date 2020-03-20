@@ -38,6 +38,7 @@ class Load(DER):
         self.duration = params['duration']  # hour
         self.site_load = params['site_load']
         self.energy_max = self.rated_power * self.duration
+        self.variables_dict = {}
 
         self.variable_names = {'power', 'ene'}
 
@@ -53,9 +54,17 @@ class Load(DER):
         Returns:
             Dictionary of optimization variables
         """
-        variables = {'power': cvx.Variable(shape=size, name='power'),
-                     'ene': cvx.Variable(shape=size, name='ene', nonneg=True)}
-        return variables
+        self.variables_dict = {}
+        if self.duration:
+            self.variables_dict = {'power': cvx.Variable(shape=size, name='power'),
+                                   'ene': cvx.Variable(shape=size, name='ene', nonneg=True)}
+        return self.variables_dict
+
+    def get_charge(self, mask):
+        return self.site_load[mask] - self.variables_dict['power']
+
+    def get_energy(self):
+        return self.variables_dict['ene']
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -88,16 +97,25 @@ class Load(DER):
 
         return constraint_list
 
-    # def timeseries_report(self):
-    #     """ Summaries the optimization results for this DER.
-    #
-    #     Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-    #         pertaining to this instance
-    #
-    #     """
-    #     results = pd.DataFrame(index=self.variables.index)
-    #     if self.duration:
-    #         results["Controllable Load (kw)"] = self.site_load - self.variables['power']
-    #     else:
-    #         results["Load (kw)"] = self.site_load
-    #     return results
+    def effective_load(self, mask):
+        """ Returns the
+
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+        """
+        if self.duration:
+            return self.site_load.loc[mask] - self.variables.loc[mask, 'power']
+        else:
+            return self.site_load.loc[mask]
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = pd.DataFrame(index=self.variables.index)
+        results["Load (kw)"] = self.effective_load(np.repeat(True, len(self.variables.index)))
+        return results

@@ -36,6 +36,11 @@
 	<retailTimeShift type="service">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</retailTimeShift>
+	<ControllableLoad type="generator">
+		<name cba="n" type="string" />
+		<power_rating cba="n" min="0.0" type="float" />
+		<duration cba="n" min="0.0" type="float" />
+	</ControllableLoad>
 	<PV type="generator">
 		<name cba="n" type="string" />
 		<inv_max cba="n" min="0.0" type="float" />

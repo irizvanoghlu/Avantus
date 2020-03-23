@@ -6,10 +6,11 @@ This Python class contains methods and attributes specific for technology analys
 
 __author__ = 'Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
+__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 import pandas as pd
@@ -62,6 +63,26 @@ class ICESizing(storagevet.ICE):
 
         return constraint_list
 
+    def proforma_report(self, opt_years, results):
+        """ Calculates the proforma that corresponds to participation in this value stream
+
+        Args:
+            opt_years (list): list of years the optimization problem ran for
+            results (DataFrame): DataFrame with all the optimization variable solutions
+
+        Returns: A DateFrame of with each year in opt_year as the index and
+            the corresponding value this stream provided.
+
+            Creates a dataframe with only the years that we have data for. Since we do not label the column,
+            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
+            DataFrame has only one column, labeled by the int 0
+
+        """
+        # recacluate capex before reporting proforma
+        self.capex = self.capital_cost * self.n + self.ccost_kw * self.rated_power * self.n
+        proforma = super().proforma_report(opt_years, results)
+        return proforma
+
     def sizing_summary(self):
         """
 
@@ -82,3 +103,23 @@ class ICESizing(storagevet.ICE):
                                        'Capital Cost ($/kW)': self.ccost_kw,
                                        'Quantity': n}, index=index)
         return sizing_results
+
+    def max_power_out(self):
+        """
+
+        Returns: the maximum power that can be outputted by this genset
+
+        """
+        try:
+            power_out = self.n.value * self.rated_power
+        except AttributeError:
+            power_out = self.n * self.rated_power
+        return power_out
+
+    def being_sized(self):
+        """ checks itself to see if this instance is being sized
+
+        Returns: true if being sized, false if not being sized
+
+        """
+        return self.n_min == self.n_max

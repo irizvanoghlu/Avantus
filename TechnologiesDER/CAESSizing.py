@@ -4,12 +4,13 @@ CAESSizing.py
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Miles Evans and Evan Giarta'
+__author__ = 'Thien Nguyen'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Thien Nguyen', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
+__maintainer__ = ['Halley Nathwani', 'Miles Evans']
+__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
+__version__ = 'beta'  # beta version
 
 import storagevet
 import cvxpy as cvx
@@ -27,22 +28,77 @@ class CAESSizing(storagevet.CAESTech):
 
     """
 
-    def __init__(self, name, opt_agg, params):
+    def __init__(self, name,  opt_agg, params):
         """ Initializes CAES class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
         Args:
+            name (string): name of technology
             opt_agg (Series): time series data determined by optimization window size (total Series length is 8760)
             params (dict): params dictionary from dataframe for one case
-            cycle_life (DataFrame): Cycle life information
         """
 
         # create generic storage object
-        super().__init__(name, opt_agg, params)
+        storagevet.CAESTech.__init__(self, name,  opt_agg, params)
 
         self.size_constraints = []
 
         self.optimization_variables = {}
+
+    def add_vars(self, size):
+        """ Adds optimization variables to dictionary
+
+        Variables added:
+            caes_ene (Variable): A cvxpy variable for Energy at the end of the time step
+            caes_dis (Variable): A cvxpy variable for Discharge Power, kW during the previous time step
+            caes_ch (Variable): A cvxpy variable for Charge Power, kW during the previous time step
+            caes_ene_max_slack (Variable): A cvxpy variable for energy max slack
+            caes_ene_min_slack (Variable): A cvxpy variable for energy min slack
+            caes_ch_max_slack (Variable): A cvxpy variable for charging max slack
+            caes_ch_min_slack (Variable): A cvxpy variable for charging min slack
+            caes_dis_max_slack (Variable): A cvxpy variable for discharging max slack
+            caes_dis_min_slack (Variable): A cvxpy variable for discharging min slack
+
+        Args:
+            size (Int): Length of optimization variables to create
+
+        Returns:
+            Dictionary of optimization variables
+        """
+
+        variables = {'caes_ene': cvx.Variable(shape=size, name='caes_ene'),
+                     'caes_dis': cvx.Variable(shape=size, name='caes_dis'),
+                     'caes_ch': cvx.Variable(shape=size, name='caes_ch'),
+                     'caes_ene_max_slack': cvx.Parameter(shape=size, name='caes_ene_max_slack', value=np.zeros(size)),
+                     'caes_ene_min_slack': cvx.Parameter(shape=size, name='caes_ene_min_slack', value=np.zeros(size)),
+                     'caes_dis_max_slack': cvx.Parameter(shape=size, name='caes_dis_max_slack', value=np.zeros(size)),
+                     'caes_dis_min_slack': cvx.Parameter(shape=size, name='caes_dis_min_slack', value=np.zeros(size)),
+                     'caes_ch_max_slack': cvx.Parameter(shape=size, name='caes_ch_max_slack', value=np.zeros(size)),
+                     'caes_ch_min_slack': cvx.Parameter(shape=size, name='caes_ch_min_slack', value=np.zeros(size)),
+                     'caes_on_c': cvx.Parameter(shape=size, name='caes_on_c', value=np.ones(size)),
+                     'caes_on_d': cvx.Parameter(shape=size, name='caes_on_d', value=np.ones(size)),
+                     }
+
+        if self.incl_slack:
+            self.variable_names.update(['caes_ene_max_slack', 'caes_ene_min_slack', 'caes_dis_max_slack', 'caes_dis_min_slack', 'caes_ch_max_slack', 'caes_ch_min_slack'])
+            variables.update({'caes_ene_max_slack': cvx.Variable(shape=size, name='caes_ene_max_slack'),
+                              'caes_ene_min_slack': cvx.Variable(shape=size, name='caes_ene_min_slack'),
+                              'caes_dis_max_slack': cvx.Variable(shape=size, name='caes_dis_max_slack'),
+                              'caes_dis_min_slack': cvx.Variable(shape=size, name='caes_dis_min_slack'),
+                              'caes_ch_max_slack': cvx.Variable(shape=size, name='caes_ch_max_slack'),
+                              'caes_ch_min_slack': cvx.Variable(shape=size, name='caes_ch_min_slack')})
+        if self.incl_binary:
+            self.variable_names.update(['caes_on_c', 'caes_on_d'])
+            variables.update({'caes_on_c': cvx.Variable(shape=size, boolean=True, name='caes_on_c'),
+                              'caes_on_d': cvx.Variable(shape=size, boolean=True, name='caes_on_d')})
+            if self.incl_startup:
+                self.variable_names.update(['bat_start_c', 'bat_start_d'])
+                variables.update({'caes_start_c': cvx.Variable(shape=size, name='caes_start_c'),
+                                  'caes_start_d': cvx.Variable(shape=size, name='caes_start_d')})
+
+        variables.update(self.optimization_variables)
+
+        return variables
 
     def sizing_summary(self):
         """
@@ -78,6 +134,29 @@ class CAESSizing(storagevet.CAESTech):
                                        'CAES Capital Cost ($/kW)': self.ccost_kw,
                                        'CAES Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
         return sizing_results
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = storagevet.CAESTech.timeseries_report(self)
+        results[self.name + ' CAES Discharge (kW)'] = self.variables['caes_dis']
+        results[self.name + ' CAES Charge (kW)'] = self.variables['caes_ch']
+        results[self.name + ' CAES Power (kW)'] = self.variables['caes_dis'] - self.variables['caes_ch']
+        results[self.name + ' CAES State of Energy (kWh)'] = self.variables['caes_ene']
+
+        try:
+            energy_rate = self.ene_max_rated.value
+        except AttributeError:
+            energy_rate = self.ene_max_rated
+
+        results['CAES SOC (%)'] = self.variables['caes_ene'] / energy_rate
+        results['CAES Fuel Price ($)'] = self.fuel_price
+
+        return results
 
 
 

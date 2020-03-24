@@ -81,10 +81,13 @@ class DERVET:
 
         for key, value in self.cases.items():
             run = ScenarioSizing(value)
-            run.add_technology()  # adds all technologies from input maps (input_tree)
-            run.add_services()  # inits all services from input maps  (input_tree)
+            run.sizing_technology()
+            run.add_services()
             run.init_financials(value.Finance)
-            run.add_control_constraints()
+
+            # TODO: review purpose/usage of this method, possibly remove it if necessary
+            # run.add_control_constraints()
+
             run.optimize_problem_loop()
 
             ResultDER.add_instance(key, run)

@@ -44,12 +44,96 @@ class ScenarioSizing(Scenario):
 
         """
         Scenario.__init__(self, input_tree)
+        Scenario.init_POI(input_tree)
+        Scenario.activate_controller()
 
-        self.predispatch_service_inputs_map.update({'Reliability': input_tree.Reliability})
+        self.controller.inputs_map.update({'Reliability': input_tree.Reliability})
 
         self.sizing_optimization = False
 
-        u_logger.info("ScenarioDER initialized ...")
+        u_logger.info("ScenarioSizing initialized ...")
+
+    def sizing_technology(self):
+        """ Re-initialize if any of these technology needs Sizing: Battery, CAES, ICE, PV, etc.
+
+        """
+
+        ess_action_map = {
+            'Battery': BatterySizing,
+            'CAES': CAESSizing
+        }
+        for storage in ess_action_map.keys():
+            inputs = self.poi.technology_inputs_map[storage]
+            if inputs is not None:
+                tech_func = ess_action_map[storage]
+                if storage == 'Battery':
+                    self.poi.energy_storages['Battery'] = tech_func(self.power_kw['opt_agg'], inputs)
+                if storage == 'CAES':
+                    self.poi.energy_storages['CAES'] = tech_func(self.power_kw['opt_agg'], inputs)
+            u_logger.info("Finished adding storage...")
+
+        generator_action_map = {
+            'ICE': ICESizing
+            # add CHP later
+        }
+        for gen in generator_action_map.keys():
+            inputs = self.poi.technology_inputs_map[gen]
+            if inputs is not None:
+                tech_func = generator_action_map[gen]
+                if gen == 'ICE':
+                    new_gen = tech_func(inputs)
+                    new_gen.estimate_year_data(self.opt_years, self.frequency)
+                    self.poi.generators['ICE'] = new_gen
+            u_logger.info("Finished adding generators...")
+
+        renewable_action_map = {
+            'PV': CurtailPVSizing,
+        }
+        for renew in renewable_action_map.keys():
+            inputs = self.poi.technology_inputs_map[renew]
+            if inputs is not None:
+                tech_func = generator_action_map[renew]
+                if renew == 'PV':
+                    new_renew = tech_func(inputs)
+                    new_renew.estimate_year_data(self.opt_years, self.frequency)
+                    self.poi.renewables['PV'] = new_renew
+            u_logger.info("Finished adding renewables...")
+
+        self.poi.distributed_energy_resources.update(self.poi.energy_storages)
+        self.poi.distributed_energy_resources.update(self.poi.generators)
+        self.poi.distributed_energy_resources.update(self.poi.renewables)
+        # self.poi.distributed_energy_resources.update(self.loads)
+
+        self.sizing_optimization = self.check_if_sizing_ders()
+
+    def check_if_sizing_ders(self):
+        """ This method will iterate through the initialized DER instances and return a logical OR of all of their
+        'being_sized' methods.
+
+        Returns: True if ANY DER is getting sized
+
+        """
+        for der in self.poi.distributed_energy_resources.values():
+            try:
+                solve_for_size = der.being_sized()
+            except AttributeError:
+                solve_for_size = False
+            if solve_for_size:
+                return True
+        return False
+
+    def add_services(self):
+        """ Add services that DERVET is capable to run, including: Reliability, etc.
+
+        """
+
+        if self.controller.inputs_map['Reliability']:
+            u_logger.info("Using: Reliability")
+            inputs = self.controller.inputs_map['Reliability']
+            new_service = Reliability(inputs, self.poi.distributed_energy_resources, self.power_kw, self.dt)
+            new_service.estimate_year_data(self.opt_years, self.frequency)
+            self.controller.value_streams['Reliability'] = new_service
+            self.controller.inputs_map.pop('Reliability')
 
     def init_financials(self, finance_inputs):
         """ Initializes the financial class with a copy of all the price data from timeseries, the tariff data, and any
@@ -63,77 +147,8 @@ class ScenarioSizing(Scenario):
         self.financials = CostBenefitAnalysis(finance_inputs)
         u_logger.info("Finished adding Financials...")
 
-    def check_if_sizing_ders(self):
-        """ This method will iterate through the initialized DER instances and return a logical OR of all of their
-        'being_sized' methods.
-
-        Returns: True if ANY DER is getting sized
-
-        """
-        for der in self.technologies.values():
-            try:
-                solve_for_size = der.being_sized()
-            except AttributeError:
-                solve_for_size = False
-            if solve_for_size:
-                return True
-        return False
-
-    def add_technology(self):
-        """ Reads params and adds technology. Each technology gets initialized and their physical constraints are found.
-
-        """
-        ess_action_map = {
-            'Battery': BatterySizing,
-            'CAES': CAESSizing
-        }
-
-        for storage in ess_action_map.keys():  # this will cause merging errors -HN
-            inputs = self.technology_inputs_map[storage]
-            if inputs is not None:
-                tech_func = ess_action_map[storage]
-                self.technologies["Storage"] = tech_func('Storage', self.power_kw['opt_agg'], inputs)
-            u_logger.info("Finished adding storage...")
-
-        generator_action_map = {
-            'PV': CurtailPVSizing,
-            'ICE': ICESizing
-        }
-
-        for gen in generator_action_map.keys():
-            inputs = self.technology_inputs_map[gen]
-            if inputs is not None:
-                tech_func = generator_action_map[gen]
-                new_gen = tech_func(gen, inputs)
-                new_gen.estimate_year_data(self.opt_years, self.frequency)
-                self.technologies[gen] = new_gen
-        u_logger.info("Finished adding generators...")
-
-        self.sizing_optimization = self.check_if_sizing_ders()
-
-    def add_services(self):
-        """ Reads through params to determine which services are turned on or off. Then creates the corresponding
-        service object and adds it to the list of services. Also generates a list of growth functions that apply to each
-        service's timeseries data (to be used when adding growth data).
-
-        Notes:
-            This method needs to be applied after the technology has been initialized.
-            ALL SERVICES ARE CONNECTED TO THE TECH
-
-        """
-
-        if self.predispatch_service_inputs_map['Reliability']:
-            u_logger.info("Using: Reliability")
-            inputs = self.predispatch_service_inputs_map['Reliability']
-            new_service = Reliability(inputs, self.technologies, self.power_kw, self.dt)
-            new_service.estimate_year_data(self.opt_years, self.frequency)
-            self.predispatch_services['Reliability'] = new_service
-            self.predispatch_service_inputs_map.pop('Reliability')
-
-        super().add_services()
-
     def optimize_problem_loop(self, annuity_scalar=1):
-        """This function selects on opt_agg of data in self.time_series and calls optimization_problem on it. We determine if the
+        """This function selects on opt_agg of data in time_series and calls optimization_problem on it. We determine if the
         optimization will be sizing and calculate a lifetime project NPV multiplier to pass into the optimization problem
 
         Args:

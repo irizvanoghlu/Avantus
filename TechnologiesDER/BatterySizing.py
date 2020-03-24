@@ -32,18 +32,17 @@ class BatterySizing(storagevet.BatteryTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params):
+    def __init__(self, opt_agg, params):
         """ Initializes a battery class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
         Args:
-            name (string): name of technology
             opt_agg (Series): time series data determined by optimization window size (total Series length is 8760)
             params (dict): params dictionary from dataframe for one case
         """
 
         # create generic storage object
-        storagevet.BatteryTech.__init__(self, name,  opt_agg, params)
+        storagevet.BatteryTech.__init__(self, opt_agg, params)
 
         self.user_duration = params['duration_max']
 
@@ -100,11 +99,10 @@ class BatterySizing(storagevet.BatteryTech):
             dis_max_rated = self.dis_max_rated
         return energy_rated/dis_max_rated
 
-    def objective_function(self, variables, mask, annuity_scalar=1):
+    def objective_function(self, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
         Args:
-            variables (Dict): dictionary of variables being optimized
             mask (Series): Series of booleans used, the same length as case.power_kw
             annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
                     the entire project lifetime (only to be set iff sizing, else alpha should not affect the aobject function)
@@ -113,7 +111,7 @@ class BatterySizing(storagevet.BatteryTech):
             self.costs (Dict): Dict of objective costs
         """
         ess_id = self.unique_ess_id()
-        super().objective_function(variables, mask, annuity_scalar)
+        super().objective_function(mask, annuity_scalar)
 
         self.costs.update({ess_id + 'capex': self.capex()*annuity_scalar})
         return self.costs
@@ -157,16 +155,15 @@ class BatterySizing(storagevet.BatteryTech):
             print('The duration of an Energy Storage System is greater than 24 hours!')
         return sizing_results
 
-    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
+    # TODO: this should be done by POI instead
+    def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
-            variables (Dict): Dictionary of variables being optimized
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
-            reservations (Dict): Dictionary of energy and power reservations required by the services being
-                preformed with the current optimization subset
             mpc_ene (float): value of energy at end of last opt step (for mpc opt)
+            sizing (bool): flag that tells indicates whether the technology is being sized
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
@@ -294,6 +291,7 @@ class BatterySizing(storagevet.BatteryTech):
 
         return constraint_list
 
+    # TODO: this should be done in Controller class as to update control system requirements
     def calculate_control_constraints(self, datetimes):
         """ Generates a list of master or 'control constraints' from physical constraints and all
         predispatch service constraints.

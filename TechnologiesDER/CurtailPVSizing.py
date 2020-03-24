@@ -60,16 +60,15 @@ class CurtailPVSizing(storagevet.CurtailPV):
                                        'Capital Cost ($/kW)': self.cost_per_kW}, index=index)
         return sizing_results
 
-    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
+    # TODO: this should be done by POI instead
+    def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
-            variables (Dict): Dictionary of variables being optimized
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
-            reservations (Dict): Dictionary of energy and power reservations required by the services being
-                preformed with the current optimization subset
             mpc_ene (float): value of energy at end of last opt step (for mpc opt)
+            sizing (bool): flag that tells indicates whether the technology is being sized
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints

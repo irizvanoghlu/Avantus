@@ -92,7 +92,7 @@ class ScenarioSizing(Scenario):
             inputs = self.technology_inputs_map[storage]
             if inputs is not None:
                 tech_func = ess_action_map[storage]
-                self.technologies["Storage"] = tech_func('Storage', self.power_kw['opt_agg'], inputs)
+                self.technologies["Storage"] = tech_func('Storage', inputs)
             u_logger.info("Finished adding storage...")
 
         generator_action_map = {

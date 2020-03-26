@@ -29,13 +29,12 @@ class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, techs, load_data, dt):
+    def __init__(self, params, techs, dt):
         """ Generates the objective function, finds and creates constraints.
 
           Args:
             params (Dict): input parameters
             techs (Dict): technology objects after initialization, as saved in a dictionary
-            load_data (DataFrame): table of time series load data
             dt (float): optimization timestep (hours)
         """
 
@@ -288,3 +287,6 @@ class Reliability(storagevet.ValueStream):
         next_reliability_check = reliability_check.iloc[1:]
         next_demand_left = demand_left.iloc[1:]
         return self.dt + self.simulate_outage(next_reliability_check, next_demand_left, outage_left - 1, ess_properties, next_soc)
+
+    def contribution_summary(self, technologies):
+        pass

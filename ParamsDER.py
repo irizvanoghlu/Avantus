@@ -128,6 +128,7 @@ class ParamsDER(Params):
         """
         super().__init__()
         self.Reliability = self.read_and_validate('Reliability')
+        self.Load = self.read_and_validate('ControllableLoad')
 
     @classmethod
     def cba_template_struct(cls):
@@ -353,42 +354,6 @@ class ParamsDER(Params):
             if 'customer_tariff_filename' in finance.keys():
                 finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
 
-    def prepare_services(self):
-        """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
-
-        """
-        super().prepare_services()
-
-        if self.Reliability is not None:
-            self.Reliability["dt"] = self.Scenario["dt"]
-            self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
-
-        u_logger.info("Successfully prepared the value-stream (services)")
-
-    def prepare_scenario(self):
-        """ Interprets user given data and prepares it for Scenario.
-
-        """
-        Params.prepare_scenario(self)
-
-        if self.Scenario['binary']:
-            e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                             'by turning the binary formulation flag off.')
-            u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                             'by turning the binary formulation flag off.')
-
-        u_logger.info("Successfully prepared the Scenario and some Finance")
-
-    def prepare_finance(self):
-        """ Interprets user given data and prepares it for Finance.
-
-        """
-        super().prepare_finance()
-        self.Finance.update({'location': self.Scenario['location'],
-                             'ownership': self.Scenario['ownership']})
-
     def other_error_checks(self):
         """ Used to collect any other errors that was not specifically detected before.
             The errors is printed in the errors log.
@@ -425,4 +390,57 @@ class ParamsDER(Params):
         if sizing_optimization and not self.Scenario['n'] == 'year':
             e_logger.error('Params Error: trying to size without setting the optimization window to \'year\'')
             return False
+
+        if self.Load is not None and self.Scenario['incl_site_load'] != 1:
+            e_logger.error('Error: incl_site_load should be = 1')
+            return False
         return super().other_error_checks()
+
+    def prepare_scenario(self):
+        """ Interprets user given data and prepares it for Scenario.
+
+        """
+        Params.prepare_scenario(self)
+
+        if self.Scenario['binary']:
+            e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+                             'by turning the binary formulation flag off.')
+            u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+                             'by turning the binary formulation flag off.')
+
+        u_logger.info("Successfully prepared the Scenario and some Finance")
+
+    def prepare_finance(self):
+        """ Interprets user given data and prepares it for Finance.
+
+        """
+        super().prepare_finance()
+        self.Finance.update({'location': self.Scenario['location'],
+                             'ownership': self.Scenario['ownership']})
+
+    def prepare_technology(self):
+        time_series = self.Scenario['time_series']
+        timeseries_columns = time_series.columns
+        if self.Load is not None:
+            # check to make sure data was included
+            if 'Site Load (kW)' not in timeseries_columns:
+                e_logger.error('Error: Please include a site load.')
+                raise Exception("Missing 'Site Load (kW)' from timeseries input")
+            self.Load.update({'dt': self.Scenario['dt'],
+                              'growth': self.Scenario['def_growth'],
+                              'site_load': self.Scenario['time_series'].loc['Site Load (kW)']})
+        super().prepare_technology()
+
+    def prepare_services(self):
+        """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
+
+        """
+        super().prepare_services()
+
+        if self.Reliability is not None:
+            self.Reliability["dt"] = self.Scenario["dt"]
+            self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
+
+        u_logger.info("Successfully prepared the value-stream (services)")

@@ -55,9 +55,11 @@ class CostBenefitAnalysis(Financial):
         self.ders = {}
         # TODO: need to deal with the data obtained from CSVs
 
-    def annuity_scalar(self, start_year, end_year, optimized_years):
+    @staticmethod
+    def annuity_scalar(start_year, end_year, optimized_years, **kwargs):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
-
+        this method is sometimes called before the class is initialized (hence it has to be
+        static)
 
         Args:
             start_year (pd.Period): First year of project (from model parameter input)
@@ -72,13 +74,13 @@ class CostBenefitAnalysis(Financial):
         base_year = min(optimized_years)
         yr_index = base_year - start_year.year
         while yr_index < n - 1:
-            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + self.inflation_rate / 100)
+            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + kwargs['inflation_rate'] / 100)
             yr_index += 1
         yr_index = base_year - start_year.year
         while yr_index > 0:
-            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + self.inflation_rate))
+            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + kwargs['inflation_rate']))
             yr_index -= 1
-        lifetime_npv_alpha = np.npv(self.npv_discount_rate/100, [0] + dollar_per_year)
+        lifetime_npv_alpha = np.npv(kwargs['npv_discount_rate']/100, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):

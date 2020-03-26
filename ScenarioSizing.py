@@ -20,6 +20,7 @@ from TechnologiesDER.CAESSizing import CAESSizing
 from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
 from TechnologiesDER.ICESizing import ICESizing
 from ValueStreamsDER.Reliability import Reliability
+from TechnologiesDER.LoadControllable import ControllableLoad
 
 from storagevet.Scenario import Scenario
 
@@ -51,18 +52,6 @@ class ScenarioSizing(Scenario):
 
         u_logger.info("ScenarioDER initialized ...")
 
-    def init_financials(self, finance_inputs):
-        """ Initializes the financial class with a copy of all the price data from timeseries, the tariff data, and any
-         system variables required for post optimization analysis.
-
-         Args:
-             finance_inputs (Dict): Financial inputs
-
-        """
-
-        self.financials = CostBenefitAnalysis(finance_inputs)
-        u_logger.info("Finished adding Financials...")
-
     def check_if_sizing_ders(self):
         """ This method will iterate through the initialized DER instances and return a logical OR of all of their
         'being_sized' methods.
@@ -88,7 +77,7 @@ class ScenarioSizing(Scenario):
             'CAES': CAESSizing
         }
 
-        for storage in ess_action_map.keys():  # this will cause merging errors -HN
+        for storage in ess_action_map.keys():
             inputs = self.technology_inputs_map[storage]
             if inputs is not None:
                 tech_func = ess_action_map[storage]
@@ -107,6 +96,15 @@ class ScenarioSizing(Scenario):
                 new_gen = tech_func(gen, inputs)
                 new_gen.estimate_year_data(self.opt_years, self.frequency)
                 self.technologies[gen] = new_gen
+
+        load_action_map = {
+            'Load': ControllableLoad
+        }
+        load_inputs = self.technology_inputs_map['Load']
+        if load_inputs is not None:
+            load_object = load_action_map['Load'](load_inputs)
+            load_object.estimate_year_data(self.opt_years, self.frequency)
+            self.technologies['Load'] = load_object
         u_logger.info("Finished adding generators...")
 
         self.sizing_optimization = self.check_if_sizing_ders()
@@ -125,7 +123,7 @@ class ScenarioSizing(Scenario):
         if self.predispatch_service_inputs_map['Reliability']:
             u_logger.info("Using: Reliability")
             inputs = self.predispatch_service_inputs_map['Reliability']
-            new_service = Reliability(inputs, self.technologies, self.power_kw, self.dt)
+            new_service = Reliability(inputs, self.technologies, self.dt)
             new_service.estimate_year_data(self.opt_years, self.frequency)
             self.predispatch_services['Reliability'] = new_service
             self.predispatch_service_inputs_map.pop('Reliability')
@@ -142,6 +140,6 @@ class ScenarioSizing(Scenario):
 
         """
         if self.sizing_optimization:
-            annuity_scalar = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
+            annuity_scalar = CostBenefitAnalysis.annuity_scalar(self.start_year, self.end_year, self.opt_years, **self.finance_inputs)
 
         super().optimize_problem_loop(annuity_scalar)

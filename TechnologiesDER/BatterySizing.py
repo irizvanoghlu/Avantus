@@ -32,18 +32,17 @@ class BatterySizing(storagevet.BatteryTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params):
+    def __init__(self, name,  params):
         """ Initializes a battery class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
         Args:
             name (string): name of technology
-            opt_agg (DataFrame): Initalized Financial Class
             params (dict): params dictionary from dataframe for one case
         """
 
         # create generic storage object
-        storagevet.BatteryTech.__init__(self, name,  opt_agg, params)
+        storagevet.BatteryTech.__init__(self, name,  params)
 
         self.user_duration = params['duration_max']
 
@@ -373,7 +372,6 @@ class BatterySizing(storagevet.BatteryTech):
         #                             'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
         #                             'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
         #                             'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
-        return None
 
     def proforma_report(self, opt_years, results):
         """ Calculates the proforma that corresponds to participation in this value stream

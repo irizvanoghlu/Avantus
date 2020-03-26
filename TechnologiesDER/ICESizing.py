@@ -32,9 +32,11 @@ class ICESizing(storagevet.ICE):
         storagevet.ICE.__init__(self, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
+
+        # TODO: use add_vars() method
         self.n = cvx.Variable(integer=True, name='generators')
 
-    # TODO: this should be done by POI instead
+    # TODO: apply appropriate variable_dict with tech_id
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 

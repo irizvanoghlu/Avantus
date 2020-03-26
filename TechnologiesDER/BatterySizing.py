@@ -49,7 +49,11 @@ class BatterySizing(storagevet.BatteryTech):
         self.size_constraints = []
 
         self.optimization_variables = {}
+
         ess_id = self.unique_ess_id()
+
+        # TODO: this class should have their own add_vars() method (use its own variable_dict for whole class)
+        #  then set up optimization constraints in the objective_constraints method instead of here
 
         # if the user inputted the energy rating as 0, then size for energy rating
         if not self.ene_max_rated:
@@ -155,7 +159,8 @@ class BatterySizing(storagevet.BatteryTech):
             print('The duration of an Energy Storage System is greater than 24 hours!')
         return sizing_results
 
-    # TODO: this should be done by POI instead
+    # TODO: rework this method, almost mimicking Storage objective_constraints method
+    #  Control_constraints are currently created in Controller identify_system_requirements method
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
@@ -290,90 +295,6 @@ class BatterySizing(storagevet.BatteryTech):
         constraint_list += self.size_constraints
 
         return constraint_list
-
-    # TODO: this should be done in Controller class as to update control system requirements
-    def calculate_control_constraints(self, datetimes):
-        """ Generates a list of master or 'control constraints' from physical constraints and all
-        predispatch service constraints.
-
-        Args:
-            datetimes (list): The values of the datetime column within the initial time_series data frame.
-
-        Returns:
-            Array of datetimes where the control constraints conflict and are infeasible. If all feasible return None.
-
-        Note: the returned failed array returns the first infeasibility found, not all feasibilities.
-        TODO: come back and check the user inputted constraints --HN
-        """
-        # create temp dataframe with values from physical_constraints
-        temp_constraints = pd.DataFrame(index=datetimes)
-
-        # create a df with all physical constraint values
-        for constraint in self.physical_constraints.values():
-            temp_constraints[re.search('^.+_.+_', constraint.name).group(0)[0:-1]] = copy.deepcopy(constraint.value)
-
-        # change physical constraint with predispatch service constraints at each timestep
-        # predispatch service constraints should be absolute constraints
-        for service in self.predispatch_services.values():
-            for constraint in service.constraints.values():
-                if constraint.value is not None:
-                    strp = constraint.name.split('_')
-                    const_name = strp[0]
-                    const_type = strp[1]
-                    name = const_name + '_' + const_type
-                    absolute_const = constraint.value.values  # constraint values
-                    absolute_index = constraint.value.index  # the datetimes for which the constraint applies
-
-                    current_const = temp_constraints.loc[absolute_index, name].values  # value of the current constraint
-
-                    if const_type == "min":
-                        # if minimum constraint, choose higher constraint value
-                        try:
-                            temp_constraints.loc[absolute_index, name] = np.maximum(absolute_const, current_const)
-                        except (TypeError, SystemError):
-                            temp_constraints.loc[absolute_index, name] = absolute_const
-                        # temp_constraints.loc[constraint.value.index, name] += constraint.value.values
-
-                        # if the minimum value needed is greater than the physical maximum, infeasible scenario
-                        max_value = self.physical_constraints[const_name + '_max' + '_rated'].value
-                        try:
-                            constraint_violation = any(temp_constraints[name] > max_value)
-                        except (ValueError, TypeError, SystemError):
-                            constraint_violation = False
-                        if constraint_violation:
-                            return temp_constraints[temp_constraints[name] > max_value].index
-
-                    else:
-                        # if maximum constraint, choose lower constraint value
-                        try:
-                            temp_constraints.loc[absolute_index, name] = np.minimum(absolute_const, current_const)
-                        except (TypeError, SystemError):
-                            temp_constraints.loc[absolute_index, name] = absolute_const
-                        # temp_constraints.loc[constraint.value.index, name] -= constraint.value.values
-
-                        # if the maximum energy needed is less than the physical minimum, infeasible scenario
-                        min_value = self.physical_constraints[const_name + '_min' + '_rated'].value
-                        try:
-                            constraint_violation = any(temp_constraints[name] < min_value)
-                        except (ValueError, TypeError):
-                            constraint_violation = False
-                        if (const_name == 'ene') & constraint_violation:
-
-                            return temp_constraints[temp_constraints[name] > max_value].index
-                        else:
-                            # it is ok to floor at zero since negative power max values will be handled in power min
-                            # i.e negative ch_max means dis_min should be positive and ch_max should be 0)
-                            temp_constraints[name] = temp_constraints[name].clip(lower=0)
-                    self.control_constraints.update({constraint.name: Const.Constraint(constraint.name, self.name, temp_constraints[constraint.name])})
-
-        # # now that we have a new list of constraints, create Constraint objects and store as 'control constraint'
-        # self.control_constraints = {'ene_min': Const.Constraint('ene_min', self.name, temp_constraints['ene_min']),
-        #                             'ene_max': Const.Constraint('ene_max', self.name, temp_constraints['ene_max']),
-        #                             'ch_min': Const.Constraint('ch_min', self.name, temp_constraints['ch_min']),
-        #                             'ch_max': Const.Constraint('ch_max', self.name, temp_constraints['ch_max']),
-        #                             'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
-        #                             'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
-        return None
 
     def proforma_report(self, opt_years, results):
         """ Calculates the proforma that corresponds to participation in this value stream

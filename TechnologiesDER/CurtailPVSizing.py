@@ -34,6 +34,9 @@ class CurtailPVSizing(storagevet.CurtailPV):
         # create generic technology object
         super().__init__(name, params)
 
+        # TODO: this class should have their own add_vars() method (use its own variable_dict for whole class)
+        #  then set up optimization constraints in the objective_constraints method instead of here
+
         self.size_constraints = []
 
         if not self.rated_capacity:
@@ -60,7 +63,6 @@ class CurtailPVSizing(storagevet.CurtailPV):
                                        'Capital Cost ($/kW)': self.cost_per_kW}, index=index)
         return sizing_results
 
-    # TODO: this should be done by POI instead
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 

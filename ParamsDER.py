@@ -362,6 +362,7 @@ class ParamsDER(Params):
         if self.Reliability is not None:
             self.Reliability["dt"] = self.Scenario["dt"]
             self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
+            self.active_value_stream_inputs_map.update({'reliability': self.Reliability})
 
         u_logger.info("Successfully prepared the value-stream (services)")
 

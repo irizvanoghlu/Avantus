@@ -40,11 +40,13 @@ class CAESSizing(storagevet.CAESTech):
         # create generic storage object
         storagevet.CAESTech.__init__(self, opt_agg, params)
 
-        self.size_constraints = []
+        # TODO: this class should have their own add_vars() method (use its own variable_dict for whole class)
+        #  then set up optimization constraints in the objective_constraints method instead of here
 
+        self.size_constraints = []
         self.optimization_variables = {}
 
-    # TODO: this should be done in POI instead
+    # TODO: review this method to create opt variables for CAESSizing
     def add_vars(self, size):
         """ Adds optimization variables to dictionary
 

@@ -13,30 +13,25 @@ __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
 import cvxpy as cvx
-import numpy as np
-import pandas as pd
-from storagevet.Technology.DER import DER
+from storagevet.Technology.Load import Load
 
 
-class Load(DER):
+class ControllableLoad(Load):
     """ An Load object
 
     """
 
-    def __init__(self, name, params):
+    def __init__(self, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            name (str): A unique string name for the technology being added, also works as category.
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        DER.__init__(self, params['name'], 'Load', params)
+        Load.__init__(self, params)
         # input params  UNITS ARE COMMENTED TO THE RIGHT
-        self.dt = params['dt']
         self.rated_power = params['power_rated']  # kW
         self.duration = params['duration']  # hour
-        self.site_load = params['site_load']
         self.energy_max = self.rated_power * self.duration
         self.variables_dict = {}
 
@@ -63,7 +58,7 @@ class Load(DER):
     def get_charge(self, mask):
         return self.site_load[mask] - self.variables_dict['power']
 
-    def get_energy(self):
+    def get_energy(self, mask):
         return self.variables_dict['ene']
 
     def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
@@ -108,14 +103,3 @@ class Load(DER):
             return self.site_load.loc[mask] - self.variables.loc[mask, 'power']
         else:
             return self.site_load.loc[mask]
-
-    def timeseries_report(self):
-        """ Summaries the optimization results for this DER.
-
-        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-            pertaining to this instance
-
-        """
-        results = pd.DataFrame(index=self.variables.index)
-        results["Load (kw)"] = self.effective_load(np.repeat(True, len(self.variables.index)))
-        return results

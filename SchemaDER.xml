@@ -23,7 +23,6 @@
 	</FR>
 	<SR type="service">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
-		<response_time cba="n" max="30" min="10" type="int" />
 		<duration cba="n" max="24" min="0.0" type="float" />
 	</SR>
 	<NSR type="service">
@@ -38,8 +37,8 @@
 	</retailTimeShift>
 	<PV type="generator">
 		<name cba="n" type="string" />
-		<nsr_response_time cba="n" max="30" min="10" type="int" />
-		<sr_response_time cba="n" max="30" min="10" type="int" />
+		<nsr_response_time cba="n" min="10" type="int" />
+		<sr_response_time cba="n" min="10" type="int" />
 		<inv_max cba="n" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<rated_capacity cba="n" min="0.0" type="float" />
@@ -52,8 +51,8 @@
 	</PV>
 	<ICE type="generator">
 		<name cba="n" type="string" />
-		<nsr_response_time cba="n" max="30" min="10" type="int" />
-		<sr_response_time cba="n" max="30" min="10" type="int" />
+		<nsr_response_time cba="n" min="10" type="int" />
+		<sr_response_time cba="n" min="10" type="int" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
 		<min_power cba="n" min="0.0" type="float" />
 		<startup_time cba="n" min="0" type="int" />
@@ -71,8 +70,8 @@
 	</ICE>
 	<Battery type="storage">
 		<name cba="n" type="string" />
-		<nsr_response_time cba="n" max="30" min="10" type="int" />
-		<sr_response_time cba="n" max="30" min="10" type="int" />
+		<nsr_response_time cba="n" min="10" type="int" />
+		<sr_response_time cba="n" min="10" type="int" />
 		<startup allowed_values="1|0" cba="y" type="bool" />
 		<ccost cba="y" min="0.0" type="float" />
 		<ccost_kw cba="y" min="0.0" type="float" />
@@ -103,8 +102,8 @@
 	</Battery>
 	<CAES type="storage">
 		<name type="string" />
-		<nsr_response_time cba="n" max="30" min="10" type="int" />
-		<sr_response_time cba="n" max="30" min="10" type="int" />
+		<nsr_response_time cba="n" min="10" type="int" />
+		<sr_response_time cba="n" min="10" type="int" />
 		<daily_cycle_limit min="0" type="float" />
 		<heat_rate_high min="0.0" type="float" />
 		<startup type="bool" allowed_values="1|0"/>

@@ -34,8 +34,8 @@ class ControllableLoad(Load):
         self.duration = params['duration']  # hour
         self.energy_max = self.rated_power * self.duration
         self.variables_dict = {}
-
-        self.variable_names = {'power', 'ene'}
+        if self.duration:  # if DURATION is not 0
+            self.variable_names = {'power', 'ene'}
 
     def add_vars(self, size):
         """ Adds optimization variables to dictionary
@@ -75,20 +75,21 @@ class ControllableLoad(Load):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        power = variables['power']
-        energy = variables['ene']
-
         constraint_list = []
-        # SOE EVALUATION EQUATIONS (one set for every day)
-        sub = mask.loc[mask]
-        for day in sub.index.dayofyear.unique():
-            day_mask = (day == sub.index.dayofyear)
-            # general
-            constraint_list += [cvx.Zero(energy[day_mask][:-1] + (power[day_mask][:-1] * self.dt) - energy[day_mask][1:])]
-            # start of first timestep of the day
-            constraint_list += [cvx.Zero(energy[day_mask][0] == self.energy_max)]
-            # end of the last timestep of the day
-            constraint_list += [cvx.Zero(energy[day_mask][-1] + (power[day_mask][-1] * self.dt) - self.energy_max)]
+        if self.duration:
+            power = variables['power']
+            energy = variables['ene']
+
+            # SOE EVALUATION EQUATIONS (one set for every day)
+            sub = mask.loc[mask]
+            for day in sub.index.dayofyear.unique():
+                day_mask = (day == sub.index.dayofyear)
+                # general
+                constraint_list += [cvx.Zero(energy[day_mask][:-1] + (power[day_mask][:-1] * self.dt) - energy[day_mask][1:])]
+                # start of first timestep of the day
+                constraint_list += [cvx.Zero(energy[day_mask][0] == self.energy_max)]
+                # end of the last timestep of the day
+                constraint_list += [cvx.Zero(energy[day_mask][-1] + (power[day_mask][-1] * self.dt) - self.energy_max)]
 
         return constraint_list
 

@@ -1,5 +1,5 @@
 """
-Scenario.py
+ScenarioSizing.py
 
 This Python class contains methods and attributes vital for completing the scenario analysis.
 """
@@ -55,8 +55,8 @@ class ScenarioSizing(Scenario):
         for name, tech_object in self.active_technology_inputs_map.items():
             sizing_tech_map.update({name: CLASS_MAP[name]})
 
-        Scenario.init_POI(input_tree, sizing_tech_map)
-        Scenario.activate_controller()
+        Scenario.init_POI(self, input_tree, sizing_tech_map)
+        Scenario.activate_controller(self)
 
         u_logger.info("ScenarioSizing initialized ...")
 

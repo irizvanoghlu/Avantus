@@ -44,12 +44,10 @@ class CostBenefitAnalysis(Financial):
         self.Finance = financial_params['CBA']['Finance']
         self.valuestream_values = financial_params['CBA']['valuestream_values']
         self.ders_values = financial_params['CBA']['ders_values']
-        # replace 'Battery' key w/ 'Storage' key
-        if 'Battery' in self.ders_values.keys():
-            self.ders_values['Storage'] = self.ders_values.pop('Battery')
-        # replace 'CAES' key w/ 'Storage' key
-        if 'CAES' in self.ders_values.keys():
-            self.ders_values['Storage'] = self.ders_values.pop('CAES')
+        if 'battery' in self.ders_values.keys():
+            self.ders_values['battery'] = self.ders_values.pop('battery')
+        if 'caes' in self.ders_values.keys():
+            self.ders_values['caes'] = self.ders_values.pop('caes')
 
         self.value_streams = {}
         self.ders = {}
@@ -81,19 +79,19 @@ class CostBenefitAnalysis(Financial):
         lifetime_npv_alpha = np.npv(self.npv_discount_rate/100, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
-    def initiate_cost_benefit_analysis(self, technologies, valuestreams):
+    def initiate_cost_benefit_analysis(self, poi, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
         This function should be called before any finacial methods so that the user defined evaluation
         values are used
 
         Args:
-            technologies (Dict): Dict of technologies (needed to get capital and om costs)
+            poi (POI): the management point of all active technology to access (needed to get capital and om costs)
             valuestreams (Dict): Dict of all services to calculate cost avoided or profit
 
         """
         # we deep copy because we do not want to change the original ValueStream objects
         self.value_streams = copy.deepcopy(valuestreams)
-        self.ders = copy.deepcopy(technologies)
+        self.ders = copy.deepcopy(poi.distributed_energy_resources)
 
         self.place_evaluation_data()
 
@@ -103,7 +101,7 @@ class CostBenefitAnalysis(Financial):
         and saves that value
 
         Args:
-            param_name (str): key of the ValueStream or DER as it is saved in the apporiate dictionary
+            param_name (str): key of the ValueStream or DER as it is saved in the appropriate dictionary
             param_object (DER, ValueStream): the actual object that we want to edit
             evaluation_dict (dict, None): keys are the string representation of the attribute where value is saved, and values
                 are what the attribute value should be
@@ -119,7 +117,7 @@ class CostBenefitAnalysis(Financial):
                 except KeyError:
                     print('No attribute ' + param_name + ': ' + key) if verbose else None
 
-    def preform_cost_benefit_analysis(self, technologies, value_streams, results):
+    def perform_cost_benefit_analysis(self, poi, value_streams, results):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
         saved in results and the set of technology and service instances that have (if any) values that the user indicated
         they wanted to use when evaluating the CBA.
@@ -128,14 +126,14 @@ class CostBenefitAnalysis(Financial):
         the technologies and services with the values the user denoted to be used for evaluating the CBA.
 
         Args:
-            technologies (Dict): Dict of technologies (needed to get capital and om costs)
+            poi (POI): management point of all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
             value_streams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
 
         """
-        self.initiate_cost_benefit_analysis(technologies, value_streams)
-        super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
+        self.initiate_cost_benefit_analysis(poi, value_streams)
+        super().perform_cost_benefit_analysis(poi, self.value_streams, results)
 
     def place_evaluation_data(self):
         """ Place the data specified in the evaluation column into the correct places. This means all the monthly data,
@@ -160,8 +158,8 @@ class CostBenefitAnalysis(Financial):
         if 'customer_tariff' in self.Finance:
             self.tariff = self.Finance['customer_tariff']
 
-        if 'User' in self.value_streams.keys():
-            self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'], self.verbose)
+        if 'user' in self.value_streams.keys():
+            self.update_with_evaluation('User', self.value_streams['user'], self.valuestream_values['user'], self.verbose)
 
         for key, value in self.ders.items():
             self.update_with_evaluation(key, value, self.ders_values[key], self.verbose)

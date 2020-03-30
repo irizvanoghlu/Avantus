@@ -44,11 +44,9 @@ class ResultDER(Result):
     def post_analysis(self):
         """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
         provided, analysis on the optimization solutions are completed here.
-
-        TODO: [multi-tech] a lot of this logic will have to change with multiple technologies
         """
         super().post_analysis()
-        for name, tech in self.technologies.items():
+        for name, tech in self.poi.distributed_energy_resources.items():
             # sizing_summary for CAES is currently similar to it for Battery
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
@@ -63,8 +61,8 @@ class ResultDER(Result):
                                            'Load (kW)': max_day_data['Original Net Load (kW)'].values,
                                            'Net Load (kW)': max_day_data['Net Load (kW)'].values}, index=time_step)
 
-        if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
-            reliability = self.predispatch_services['Reliability']
+        if 'Reliability' in self.controller.value_streams.keys():  # TODO: possibly make an method of Reliability --HN
+            reliability = self.controller.value_streams['Reliability']
             # save/calculate load coverage
             u_logger.info('Starting load coverage calculation. This may take a while.')
             self.load_coverage_prob = reliability.load_coverage_probability(self.results, self.sizing_df, self.technology_summary)
@@ -74,10 +72,10 @@ class ResultDER(Result):
             if not reliability.post_facto_only:
                 outage_energy = reliability.reliability_requirement
                 sum_outage_requirement = outage_energy.sum()  # sum of energy required to provide x hours of energy if outage occurred at every timestep
-                coverage_timestep = self.predispatch_services['Reliability'].coverage_timesteps  # guaranteed power for this many hours in outage
+                coverage_timestep = self.controller.value_streams['Reliability'].coverage_timesteps  # guaranteed power for this many hours in outage
 
                 percent_usage = {}
-                if 'PV' in self.technologies.keys():
+                if 'pv' in self.poi.renewables.keys():
                     # reverse the time series to use rolling function
                     # rolling function looks back, so reversing looks forward
                     reverse_pv_out = self.results['PV Generation (kW)'].iloc[::-1]
@@ -98,8 +96,8 @@ class ResultDER(Result):
                     pv_outage_energy = np.zeros(len(self.results.index))
                     pv_contribution = 0
 
-                if 'Storage' in self.technologies.keys():
-                    battery_energy = self.results[self.technologies['Storage'].name + ' State of Energy (kWh)']
+                if 'battery' in self.poi.energy_storages.keys():
+                    battery_energy = self.results[self.poi.energy_storages['battery'].name + ' State of Energy (kWh)']
                     extra_energy = (battery_energy - remaining_outage_ene).clip(lower=0)
                     battery_outage_ene = battery_energy - extra_energy
                     remaining_outage_ene -= battery_outage_ene
@@ -109,11 +107,11 @@ class ResultDER(Result):
                     battery_outage_ene = np.zeros(len(self.results.index))
                     battery_contribution = 0
 
-                if 'CAES' in self.technologies.keys():
+                if 'caes' in self.poi.energy_storages.keys():
                     print('What is CAES output behavior when there is Reliability?')
                     # pending status - TN
 
-                if 'Diesel' in self.technologies.keys():
+                if 'ice' in self.poi.generators.keys():
                     # supplies what every energy that cannot be by pv and diesel
                     reverse_diesel_gen = self.results['Diesel Generation (kW)'].iloc[::-1]
                     reverse_diesel_rolsum = reverse_diesel_gen.rolling(coverage_timestep, min_periods=1).sum() * self.dt
@@ -156,7 +154,7 @@ class ResultDER(Result):
         else:
             savepath = self.dir_abs_path
 
-        if 'Reliability' in self.predispatch_services.keys():
+        if 'reliability' in self.controller.value_streams.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
             self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))

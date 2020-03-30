@@ -47,7 +47,8 @@ class Reliability(storagevet.ValueStream):
         self.nu = params['nu'] / 100
         self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
-        self.n_2 = params['n-2']
+        # self.n_2 = params['n-2']
+        self.n_2 = 0
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power

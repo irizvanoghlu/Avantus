@@ -5,7 +5,7 @@
 		<nu cba="n" max="100.0" min="0.0" type="float" />
 		<gamma cba="n" max="100.0" min="0.0" type="float" />
 		<max_outage_duration cba="n" min="1" type="int" />
-		<n-2  allowed_values="1|0" cba="n" type="bool" />
+<!--		<n-2  allowed_values="1|0" cba="n" type="bool" />-->
 	</Reliability>
 	<Backup type="pre-dispatch" />
 	<User type="pre-dispatch">

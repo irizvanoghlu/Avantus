@@ -240,7 +240,7 @@ class BatterySizing(storagevet.BatteryTech):
             constraint_list += [cvx.Zero(ene[0] - mpc_ene)]
 
         # Keep energy in bounds determined in the constraints configuration function
-        constraint_list += [cvx.NonPos(ene_target - ene_max_n + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]
+        constraint_list += [cvx.NonPos(ene_target - ene_max_n + reservations['E_upper'][-1] - variables['ene_max_slack'][-1])]  # TODO: comment out if putting energy user constraint and infeasible result
         constraint_list += [cvx.NonPos(ene[:-1] - ene_max_t + reservations['E_upper'][:-1] - variables['ene_max_slack'][:-1])]
 
         constraint_list += [cvx.NonPos(-ene_target + ene_min_n - (pv_gen[-1]*self.dt) - (ice_gen[-1]*self.dt) - reservations['E_lower'][-1] - variables['ene_min_slack'][-1])]
@@ -374,6 +374,26 @@ class BatterySizing(storagevet.BatteryTech):
         #                             'dis_min': Const.Constraint('dis_min', self.name, temp_constraints['dis_min']),
         #                             'dis_max': Const.Constraint('dis_max', self.name, temp_constraints['dis_max'])}
         return None
+
+    def proforma_report(self, opt_years, results):
+        """ Calculates the proforma that corresponds to participation in this value stream
+
+        Args:
+            opt_years (list): list of years the optimization problem ran for
+            results (DataFrame): DataFrame with all the optimization variable solutions
+
+        Returns: A DateFrame of with each year in opt_year as the index and
+            the corresponding value this stream provided.
+
+            Creates a dataframe with only the years that we have data for. Since we do not label the column,
+            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
+            DataFrame has only one column, labeled by the int 0
+
+        """
+        # recacluate capex before reporting proforma
+        self.capex = self.ccost + (self.ccost_kw * self.dis_max_rated) + (self.ccost_kwh * self.ene_max_rated)
+        proforma = super().proforma_report(opt_years, results)
+        return proforma
 
     # def physical_properties(self):
     #     """

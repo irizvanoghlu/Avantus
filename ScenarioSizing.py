@@ -140,6 +140,6 @@ class ScenarioSizing(Scenario):
 
         """
         if self.sizing_optimization:
-            annuity_scalar = CostBenefitAnalysis.annuity_scalar(self.start_year, self.end_year, self.opt_years, **self.finance_inputs)
+            annuity_scalar = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
 
         super().optimize_problem_loop(annuity_scalar)

@@ -94,7 +94,7 @@ class ControllableLoad(Load):
         return constraint_list
 
     def effective_load(self, mask):
-        """ Returns the
+        """ Returns the load that is seen by the microgrid or point of interconnection
 
         Args:
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
@@ -104,3 +104,11 @@ class ControllableLoad(Load):
             return self.site_load.loc[mask] - self.variables.loc[mask, 'power']
         else:
             return self.site_load.loc[mask]
+
+    def sizing_summary(self):
+        """ load does not have a 'size' the same way other DER do. Instead you say a load
+        has a shape, so it does not need to how up in the sizing summary
+
+        Returns:
+
+        """

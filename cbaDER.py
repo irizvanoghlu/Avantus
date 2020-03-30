@@ -56,7 +56,7 @@ class CostBenefitAnalysis(Financial):
         # TODO: need to deal with the data obtained from CSVs
 
     @staticmethod
-    def annuity_scalar(start_year, end_year, optimized_years, **kwargs):
+    def annuity_scalar(start_year, end_year, opt_years, **kwargs):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
         this method is sometimes called before the class is initialized (hence it has to be
         static)
@@ -64,14 +64,14 @@ class CostBenefitAnalysis(Financial):
         Args:
             start_year (pd.Period): First year of project (from model parameter input)
             end_year (pd.Period): Last year of project (from model parameter input)
-            optimized_years (list): List of years that the user wants to optimize--should be length=1
+            opt_years (list): List of years that the user wants to optimize--should be length=1
 
         Returns: the NPV multiplier
 
         """
         n = end_year.year - start_year.year
         dollar_per_year = np.ones(n)
-        base_year = min(optimized_years)
+        base_year = min(opt_years)
         yr_index = base_year - start_year.year
         while yr_index < n - 1:
             dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + kwargs['inflation_rate'] / 100)

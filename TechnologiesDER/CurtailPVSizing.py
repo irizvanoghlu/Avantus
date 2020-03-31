@@ -22,7 +22,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
     """
 
-    def __init__(self, name, params):
+    def __init__(self, params):
         """ Initializes a PV class where perfect foresight of generation is assumed.
         It inherits from the technology class. Additionally, it sets the type and physical constraints of the
         technology.
@@ -32,17 +32,18 @@ class CurtailPVSizing(storagevet.CurtailPV):
             params (dict): Dict of parameters
         """
         # create generic technology object
-        super().__init__(name, params)
+        super().__init__(params)
 
-        # TODO: this class should have their own add_vars() method (use its own variable_dict for whole class)
-        #  then set up optimization constraints in the objective_constraints method instead of here
-
-        self.size_constraints = []
-
+    def add_vars(self, size):
+        """
+        Args:
+            size (Int): Length of optimization variables to create
+        """
+        tech_id = self.unique_tech_id()
+        super().add_vars(size)
         if not self.rated_capacity:
-            self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
-            self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
-            self.capex = self.cost_per_kW * self.rated_capacity
+            self.rated_capacity = cvx.Variable(shape=size, name='PV rating', integer=True)
+            self.variables_dict.update({tech_id + 'rated_capacity': self.rated_capacity})
 
     def sizing_summary(self):
         """
@@ -60,7 +61,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': rated_capacity,
-                                       'Capital Cost ($/kW)': self.cost_per_kW}, index=index)
+                                       'Capital Cost ($/kW)': self.capital_costs['/kW']}, index=index)
         return sizing_results
 
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
@@ -75,10 +76,30 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().objective_constraints(variables, mask, reservations, mpc_ene)
-
-        constraints += self.size_constraints
+        constraints = super().objective_constraints(mask, mpc_ene, sizing)
+        if not self.rated_capacity:
+            constraints += [cvx.NonPos(-self.rated_capacity)]
         return constraints
+
+    def objective_function(self, mask, annuity_scalar=1):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
+
+        Args:
+            mask (Series): Series of booleans used, the same length as case.power_kw
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                    the entire project lifetime (only to be set iff sizing, else alpha should not affect the aobject function)
+
+        Returns:
+            self.costs (Dict): Dict of objective costs
+        """
+        tech_id = self.unique_tech_id()
+        super().objective_function(mask, annuity_scalar)
+
+        if not self.rated_capacity:
+            self.capex = self.capital_costs['/kW'] * self.rated_capacity
+            self.costs.update({tech_id + 'capex': self.capex * annuity_scalar})
+
+        return self.costs
 
     def proforma_report(self, opt_years, results):
         """ Calculates the proforma that corresponds to participation in this value stream
@@ -95,8 +116,8 @@ class CurtailPVSizing(storagevet.CurtailPV):
             DataFrame has only one column, labeled by the int 0
 
         """
-        # recacluate capex before reporting proforma
-        self.capex = self.cost_per_kW * self.rated_capacity
+        # recalculate capex before reporting proforma
+        self.capex = self.capital_costs['/kW'] * self.rated_capacity
         proforma = super().proforma_report(opt_years, results)
         return proforma
 
@@ -107,9 +128,9 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
         """
         try:
-            max_gen = self.generation.value
+            max_gen = self.get_generation().value
         except AttributeError:
-            max_gen = self.generation
+            max_gen = self.get_generation()
         return max_gen
 
     def being_sized(self):
@@ -118,4 +139,5 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns: true if being sized, false if not being sized
 
         """
-        return bool(len(self.size_constraints))
+        return True if not self.rated_capacity else False
+

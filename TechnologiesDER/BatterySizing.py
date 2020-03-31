@@ -56,9 +56,6 @@ class BatterySizing(storagevet.BatteryTech):
 
         Args:
             size (Int): Length of optimization variables to create
-
-        Returns:
-            Dictionary of optimization variables
         """
 
         super().add_vars(size)
@@ -122,8 +119,8 @@ class BatterySizing(storagevet.BatteryTech):
         tech_id = self.unique_tech_id()
         super().objective_function(mask, annuity_scalar)
 
-        capex = self.capital_costs['flat'] + (self.capital_costs['/kW'] * self.dis_max_rated) + (self.capital_costs['/kWh'] * self.ene_max_rated)
-        self.costs.update({tech_id + ess_id + 'capex': capex * annuity_scalar})
+        self.capex = self.capital_costs['flat'] + (self.capital_costs['/kW'] * self.dis_max_rated) + (self.capital_costs['/kWh'] * self.ene_max_rated)
+        self.costs.update({tech_id + ess_id + 'capex': self.capex * annuity_scalar})
         return self.costs
 
     def sizing_summary(self):

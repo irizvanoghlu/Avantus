@@ -75,7 +75,7 @@ class ResultDER(Result):
                 coverage_timestep = self.controller.value_streams['Reliability'].coverage_timesteps  # guaranteed power for this many hours in outage
 
                 percent_usage = {}
-                if 'pv' in self.poi.renewables.keys():
+                if 'PV' in self.poi.renewables.keys():
                     # reverse the time series to use rolling function
                     # rolling function looks back, so reversing looks forward
                     reverse_pv_out = self.results['PV Generation (kW)'].iloc[::-1]
@@ -96,7 +96,7 @@ class ResultDER(Result):
                     pv_outage_energy = np.zeros(len(self.results.index))
                     pv_contribution = 0
 
-                if 'battery' in self.poi.energy_storages.keys():
+                if 'Battery' in self.poi.energy_storages.keys():
                     battery_energy = self.results[self.poi.energy_storages['battery'].name + ' State of Energy (kWh)']
                     extra_energy = (battery_energy - remaining_outage_ene).clip(lower=0)
                     battery_outage_ene = battery_energy - extra_energy
@@ -107,11 +107,10 @@ class ResultDER(Result):
                     battery_outage_ene = np.zeros(len(self.results.index))
                     battery_contribution = 0
 
-                if 'caes' in self.poi.energy_storages.keys():
+                if 'CAES' in self.poi.energy_storages.keys():
                     print('What is CAES output behavior when there is Reliability?')
-                    # pending status - TN
 
-                if 'ice' in self.poi.generators.keys():
+                if 'ICE' in self.poi.generators.keys():
                     # supplies what every energy that cannot be by pv and diesel
                     reverse_diesel_gen = self.results['Diesel Generation (kW)'].iloc[::-1]
                     reverse_diesel_rolsum = reverse_diesel_gen.rolling(coverage_timestep, min_periods=1).sum() * self.dt
@@ -154,7 +153,7 @@ class ResultDER(Result):
         else:
             savepath = self.dir_abs_path
 
-        if 'reliability' in self.controller.value_streams.keys():
+        if 'Reliability' in self.controller.value_streams.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
             self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))

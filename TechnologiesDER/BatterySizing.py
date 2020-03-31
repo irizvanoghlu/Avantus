@@ -214,4 +214,4 @@ class BatterySizing(storagevet.BatteryTech):
         Returns: true if being sized, false if not being sized
 
         """
-        return bool(len(self.size_constraints))
+        return bool(len(self.sizing_properties))

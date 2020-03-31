@@ -80,7 +80,7 @@ class ICESizing(storagevet.ICE):
 
         """
         # recacluate capex before reporting proforma
-        self.capex = self.capital_cost * self.n + self.ccost_kw * self.rated_power * self.n
+        self.capex = self.capital_costs['flat'] * self.n + self.capital_costs['/kW'] * self.rated_power * self.n
         proforma = super().proforma_report(opt_years, results)
         return proforma
 
@@ -100,8 +100,8 @@ class ICESizing(storagevet.ICE):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': self.rated_power,
-                                       'Capital Cost ($)': self.capital_cost,
-                                       'Capital Cost ($/kW)': self.ccost_kw,
+                                       'Capital Cost ($)': self.capital_costs['flat'],
+                                       'Capital Cost ($/kW)': self.capital_costs['/kW'],
                                        'Quantity': n}, index=index)
         return sizing_results
 

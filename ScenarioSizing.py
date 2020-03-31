@@ -31,10 +31,10 @@ e_logger = logging.getLogger('Error')
 
 # constant names of available value streams
 CLASS_MAP = {
-    'battery': BatterySizing,
-    'caes': CAESSizing,
-    'ice': ICESizing,
-    'pv': CurtailPVSizing
+    'Battery': BatterySizing,
+    'CAES': CAESSizing,
+    'ICE': ICESizing,
+    'PV': CurtailPVSizing
 }
 
 class ScenarioSizing(Scenario):

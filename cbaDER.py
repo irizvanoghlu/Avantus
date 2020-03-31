@@ -44,10 +44,10 @@ class CostBenefitAnalysis(Financial):
         self.Finance = financial_params['CBA']['Finance']
         self.valuestream_values = financial_params['CBA']['valuestream_values']
         self.ders_values = financial_params['CBA']['ders_values']
-        if 'battery' in self.ders_values.keys():
-            self.ders_values['battery'] = self.ders_values.pop('battery')
-        if 'caes' in self.ders_values.keys():
-            self.ders_values['caes'] = self.ders_values.pop('caes')
+        if 'Battery' in self.ders_values.keys():
+            self.ders_values['Battery'] = self.ders_values.pop('Battery')
+        if 'CAES' in self.ders_values.keys():
+            self.ders_values['CAES'] = self.ders_values.pop('CAES')
 
         self.value_streams = {}
         self.ders = {}
@@ -158,8 +158,8 @@ class CostBenefitAnalysis(Financial):
         if 'customer_tariff' in self.Finance:
             self.tariff = self.Finance['customer_tariff']
 
-        if 'user' in self.value_streams.keys():
-            self.update_with_evaluation('User', self.value_streams['user'], self.valuestream_values['user'], self.verbose)
+        if 'User' in self.value_streams.keys():
+            self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'], self.verbose)
 
         for key, value in self.ders.items():
             self.update_with_evaluation(key, value, self.ders_values[key], self.verbose)

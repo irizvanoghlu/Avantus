@@ -142,15 +142,15 @@ class ParamsDER(Params):
 
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
-            'battery': cls.read_and_validate_cba('Battery'),
-            'caes': cls.read_and_validate_cba('CAES'),
-            'pv': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
-            'ice': cls.read_and_validate_cba('ICE')  # fuel_price,
+            'Battery': cls.read_and_validate_cba('Battery'),
+            'CAES': cls.read_and_validate_cba('CAES'),
+            'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
+            'ICE': cls.read_and_validate_cba('ICE')  # fuel_price,
         }
 
         # create dictionary for CBA values for all services (from data files)
-        template['valuestream_values'] = {'user': cls.read_and_validate_cba('User'),  # USER will only have one entry in it (key = price)
-                                          'deferral': cls.read_and_validate_cba('Deferral')}
+        template['valuestream_values'] = {'User': cls.read_and_validate_cba('User'),  # USER will only have one entry in it (key = price)
+                                          'Deferral': cls.read_and_validate_cba('Deferral')}
         return template
 
     @classmethod

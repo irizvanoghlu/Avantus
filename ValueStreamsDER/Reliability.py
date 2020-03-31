@@ -47,14 +47,8 @@ class Reliability(storagevet.ValueStream):
         self.max_outage_duration = params['max_outage_duration']
         self.n_2 = params['n-2']
 
-        if 'Diesel' in techs.keys():
-            self.ice_rated_power = techs['Diesel'].rated_power
-        # else:
-        #     self.ice_rated_power = 0
-        if 'Storage' in techs.keys():
-            self.ess_rated_power = techs['Storage'].dis_max_rated
-        else:
-            self.ess_rated_power = 0
+        if 'ICE' in techs.keys():
+            self.ice_rated_power = techs['ICE'].rated_power
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
@@ -93,6 +87,8 @@ class Reliability(storagevet.ValueStream):
             A list for aggregation of constraints
         """
 
+        # TODO: Reliability needs a way to access the active technologies and variables in POI
+
         if not self.post_facto_only:
             try:
                 pv_generation = variables['pv_out']  # time series curtailed pv optimization variable
@@ -111,9 +107,9 @@ class Reliability(storagevet.ValueStream):
             # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
             # to ensure that our DER mix can cover peak net load during any outage in the year
             print(f'combined max power output > {subs.loc[:, "load"].max()} kW') if DEBUG else None
-            return [cvx.NonPos(cvx.max(self.critical_load.loc[subs.index].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
+            return [cvx.NonPos(cvx.max(self.critical_load.loc[subs.index].values - pv_generation) - combined_rating - ice_rated_power)]
         else:
-            return super().objective_constraints(variables, subs, generation, reservations)
+            return super().objective_constraints(mask, load, net_power, combined_rating, critical_load)
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.

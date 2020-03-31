@@ -31,7 +31,7 @@ class ParamsDER(Params):
         Notes:
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
-    # set schema loction based on the location of this file (this should override the global value within Params.py
+    # set schema location based on the location of this file (this should override the global value within Params.py
     schema_location = os.path.abspath(__file__)[:-len('ParamsDER.py')] + "SchemaDER.xml"
 
     sensitivity = {"attributes": dict(), "coupled": list(), 'cba_values': dict()}
@@ -363,7 +363,7 @@ class ParamsDER(Params):
         if self.Reliability is not None:
             self.Reliability["dt"] = self.Scenario["dt"]
             self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
-            self.active_value_stream_inputs_map.update({'reliability': self.Reliability})
+            self.active_value_stream_inputs_map.update({'Reliability': self.Reliability})
 
         u_logger.info("Successfully prepared the value-stream (services)")
 

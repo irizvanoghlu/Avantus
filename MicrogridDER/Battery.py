@@ -69,9 +69,15 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
         if not self.ch_max_rated and not self.dis_max_rated:
             self.ch_max_rated = cvx.Variable(name='power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
-            self.size_constraints += [cvx.NonPos(self.ch_max_rated-self.user_ch_rated_max)]
-            self.size_constraints += [cvx.NonPos(self.user_ch_rated_min-self.ch_min_rated)]
+            if not self.user_ch_rated_max:
+                self.size_constraints += [cvx.NonPos(self.ch_max_rated - self.user_ch_rated_max)]
+            if not self.user_ch_rated_min:
+                self.size_constraints += [cvx.NonPos(self.user_ch_rated_min - self.ch_min_rated)]
             self.dis_max_rated = self.ch_max_rated
+            if not self.user_dis_rated_min:
+                self.size_constraints += [cvx.NonPos(self.user_dis_rated_min - self.dis_min_rated)]
+            if not self.user_dis_rated_max:
+                self.size_constraints += [cvx.NonPos(self.dis_max_rated - self.user_dis_rated_max)]
             if self.incl_charge_limits and self.limit_charge_max is not None:
                 e_logger.error(f'Ignoring charge max time series because {self.tag}-{self.name} sizing for power capacity')
                 self.limit_charge_max = None

@@ -419,7 +419,7 @@ class ParamsDER(Params):
         if self.ICE:
             if self.ICE['n_min'] != self.ICE['n_max']:
                 sizing_optimization = True
-                if self.ICE['n_min'] < self.ICE['n_max']:
+                if self.ICE['n_min'] > self.ICE['n_max']:
                     e_logger.error('Params Error: ICE must have n_min < n_max')
                     return False
         if sizing_optimization and not self.Scenario['n'] == 'year':

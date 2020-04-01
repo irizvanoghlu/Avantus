@@ -441,17 +441,47 @@ class ParamsDER(Params):
         sizing_optimization = False
         if len(self.Battery):
             for id_str, battery_inputs in self.Battery.items():
-                if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated'] or not battery_inputs['ene_max_rated']:
+                if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
                     sizing_optimization = True
-                if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
-                    e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
-                    return False
-                if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
-                    e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
-                    return False
-                if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
-                    e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
-                    return False
+                    # if sizing for power, with ...
+                    if self.Scenario['binary']:
+                        # the binary formulation
+                        e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
+                        return False
+                    if self.SR or self.NSR or self.FR:
+                        # whole sale markets
+                        if self.SR is not None and self.SR['ts_constraints'] is False:
+                            self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
+                                                    'in wholesale markets, but SR time-series constraints is not applied.')
+                        if self.NSR is not None and self.NSR['ts_constraints'] is False:
+                            self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
+                                                    'in wholesale markets, but NSR time-series constraints is not applied.')
+                        if self.FR is not None and self.FR['u_ts_constraints'] is False or self.FR['d_ts_constraints'] is False:
+                            self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
+                                                    'in wholesale markets, but FR time-series constraints is not applied.')
+
+                    if not battery_inputs['ch_max_rated']:
+                        if not battery_inputs['user_ch_rated_max'] and not battery_inputs['user_ch_rated_min']:
+                            e_logger.error('Error: Please indicate min/max charge power capacity to size the Battery.')
+                            return False
+                        if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
+                            e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
+                            return False
+                    if not battery_inputs['dis_max_rated']:
+                        if not battery_inputs['user_dis_rated_max'] and not battery_inputs['user_dis_rated_min']:
+                            e_logger.error('Error: Please indicate min/max discharge power capacity to size the Battery.')
+                            return False
+                        if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
+                            e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
+                            return False
+                if not battery_inputs['ene_max_rated']:
+                    if not battery_inputs['user_ene_rated_max'] and not battery_inputs['user_ene_rated_min']:
+                        e_logger.error('Error: Please indicate min/max energy capacity to size the Battery.')
+                        return False
+                    if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
+                        e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
+                        return False
+                    sizing_optimization = True
 
                 # check if user wants to include timeseries constraints -> grab data
                 if battery_inputs['incl_ts_energy_limits']:
@@ -488,19 +518,6 @@ class ParamsDER(Params):
                     self.record_input_error(f'ICE {id_str} must have n_min < n_max')
         if sizing_optimization and not self.Scenario['n'] == 'year':
             self.record_input_error('Trying to size without setting the optimization window to \'year\'')
-        # TODO: move check
-        # if sizing_optimization:
-        #     if self.DA or self.SR or self.NSR or self.FR:
-        #         # whole sale markets
-        #         if self.SR is not None and self.SR['ts_constraints'] is False:
-        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
-        #                              'in wholesale markets, but SR time-series constraints is not applied.')
-        #         if self.NSR is not None and self.NSR['ts_constraints'] is False:
-        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
-        #                              'in wholesale markets, but NSR time-series constraints is not applied.')
-        #         if self.FR is not None and self.FR['u_ts_constraints'] is False or self.FR['d_ts_constraints'] is False:
-        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
-        #                              'in wholesale markets, but FR time-series constraints is not applied.')
 
         if len(self.Load):
             if self.Scenario['incl_site_load'] != 1:

@@ -292,8 +292,6 @@ class Reliability(storagevet.ValueStream):
         while outage_init < len(self.critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
-            if outage_init == 52:
-                print("at hour 37")
             longest_outage = self.simulate_outage(reliability_check.iloc[outage_init:], demand_left.iloc[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1

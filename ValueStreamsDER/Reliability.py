@@ -309,7 +309,7 @@ class Reliability(storagevet.ValueStream):
         # 3) build DataFrame to return
         outage_lengths = list(np.arange(0, self.max_outage_duration + self.dt, self.dt))
         outage_coverage = {'Outage Length (hrs)': outage_lengths,
-                           '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
+                           # '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
                            'Load Coverage Probability (%)': [1] + load_coverage_prob}  # first index is prob of covering outage of 0 hours (P=100%)
         end = time.time()
         u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')

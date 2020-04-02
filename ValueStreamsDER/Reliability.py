@@ -10,7 +10,7 @@ __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
 __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = 'beta'  # beta version
+__version__ = '0.1.1'
 
 import storagevet.Constraint as Const
 import numpy as np
@@ -47,6 +47,8 @@ class Reliability(storagevet.ValueStream):
         self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
         self.n_2 = params['n-2']
+        # self.n_2 = 0
+        self.contribution_df = pd.DataFrame()
 
         if 'Diesel' in techs.keys():
             self.ice_rated_power = techs['Diesel'].rated_power
@@ -171,7 +173,7 @@ class Reliability(storagevet.ValueStream):
                 contribution_arrays.update({'PV Outage Contribution (kWh)': pv_outage_e.values})
 
             if 'Storage' in technologies_keys:
-                ess_outage = results.loc[:, 'Total State of Energy (kW)']
+                ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
                 # try to cover as much of the outage that can be with the ES
                 net_outage_energy = outage_energy - ess_outage
                 # ESS might have more energy than in the outage, so dont let energy go negative
@@ -191,8 +193,11 @@ class Reliability(storagevet.ValueStream):
                 contribution_arrays.update({'Storage Outage Contribution (kWh)': outage_energy.values})
 
             self.contribution_df = pd.DataFrame(percent_usage, index=pd.Index(['Reliability contribution'])).T
+            contribution_per_outage_df = pd.DataFrame(contribution_arrays, index=self.critical_load.index)
 
-            return pd.DataFrame(contribution_arrays, index=self.critical_load.index), self.contribution_df
+            return contribution_per_outage_df, self.contribution_df
+        else:
+            return pd.DataFrame(), pd.DataFrame()
 
     def load_coverage_probability(self, results_df, size_df, technology_summary_df):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
@@ -271,8 +276,6 @@ class Reliability(storagevet.ValueStream):
         while outage_init < len(self.critical_load):
             if soc is not None:
                 tech_specs['init_soc'] = soc.iloc[outage_init]
-            if outage_init == 52:
-                print("at hour 37")
             longest_outage = self.simulate_outage(reliability_check.iloc[outage_init:], demand_left.iloc[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1
@@ -290,7 +293,7 @@ class Reliability(storagevet.ValueStream):
         # 3) build DataFrame to return
         outage_lengths = list(np.arange(0, self.max_outage_duration + self.dt, self.dt))
         outage_coverage = {'Outage Length (hrs)': outage_lengths,
-                           '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
+                           # '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
                            'Load Coverage Probability (%)': [1] + load_coverage_prob}  # first index is prob of covering outage of 0 hours (P=100%)
         end = time.time()
         u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')

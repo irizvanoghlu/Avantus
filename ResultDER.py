@@ -47,7 +47,6 @@ class ResultDER(Result):
         """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
         provided, analysis on the optimization solutions are completed here.
 
-        TODO: [multi-tech] a lot of this logic will have to change with multiple technologies
         """
         super().post_analysis()
         for name, tech in self.technologies.items():  # TODO

@@ -38,12 +38,18 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         DERExtension.__init__(self, params)
 
         self.curtail = params['curtail']
+        self.max_rated_capacity = params['max_rated_capacity']
+        self.min_rated_capacity = params['min_rated_capacity']
         if not self.curtail:
             # if we are not curatiling, then we do not need any variables
             self.variable_names = {}
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
+            if self.min_rated_capacity:
+                self.size_constraints += [cvx.NonPos(self.min_rated_capacity - self.rated_capacity)]
+            if self.max_rated_capacity:
+                self.size_constraints += [cvx.NonPos(self.rated_capacity - self.max_rated_capacity)]
 
     def get_discharge(self, mask):
         """ The effective discharge of this DER

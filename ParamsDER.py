@@ -145,7 +145,8 @@ class ParamsDER(Params):
         template['ders_values'] = {
             'Battery': cls.read_and_validate_cba('Battery'),
             'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
-            'ICE': cls.read_and_validate_cba('ICE')  # fuel_price,
+            'ICE': cls.read_and_validate_cba('ICE'),  # fuel_price,
+            'Load': cls.read_and_validate_cba('Load')
         }
 
         # create dictionary for CBA values for all services (from data files)
@@ -430,7 +431,7 @@ class ParamsDER(Params):
                 raise Exception("Missing 'Site Load (kW)' from timeseries input")
             self.Load.update({'dt': self.Scenario['dt'],
                               'growth': self.Scenario['def_growth'],
-                              'site_load': self.Scenario['time_series'].loc['Site Load (kW)']})
+                              'site_load': time_series.loc[:, 'Site Load (kW)']})
         super().prepare_technology()
 
     def prepare_services(self):

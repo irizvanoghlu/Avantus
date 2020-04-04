@@ -108,4 +108,7 @@ Reliability,n-2,0,y/n,bool,"{1,0}",N/A,None,Optimize and preform post-facto for 
 Deferral,planned_load_limit,15000,kW,float,"[0, max_import)",N/A,None,Max net import power flow to grid,no,no,.,.,
 Deferral,reverse_power_flow_limit,-15000,kW,float,"[0, max_export)",N/A,None,Max net export power flow to grid,.,no,.,.,
 Deferral,growth,6,%/yr,float,"[0, 100]",N/A,None,Growth Rate of deferral load,.,no,.,.,
-Deferral,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for deferring a T and D asset upgrade,.,.,1000,n,
+Deferral,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for deferring a T and D asset upgrade,.,no,1000,n,
+ControllableLoad,name,Demand Response Tech,N/A,string,,N/A,None,Name of controllable load,no,no,.,.,
+ControllableLoad,power_rating,100,kW,float,,N/A,None,Maximum offset from the original load.,.,no,.,.,
+ControllableLoad,duration,4,hr,float,,N/A,None,Maximum time that the load can effectively 'charge' or 'discharge' at once ,.,no,.,.,

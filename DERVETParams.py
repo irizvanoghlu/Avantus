@@ -461,24 +461,15 @@ class ParamsDER(Params):
                                                     'in wholesale markets, but FR time-series constraints is not applied.')
 
                     if not battery_inputs['ch_max_rated']:
-                        if not battery_inputs['user_ch_rated_max'] and not battery_inputs['user_ch_rated_min']:
-                            e_logger.error('Error: Please indicate min/max charge power capacity to size the Battery.')
-                            return False
-                        if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
+                        if battery_inputs['user_ch_rated_max'] and battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
                             e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
                             return False
                     if not battery_inputs['dis_max_rated']:
-                        if not battery_inputs['user_dis_rated_max'] and not battery_inputs['user_dis_rated_min']:
-                            e_logger.error('Error: Please indicate min/max discharge power capacity to size the Battery.')
-                            return False
-                        if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
+                        if battery_inputs['user_dis_rated_max'] and battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
                             e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
                             return False
                 if not battery_inputs['ene_max_rated']:
-                    if not battery_inputs['user_ene_rated_max'] and not battery_inputs['user_ene_rated_min']:
-                        e_logger.error('Error: Please indicate min/max energy capacity to size the Battery.')
-                        return False
-                    if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
+                    if battery_inputs['user_ene_rated_max'] and battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
                         e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
                         return False
                     sizing_optimization = True

@@ -15,13 +15,19 @@
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</DA>
 	<FR type="service">
-		<ku cba="n" max="1.0" min="0.0" type="float" />
-		<kd cba="n" max="1.0" min="0.0" type="float" />
+		<eou cba="n" max="1.0" min="0.0" type="float" />
+		<eod cba="n" max="1.0" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<energyprice_growth cba="n" max="100.0" min="0.0" type="float" />
 		<CombinedMarket allowed_values="1|0" cba="n" type="bool" />
 		<duration cba="n" max="24" min="0.0" type="float" />
 	</FR>
+	<LF type="service">
+		<eou cba="n" max="1.0" min="0.0" type="float" />
+		<eod cba="n" max="1.0" min="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<CombinedMarket allowed_values="1|0" cba="n" type="bool" />
+	</LF>
 	<SR type="service">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<duration cba="n" max="24" min="0.0" type="float" />
@@ -128,8 +134,9 @@
 		<end_year cba="y" type="Period" />
 		<n allowed_values="month|year|BOUND" cba="n" max="366" min="0" type="string/int" />
 		<incl_site_load allowed_values="1|0" cba="n" type="bool" />
-		<no_export allowed_values="1|0" cba="n" type="bool" />
-		<no_import allowed_values="1|0" cba="n" type="bool" />
+		<max_export type="float" min="0.0"/>
+		<max_import type="float" max="0.0"/>
+		<apply_interconnection_constraints type="bool" allowed_values="1|0"/>
 		<def_growth cba="n" max="100.0" min="0.0" type="float" />
 		<binary allowed_values="1|0" cba="n" type="bool" />
 		<slack allowed_values="1|0" cba="n" type="bool" />

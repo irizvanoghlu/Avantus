@@ -55,11 +55,11 @@ class ResultDER(Result):
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
 
         # DESIGN PLOT (peak load day)
-        max_day = self.results['Original Net Load (kW)'].idxmax().date()
+        max_day = self.results['Total Load (kW)'].idxmax().date()
         max_day_data = self.results[self.results.index.date == max_day]
         time_step = pd.Index(np.arange(0, 24, self.dt), name='Timestep Beginning')
         self.peak_day_load = pd.DataFrame({'Date': max_day_data.index.date,
-                                           'Load (kW)': max_day_data['Original Net Load (kW)'].values,
+                                           'Load (kW)': max_day_data['Total Load (kW)'].values,
                                            'Net Load (kW)': max_day_data['Net Load (kW)'].values}, index=time_step)
 
         if 'Reliability' in self.predispatch_services.keys():

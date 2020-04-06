@@ -13,7 +13,6 @@ __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
 import cvxpy as cvx
-import numpy as np
 from storagevet.Technology.Load import Load
 
 
@@ -126,16 +125,16 @@ class ControllableLoad(Load):
 
         return constraint_list
 
-    def effective_load(self, mask):
+    def effective_load(self):
         """ Returns the load that is seen by the microgrid or point of interconnection
 
         Args:
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
         """
-        effective_load = super().effective_load(mask)
+        effective_load = super().effective_load()
         if self.duration:
-            effective_load += self.variables.loc[mask, 'power']
+            effective_load += self.variables['power']
         return effective_load
 
     def sizing_summary(self):
@@ -145,3 +144,16 @@ class ControllableLoad(Load):
         Returns: None
 
         """
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = super().timeseries_report()
+        if self.duration:
+            results["Site Load (kW)"] = self.site_load
+            results["Load Offset (kW)"] = self.variables['power']
+        return results

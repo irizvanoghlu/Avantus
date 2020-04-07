@@ -443,6 +443,15 @@ class ParamsDER(Params):
             for id_str, battery_inputs in self.Battery.items():
                 if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated'] or not battery_inputs['ene_max_rated']:
                     sizing_optimization = True
+                if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
+                    e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
+                    return False
+                if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
+                    e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
+                    return False
+                if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
+                    e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
+                    return False
 
                 # check if user wants to include timeseries constraints -> grab data
                 if battery_inputs['incl_ts_energy_limits']:
@@ -466,6 +475,9 @@ class ParamsDER(Params):
             for pv_inputs in self.PV.values():
                 if not pv_inputs['rated_capacity']:
                     sizing_optimization = True
+                if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:
+                    e_logger.error('Error: Required PV min rated capacity is set greater than required PV max rated capacity.')
+                    return False
 
         if len(self.ICE):
             # add scenario case parameters to ICE parameter dictionary

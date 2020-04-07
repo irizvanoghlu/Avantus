@@ -530,18 +530,14 @@ class ParamsDER(Params):
         """
         super().load_services()
 
-        post_facto_only = False
-
         if self.Reliability is not None:
-            post_facto_only = self.Reliability['post_facto_only']
             self.Reliability["dt"] = self.Scenario["dt"]
             try:
                 self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
             except KeyError:
                 self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
 
-        if self.DA is None and self.retailTimeShift is None and not post_facto_only:
-            self.record_input_error('Not providing DA or retailETS might cause the solver to take infinite time to solve!')
+        # TODO add try statements around each lookup to time_series
         if self.FR is not None:
             if self.FR['u_ts_constraints']:
                 self.FR.update({'regu_max': self.Scenario['time_series'].loc[:, 'Reg Up Max (kW)'],

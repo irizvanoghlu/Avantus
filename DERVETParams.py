@@ -400,9 +400,13 @@ class ParamsDER(Params):
                                  'min': self.Scenario['time_series'].loc[:, 'NSR Min (kW)']})
 
         if self.LF is not None:
-            if self.LF['ts_constraints']:
-                self.LF.update({'max': self.Scenario['time_series'].loc[:, 'LF Max (kW)'],
-                                'min': self.Scenario['time_series'].loc[:, 'LF Min (kW)']})
+            if self.LF['u_ts_constraints']:
+                self.LF.update({'lf_u_max': self.Scenario['time_series'].loc[:, 'LF Up Max (kW)'],
+                                'lf_u_min': self.Scenario['time_series'].loc[:, 'L Up Min (kW)']})
+            if self.LF['u_ts_constraints']:
+                self.LF.update({'lf_d_max': self.Scenario['time_series'].loc[:, 'LF Down Max (kW)'],
+                                'lf_d_min': self.Scenario['time_series'].loc[:, 'LF Down Min (kW)']})
+
         u_logger.info("Successfully prepared the value-stream (services)")
 
     def load_scenario(self):

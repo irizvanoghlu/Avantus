@@ -363,7 +363,6 @@ class ParamsDER(Params):
         if self.Reliability is not None:
             self.Reliability["dt"] = self.Scenario["dt"]
             self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
-            self.active_value_stream_inputs_map.update({'Reliability': self.Reliability})
 
         u_logger.info("Successfully prepared the value-stream (services)")
 
@@ -373,13 +372,13 @@ class ParamsDER(Params):
         """
         Params.prepare_scenario(self)
 
-        if self.Scenario['binary']:
-            e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                             'by turning the binary formulation flag off.')
-            u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                             'by turning the binary formulation flag off.')
+        # if self.Scenario['binary']:
+        #     e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+        #                      'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+        #                      'by turning the binary formulation flag off.')
+        #     u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+        #                      'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
+        #                      'by turning the binary formulation flag off.')
 
         u_logger.info("Successfully prepared the Scenario and some Finance")
 

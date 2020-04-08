@@ -29,7 +29,7 @@ class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, techs):
+    def __init__(self, params):
         """ Generates the objective function, finds and creates constraints.
 
           Args:

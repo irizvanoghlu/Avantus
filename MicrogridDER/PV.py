@@ -45,6 +45,7 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             self.variable_names = {}
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
+            self.inv_max = self.rated_capacity
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
             if self.min_rated_capacity:
                 self.size_constraints += [cvx.NonPos(self.min_rated_capacity - self.rated_capacity)]

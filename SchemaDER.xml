@@ -42,7 +42,10 @@
 		<duration cba="n" min="0.0" type="float" />
 	</ControllableLoad>
 	<PV type="generator">
+		<startup_time cba="n" min="0" type="int" />
 		<name cba="n" type="string" />
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
 		<inv_max cba="n" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<rated_capacity cba="n" min="0.0" type="float" />
@@ -55,6 +58,8 @@
 	</PV>
 	<ICE type="generator">
 		<name cba="n" type="string" />
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="y" type="float" />
 		<min_power cba="n" min="0.0" type="float" />
 		<startup_time cba="n" min="0" type="int" />
@@ -71,7 +76,10 @@
 		<operation_date cba="n" type="Timestamp" />
 	</ICE>
 	<Battery type="storage">
+		<startup_time cba="n" min="0" type="int" />
 		<name cba="n" type="string" />
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
 		<startup allowed_values="1|0" cba="y" type="bool" />
 		<ccost cba="y" min="0.0" type="float" />
 		<ccost_kw cba="y" min="0.0" type="float" />
@@ -101,7 +109,10 @@
 		<duration_max min="0" type="float" optional="y"/>
 	</Battery>
 	<CAES type="storage">
+		<startup_time cba="n" min="0" type="int" />
 		<name type="string" />
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
 		<daily_cycle_limit min="0" type="float" />
 		<heat_rate_high min="0.0" type="float" />
 		<startup type="bool" allowed_values="1|0"/>

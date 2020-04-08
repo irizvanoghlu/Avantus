@@ -4,7 +4,7 @@
 
     <Scenario active="yes">
         <monthly_data_filename analysis="no">
-            <Value>.\dervet\storagevet\Data\Monthly_Data.csv</Value>
+            <Value>.\dervet\storagevreset\Data\Monthly_Data.csv</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
             <Type>string</Type>
             <Coupled>None</Coupled>
@@ -210,6 +210,12 @@
             <Type>string</Type>
             <Coupled>None</Coupled>
         </name>
+        <startup_time analysis="no">
+            <Value>0</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </startup_time>
         <ccost analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -225,9 +231,21 @@
         <ccost_kwh analysis="no">
             <Value>800</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
-            <Type>float</Type>
+            <Type>int</Type>
             <Coupled>None</Coupled>
         </ccost_kwh>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </sr_response_time>
         <startup analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -375,6 +393,12 @@
             <Type>string</Type>
             <Coupled>nan</Coupled>
         </name>
+        <startup_time analysis="no">
+            <Value>0</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </startup_time>
         <inv_max analysis="no">
             <Value>3000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -399,6 +423,18 @@
             <Type>float</Type>
             <Coupled>None</Coupled>
         </cost_per_kW>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>int</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>float</Type>
+            <Coupled>int</Coupled>
+        </sr_response_time>
         <macrs_term analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -450,6 +486,18 @@
             <Type>float</Type>
             <Coupled>None</Coupled>
         </min_power>
+        <nsr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Value>10</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </sr_response_time>
         <startup_time analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>

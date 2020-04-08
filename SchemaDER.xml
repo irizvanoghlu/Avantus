@@ -37,6 +37,7 @@
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</retailTimeShift>
 	<PV type="generator">
+		<startup_time cba="n" min="0" type="int" />
 		<name cba="n" type="string" />
 		<nsr_response_time cba="n" min="10" type="int" />
 		<sr_response_time cba="n" min="10" type="int" />
@@ -70,6 +71,7 @@
 		<operation_date cba="n" type="Timestamp" />
 	</ICE>
 	<Battery type="storage">
+		<startup_time cba="n" min="0" type="int" />
 		<name cba="n" type="string" />
 		<nsr_response_time cba="n" min="10" type="int" />
 		<sr_response_time cba="n" min="10" type="int" />
@@ -102,6 +104,7 @@
 		<duration_max min="0" type="float" optional="y"/>
 	</Battery>
 	<CAES type="storage">
+		<startup_time cba="n" min="0" type="int" />
 		<name type="string" />
 		<nsr_response_time cba="n" min="10" type="int" />
 		<sr_response_time cba="n" min="10" type="int" />

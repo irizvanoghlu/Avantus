@@ -210,6 +210,12 @@
             <Type>string</Type>
             <Coupled>None</Coupled>
         </name>
+        <startup_time analysis="no">
+            <Value>0</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </startup_time>
         <ccost analysis="no">
             <Value>0</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
@@ -387,6 +393,12 @@
             <Type>string</Type>
             <Coupled>nan</Coupled>
         </name>
+        <startup_time analysis="no">
+            <Value>0</Value>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+            <Type>int</Type>
+            <Coupled>None</Coupled>
+        </startup_time>
         <inv_max analysis="no">
             <Value>3000</Value>
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>

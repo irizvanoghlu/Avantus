@@ -40,6 +40,9 @@
 		<name cba="n" type="string" />
 		<power_rating cba="n" min="0.0" type="float" />
 		<duration cba="n" min="0.0" type="float" />
+		<nsr_response_time min="0" type="int" />
+		<sr_response_time min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
 	</ControllableLoad>
 	<PV type="generator">
 		<startup_time cba="n" min="0" type="int" />

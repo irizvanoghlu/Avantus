@@ -22,30 +22,29 @@ class ICESizing(storagevet.ICE):
 
     """
 
-    def __init__(self, name, params):
+    def __init__(self, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            name (str): A unique string name for the technology being added, also works as category.
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        storagevet.ICE.__init__(self, name, params)
+        storagevet.ICE.__init__(self, params)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
-        self.n = cvx.Variable(integer=True, name='generators')
-        self.capex = self.capital_cost * self.n + self.capital_cost * self.rated_power
 
-    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
+        # TODO: use add_vars() method
+        self.n = cvx.Variable(integer=True, name='generators')
+
+    # TODO: apply appropriate variable_dict with tech_id
+    def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
-            variables (Dict): Dictionary of variables being optimized
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
-            reservations (Dict): Dictionary of energy and power reservations required by the services being
-                preformed with the current optimization subset
             mpc_ene (float): value of energy at end of last opt step (for mpc opt)
+            sizing (bool): flag that tells indicates whether the technology is being sized
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
@@ -81,7 +80,7 @@ class ICESizing(storagevet.ICE):
 
         """
         # recacluate capex before reporting proforma
-        self.capex = self.capital_cost * self.n + self.ccost_kw * self.rated_power * self.n
+        self.capex = self.capital_costs['flat'] * self.n + self.capital_costs['/kW'] * self.rated_power * self.n
         proforma = super().proforma_report(opt_years, results)
         return proforma
 
@@ -101,8 +100,8 @@ class ICESizing(storagevet.ICE):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': self.rated_power,
-                                       'Capital Cost ($)': self.capital_cost,
-                                       'Capital Cost ($/kW)': self.ccost_kw,
+                                       'Capital Cost ($)': self.capital_costs['flat'],
+                                       'Capital Cost ($/kW)': self.capital_costs['/kW'],
                                        'Quantity': n}, index=index)
         return sizing_results
 

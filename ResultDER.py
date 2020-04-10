@@ -49,7 +49,7 @@ class ResultDER(Result):
 
         """
         super().post_analysis()
-        for name, tech in self.technologies.items():  # TODO
+        for name, tech in self.poi.distributed_energy_resources.items():
             # sizing_summary for CAES is currently similar to it for Battery
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
@@ -62,8 +62,8 @@ class ResultDER(Result):
                                            'Load (kW)': max_day_data['Total Load (kW)'].values,
                                            'Net Load (kW)': max_day_data['Net Load (kW)'].values}, index=time_step)
 
-        if 'Reliability' in self.predispatch_services.keys():
-            reliability = self.predispatch_services['Reliability']
+        if 'Reliability' in self.controller.value_streams.keys():  # TODO: possibly make an method of Reliability --HN
+            reliability = self.controller.value_streams['Reliability']
             # save/calculate load coverage
             u_logger.info('Starting load coverage calculation. This may take a while.')
             self.load_coverage_prob = reliability.load_coverage_probability(self.results, self.sizing_df, self.technology_summary)
@@ -89,7 +89,7 @@ class ResultDER(Result):
         else:
             savepath = self.dir_abs_path
 
-        if 'Reliability' in self.predispatch_services.keys():
+        if 'Reliability' in self.controller.value_streams.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
             self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))

@@ -31,7 +31,7 @@ class ParamsDER(Params):
         Notes:
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
-    # set schema loction based on the location of this file (this should override the global value within Params.py
+    # set schema location based on the location of this file (this should override the global value within Params.py
     schema_location = os.path.abspath(__file__)[:-len('ParamsDER.py')] + "SchemaDER.xml"
 
     sensitivity = {"attributes": dict(), "coupled": list(), 'cba_values': dict()}
@@ -144,6 +144,7 @@ class ParamsDER(Params):
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
             'Battery': cls.read_and_validate_cba('Battery'),
+            'CAES': cls.read_and_validate_cba('CAES'),
             'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
             'ICE': cls.read_and_validate_cba('ICE'),  # fuel_price,
             'Load': cls.read_and_validate_cba('Load')

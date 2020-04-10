@@ -22,24 +22,23 @@ import logging
 
 
 u_logger = logging.getLogger('User')
-DEBUG = True
+DEBUG = False
 
 
 class Reliability(storagevet.ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 
-    def __init__(self, params, techs, dt):
+    def __init__(self, params):
         """ Generates the objective function, finds and creates constraints.
 
           Args:
             params (Dict): input parameters
             techs (Dict): technology objects after initialization, as saved in a dictionary
-            dt (float): optimization timestep (hours)
         """
 
         # generate the generic predispatch service object
-        super().__init__(None, 'Reliability', dt)
+        super().__init__('Reliability', params)
         self.outage_duration_coverage = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
@@ -62,7 +61,6 @@ class Reliability(storagevet.ValueStream):
         self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
 
         self.critical_load = params['critical load'].copy()
-        # TODO: atm this load is only the site load, should consider aux load if included by user  --HN
 
         self.reliability_requirement = self.rolling_sum(params['critical load'].copy(), self.coverage_timesteps) * self.dt
 
@@ -91,18 +89,19 @@ class Reliability(storagevet.ValueStream):
         data = reverse.iloc[::-1]
         return data
 
-    def objective_constraints(self, variables, mask, load, generation, reservations=None):
+    def objective_constraints(self, mask, load, net_power, combined_rating, critical_load):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
-            variables (Dict): dictionary of variables being optimized
-            subs (DataFrame): Subset of time_series data that is being optimized
-            generation (list, Expression): the sum of generation within the system for the subset of time
-                being optimized
-            reservations (Dict): power reservations from dispatch services
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                    in the subs data set
+            load (DataFrame): Subset of time_series load data that is being optimized
+            net_power (Expression): the sum of all power flows in the system. flow out into the grid is negative
+            combined_rating (Dictionary): the combined rating of each DER class type
+            critical_load (pd.Expression): the load that must be met in an outage (usually load - pv generation)
 
         Returns:
-            An empty list
+            A list of constraints
         """
         if not self.post_facto_only:
             try:
@@ -123,7 +122,7 @@ class Reliability(storagevet.ValueStream):
             # to ensure that our DER mix can cover peak net load during any outage in the year
             return [cvx.NonPos(cvx.max(self.critical_load.loc[mask].values - pv_generation) - self.ess_rated_power - ice_rated_power)]
         else:
-            return super().objective_constraints(variables, mask, load, generation, reservations)
+            return super().objective_constraints(mask, load, net_power, combined_rating, critical_load)
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.

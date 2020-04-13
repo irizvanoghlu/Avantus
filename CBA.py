@@ -14,7 +14,6 @@ __version__ = 'beta'  # beta version
 
 import logging
 from storagevet.Finances import Financial
-from ParamsDER import ParamsDER
 import numpy as np
 import copy
 import pandas as pd

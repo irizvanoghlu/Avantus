@@ -1,5 +1,5 @@
 """
-ScenarioSizing.py
+MicrogridScenario.py
 
 This Python class contains methods and attributes vital for completing the scenario analysis.
 """
@@ -32,7 +32,7 @@ u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class ScenarioSizing(Scenario):
+class MicrogridScenario(Scenario):
     """ A scenario is one simulation run in the model_parameters file.
 
     """

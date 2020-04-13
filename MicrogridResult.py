@@ -27,7 +27,7 @@ u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class ResultDER(Result):
+class MicrogridResult(Result):
     """
 
     """
@@ -39,9 +39,7 @@ class ResultDER(Result):
                 scenario (Scenario.Scenario): scenario object after optimization has run to completion
         """
         super().__init__(scenario, CostBenefitAnalysis)
-        self.reliability_df = pd.DataFrame()
         self.sizing_df = pd.DataFrame()
-        self.load_coverage_prob = pd.DataFrame()
 
     def post_analysis(self):
         """ Wrapper for Post Optimization Analysis. Depending on what the user wants and what services were being
@@ -88,6 +86,7 @@ class ResultDER(Result):
             savepath = self.dir_abs_path + "\\" + str(instance_key)
         else:
             savepath = self.dir_abs_path
+        self.peak_day_load.to_csv(path_or_buf=Path(savepath, f'peak_day_load{self.csv_label}.csv'))
 
         if 'Reliability' in self.controller.value_streams.keys():
             self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))

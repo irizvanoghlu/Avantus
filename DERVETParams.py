@@ -381,34 +381,6 @@ class ParamsDER(Params):
             finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
         return cba_dict
 
-        if self.FR is not None:
-            if self.FR['u_ts_constraints']:
-                self.FR.update({'regu_max': self.Scenario['time_series'].loc[:, 'Reg Up Max (kW)'],
-                                'regu_min': self.Scenario['time_series'].loc[:, 'Reg Up Min (kW)']})
-            if self.FR['u_ts_constraints']:
-                self.FR.update({'regd_max': self.Scenario['time_series'].loc[:, 'Reg Down Max (kW)'],
-                                'regd_min': self.Scenario['time_series'].loc[:, 'Reg Down Min (kW)']})
-
-        if self.SR is not None:
-            if self.SR['ts_constraints']:
-                self.SR.update({'max': self.Scenario['time_series'].loc[:, 'SR Max (kW)'],
-                                'min': self.Scenario['time_series'].loc[:, 'SR Min (kW)']})
-
-        if self.NSR is not None:
-            if self.NSR['ts_constraints']:
-                self.NSR.update({'max': self.Scenario['time_series'].loc[:, 'NSR Max (kW)'],
-                                 'min': self.Scenario['time_series'].loc[:, 'NSR Min (kW)']})
-
-        if self.LF is not None:
-            if self.LF['u_ts_constraints']:
-                self.LF.update({'lf_u_max': self.Scenario['time_series'].loc[:, 'LF Up Max (kW)'],
-                                'lf_u_min': self.Scenario['time_series'].loc[:, 'L Up Min (kW)']})
-            if self.LF['u_ts_constraints']:
-                self.LF.update({'lf_d_max': self.Scenario['time_series'].loc[:, 'LF Down Max (kW)'],
-                                'lf_d_min': self.Scenario['time_series'].loc[:, 'LF Down Min (kW)']})
-
-        u_logger.info("Successfully prepared the value-stream (services)")
-
     def load_scenario(self):
         """ Interprets user given data and prepares it for Scenario.
 
@@ -516,6 +488,19 @@ class ParamsDER(Params):
                     self.record_input_error(f'ICE {id_str} must have n_min < n_max')
         if sizing_optimization and not self.Scenario['n'] == 'year':
             self.record_input_error('Trying to size without setting the optimization window to \'year\'')
+        # TODO: move check
+        # if sizing_optimization:
+        #     if self.DA or self.SR or self.NSR or self.FR:
+        #         # whole sale markets
+        #         if self.SR is not None and self.SR['ts_constraints'] is False:
+        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
+        #                              'in wholesale markets, but SR time-series constraints is not applied.')
+        #         if self.NSR is not None and self.NSR['ts_constraints'] is False:
+        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
+        #                              'in wholesale markets, but NSR time-series constraints is not applied.')
+        #         if self.FR is not None and self.FR['u_ts_constraints'] is False or self.FR['d_ts_constraints'] is False:
+        #             u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
+        #                              'in wholesale markets, but FR time-series constraints is not applied.')
 
         if len(self.Load):
             if self.Scenario['incl_site_load'] != 1:
@@ -549,4 +534,30 @@ class ParamsDER(Params):
 
         if self.DA is None and self.retailTimeShift is None and not post_facto_only:
             self.record_input_error('Not providing DA or retailETS might cause the solver to take infinite time to solve!')
+        if self.FR is not None:
+            if self.FR['u_ts_constraints']:
+                self.FR.update({'regu_max': self.Scenario['time_series'].loc[:, 'Reg Up Max (kW)'],
+                                'regu_min': self.Scenario['time_series'].loc[:, 'Reg Up Min (kW)']})
+            if self.FR['u_ts_constraints']:
+                self.FR.update({'regd_max': self.Scenario['time_series'].loc[:, 'Reg Down Max (kW)'],
+                                'regd_min': self.Scenario['time_series'].loc[:, 'Reg Down Min (kW)']})
+
+        if self.SR is not None:
+            if self.SR['ts_constraints']:
+                self.SR.update({'max': self.Scenario['time_series'].loc[:, 'SR Max (kW)'],
+                                'min': self.Scenario['time_series'].loc[:, 'SR Min (kW)']})
+
+        if self.NSR is not None:
+            if self.NSR['ts_constraints']:
+                self.NSR.update({'max': self.Scenario['time_series'].loc[:, 'NSR Max (kW)'],
+                                 'min': self.Scenario['time_series'].loc[:, 'NSR Min (kW)']})
+
+        if self.LF is not None:
+            if self.LF['u_ts_constraints']:
+                self.LF.update({'lf_u_max': self.Scenario['time_series'].loc[:, 'LF Up Max (kW)'],
+                                'lf_u_min': self.Scenario['time_series'].loc[:, 'L Up Min (kW)']})
+            if self.LF['u_ts_constraints']:
+                self.LF.update({'lf_d_max': self.Scenario['time_series'].loc[:, 'LF Down Max (kW)'],
+                                'lf_d_min': self.Scenario['time_series'].loc[:, 'LF Down Min (kW)']})
+
         u_logger.info("Successfully prepared the value-stream (services)")

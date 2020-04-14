@@ -164,8 +164,8 @@ class MicrogridScenario(Scenario):
         return True
 
     def error_checks_on_sizing_with_ts_service_constraints(self):
-        # perform error checks on DERs that are being sized with ts_user_constraints
-        # collect errors and raise if any were found
+        """ perform error checks on DERs that are being sized with ts_user_constraints
+        collect errors and raise if any were found"""
         errors_found = False
         for der in self.poi.der_list:
             try:

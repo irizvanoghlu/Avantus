@@ -448,8 +448,11 @@ class ParamsDER(Params):
                         # the binary formulation
                         e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
                         return False
-                    if self.SR or self.NSR or self.FR:
+                    if self.SR or self.NSR or self.FR or self.LF:
                         # whole sale markets
+                        if self.LF is not None and self.LF['u_ts_constraints'] is False or self.LF['d_ts_constraints'] is False:
+                            u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
+                                             'in wholesale markets, but LF time-series constraints is not applied.')
                         if self.SR is not None and self.SR['ts_constraints'] is False:
                             self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
                                                     'in wholesale markets, but SR time-series constraints is not applied.')

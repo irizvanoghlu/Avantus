@@ -31,10 +31,10 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 # add storagevet (source root) to PYTHONPATH
 sys.path.insert(0, storagevet_path)
 
-from ScenarioSizing import ScenarioSizing
-from ParamsDER import ParamsDER
-from cbaDER import CostBenefitAnalysis
-from ResultDER import ResultDER
+from MicrogridScenario import MicrogridScenario
+from DERVETParams import ParamsDER
+from CBA import CostBenefitAnalysis
+from MicrogridResult import MicrogridResult
 from storagevet.Visualization import Visualization
 
 
@@ -66,12 +66,8 @@ class DERVET:
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
-        self.results = ResultDER.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
+        self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions, CostBenefitAnalysis)
         u_logger.info('Successfully initialized the Params class with the XML file.')
-
-        # # Initialize the CBA module
-        # CostBenefitAnalysis.initialize_evaluation()
-        # u_logger.info('Successfully initialized the CBA class with the XML file.')
 
         if self.verbose:
             Visualization(ParamsDER).class_summary()
@@ -80,20 +76,20 @@ class DERVET:
         starts = time.time()
 
         for key, value in self.cases.items():
-            run = ScenarioSizing(value)
+            run = MicrogridScenario(value)
             run.set_up_poi_and_service_aggregator()
             run.fill_and_drop_extra_data()
             run.optimize_problem_loop()
 
-            ResultDER.add_instance(key, run)
+            MicrogridResult.add_instance(key, run)
 
-        ResultDER.sensitivity_summary()
+        MicrogridResult.sensitivity_summary()
 
         ends = time.time()
         print("DERVET runtime: ") if self.verbose else None
         print(ends - starts) if self.verbose else None
 
-        return ResultDER
+        return MicrogridResult
 
 
 if __name__ == '__main__':

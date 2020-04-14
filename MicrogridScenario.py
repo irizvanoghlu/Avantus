@@ -12,19 +12,17 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-
-import storagevet
-
-from TechnologiesDER.BatterySizing import BatterySizing
-from TechnologiesDER.CAESSizing import CAESSizing
-from TechnologiesDER.CurtailPVSizing import CurtailPVSizing
-from TechnologiesDER.ICESizing import ICESizing
-from ValueStreamsDER.Reliability import Reliability
-from TechnologiesDER.LoadControllable import ControllableLoad
-
+import storagevet.ValueStreams as ValueStreams
+from MicrogridValueStreams.Reliability import Reliability
+from MicrogridDER.BatterySizing import BatterySizing
+from MicrogridDER.CAESSizing import CAESSizing
+from MicrogridDER.CurtailPVSizing import CurtailPVSizing
+from MicrogridDER.ICESizing import ICESizing
+from MicrogridDER.LoadControllable import ControllableLoad
 from storagevet.Scenario import Scenario
-
-from cbaDER import CostBenefitAnalysis
+from CBA import CostBenefitAnalysis
+from MicrogridPOI import MicrogridPOI
+from MicrogridServiceAggregator import MicrogridServiceAggregator
 
 import logging
 
@@ -46,23 +44,41 @@ class MicrogridScenario(Scenario):
         """
         Scenario.__init__(self, input_tree)
 
-        self.predispatch_service_inputs_map.update({'Reliability': input_tree.Reliability})
-
-        self.sizing_optimization = False
+        self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
 
         u_logger.info("ScenarioSizing initialized ...")
 
-    def init_financials(self, finance_inputs):
-        """ Initializes the financial class with a copy of all the price data from timeseries, the tariff data, and any
-         system variables required for post optimization analysis.
-
-         Args:
-             finance_inputs (Dict): Financial inputs
+    def set_up_poi_and_service_aggregator(self):
+        """ Initialize the POI and service aggregator with DERs and valuestreams to be evaluated.
 
         """
+        technology_class_map = {
+            'CAES': CAESSizing,
+            'Battery': BatterySizing,
+            'PV': CurtailPVSizing,
+            'ICE': ICESizing,
+            'Load': ControllableLoad
+        }
 
-        self.financials = CostBenefitAnalysis(finance_inputs)
-        u_logger.info("Finished adding Financials...")
+        value_stream_class_map = {
+            'Deferral': ValueStreams.Deferral,
+            'DR': ValueStreams.DemandResponse,
+            'RA': ValueStreams.ResourceAdequacy,
+            'Backup': ValueStreams.Backup,
+            'Volt': ValueStreams.VoltVar,
+            'User': ValueStreams.UserConstraints,
+            'DA': ValueStreams.DAEnergyTimeShift,
+            'FR': ValueStreams.FrequencyRegulation,
+            'LF': ValueStreams.LoadFollowing,
+            'SR': ValueStreams.SpinningReserve,
+            'NSR': ValueStreams.NonspinningReserve,
+            'DCM': ValueStreams.DemandChargeReduction,
+            'retailTimeShift': ValueStreams.EnergyTimeShift,
+            'Reliability': Reliability
+        }
+        # these need to be initialized after opt_agg is created
+        self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
+        self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
 
     def optimize_problem_loop(self, annuity_scalar=1):
         """This function selects on opt_agg of data in time_series and calls optimization_problem on it. We determine if the
@@ -73,7 +89,7 @@ class MicrogridScenario(Scenario):
                 the entire project lifetime (only to be set iff sizing)
 
         """
-        if self.poi.sizing_optimization:
+        if self.poi.is_sizing_optimization:
             annuity_scalar = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
 
         super().optimize_problem_loop(annuity_scalar)

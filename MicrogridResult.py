@@ -39,6 +39,20 @@ class MicrogridResult(Result):
                 scenario (Scenario.Scenario): scenario object after optimization has run to completion
         """
         super().__init__(scenario)
+        self.sizing_df = None
+
+    def collect_results(self):
+        """ Collects any optimization variable solutions or user inputs that will be used for drill down
+        plots, as well as reported to the user. No matter what value stream or DER is being evaluated, these
+        dataFrames should always be made and reported to the user
+
+        Three attributes are edited in this method: TIME_SERIES_DATA, MONTHLY_DATA, TECHNOLOGY_SUMMARY
+        """
+        super().collect_results()
+        for name, tech in self.technologies.items():
+            # sizing_summary for CAES is currently similar to it for Battery
+            sizing_df = tech.sizing_summary()
+            self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
 
     def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.

@@ -12,7 +12,7 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import storagevet
+import storagevet.Technology as Tech
 import logging
 import pandas as pd
 
@@ -20,7 +20,7 @@ u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class CAESSizing(storagevet.CAESTech):
+class CAESSizing(Tech.CAES):
     """ CAES class that inherits from StorageVET
 
     """
@@ -34,7 +34,7 @@ class CAESSizing(storagevet.CAESTech):
         """
 
         # create generic storage object
-        storagevet.CAESTech.__init__(self, params)
+        super().__init__(params)
 
         self.size_constraints = []
         self.optimization_variables = {}

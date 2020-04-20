@@ -30,7 +30,7 @@ class MicrogridPOI(POI):
 
     def sizing_summary(self):
         sizing_df = pd.DataFrame()
-        for der_category in self.ders.values():
+        for der_category in self.der_list.values():
             for der_instance in der_category.values():
                 # sizing_summary for CAES is currently similar to it for Battery
                 sizing_df = der_instance.sizing_summary()

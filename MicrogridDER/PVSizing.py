@@ -1,5 +1,5 @@
 """
-CurtailPVPV.py
+PVSizing.py
 
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
@@ -14,11 +14,12 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 import pandas as pd
-import storagevet
+from storagevet.Technology import PVSystem
+from .Sizing import Sizing
 
 
-class CurtailPVSizing(storagevet.CurtailPV):
-    """ Pre_IEEE 1547 2018 standards. Assumes perfect foresight. Ability to curtail PV generation, unlike ChildPV.
+class PVSizing(PVSystem.PV, Sizing):
+    """ Assumes perfect foresight. Ability to curtail PV generation
 
     """
 
@@ -28,22 +29,15 @@ class CurtailPVSizing(storagevet.CurtailPV):
         technology.
 
         Args:
-            name (str): A unique string name for the technology being added, also works as category.
             params (dict): Dict of parameters
         """
         # create generic technology object
-        super().__init__(params)
+        PVSystem.PV.__init__(self, params)
+        Sizing.__init__(self)
 
-    def add_vars(self, size):
-        """
-        Args:
-            size (Int): Length of optimization variables to create
-        """
-        tech_id = self.unique_tech_id()
-        super().add_vars(size)
         if not self.rated_capacity:
-            self.rated_capacity = cvx.Variable(shape=size, name='PV rating', integer=True)
-            self.variables_dict.update({tech_id + 'rated_capacity': self.rated_capacity})
+            self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
+            self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
 
     def sizing_summary(self):
         """
@@ -61,7 +55,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': rated_capacity,
-                                       'Capital Cost ($/kW)': self.capital_costs['/kW']}, index=index)
+                                       'Capital Cost ($/kW)': self.capital_cost_function[0]}, index=index)
         return sizing_results
 
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
@@ -77,7 +71,7 @@ class CurtailPVSizing(storagevet.CurtailPV):
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
         constraints = super().objective_constraints(mask, mpc_ene, sizing)
-        if not self.rated_capacity:
+        if self.being_sized():
             constraints += [cvx.NonPos(-self.rated_capacity)]
         return constraints
 
@@ -92,46 +86,12 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns:
             self.costs (Dict): Dict of objective costs
         """
-        tech_id = self.unique_tech_id()
-        super().objective_function(mask, annuity_scalar)
+        costs = dict()
 
-        if not self.rated_capacity:
-            self.capex = self.capital_costs['/kW'] * self.rated_capacity
-            self.costs.update({tech_id + 'capex': self.capex * annuity_scalar})
+        if self.being_sized():
+            costs.update({self.name + 'capex': self.get_capex})
 
-        return self.costs
-
-    def proforma_report(self, opt_years, results):
-        """ Calculates the proforma that corresponds to participation in this value stream
-
-        Args:
-            opt_years (list): list of years the optimization problem ran for
-            results (DataFrame): DataFrame with all the optimization variable solutions
-
-        Returns: A DateFrame of with each year in opt_year as the index and
-            the corresponding value this stream provided.
-
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
-
-        """
-        # recalculate capex before reporting proforma
-        self.capex = self.capital_costs['/kW'] * self.rated_capacity
-        proforma = super().proforma_report(opt_years, results)
-        return proforma
-
-    def max_generation(self):
-        """
-
-        Returns: the maximum generation that the pv can produce
-
-        """
-        try:
-            max_gen = self.get_generation().value
-        except AttributeError:
-            max_gen = self.get_generation()
-        return max_gen
+        return costs
 
     def being_sized(self):
         """ checks itself to see if this instance is being sized
@@ -139,5 +99,4 @@ class CurtailPVSizing(storagevet.CurtailPV):
         Returns: true if being sized, false if not being sized
 
         """
-        return True if not self.rated_capacity else False
-
+        return bool(len(self.size_constraints))

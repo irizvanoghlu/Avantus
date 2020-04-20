@@ -1,5 +1,5 @@
 """
-Diesel
+ICE Sizing class
 
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
@@ -14,10 +14,11 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 import pandas as pd
-import storagevet
+from storagevet.Technology import InternalCombustionEngine
+from .Sizing import Sizing
 
 
-class ICESizing(storagevet.ICE):
+class ICESizing(InternalCombustionEngine.ICE, Sizing):
     """ An ICE generator
 
     """
@@ -29,14 +30,12 @@ class ICESizing(storagevet.ICE):
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        storagevet.ICE.__init__(self, params)
+        InternalCombustionEngine.ICE.__init__(self, params)
+        Sizing.__init__(self)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
-
-        # TODO: use add_vars() method
         self.n = cvx.Variable(integer=True, name='generators')
 
-    # TODO: apply appropriate variable_dict with tech_id
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
@@ -49,12 +48,12 @@ class ICESizing(storagevet.ICE):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        ice_gen = variables['ice_gen']
-        on_ice = variables['on_ice']
+        ice_gen = self.variables_dict['ice_gen']
+        on_ice = self.variables_dict['on_ice']
 
         # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
         # cover that constraint
-        constraint_list = [storagevet.ICE.objective_constraints(self, variables, mask, reservations, mpc_ene)[0]]
+        constraint_list = [super().objective_constraints(mask)[0]]
 
         constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
@@ -64,25 +63,22 @@ class ICESizing(storagevet.ICE):
 
         return constraint_list
 
-    def proforma_report(self, opt_years, results):
-        """ Calculates the proforma that corresponds to participation in this value stream
+    def objective_function(self, mask, annuity_scalar=1):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
         Args:
-            opt_years (list): list of years the optimization problem ran for
-            results (DataFrame): DataFrame with all the optimization variable solutions
+            mask (Series): Series of booleans used, the same length as case.power_kw
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                        the entire project lifetime (only to be set iff sizing)
 
-        Returns: A DateFrame of with each year in opt_year as the index and
-            the corresponding value this stream provided.
-
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
-
+        Returns:
+            self.costs (Dict): Dict of objective costs
         """
-        # recacluate capex before reporting proforma
-        self.capex = self.capital_costs['flat'] * self.n + self.capital_costs['/kW'] * self.rated_power * self.n
-        proforma = super().proforma_report(opt_years, results)
-        return proforma
+        costs = super().objective_constraints(mask, annuity_scalar)
+        if self.being_sized():
+            costs[self.name + '_ccost'] = self.get_capex()
+
+        return costs
 
     def sizing_summary(self):
         """
@@ -100,8 +96,8 @@ class ICESizing(storagevet.ICE):
 
         index = pd.Index([self.name], name='DER')
         sizing_results = pd.DataFrame({'Power Capacity (kW)': self.rated_power,
-                                       'Capital Cost ($)': self.capital_costs['flat'],
-                                       'Capital Cost ($/kW)': self.capital_costs['/kW'],
+                                       'Capital Cost ($)': self.capital_cost_function[0],
+                                       'Capital Cost ($/kW)': self.capital_cost_function[1],
                                        'Quantity': n}, index=index)
         return sizing_results
 
@@ -123,4 +119,4 @@ class ICESizing(storagevet.ICE):
         Returns: true if being sized, false if not being sized
 
         """
-        return self.n_min == self.n_max
+        return self.n_min != self.n_max

@@ -1,1 +1,3 @@
-__all__ = ['CurtailPVSizing', 'BatterySizing', 'ICESizing']
+__all__ = ['Sizing', 'PVSizing', 'BatterySizing', 'ICESizing']
+
+from .Sizing import Sizing

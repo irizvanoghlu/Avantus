@@ -37,7 +37,7 @@ class ControllableLoad(Load):
         if self.duration:  # if DURATION is not 0
             self.variable_names = {'power', 'ene_load'}
 
-    def add_vars(self, size):
+    def initialize_variables(self, size):
         """ Adds optimization variables to dictionary
 
         Variables added:
@@ -56,25 +56,37 @@ class ControllableLoad(Load):
         return self.variables_dict
 
     def get_charge(self, mask):
+        """
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+
+        Returns: the charge as a function of time for the
+
+        """
         # load + (charge - discharge)
         effective_charge = cvx.Parameter(shape=sum(mask), value=super().get_charge(mask), name='OG Load')
         if self.duration:
             effective_charge += self.variables_dict['power']
         return effective_charge
 
-    def get_energy(self, mask):
-        return self.variables_dict['ene_load']
-
-    def objective_constraints(self, variables, mask, reservations, mpc_ene=None):
-        """ Builds the master constraint list for the subset of timeseries data being optimized.
-
+    def get_state_of_energy(self, mask):
+        """
         Args:
-            variables (Dict): Dictionary of variables being optimized
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
-            reservations (Dict): Dictionary of energy and power reservations required by the services being
-                preformed with the current optimization subset
-            mpc_ene (float): value of energy at end of last opt step (for mpc opt)
+
+        Returns: the state of energy as a function of time for the
+
+        """
+        return self.variables_dict['ene_load']
+
+    def objective_constraints(self, mask):
+        """Default build constraint list method. Used by services that do not have constraints.
+
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                    in the subs data set
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
@@ -89,29 +101,6 @@ class ControllableLoad(Load):
             constraint_list += [cvx.NonPos(-self.rated_power - power)]
             constraint_list += [cvx.NonPos(-energy)]
             constraint_list += [cvx.NonPos(energy - self.energy_max)]
-
-            # SOE EVALUATION EQUATIONS
-            # # general:  e_{t+1} = e_t + (charge_t - discharge_t) * dt = e_t + power_t * dt
-            # constraint_list += [cvx.Zero(energy[:-1] + (power[:-1] * self.dt) - energy[1:])]
-            # # start of first timestep of the day
-            # constraint_list += [cvx.Zero(energy[0] - self.energy_max)]
-            # # end of the last timestep of the day
-            # constraint_list += [cvx.Zero(energy[-1] + (power[-1] * self.dt) - self.energy_max)]
-
-            # day_i0 = 0  # index of the first timestep of the 1 hour of the opt window
-            # day_i24 = 24 * self.dt  # index of last timestp of the 24th hour from the hour of DAY_INDEX_0
-            # max_index = sum(mask)
-            # while day_i24 < max_index:
-            #     # general:  e_{t+1} = e_t + (charge_t - discharge_t) * dt = e_t + power_t * dt
-            #     constraint_list += [cvx.Zero(energy[day_i0:day_i24-1] + (power[day_i0:day_i24-1] * self.dt) - energy[day_i0+1:day_i24])]
-            #     # start of first timestep of the day
-            #     constraint_list += [cvx.Zero(energy[day_i0] - self.energy_max)]
-            #     # end of the last timestep of the day
-            #     constraint_list += [cvx.Zero(energy[day_i24-1] + (power[day_i24-1] * self.dt) - self.energy_max)]
-            #
-            #     # update indexes to point to the next set of 24 hours
-            #     day_i0 = day_i24
-            #     day_i24 += 24 * self.dt
 
             sub = mask.loc[mask]
             for day in sub.index.dayofyear.unique():
@@ -128,22 +117,11 @@ class ControllableLoad(Load):
     def effective_load(self):
         """ Returns the load that is seen by the microgrid or point of interconnection
 
-        Args:
-            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
-                in the subs data set
         """
         effective_load = super().effective_load()
         if self.duration:
-            effective_load += self.variables['power']
+            effective_load += self.variables_df.loc[:, 'power']
         return effective_load
-
-    def sizing_summary(self):
-        """ load does not have a 'size' the same way other DER do. Instead you say a load
-        has a shape, so it does not need to how up in the sizing summary
-
-        Returns: None
-
-        """
 
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
@@ -154,6 +132,6 @@ class ControllableLoad(Load):
         """
         results = super().timeseries_report()
         if self.duration:
-            results["Site Load (kW)"] = self.site_load
-            results["Load Offset (kW)"] = self.variables['power']
+            results["Site Load (kW)"] = self.site_load.loc[:]
+            results["Load Offset (kW)"] = self.variables_df.loc[:, 'power']
         return results

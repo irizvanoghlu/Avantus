@@ -29,12 +29,13 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         Args:
             params (dict): Dict of parameters for initialization
         """
-        # create generic technology object
-        InternalCombustionEngine.ICE.__init__(self, params)
         Sizing.__init__(self)
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
-        self.n = cvx.Variable(integer=True, name='generators')
+        if self.being_sized():
+            params['n'] = cvx.Variable(integer=True, name='generators')
+        # create generic technology object
+        InternalCombustionEngine.ICE.__init__(self, params)
 
     def objective_constraints(self, mask, mpc_ene=None, sizing=True):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -83,7 +84,7 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
     def sizing_summary(self):
         """
 
-        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+        Returns: A dictionary describe this DER's size and captial costs.
 
         """
         # obtain the size of the battery, these may or may not be optimization variable
@@ -94,11 +95,12 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         except AttributeError:
             n = self.n
 
-        index = pd.Index([self.name], name='DER')
-        sizing_results = pd.DataFrame({'Power Capacity (kW)': self.rated_power,
-                                       'Capital Cost ($)': self.capital_cost_function[0],
-                                       'Capital Cost ($/kW)': self.capital_cost_function[1],
-                                       'Quantity': n}, index=index)
+        sizing_results = {
+            'DER': self.name,
+            'Power Capacity (kW)': self.rated_power,
+            'Capital Cost ($)': self.capital_cost_function[0],
+            'Capital Cost ($/kW)': self.capital_cost_function[1],
+            'Quantity': n}
         return sizing_results
 
     def max_power_out(self):

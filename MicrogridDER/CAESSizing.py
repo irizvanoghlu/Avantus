@@ -12,65 +12,43 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import storagevet.Technology as Tech
+from storagevet.Technology import CAESTech
 import logging
 import pandas as pd
+from .Sizing import Sizing
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class CAESSizing(Tech.CAES):
-    """ CAES class that inherits from StorageVET
+class CAESSizing(CAESTech.CAES, Sizing):
+    """ CAES class that inherits from StorageVET. this object does not size.
 
     """
 
-    def __init__(self, params):
-        """ Initializes CAES class that inherits from the technology class.
-        It sets the type and physical constraints of the technology.
-
-        Args:
-            params (dict): params dictionary from dataframe for one case
-        """
-
-        # create generic storage object
-        super().__init__(params)
-
-        self.size_constraints = []
-        self.optimization_variables = {}
-
     def sizing_summary(self):
         """
-        Returns: A datafram indexed by the terms that describe this DER's size and captial costs.
+
+        Returns: A dictionary describe this DER's size and captial costs.
 
         """
-        # obtain the size of the CAES, these may or may not be optimization variable
-        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
-        # If there is an error, then we know that it was user inputted and we just take that value instead.
-        try:
-            energy_rated = self.ene_max_rated.value
-        except AttributeError:
-            energy_rated = self.ene_max_rated
+        sizing_dict = {
+            'DER': self.name,
+            'Energy Rating (kWh)': self.ene_max_rated,
+            'Charge Rating (kW)': self.ch_max_rated,
+            'Discharge Rating (kW)': self.dis_max_rated,
+            'Round Trip Efficiency (%)': self.rte,
+            'Lower Limit on SOC (%)': self.llsoc,
+            'Upper Limit on SOC (%)': self.ulsoc,
+            'Duration (hours)': self.ene_max_rated / self.dis_max_rated,
+            'Capital Cost ($)': self.capital_cost_function[0],
+            'Capital Cost ($/kW)': self.capital_cost_function[1],
+            'Capital Cost ($/kWh)': self.capital_cost_function[2]
+        }
+        if (sizing_dict['Duration (hours)'] > 24).any():
+            print('The duration of an Energy Storage System is greater than 24 hours!')
 
-        try:
-            ch_max_rated = self.ch_max_rated.value
-        except AttributeError:
-            ch_max_rated = self.ch_max_rated
-
-        try:
-            dis_max_rated = self.dis_max_rated.value
-        except AttributeError:
-            dis_max_rated = self.dis_max_rated
-
-        index = pd.Index([self.name], name='DER')
-        sizing_results = pd.DataFrame({'CAES Energy Rating (kWh)': energy_rated,
-                                       'CAES Charge Rating (kW)': ch_max_rated,
-                                       'CAES Discharge Rating (kW)': dis_max_rated,
-                                       'CAES Duration (hours)': energy_rated / dis_max_rated,
-                                       'CAES Capital Cost ($)': self.ccost,
-                                       'CAES Capital Cost ($/kW)': self.ccost_kw,
-                                       'CAES Capital Cost ($/kWh)': self.ccost_kwh}, index=index)
-        return sizing_results
+        return sizing_dict
 
 
 

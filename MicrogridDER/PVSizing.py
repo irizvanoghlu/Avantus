@@ -39,38 +39,13 @@ class PVSizing(PVSystem.PV, Sizing):
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
 
-    def sizing_summary(self):
-        """
-
-        Returns: A dataframe indexed by the terms that describe this DER's size and captial costs.
-
-        """
-        # obtain the size of the battery, these may or may not be optimization variable
-        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
-        # If there is an error, then we know that it was user inputted and we just take that value instead.
-        try:
-            rated_capacity = self.rated_capacity.value
-        except AttributeError:
-            rated_capacity = self.rated_capacity
-
-        index = pd.Index([self.name], name='DER')
-        sizing_results = pd.DataFrame({'Power Capacity (kW)': rated_capacity,
-                                       'Capital Cost ($/kW)': self.capital_cost_function[0]}, index=index)
-        return sizing_results
-
-    def objective_constraints(self, mask, mpc_ene=None, sizing=True):
+    def objective_constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
-
-        Args:
-            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
-                in the subs data set
-            mpc_ene (float): value of energy at end of last opt step (for mpc opt)
-            sizing (bool): flag that tells indicates whether the technology is being sized
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().objective_constraints(mask, mpc_ene, sizing)
+        constraints = super().objective_constraints(mask)
         if self.being_sized():
             constraints += [cvx.NonPos(-self.rated_capacity)]
         return constraints
@@ -93,10 +68,19 @@ class PVSizing(PVSystem.PV, Sizing):
 
         return costs
 
-    def being_sized(self):
-        """ checks itself to see if this instance is being sized
+    def sizing_summary(self):
+        """
 
-        Returns: true if being sized, false if not being sized
+        Returns: A dictionary describe this DER's size and captial costs.
 
         """
-        return bool(len(self.size_constraints))
+        try:
+            rated_capacity = self.rated_capacity.value
+        except AttributeError:
+            rated_capacity = self.rated_capacity
+
+        sizing_results = {
+            'DER': self.name,
+            'Power Capacity (kW)': rated_capacity,
+            'Capital Cost ($/kW)': self.capital_cost_function[0]}
+        return sizing_results

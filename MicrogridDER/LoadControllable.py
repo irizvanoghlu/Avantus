@@ -14,10 +14,11 @@ __version__ = 'beta'
 
 import cvxpy as cvx
 from storagevet.Technology.Load import Load
+from .Sizing import Sizing
 
 
-class ControllableLoad(Load):
-    """ An Load object
+class ControllableLoad(Load, Sizing):
+    """ An Load object. this object does not size.
 
     """
 
@@ -35,6 +36,7 @@ class ControllableLoad(Load):
         self.energy_max = self.rated_power * self.duration
         self.variables_dict = {}
         if self.duration:  # if DURATION is not 0
+            self.tag = 'ControllableLoad'
             self.variable_names = {'power', 'ene_load'}
 
     def initialize_variables(self, size):
@@ -135,3 +137,16 @@ class ControllableLoad(Load):
             results["Site Load (kW)"] = self.site_load.loc[:]
             results["Load Offset (kW)"] = self.variables_df.loc[:, 'power']
         return results
+
+    def sizing_summary(self):
+        """
+
+        Returns: A dictionary describe this DER's size and captial costs.
+
+        """
+        sizing_results = {
+            'DER': self.name,
+            'Power Capacity (kW)': self.rated_power,
+            'Duration (hours)': self.duration
+        }
+        return sizing_results

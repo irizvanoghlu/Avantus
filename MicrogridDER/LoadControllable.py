@@ -14,7 +14,7 @@ __version__ = 'beta'
 
 import cvxpy as cvx
 from storagevet.Technology.Load import Load
-from .Sizing import Sizing
+from MicrogridDER.Sizing import Sizing
 
 
 class ControllableLoad(Load, Sizing):

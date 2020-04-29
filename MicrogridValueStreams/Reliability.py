@@ -13,8 +13,8 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
 from storagevet.SystemRequirement import Requirement
+from storagevet.ValueStreams.ValueStream import ValueStream
 import numpy as np
-import storagevet
 import cvxpy as cvx
 import pandas as pd
 import time
@@ -25,7 +25,7 @@ u_logger = logging.getLogger('User')
 DEBUG = False
 
 
-class Reliability(storagevet.ValueStream):
+class Reliability(ValueStream):
     """ Reliability Service. Each service will be daughters of the PreDispService class.
     """
 

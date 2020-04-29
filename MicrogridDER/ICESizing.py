@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
-from .Sizing import Sizing
+from MicrogridDER.Sizing import Sizing
 
 
 class ICESizing(InternalCombustionEngine.ICE, Sizing):

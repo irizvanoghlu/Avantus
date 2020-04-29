@@ -13,9 +13,8 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
-import pandas as pd
 from storagevet.Technology import PVSystem
-from .Sizing import Sizing
+from MicrogridDER.Sizing import Sizing
 
 
 class PVSizing(PVSystem.PV, Sizing):

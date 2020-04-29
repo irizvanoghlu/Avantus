@@ -14,11 +14,7 @@ __version__ = 'beta'  # beta version
 
 import pandas as pd
 import logging
-import copy
-import numpy as np
 from pathlib import Path
-import os
-import storagevet
 from storagevet.Result import Result
 from CBA import CostBenefitAnalysis
 

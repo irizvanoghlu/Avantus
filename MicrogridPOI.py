@@ -13,8 +13,6 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 
 import logging
-import numpy as np
-import cvxpy as cvx
 import pandas as pd
 from storagevet.POI import POI
 

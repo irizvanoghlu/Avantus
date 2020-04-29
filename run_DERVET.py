@@ -17,10 +17,10 @@ import logging
 import time
 import argparse
 
+import storagevet
 from MicrogridScenario import MicrogridScenario
 from DERVETParams import ParamsDER
 from MicrogridResult import MicrogridResult
-from storagevet.Visualization import Visualization
 
 
 e_logger = logging.getLogger('Error')

@@ -12,13 +12,13 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import storagevet.ValueStreams as ValueStreams
 from MicrogridValueStreams.Reliability import Reliability
 from MicrogridDER.BatterySizing import BatterySizing
 from MicrogridDER.CAESSizing import CAESSizing
 from MicrogridDER.PVSizing import PVSizing
 from MicrogridDER.ICESizing import ICESizing
 from MicrogridDER.LoadControllable import ControllableLoad
+import storagevet
 from storagevet.Scenario import Scenario
 from CBA import CostBenefitAnalysis
 from MicrogridPOI import MicrogridPOI

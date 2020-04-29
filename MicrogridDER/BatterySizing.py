@@ -14,8 +14,7 @@ __version__ = 'beta'  # beta version
 
 import logging
 import cvxpy as cvx
-import pandas as pd
-from .Sizing import Sizing
+from MicrogridDER.Sizing import Sizing
 from storagevet.Technology import BatteryTech
 
 

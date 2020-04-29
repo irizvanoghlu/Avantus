@@ -14,8 +14,7 @@ __version__ = 'beta'  # beta version
 
 from storagevet.Technology import CAESTech
 import logging
-import pandas as pd
-from .Sizing import Sizing
+from MicrogridDER.Sizing import Sizing
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')

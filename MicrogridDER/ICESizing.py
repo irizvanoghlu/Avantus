@@ -33,6 +33,8 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         self.n_max = params['n_max']  # generators
         if self.being_sized():
             params['n'] = cvx.Variable(integer=True, name='generators')
+        else:
+            params['n'] = self.n_max
         # create generic technology object
         InternalCombustionEngine.ICE.__init__(self, params)
 

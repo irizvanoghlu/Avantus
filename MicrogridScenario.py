@@ -19,6 +19,19 @@ from MicrogridDER.PVSizing import PVSizing
 from MicrogridDER.ICESizing import ICESizing
 from MicrogridDER.LoadControllable import ControllableLoad
 import storagevet
+from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
+from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
+from storagevet.ValueStreams.NonspinningReserve import NonspinningReserve
+from storagevet.ValueStreams.DemandChargeReduction import DemandChargeReduction
+from storagevet.ValueStreams.EnergyTimeShift import EnergyTimeShift
+from storagevet.ValueStreams.SpinningReserve import SpinningReserve
+from storagevet.ValueStreams.Backup import Backup
+from storagevet.ValueStreams.Deferral import Deferral
+from storagevet.ValueStreams.DemandResponse import DemandResponse
+from storagevet.ValueStreams.ResourceAdequacy import ResourceAdequacy
+from storagevet.ValueStreams.UserConstraints import UserConstraints
+from storagevet.ValueStreams.VoltVar import VoltVar
+from storagevet.ValueStreams.LoadFollowing import LoadFollowing
 from storagevet.Scenario import Scenario
 from CBA import CostBenefitAnalysis
 from MicrogridPOI import MicrogridPOI
@@ -61,19 +74,19 @@ class MicrogridScenario(Scenario):
         }
 
         value_stream_class_map = {
-            'Deferral': ValueStreams.Deferral,
-            'DR': ValueStreams.DemandResponse,
-            'RA': ValueStreams.ResourceAdequacy,
-            'Backup': ValueStreams.Backup,
-            'Volt': ValueStreams.VoltVar,
-            'User': ValueStreams.UserConstraints,
-            'DA': ValueStreams.DAEnergyTimeShift,
-            'FR': ValueStreams.FrequencyRegulation,
-            'LF': ValueStreams.LoadFollowing,
-            'SR': ValueStreams.SpinningReserve,
-            'NSR': ValueStreams.NonspinningReserve,
-            'DCM': ValueStreams.DemandChargeReduction,
-            'retailTimeShift': ValueStreams.EnergyTimeShift,
+            'Deferral': Deferral,
+            'DR': DemandResponse,
+            'RA': ResourceAdequacy,
+            'Backup': Backup,
+            'Volt': VoltVar,
+            'User': UserConstraints,
+            'DA': DAEnergyTimeShift,
+            'FR': FrequencyRegulation,
+            'LF': LoadFollowing,
+            'SR': SpinningReserve,
+            'NSR': NonspinningReserve,
+            'DCM': DemandChargeReduction,
+            'retailTimeShift': EnergyTimeShift,
             'Reliability': Reliability
         }
         # these need to be initialized after opt_agg is created

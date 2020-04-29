@@ -26,6 +26,9 @@ e_logger = logging.getLogger('Error')
 
 
 class CostBenefitAnalysis(Financial):
+    """ This Cost Benefit Analysis Module
+
+    """
 
     def __init__(self, financial_params):
         """ Initialize CBA model and edit any attributes that the user denoted a separate value
@@ -50,7 +53,6 @@ class CostBenefitAnalysis(Financial):
 
         self.value_streams = {}
         self.ders = {}
-        # TODO: need to deal with the data obtained from CSVs
 
     @staticmethod
     def annuity_scalar(start_year, end_year, opt_years, **kwargs):
@@ -92,7 +94,7 @@ class CostBenefitAnalysis(Financial):
         """
         # we deep copy because we do not want to change the original ValueStream objects
         self.value_streams = copy.deepcopy(valuestreams)
-        self.ders = copy.deepcopy(poi.distributed_energy_resources)
+        self.ders = copy.deepcopy(poi.der_list)
 
         self.place_evaluation_data()
 

@@ -14,4 +14,13 @@ class MicrogridServiceAggregator(ServiceAggregator):
     into energy markets
 
     """
+    def post_facto_reliability_only(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto calculations only
+
+        """
+        if 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only:
+            return True
+        return False
 

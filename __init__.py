@@ -33,18 +33,13 @@ from .storagevet.ValueStreams.ValueStream import ValueStream
 from .storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
 from .MicrogridValueStreams import Reliability
 
-from .storagevet.Technology.BatteryTech import Battery
-from .storagevet.Technology.CAESTech import CAES
-from .storagevet.Technology.PVSystem import PV
-from .storagevet.Technology.InternalCombustionEngine import ICE
-from .storagevet.Technology.Load import Load
 from .MicrogridDER.BatterySizing import BatterySizing
 from .MicrogridDER.PVSizing import PVSizing
 from .MicrogridDER.LoadControllable import ControllableLoad
 from .MicrogridDER.ICESizing import ICESizing
 from .MicrogridDER.CAESSizing import CAESSizing
 
-from .storagevet.Constraint import Constraint
+from .storagevet.SystemRequirement import Requirement, SystemRequirement
 from .storagevet.Finances import Financial
 from .storagevet.Params import Params
 from .storagevet.Scenario import Scenario

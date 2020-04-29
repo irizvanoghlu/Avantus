@@ -28,11 +28,28 @@ class MicrogridPOI(POI):
         impose any constraints that should be opposed at the microgrid's POI.
     """
 
+    def __init__(self, params, technology_inputs_map, technology_class_map):
+        super().__init__(params, technology_inputs_map, technology_class_map)
+        self.is_sizing_optimization = self.check_if_sizing_ders()
+
+    def check_if_sizing_ders(self):
+        """ This method will iterate through the initialized DER instances and return a logical OR of all of their
+        'being_sized' methods.
+
+        Returns: True if ANY DER is getting sized
+
+        """
+        for der_instance in self.der_list:
+            try:
+                solve_for_size = der_instance.being_sized()
+            except AttributeError:
+                solve_for_size = False
+            if solve_for_size:
+                return True
+        return False
+
     def sizing_summary(self):
-        sizing_df = pd.DataFrame()
-        for der_category in self.der_list.values():
-            for der_instance in der_category.values():
-                # sizing_summary for CAES is currently similar to it for Battery
-                sizing_df = der_instance.sizing_summary()
-                sizing_df = pd.concat([sizing_df, sizing_df], axis=0, sort=False)
+        rows = list(map(lambda der: der.sizing_summary(), self.der_list))
+        sizing_df = pd.DataFrame(rows)
+        sizing_df.set_index('DER')
         return sizing_df

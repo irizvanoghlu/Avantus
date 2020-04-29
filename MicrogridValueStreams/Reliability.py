@@ -12,7 +12,7 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
-import storagevet.Constraint as Const
+from storagevet.SystemRequirement import Requirement
 import numpy as np
 import storagevet
 import cvxpy as cvx
@@ -56,23 +56,24 @@ class Reliability(storagevet.ValueStream):
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
 
-    def calculate_system_requirements(self, der_dict):
+    def calculate_system_requirements(self, der_lst):
         """ Calculate the system requirements that must be meet regardless of what other value streams are active
         However these requirements do depend on the technology that are active in our analysis
 
         Args:
-            der_dict (Dict): dictionary of the initialized DERs in our scenario
+            der_lst (list): list of the initialized DERs in our scenario
 
         """
-        if 'ICE' in der_dict.keys():
-            self.ice_rating = der_dict['ICE'].rated_power
+        for der in der_lst:
+            if der.tag == 'ICE':
+                self.ice_rating = der.rated_power  # save ONE random ICE's rated power in case we n-2 is true
 
         self.reliability_requirement = self.rolling_sum(self.critical_load.loc[:], self.coverage_timesteps) * self.dt
 
         if not self.post_facto_only:
             # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
             # there will be 2 constraints: one for power, one for energy
-            self.system_requirements = [Const.Constraint('ene_min', self.name, self.reliability_requirement)]
+            self.system_requirements = [Requirement('energy', 'min', self.name, self.reliability_requirement)]
             # this should be the constraint that makes sure the next x hours have enough energy
 
     @staticmethod
@@ -94,7 +95,7 @@ class Reliability(storagevet.ValueStream):
         data = reverse.iloc[::-1]
         return data
 
-    def objective_constraints(self, mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating):
+    def constraints(self, mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
@@ -169,7 +170,7 @@ class Reliability(storagevet.ValueStream):
             agg_pv_max = pd.DataFrame(np.zeros(len(results)), index=results.index)
             for name in pv_names.index:
 
-                agg_pv_max += results.loc[:, f'{name}: PV Maximum (kW)']
+                agg_pv_max += results.loc[:, f'PV: {name} Maximum (kW)']
             # rolling sum of energy within a coverage_timestep window
             pv_outage_e = self.rolling_sum(agg_pv_max, self.coverage_timesteps) * self.dt
             # try to cover as much of the outage that can be with PV energy
@@ -264,7 +265,7 @@ class Reliability(storagevet.ValueStream):
         if len(pv_names.index):
             combined_pv_max = np.zeros(data_length)
             for name in pv_names.index:
-                combined_pv_max += results_df.loc[:, f'{name}: PV Maximum (kW)']
+                combined_pv_max += results_df.loc[:, f'PV: {name} Maximum (kW)']
             reliability_check -= self.nu * combined_pv_max
             demand_left -= combined_pv_max
 

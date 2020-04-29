@@ -39,15 +39,14 @@ class PVSizing(PVSystem.PV, Sizing):
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
 
-    def objective_constraints(self, mask):
+    def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().objective_constraints(mask)
-        if self.being_sized():
-            constraints += [cvx.NonPos(-self.rated_capacity)]
+        constraints = super().constraints(mask)
+        constraints += self.size_constraints
         return constraints
 
     def objective_function(self, mask, annuity_scalar=1):

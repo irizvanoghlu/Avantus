@@ -49,10 +49,7 @@ class MicrogridResult(Result):
         Three attributes are edited in this method: TIME_SERIES_DATA, MONTHLY_DATA, TECHNOLOGY_SUMMARY
         """
         super().collect_results()
-        for name, tech in self.technologies.items():
-            # sizing_summary for CAES is currently similar to it for Battery
-            sizing_df = tech.sizing_summary()
-            self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
+        self.sizing_df = self.poi.sizing_summary()
 
     def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
@@ -70,11 +67,6 @@ class MicrogridResult(Result):
             savepath = self.dir_abs_path + "\\" + str(instance_key)
         else:
             savepath = self.dir_abs_path
-        # self.peak_day_load.to_csv(path_or_buf=Path(savepath, f'peak_day_load{self.csv_label}.csv'))
-
-        # if 'Reliability' in self.controller.value_streams.keys():
-        #     self.reliability_df.to_csv(path_or_buf=Path(savepath, 'reliability_summary' + self.csv_label + '.csv'))
-        #     self.load_coverage_prob.to_csv(path_or_buf=Path(savepath, 'load_coverage_probability' + self.csv_label + '.csv'), index=False)
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.dir_abs_path)
         u_logger.info('DER results have been saved to: ' + self.dir_abs_path)

@@ -16,7 +16,7 @@ import storagevet.ValueStreams as ValueStreams
 from MicrogridValueStreams.Reliability import Reliability
 from MicrogridDER.BatterySizing import BatterySizing
 from MicrogridDER.CAESSizing import CAESSizing
-from MicrogridDER.CurtailPVSizing import CurtailPVSizing
+from MicrogridDER.PVSizing import PVSizing
 from MicrogridDER.ICESizing import ICESizing
 from MicrogridDER.LoadControllable import ControllableLoad
 from storagevet.Scenario import Scenario
@@ -55,7 +55,7 @@ class MicrogridScenario(Scenario):
         technology_class_map = {
             'CAES': CAESSizing,
             'Battery': BatterySizing,
-            'PV': CurtailPVSizing,
+            'PV': PVSizing,
             'ICE': ICESizing,
             'Load': ControllableLoad
         }
@@ -80,16 +80,14 @@ class MicrogridScenario(Scenario):
         self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
         self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
 
-    def optimize_problem_loop(self, annuity_scalar=1):
+    def optimize_problem_loop(self):
         """This function selects on opt_agg of data in time_series and calls optimization_problem on it. We determine if the
         optimization will be sizing and calculate a lifetime project NPV multiplier to pass into the optimization problem
 
-        Args:
-            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
-                the entire project lifetime (only to be set iff sizing)
-
         """
         if self.poi.is_sizing_optimization:
-            annuity_scalar = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
+            alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
+        else:
+            alpha = 1
 
-        super().optimize_problem_loop(annuity_scalar)
+        super().optimize_problem_loop(annuity_scalar=alpha, ignore_der_costs=self.service_agg.post_facto_reliability_only())

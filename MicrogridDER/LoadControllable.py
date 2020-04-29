@@ -33,11 +33,39 @@ class ControllableLoad(Load, Sizing):
         # input params  UNITS ARE COMMENTED TO THE RIGHT
         self.rated_power = params['power_rating']  # kW
         self.duration = params['duration']  # hour
-        self.energy_max = self.rated_power * self.duration
         self.variables_dict = {}
         if self.duration:  # if DURATION is not 0
             self.tag = 'ControllableLoad'
             self.variable_names = {'power', 'ene_load'}
+
+    def discharge_capacity(self):
+        """
+
+        Returns: the maximum discharge that can be attained
+
+        """
+        return self.rated_power
+
+    def operational_max_energy(self):
+        """
+
+        Returns: the maximum energy that should stored in this DER based on user inputs
+
+        """
+        return self.rated_power * self.duration
+
+    def qualifying_capacity(self, event_length):
+        """ Describes how much power the DER can discharge to qualify for RA or DR. Used to determine
+        the system's qualifying commitment.
+
+        Args:
+            event_length (int): the length of the RA or DR event, this is the
+                total hours that a DER is expected to discharge for
+
+        Returns: int/float
+
+        """
+        return min(self.discharge_capacity(), self.operational_max_energy()/event_length)
 
     def initialize_variables(self, size):
         """ Adds optimization variables to dictionary
@@ -83,7 +111,7 @@ class ControllableLoad(Load, Sizing):
         """
         return self.variables_dict['ene_load']
 
-    def objective_constraints(self, mask):
+    def constraints(self, mask):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:
@@ -102,7 +130,7 @@ class ControllableLoad(Load, Sizing):
             constraint_list += [cvx.NonPos(power - self.rated_power)]
             constraint_list += [cvx.NonPos(-self.rated_power - power)]
             constraint_list += [cvx.NonPos(-energy)]
-            constraint_list += [cvx.NonPos(energy - self.energy_max)]
+            constraint_list += [cvx.NonPos(energy - self.operational_max_energy())]
 
             sub = mask.loc[mask]
             for day in sub.index.dayofyear.unique():
@@ -110,9 +138,9 @@ class ControllableLoad(Load, Sizing):
                 # general:  e_{t+1} = e_t + (charge_t - discharge_t) * dt = e_t + power_t * dt
                 constraint_list += [cvx.Zero(energy[day_mask][:-1] + (power[day_mask][:-1] * self.dt) - energy[day_mask][1:])]
                 # start of first timestep of the day
-                constraint_list += [cvx.Zero(energy[day_mask][0] - self.energy_max)]
+                constraint_list += [cvx.Zero(energy[day_mask][0] - self.operational_max_energy())]
                 # end of the last timestep of the day
-                constraint_list += [cvx.Zero(energy[day_mask][-1] + (power[day_mask][-1] * self.dt) - self.energy_max)]
+                constraint_list += [cvx.Zero(energy[day_mask][-1] + (power[day_mask][-1] * self.dt) - self.operational_max_energy())]
 
         return constraint_list
 

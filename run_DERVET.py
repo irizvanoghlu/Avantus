@@ -22,21 +22,11 @@ from datetime import datetime
 import argparse
 import pandas as pd
 
-# # ADD DERVET and STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
-# dervet_path = os.path.abspath(__file__)
-# # add dervet (source root) to PYTHONPATH
-# sys.path.insert(0, dervet_path)
-# # dervet's directory path is the first in sys.path
-# # determine storagevet path (absolute path)
-# storagevet_path = os.path.join(dervet_path, 'storagevet')
-# # add storagevet (source root) to PYTHONPATH
-# sys.path.insert(0, storagevet_path)
-
-from .MicrogridScenario import MicrogridScenario
-from .DERVETParams import ParamsDER
-from .CBA import CostBenefitAnalysis
-from .MicrogridResult import MicrogridResult
-from .storagevet.Visualization import Visualization
+from MicrogridScenario import MicrogridScenario
+from DERVETParams import ParamsDER
+from CBA import CostBenefitAnalysis
+from MicrogridResult import MicrogridResult
+from storagevet.Visualization import Visualization
 
 
 e_logger = logging.getLogger('Error')

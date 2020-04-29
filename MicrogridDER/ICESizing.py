@@ -13,7 +13,6 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
-import pandas as pd
 from storagevet.Technology import InternalCombustionEngine
 from .Sizing import Sizing
 
@@ -37,14 +36,12 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         # create generic technology object
         InternalCombustionEngine.ICE.__init__(self, params)
 
-    def objective_constraints(self, mask, mpc_ene=None, sizing=True):
+    def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
             mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
                 in the subs data set
-            mpc_ene (float): value of energy at end of last opt step (for mpc opt)
-            sizing (bool): flag that tells indicates whether the technology is being sized
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
@@ -54,7 +51,7 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
 
         # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
         # cover that constraint
-        constraint_list = [super().objective_constraints(mask)[0]]
+        constraint_list = [super().constraints(mask)[0]]
 
         constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
         constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
@@ -75,7 +72,7 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         Returns:
             self.costs (Dict): Dict of objective costs
         """
-        costs = super().objective_constraints(mask, annuity_scalar)
+        costs = super().objective_function(mask, annuity_scalar)
         if self.being_sized():
             costs[self.name + '_ccost'] = self.get_capex()
 

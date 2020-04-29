@@ -13,18 +13,12 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import sys
-from pathlib import Path
-import os.path
 import logging
 import time
-from datetime import datetime
 import argparse
-import pandas as pd
 
 from MicrogridScenario import MicrogridScenario
 from DERVETParams import ParamsDER
-from CBA import CostBenefitAnalysis
 from MicrogridResult import MicrogridResult
 from storagevet.Visualization import Visualization
 
@@ -57,7 +51,7 @@ class DERVET:
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
-        self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions, CostBenefitAnalysis)
+        self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
         u_logger.info('Successfully initialized the Params class with the XML file.')
 
         if self.verbose:

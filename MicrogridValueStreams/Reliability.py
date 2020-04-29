@@ -131,7 +131,7 @@ class Reliability(storagevet.ValueStream):
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
         return report
 
-    def drill_down_reports(self, monthly_data, time_series_data, technology_summary, sizing_df):
+    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None):
         """ Calculates any service related dataframe that is reported to the user.
 
         Returns: dictionary of DataFrames of any reports that are value stream specific

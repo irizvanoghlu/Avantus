@@ -38,8 +38,8 @@ class MicrogridResult(Result):
             Args:
                 scenario (Scenario.Scenario): scenario object after optimization has run to completion
         """
-        super().__init__(scenario)
-        self.sizing_df = None
+        super().__init__(scenario, CostBenefitAnalysis)
+        self.sizing_df = pd.DataFrame()
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down
@@ -50,6 +50,21 @@ class MicrogridResult(Result):
         """
         super().collect_results()
         self.sizing_df = self.poi.sizing_summary()
+
+    def create_drill_down_dfs(self):
+        """ Tells ServiceAggregator and POI to build drill down reports. These are reports
+        that are service or technology specific.
+
+        Returns: Dictionary of DataFrames of any reports that are value stream specific
+            keys are the file name that the df will be saved with
+
+        """
+        if not self.service_agg.is_deferral_only():
+            self.drill_down_dict.update(self.poi.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
+                                                                technology_summary=self.technology_summary, sizing_df=self.sizing_df))
+        self.drill_down_dict.update(self.service_agg.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
+                                                                    technology_summary=self.technology_summary, sizing_df=self.sizing_df))
+        u_logger.debug("Finished post optimization analysis")
 
     def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.
@@ -70,4 +85,3 @@ class MicrogridResult(Result):
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         print('DER results have been saved to: ' + self.dir_abs_path)
         u_logger.info('DER results have been saved to: ' + self.dir_abs_path)
-

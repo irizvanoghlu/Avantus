@@ -134,8 +134,8 @@ class BatterySizing(BatteryTech.Battery, Sizing):
             'Capital Cost ($)': self.capital_cost_function[0],
             'Capital Cost ($/kW)': self.capital_cost_function[1],
             'Capital Cost ($/kWh)': self.capital_cost_function[2]}
-        if (sizing_results['Duration (hours)'] > 24).any():
-            print('The duration of an Energy Storage System is greater than 24 hours!')
+        if sizing_results['Duration (hours)'] > 24:
+            u_logger.error(f'The duration of {self.name} is greater than 24 hours!')
         return sizing_results
 
     def calculate_duration(self):

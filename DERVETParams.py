@@ -127,8 +127,8 @@ class ParamsDER(Params):
         """ Initialize these following attributes of the empty Params class object.
         """
         super().__init__()
-        self.Reliability = self.read_and_validate('Reliability')
-        self.Load = self.read_and_validate('ControllableLoad')
+        self.Reliability = self.flatten_tag_id(self.read_and_validate('Reliability'))  # Value Stream
+        self.Load = self.read_and_validate('ControllableLoad')  # DER
 
     @classmethod
     def cba_template_struct(cls):
@@ -162,63 +162,63 @@ class ParamsDER(Params):
         Args:
             name (str): name of root element in xml file
 
-        Returns: A dictionary filled with values provided by user that will be used by the CBA class
-        or None if no values are active.
+        Returns: A dictionary where keys are the ID value and the key is a dictionary
+            filled with values provided by user that will be used by the CBA class
+            or None if no values are active.
 
         """
-        tag = cls.xmlTree.find(name)
         schema_tag = cls.schema_tree.find(name)
-
-        # check to see if user includes the tag within the provided xml
-        if tag is None:
+        # Check if tag is in schema (SANITY CHECK)
+        if schema_tag is None:
+            cls.report_warning("missing tag", tag=name, raise_input_error=False)
+            # warn user that the tag given is not in the schema
             return
-
-        # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
-        if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
-            # Check if tag is in schema
-            if schema_tag is None:
-                cls.report_warning("missing tag", tag=name, raise_input_error=False)
-                # warn user that the tag given is not in the schema
-                return
-            dictionary = {}
-            # iterate through each tag required by the schema
-            for schema_key in schema_tag:
-                # Check if attribute is in the schema
-                try:
+        tag_elems = cls.xmlTree.findall(name)
+        # check to see if user includes the tag within the provided xml
+        if tag_elems is None:
+            return
+        tag_data_struct = {}
+        for tag in tag_elems:
+            # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
+            if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
+                dictionary = {}
+                # iterate through each key required by the schema
+                for schema_key in schema_tag:
                     key = tag.find(schema_key.tag)
                     cba_value = key.find('Evaluation')
-                except (KeyError, AttributeError):
-                    cls.report_warning("missing key", tag=name, key=schema_key.tag)
-                    continue
-                # if we dont have a cba_value, skip to next key
-                if cba_value is None:
-                    continue
-                # check if the first character is 'y' for the active value within each property
-                if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
-                    valuation_entry = None
-                    intended_type = key.find('Type').text
-                    if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
-                        # if analysis, then convert each value and save as list
-                        tag_key = (tag.tag, key.tag)
-                        sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
+                    # if we dont have a cba_value, skip to next key
+                    if cba_value is None:
+                        continue
+                    # did the user mark cba input as active?
+                    if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
+                        # check if you are allowed to input Evaulation value for the give key
+                        if schema_key.get('cba')[0].lower() in ['y', '1']:
+                            valuation_entry = None
+                            intended_type = key.find('Type').text
+                            if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
+                                # if analysis, then convert each value and save as list
+                                tag_key = (tag.tag, key.tag)
+                                sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
 
-                        # validate each value
-                        for values in sensitivity_values:
-                            cls.checks_for_validate(values, schema_key, name)
+                                # validate each value
+                                for values in sensitivity_values:
+                                    cls.checks_for_validate(values, schema_key, name)
 
-                        #  check to make sure the length match with sensitivity analysis value set length
-                        required_values = len(cls.sensitivity['attributes'][tag_key])
-                        if required_values != len(sensitivity_values):
-                            cls.report_warning('cba sa length', tag=name, key=key.tag, required_num=required_values)
-                        cls.sensitivity['cba_values'][tag_key] = sensitivity_values
-                    else:
-                        # convert to correct data type
-                        valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
-                    # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
-                    dictionary[key.tag] = valuation_entry
-                else:
-                    cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
-            return dictionary
+                                #  check to make sure the length match with sensitivity analysis value set length
+                                required_values = len(cls.sensitivity['attributes'][tag_key])
+                                if required_values != len(sensitivity_values):
+                                    cls.report_warning('cba sa length', tag=name, key=key.tag, required_num=required_values)
+                                cls.sensitivity['cba_values'][tag_key] = sensitivity_values
+                            else:
+                                # convert to correct data type
+                                valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
+                            # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
+                            dictionary[key.tag] = valuation_entry
+                        else:
+                            cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
+                # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
+                tag_data_struct[tag.get('id')] = dictionary
+        return tag_data_struct
 
     @classmethod
     def report_warning(cls, warning_type, raise_input_error=True, **kwargs):
@@ -232,6 +232,8 @@ class ParamsDER(Params):
                 caused the error
 
         """
+        if warning_type == "too many tags":
+            e_logger.error(f"INPUT: There are {kwargs['length']} {kwargs['tag']}'s, but only {kwargs['max']} can be defined")
 
         if warning_type == 'cba not allowed':
             e_logger.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +

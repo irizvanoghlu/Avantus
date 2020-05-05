@@ -138,8 +138,8 @@ class ParamsDER(Params):
 
         """
         template = dict()
-        template['Scenario'] = cls.read_and_validate_cba('Scenario')
-        template['Finance'] = cls.read_and_validate_cba('Finance')
+        template['Scenario'] = cls.flatten_tag_id(cls.read_and_validate_cba('Scenario'))
+        template['Finance'] = cls.flatten_tag_id(cls.read_and_validate_cba('Finance'))
 
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
@@ -151,8 +151,8 @@ class ParamsDER(Params):
         }
 
         # create dictionary for CBA values for all services (from data files)
-        template['valuestream_values'] = {'User': cls.read_and_validate_cba('User'),  # USER will only have one entry in it (key = price)
-                                          'Deferral': cls.read_and_validate_cba('Deferral')}
+        template['valuestream_values'] = {'User': cls.flatten_tag_id(cls.read_and_validate_cba('User')),  # only have one entry in it (key = price)
+                                          'Deferral': cls.flatten_tag_id(cls.read_and_validate_cba('Deferral'))}
         return template
 
     @classmethod
@@ -358,53 +358,11 @@ class ParamsDER(Params):
             if 'customer_tariff_filename' in finance.keys():
                 finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
 
-    def other_error_checks(self):
-        """ Used to collect any other errors that was not specifically detected before.
-            The errors is printed in the errors log.
-            Including: errors in opt_years, opt_window, validation check for Battery and CAES's parameters.
-
-        Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
-
-        """
-        sizing_optimization = False
-        if self.Battery:
-            battery = self.Battery
-            if not battery['ch_max_rated'] or not battery['dis_max_rated']:
-                sizing_optimization = True
-                # if sizing for power, with ...
-                if self.Scenario['binary']:
-                    # the binary formulation
-                    e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
-                    return False
-                if self.DA or self.SR or self.NSR or self.FR:
-                    # whole sale markets
-                    e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
-                    return False
-            if not battery['ene_max_rated']:
-                sizing_optimization = True
-
-        if self.PV and not self.PV['rated_capacity']:
-            sizing_optimization = True
-        if self.ICE:
-            if self.ICE['n_min'] != self.ICE['n_max']:
-                sizing_optimization = True
-                if self.ICE['n_min'] > self.ICE['n_max']:
-                    e_logger.error('Params Error: ICE must have n_min < n_max')
-                    return False
-        if sizing_optimization and not self.Scenario['n'] == 'year':
-            e_logger.error('Params Error: trying to size without setting the optimization window to \'year\'')
-            return False
-
-        if self.Load is not None and self.Scenario['incl_site_load'] != 1:
-            e_logger.error('Error: incl_site_load should be = 1')
-            return False
-        return super().other_error_checks()
-
-    def prepare_scenario(self):
+    def load_scenario(self):
         """ Interprets user given data and prepares it for Scenario.
 
         """
-        Params.prepare_scenario(self)
+        Params.load_scenario(self)
 
         if self.Scenario['binary']:
             e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
@@ -416,35 +374,62 @@ class ParamsDER(Params):
 
         u_logger.info("Successfully prepared the Scenario and some Finance")
 
-    def prepare_finance(self):
+    def load_finance(self):
         """ Interprets user given data and prepares it for Finance.
 
         """
-        super().prepare_finance()
+        super().load_finance()
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 
-    def prepare_technology(self):
+    def load_technology(self):
         time_series = self.Scenario['time_series']
-        timeseries_columns = time_series.columns
-        if self.Load is not None:
-            # check to make sure data was included
-            if 'Site Load (kW)' not in timeseries_columns:
-                e_logger.error('Error: Please include a site load.')
-                raise Exception("Missing 'Site Load (kW)' from timeseries input")
-            self.Load.update({'dt': self.Scenario['dt'],
-                              'growth': self.Scenario['def_growth'],
-                              'site_load': time_series.loc[:, 'Site Load (kW)']})
-        super().prepare_technology()
+        sizing_optimization = False
+        if len(self.Battery):
+            for battery_inputs in self.Battery.values():
+                if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated'] or not battery_inputs['ene_max_rated']:
+                    sizing_optimization = True
 
-    def prepare_services(self):
+        if len(self.PV):
+            for pv_inputs in self.PV.values():
+                if not pv_inputs['rated_capacity']:
+                    sizing_optimization = True
+
+        if self.ICE is not None:
+            # add scenario case parameters to ICE parameter dictionary
+            for id_str, ice_input in self.ICE.items():
+                if ice_input['n_min'] != ice_input['n_max']:
+                    sizing_optimization = True
+                if ice_input['n_min'] > ice_input['n_max']:
+                    self.record_input_error(f'ICE {id_str} must have n_min < n_max')
+        if sizing_optimization and not self.Scenario['n'] == 'year':
+            self.record_input_error('Trying to size without setting the optimization window to \'year\'')
+
+        if len(self.Load):
+            if self.Scenario['incl_site_load'] != 1:
+                self.record_input_error('Load is active, so incl_site_load should be 1')
+            # check to make sure data was included
+            for id_str, load_inputs in self.Load:
+                try:
+                    load_inputs['site_load'] = time_series.loc[:, f'Site Load (kW)/{id_str}']
+                except KeyError:
+                    self.record_input_error(f"Missing 'Site Load (kW)/{id_str}' from timeseries input. Please include a site load.")
+
+                load_inputs.update({'dt': self.Scenario['dt'],
+                                    'growth': self.Scenario['def_growth']})
+        super().load_technology()
+
+    def load_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
 
         """
-        super().prepare_services()
+        super().load_services()
 
         if self.Reliability is not None:
             self.Reliability["dt"] = self.Scenario["dt"]
-            self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
+            try:
+                self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
+            except KeyError:
+                self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
 
         u_logger.info("Successfully prepared the value-stream (services)")

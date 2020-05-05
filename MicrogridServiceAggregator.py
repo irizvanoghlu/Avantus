@@ -24,3 +24,11 @@ class MicrogridServiceAggregator(ServiceAggregator):
             return True
         return False
 
+    def is_whole_sale_market(self):
+        """
+
+        Returns: boolean, interect btw list of market services
+
+        """
+        return {'DA', 'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
+

@@ -1,4 +1,20 @@
 <schema version="1.0.0">
+	<RA type="service" max_num="1">
+		<growth max="100" min="0" type="float" />
+		<days max="366" min="0" type="int" />
+		<length max="24" min="1" type="int" />
+		<dispmode type="bool" allowed_values="1|0"/>
+		<idmode type="string" allowed_values="Peak by Year|Peak by Month|Peak by Month with Active Hours"/>
+	</RA>
+	<DR type="service" max_num="1">
+		<days max="366" min="0" type="int" />
+		<length max="24" min="0" type="string/int"/>
+		<weekend type="bool" allowed_values="1|0"/>
+		<program_start_hour max="24" min="0" type="int" />
+		<program_end_hour max="24" min="0" type="string/int"/>
+		<day_ahead min="0" type="bool" />
+		<growth max="100" min="0" type="float" />
+	</DR>
 	<Reliability type="service" max_num="1">
 		<target cba="n" min="1.0" type="float" />
 		<post_facto_only  allowed_values="1|0" cba="n" type="bool" />

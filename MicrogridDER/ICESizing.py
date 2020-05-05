@@ -50,16 +50,18 @@ class ICESizing(InternalCombustionEngine.ICE, Sizing):
         """
         ice_gen = self.variables_dict['ice_gen']
         on_ice = self.variables_dict['on_ice']
+        constraint_list = super().constraints(mask)
 
-        # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
-        # cover that constraint
-        constraint_list = [super().constraints(mask)[0]]
+        if self.being_sized():
+            # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
+            # cover that constraint
+            constraint_list = [constraint_list[0]]
 
-        constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
-        constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
+            constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
+            constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
 
-        constraint_list += [cvx.NonPos(self.n_min - self.n)]
-        constraint_list += [cvx.NonPos(self.n - self.n_max)]
+            constraint_list += [cvx.NonPos(self.n_min - self.n)]
+            constraint_list += [cvx.NonPos(self.n - self.n_max)]
 
         return constraint_list
 

@@ -18,7 +18,6 @@ from MicrogridDER.CAESSizing import CAESSizing
 from MicrogridDER.PVSizing import PVSizing
 from MicrogridDER.ICESizing import ICESizing
 from MicrogridDER.LoadControllable import ControllableLoad
-import storagevet
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
 from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
 from storagevet.ValueStreams.NonspinningReserve import NonspinningReserve
@@ -36,6 +35,8 @@ from storagevet.Scenario import Scenario
 from CBA import CostBenefitAnalysis
 from MicrogridPOI import MicrogridPOI
 from MicrogridServiceAggregator import MicrogridServiceAggregator
+import time
+import pandas as pd
 
 import logging
 
@@ -93,14 +94,64 @@ class MicrogridScenario(Scenario):
         self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
         self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
 
-    def optimize_problem_loop(self):
-        """This function selects on opt_agg of data in time_series and calls optimization_problem on it. We determine if the
-        optimization will be sizing and calculate a lifetime project NPV multiplier to pass into the optimization problem
+    def optimize_problem_loop(self, **kwargs):
+        """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
+
+        Args:
+            **kwargs: allows child classes to pass in additional arguments to set_up_optimization
 
         """
+        if self.service_agg.is_deferral_only():
+            u_logger.info("Only active Value Stream is Deferral, so not optimizations will run...")
+            return
+        alpha = 1
         if self.poi.is_sizing_optimization:
+            # check to make sure the problem will solve
+            if self.incl_binary:
+                # the binary formulation
+                e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
+                return
+            if self.service_agg.is_whole_sale_market():
+                # whole sale markets
+                e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
+                return
+            # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
-        else:
-            alpha = 1
 
-        super().optimize_problem_loop(annuity_scalar=alpha, ignore_der_costs=self.service_agg.post_facto_reliability_only())
+        # calculate and check that system requirement set by value streams can be met
+        system_requirements = self.check_system_requirements()
+
+        u_logger.info("Starting optimization loop")
+        for opt_period in self.optimization_levels.predictive.unique():
+
+            # used to select rows from time_series relevant to this optimization window
+            mask = self.optimization_levels.predictive == opt_period
+
+            # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+            for der in self.poi.der_list:
+                if der.technology_type == "ESS":
+                    der.apply_past_degredation(opt_period)
+
+            if self.verbose:
+                print(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {self.optimization_levels.loc[mask].index[0]} hb")
+
+            # setup + run optimization then return optimal objective costs
+            functions, constraints = self.set_up_optimization(mask, system_requirements,
+                                                              annuity_scalar=alpha,
+                                                              ignore_der_costs=self.service_agg.post_facto_reliability_only())
+            objective_values = self.run_optimization(functions, constraints, opt_period)
+
+            # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+            sub_index = self.optimization_levels.loc[mask].index
+            for der in self.poi.der_list:
+                if der.technology_type == "ESS":
+                    der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
+
+            # then add objective expressions to financial obj_val
+            self.objective_values = pd.concat([self.objective_values, objective_values])
+
+            # record the solution of the variables and run again
+            for der in self.poi.der_list:
+                der.save_variable_results(sub_index)
+            for vs in self.service_agg.value_streams.values():
+                vs.save_variable_results(sub_index)

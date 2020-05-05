@@ -80,5 +80,5 @@ class PVSizing(PVSystem.PV, Sizing):
         sizing_results = {
             'DER': self.name,
             'Power Capacity (kW)': rated_capacity,
-            'Capital Cost ($/kW)': self.capital_cost_function[0]}
+            'Capital Cost ($/kW)': self.capital_cost_function}
         return sizing_results

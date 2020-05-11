@@ -46,6 +46,9 @@ class BatterySizing(BatteryTech.Battery, Sizing):
         if not self.ene_max_rated:
             self.ene_max_rated = cvx.Variable(name='Energy_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ene_max_rated)]
+            # recalculate the effective SOE limits s.t. they are CVXPY expressions
+            self.effective_soe_min = self.llsoc * self.ene_max_rated
+            self.effective_soe_max = self.ulsoc * self.ene_max_rated
 
         # if both the discharge and charge ratings are 0, then size for both and set them equal to each other
         if not self.ch_max_rated and not self.dis_max_rated:

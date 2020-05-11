@@ -30,5 +30,5 @@ class MicrogridServiceAggregator(ServiceAggregator):
         Returns: boolean, interect btw list of market services
 
         """
-        return {'DA', 'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
+        return {'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
 

@@ -38,7 +38,7 @@ class Reliability(ValueStream):
 
         # generate the generic predispatch service object
         super().__init__('Reliability', params)
-        self.outage_duration_coverage = params['target']  # must be in hours
+        self.outage_duration = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
         self.nu = params['nu'] / 100
@@ -48,7 +48,7 @@ class Reliability(ValueStream):
         # self.n_2 = 0
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
-        self.coverage_timesteps = int(np.round(self.outage_duration_coverage / self.dt))  # integral type for indexing
+        self.coverage_timesteps = int(np.round(self.outage_duration / self.dt))  # integral type for indexing
         self.critical_load = params['critical load'].copy()
 
         self.reliability_requirement = None
@@ -343,7 +343,7 @@ class Reliability(ValueStream):
             # check to see if there is space to storage energy in the ESS to save extra generation
             if ess_properties is not None and ess_properties['operation SOE max'] >= init_soe:
                 # the amount we can charge based on its current SOC
-                random_rte = ess_properties['rte'][random.randrange(0, len(ess_properties['rte'])-1)]
+                random_rte = random.choice(ess_properties['rte'])
                 charge_possible = (ess_properties['operation SOE max'] - init_soe) / (random_rte * self.dt)
                 charge = min(charge_possible, -current_demand_left, ess_properties['charge max'])
                 # update the state of charge of the ESS

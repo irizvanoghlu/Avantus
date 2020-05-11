@@ -33,6 +33,7 @@ class PVSizing(PVSystem.PV, Sizing):
         # create generic technology object
         PVSystem.PV.__init__(self, params)
         Sizing.__init__(self)
+        self.curtail = params['curtail']
 
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)

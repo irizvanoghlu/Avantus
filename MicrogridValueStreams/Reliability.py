@@ -165,7 +165,7 @@ class Reliability(ValueStream):
         percent_usage = {}
         contribution_arrays = {}
 
-        pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'PV']
+        pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'IntermittentResource']
         if len(pv_names):
             agg_pv_max = pd.DataFrame(np.zeros(len(results)), index=results.index)
             for name in pv_names.index:
@@ -187,7 +187,7 @@ class Reliability(ValueStream):
             percent_usage.update({'PV': np.sum(pv_outage_e) / sum_outage_requirement})
             contribution_arrays.update({'PV Outage Contribution (kWh)': pv_outage_e.values})
 
-        ess_names = technology_summary_df.loc[technology_summary_df['Type'] is 'ESS']
+        ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
         if len(ess_names):
             ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
             # try to cover as much of the outage that can be with the ES
@@ -242,7 +242,7 @@ class Reliability(ValueStream):
         tech_specs = {}
         soc = None
 
-        ess_names = technology_summary_df.loc[technology_summary_df['Type'] is 'ESS']
+        ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
         if len(ess_names.index):
             ess_properties = [[size_df.loc[name, 'Charge Rating (kW)'],  # charge max
                               size_df.loc[name, 'Discharge Rating (kW)'],  # discharge max

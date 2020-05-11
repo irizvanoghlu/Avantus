@@ -106,11 +106,6 @@ class MicrogridScenario(Scenario):
             return
         alpha = 1
         if self.poi.is_sizing_optimization:
-            # check to make sure the problem will solve
-            if self.incl_binary:
-                # the binary formulation
-                e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
-                return
             if self.service_agg.is_whole_sale_market():
                 # whole sale markets
                 e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
@@ -129,7 +124,7 @@ class MicrogridScenario(Scenario):
 
             # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.der_list:
-                if der.technology_type == "ESS":
+                if der.technology_type == "Energy Storage System":
                     der.apply_past_degredation(opt_period)
 
             if self.verbose:
@@ -144,7 +139,7 @@ class MicrogridScenario(Scenario):
             # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
             sub_index = self.optimization_levels.loc[mask].index
             for der in self.poi.der_list:
-                if der.technology_type == "ESS":
+                if der.technology_type == "Energy Storage System":
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 
             # then add objective expressions to financial obj_val

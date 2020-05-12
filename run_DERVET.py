@@ -16,6 +16,18 @@ __version__ = 'beta'  # beta version
 import logging
 import time
 import argparse
+import os
+import sys
+
+# ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
+
+# dervet's directory path is the first in sys.path
+# determine storagevet path (absolute path)
+storagevet_path = os.path.join(sys.path[0], 'storagevet')
+
+# add storagevet (source root) to PYTHONPATH
+sys.path.insert(0, storagevet_path)
+
 
 import storagevet
 from MicrogridScenario import MicrogridScenario

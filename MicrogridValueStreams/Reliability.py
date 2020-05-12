@@ -225,6 +225,7 @@ class Reliability(ValueStream):
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
         """
+        size_df = size_df.set_index("DER")
         start = time.time()
 
         # initialize a list to track the frequency of the results of the simulate_outage method
@@ -244,12 +245,14 @@ class Reliability(ValueStream):
 
         ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
         if len(ess_names.index):
-            ess_properties = [[size_df.loc[name, 'Charge Rating (kW)'],  # charge max
-                              size_df.loc[name, 'Discharge Rating (kW)'],  # discharge max
-                              size_df.loc[name, 'Round Trip Efficiency (%)'],  # rte
-                              size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Lower Limit on SOC (%)'],  # operation SOE min
-                              size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Upper Limit on SOC (%)']]   # 'operation SOE max'
-                              for name in ess_names.index]
+            ess_properties = [[], [], [], [], []]
+            for name in ess_names.Name:
+                ess_properties[0].append(size_df.loc[name, 'Charge Rating (kW)'])
+                ess_properties[1].append(size_df.loc[name, 'Discharge Rating (kW)'])
+                ess_properties[2].append(size_df.loc[name, 'Round Trip Efficiency (%)'])
+                ess_properties[3].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Lower Limit on SOC (%)'])
+                ess_properties[4].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Upper Limit on SOC (%)'])
+
             ess_agg_prop = {
                 'charge max': np.sum(ess_properties[0]),
                 'discharge max': np.sum(ess_properties[1]),
@@ -294,7 +297,7 @@ class Reliability(ValueStream):
         outage_init = 0
         while outage_init < len(self.critical_load):
             if soc is not None:
-                tech_specs['init_soc'] = soc[outage_init]
+                tech_specs['init_soe'] = soc[outage_init]
             longest_outage = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1

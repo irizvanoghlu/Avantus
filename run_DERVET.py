@@ -77,9 +77,13 @@ class DERVET:
             run = MicrogridScenario(value)
             run.set_up_poi_and_service_aggregator()
             run.fill_and_drop_extra_data()
-            run.optimize_problem_loop()
+            continue_to_results = run.optimize_problem_loop()
 
-            MicrogridResult.add_instance(key, run)
+            if continue_to_results:
+                MicrogridResult.add_instance(key, run)
+            else:
+                raise ArithmeticError("Further calculations requires that economic dispatch is solved, but "
+                                      + "no optimization was built or solved. Please check log files for more information. ")
 
         MicrogridResult.sensitivity_summary()
 

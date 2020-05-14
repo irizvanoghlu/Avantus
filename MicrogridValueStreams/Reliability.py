@@ -13,6 +13,7 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
 from storagevet.SystemRequirement import Requirement
+import storagevet.Library as Lib
 from storagevet.ValueStreams.ValueStream import ValueStream
 import numpy as np
 import cvxpy as cvx
@@ -41,6 +42,8 @@ class Reliability(ValueStream):
         self.outage_duration = params['target']  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
+        if self.post_facto_only:
+            self.soc_init = params['post_facto_initial_soc'] / 100
         self.nu = params['nu'] / 100
         self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
@@ -49,12 +52,26 @@ class Reliability(ValueStream):
 
         # determines how many time_series timestamps relates to the reliability target hours to cover
         self.coverage_timesteps = int(np.round(self.outage_duration / self.dt))  # integral type for indexing
-        self.critical_load = params['critical load'].copy()
+        self.critical_load = params['critical load']
 
         self.reliability_requirement = None
         self.contribution_perc_df = None
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
+
+    def grow_drop_data(self, years, frequency, load_growth):
+        """ Adds data by growing the given data OR drops any extra data that might have slipped in.
+        Update variable that hold timeseries data after adding growth data. These method should be called after
+        add_growth_data and before the optimization is run.
+
+        Args:
+            years (List): list of years for which analysis will occur on
+            frequency (str): period frequency of the timeseries data
+            load_growth (float): percent/ decimal value of the growth rate of loads in this simulation
+
+        """
+        self.critical_load = Lib.fill_extra_data(self.critical_load, years, load_growth, frequency)
+        self.critical_load = Lib.drop_extra_data(self.critical_load, years)
 
     def calculate_system_requirements(self, der_lst):
         """ Calculate the system requirements that must be meet regardless of what other value streams are active
@@ -117,6 +134,8 @@ class Reliability(ValueStream):
             # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
             # to ensure that our DER mix can cover peak net load during any outage in the year
             return [cvx.NonPos(cvx.max(self.critical_load.loc[mask].values - tot_variable_gen) - combined_rating)]
+        else:
+            return super().constraints(mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating)
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.
@@ -125,7 +144,7 @@ class Reliability(ValueStream):
             pertaining to this instance
 
         """
-        report = pd.DataFrame(index=self.reliability_requirement.index)
+        report = pd.DataFrame(index=self.critical_load.index)
         if not self.post_facto_only:
             report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
@@ -143,9 +162,10 @@ class Reliability(ValueStream):
         df_dict['load_coverage_prob'] = self.load_coverage_probability(time_series_data, sizing_df, technology_summary)
         u_logger.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
-        self.contribution_summary(technology_summary, time_series_data)
-        df_dict['outage_energy_contributions'] = self.outage_contribution_df
-        df_dict['reliability_summary'] = self.contribution_perc_df
+        if not self.post_facto_only:
+            self.contribution_summary(technology_summary, time_series_data)
+            df_dict['outage_energy_contributions'] = self.outage_contribution_df
+            df_dict['reliability_summary'] = self.contribution_perc_df
         return df_dict
 
     def contribution_summary(self, technology_summary_df, results):
@@ -245,24 +265,29 @@ class Reliability(ValueStream):
 
         ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
         if len(ess_names.index):
-            ess_properties = [[], [], [], [], []]
+            ess_properties = [[], [], [], [], [], []]
             for name in ess_names.Name:
                 ess_properties[0].append(size_df.loc[name, 'Charge Rating (kW)'])
                 ess_properties[1].append(size_df.loc[name, 'Discharge Rating (kW)'])
                 ess_properties[2].append(size_df.loc[name, 'Round Trip Efficiency (%)'])
                 ess_properties[3].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Lower Limit on SOC (%)'])
                 ess_properties[4].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Upper Limit on SOC (%)'])
+                ess_properties[5].append(size_df.loc[name, 'Energy Rating (kWh)'])
 
             ess_agg_prop = {
                 'charge max': np.sum(ess_properties[0]),
                 'discharge max': np.sum(ess_properties[1]),
                 'rte list': ess_properties[2],
                 'operation SOE min': np.sum(ess_properties[3]),
-                'operation SOE max': np.sum(ess_properties[4])
+                'operation SOE max': np.sum(ess_properties[4]),
+                'energy rating': np.sum(ess_properties[5])
             }
             tech_specs['ess_properties'] = ess_agg_prop
             # save the state of charge
-            soc = results_df.loc[:, 'Aggregated State of Energy (kWh)'].values
+            try:
+                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)'].values
+            except KeyError:
+                pass
 
         pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'PV']
         if len(pv_names.index):
@@ -296,8 +321,11 @@ class Reliability(ValueStream):
         start = time.time()
         outage_init = 0
         while outage_init < len(self.critical_load):
-            if soc is not None:
-                tech_specs['init_soe'] = soc[outage_init]
+            try:
+                tech_specs['init_soe'] = self.soc_init * tech_specs['ess_properties']['energy rating']
+            except AttributeError:
+                if soc is not None:
+                    tech_specs['init_soe'] = soc[outage_init]
             longest_outage = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1

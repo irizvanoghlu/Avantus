@@ -101,17 +101,22 @@ class MicrogridScenario(Scenario):
             **kwargs: allows child classes to pass in additional arguments to set_up_optimization
 
         """
-        if self.service_agg.is_deferral_only():
-            u_logger.info("Only active Value Stream is Deferral, so not optimizations will run...")
-            return
         alpha = 1
         if self.poi.is_sizing_optimization:
             if self.service_agg.is_whole_sale_market():
                 # whole sale markets
                 e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
-                return
+                return False
+            if self.service_agg.post_facto_reliability_only():
+                # whole sale markets
+                e_logger.error('Params Error: trying to size and preform post facto calculations only')
+                return False
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
+
+        if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
+            u_logger.info("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
+            return True
 
         # calculate and check that system requirement set by value streams can be met
         system_requirements = self.check_system_requirements()
@@ -150,3 +155,4 @@ class MicrogridScenario(Scenario):
                 der.save_variable_results(sub_index)
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)
+        return True

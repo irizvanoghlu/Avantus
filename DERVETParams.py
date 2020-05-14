@@ -131,6 +131,16 @@ class ParamsDER(Params):
         self.Load = self.read_and_validate('ControllableLoad')  # DER
 
     @classmethod
+    def bad_active_combo(cls):
+        """ Based on what the user has indicated as active (and what the user has not), predict whether or not
+        the simulation(s) will have trouble solving.
+
+        Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
+
+        """
+        super().bad_active_combo(dervet=True)
+
+    @classmethod
     def cba_template_struct(cls):
         """
 
@@ -432,4 +442,6 @@ class ParamsDER(Params):
             except KeyError:
                 self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
 
+        if self.DA is None and self.retailTimeShift is None and not self.Reliability['post_facto_only']:
+            self.record_input_error('Not providing DA or retailETS might cause the solver to take infinite time to solve!')
         u_logger.info("Successfully prepared the value-stream (services)")

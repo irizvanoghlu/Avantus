@@ -17,6 +17,7 @@
 	</DR>
 	<Reliability type="service" max_num="1">
 		<target cba="n" min="1.0" type="float" />
+		<post_facto_initial_soc cba="n" min="0" max="100" type="float" />
 		<post_facto_only  allowed_values="1|0" cba="n" type="bool" />
 		<nu cba="n" max="100.0" min="0.0" type="float" />
 		<gamma cba="n" max="100.0" min="0.0" type="float" />

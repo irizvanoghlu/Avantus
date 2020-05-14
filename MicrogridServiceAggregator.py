@@ -20,7 +20,7 @@ class MicrogridServiceAggregator(ServiceAggregator):
         Returns: A boolean that is true if Reliability is doing post facto calculations only
 
         """
-        if 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only:
+        if 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only and len(self.value_streams.keys()) == 1:
             return True
         return False
 

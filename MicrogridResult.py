@@ -44,7 +44,7 @@ class MicrogridResult(Result):
 
         Three attributes are edited in this method: TIME_SERIES_DATA, MONTHLY_DATA, TECHNOLOGY_SUMMARY
         """
-        super().collect_results()
+        super().collect_results(post_facto_flag=self.service_agg.post_facto_reliability_only())
         self.sizing_df = self.poi.sizing_summary()
 
     def create_drill_down_dfs(self):
@@ -55,12 +55,19 @@ class MicrogridResult(Result):
             keys are the file name that the df will be saved with
 
         """
-        if not self.service_agg.is_deferral_only():
+        if not (self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only()):
             self.drill_down_dict.update(self.poi.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
                                                                 technology_summary=self.technology_summary, sizing_df=self.sizing_df))
         self.drill_down_dict.update(self.service_agg.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
                                                                     technology_summary=self.technology_summary, sizing_df=self.sizing_df))
         u_logger.debug("Finished post optimization analysis")
+
+    def calculate_cba(self):
+        """ Calls all finacial methods that will result in a series of dataframes to describe the cost benefit analysis for the
+        case in question.
+
+        """
+        super().calculate_cba(post_facto_only=self.service_agg.post_facto_reliability_only())
 
     def save_as_csv(self, instance_key, sensitivity=False):
         """ Save useful DataFrames to disk in csv files in the user specified path for analysis.

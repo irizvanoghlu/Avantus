@@ -150,7 +150,7 @@ class Reliability(ValueStream):
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
         return report
 
-    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None):
+    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None, der_list=None):
         """ Calculates any service related dataframe that is reported to the user.
 
         Returns: dictionary of DataFrames of any reports that are value stream specific
@@ -159,7 +159,7 @@ class Reliability(ValueStream):
         """
         df_dict = {}
         u_logger.info('Starting load coverage calculation. This may take a while.')
-        df_dict['load_coverage_prob'] = self.load_coverage_probability(time_series_data, sizing_df, technology_summary)
+        df_dict['load_coverage_prob'] = self.load_coverage_probability(time_series_data, technology_summary, der_list)
         u_logger.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
         if not self.post_facto_only:
@@ -185,7 +185,7 @@ class Reliability(ValueStream):
         percent_usage = {}
         contribution_arrays = {}
 
-        pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'IntermittentResource']
+        pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Intermittent Resource']
         if len(pv_names):
             agg_pv_max = pd.DataFrame(np.zeros(len(results)), index=results.index)
             for name in pv_names.index:
@@ -233,87 +233,66 @@ class Reliability(ValueStream):
 
         self.outage_contribution_df = pd.DataFrame(contribution_arrays, index=self.critical_load.index)
 
-    def load_coverage_probability(self, results_df, size_df, technology_summary_df):
+    def load_coverage_probability(self, results_df, technology_summary_df, der_list):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
         OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
             results_df (DataFrame): the dataframe that consoidates all results
-            size_df (DataFrame): the dataframe that describes the physical capabilities of the DERs
             technology_summary_df(DataFrame): maps DER type to user inputted name that indexes the size df
+            der_list (list): list of ders
 
         Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and 'Load Coverage Probability (%)'
 
         """
-        size_df = size_df.set_index("DER")
         start = time.time()
 
         # initialize a list to track the frequency of the results of the simulate_outage method
         frequency_simulate_outage = np.zeros(int(self.max_outage_duration / self.dt) + 1)
 
         # 1) simulate an outage that starts at every timestep
-        # check to see if there is enough fuel generation to meet the load as offset by the amount of PV
-        # generation you are confident will be delivered (usually 20% of PV forecast)
-        reliability_check = self.critical_load.copy()
-        demand_left = self.critical_load.copy()
-
-        data_length = len(self.critical_load.index)
 
         # collect information required to call simulate_outage
         tech_specs = {}
         soc = None
+        ess_properties = {
+            'charge max': 0,
+            'discharge max': 0,
+            'rte list': [],
+            'operation SOE min': 0,
+            'operation SOE max': 0,
+            'energy rating': 0
+        }
 
-        ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
-        if len(ess_names.index):
-            ess_properties = [[], [], [], [], [], []]
-            for name in ess_names.Name:
-                ess_properties[0].append(size_df.loc[name, 'Charge Rating (kW)'])
-                ess_properties[1].append(size_df.loc[name, 'Discharge Rating (kW)'])
-                ess_properties[2].append(size_df.loc[name, 'Round Trip Efficiency (%)'])
-                ess_properties[3].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Lower Limit on SOC (%)'])
-                ess_properties[4].append(size_df.loc[name, 'Energy Rating (kWh)'] * size_df.loc[name, 'Upper Limit on SOC (%)'])
-                ess_properties[5].append(size_df.loc[name, 'Energy Rating (kWh)'])
+        total_pv_max = np.zeros(len(self.critical_load))
+        total_dg_max = 0
 
-            ess_agg_prop = {
-                'charge max': np.sum(ess_properties[0]),
-                'discharge max': np.sum(ess_properties[1]),
-                'rte list': ess_properties[2],
-                'operation SOE min': np.sum(ess_properties[3]),
-                'operation SOE max': np.sum(ess_properties[4]),
-                'energy rating': np.sum(ess_properties[5])
-            }
-            tech_specs['ess_properties'] = ess_agg_prop
+        for der_inst in der_list:
+            if der_inst.technology_type == 'Intermittent Resource':
+                total_pv_max += der_inst.maximum_generation(None)
+            if der_inst.technology_type == 'Generator':
+                total_dg_max += der_inst.discharge_capacity()
+            if der_inst.technology_type == 'Energy Storage System':
+                ess_properties['rte list'].append(der_inst.rte)
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy()
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                ess_properties['discharge max'] += der_inst.discharge_capacity()
+                ess_properties['charge max'] += der_inst.charge_capacity()
+                ess_properties['energy rating'] += der_inst.ene_max_rated
+        if self.n_2:
+            total_dg_max -= self.ice_rating
+        generation = np.repeat(total_dg_max, len(self.critical_load))
+
+        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
+        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max), decimals=5)
+
+        if 'Energy Storage System' in technology_summary_df['Type'].values:
+            tech_specs['ess_properties'] = ess_properties
             # save the state of charge
             try:
-                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)'].values
+                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']
             except KeyError:
-                pass
-
-        pv_names = technology_summary_df.loc[technology_summary_df['Type'] == 'PV']
-        if len(pv_names.index):
-            combined_pv_max = np.zeros(data_length)
-            for name in pv_names.index:
-                combined_pv_max += results_df.loc[:, f'PV: {name} Maximum (kW)']
-            reliability_check -= self.nu * combined_pv_max
-            demand_left -= combined_pv_max
-
-        ice_names = technology_summary_df.loc[technology_summary_df['Type'] == 'ICE']
-        num_ice = len(ice_names.index)
-        if num_ice:
-            combined_ice_rating = 0  # for multiple ICE
-            if self.n_2:
-                name = ice_names.index.loc[0]
-                if num_ice == 1:
-                    combined_ice_rating += np.max([size_df.loc[name, 'Quantity']-1, 0]) * size_df.loc[name, 'Power Capacity (kW)']
-                else:
-                    u_logger.error(f'{len(ice_names.index)} ice instances included, n-2 coverage probability algorithm assumes only 1')
-                    return
-            else:
-                for name in ice_names:
-                    combined_ice_rating += size_df.loc[name, 'Quantity'] * size_df.loc[name, 'Power Capacity (kW)']
-            max_ice_power = np.repeat(combined_ice_rating, data_length)
-            reliability_check -= max_ice_power
-            demand_left -= max_ice_power
+                soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 
         end = time.time()
         u_logger.info(f'Critical Load Coverage Curve overhead time: {end - start}')
@@ -321,11 +300,8 @@ class Reliability(ValueStream):
         start = time.time()
         outage_init = 0
         while outage_init < len(self.critical_load):
-            try:
-                tech_specs['init_soe'] = self.soc_init * tech_specs['ess_properties']['energy rating']
-            except AttributeError:
-                if soc is not None:
-                    tech_specs['init_soe'] = soc[outage_init]
+            if soc is not None:
+                tech_specs['init_soe'] = soc[outage_init]
             longest_outage = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1

@@ -59,7 +59,8 @@ class MicrogridResult(Result):
             self.drill_down_dict.update(self.poi.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
                                                                 technology_summary=self.technology_summary, sizing_df=self.sizing_df))
         self.drill_down_dict.update(self.service_agg.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
-                                                                    technology_summary=self.technology_summary, sizing_df=self.sizing_df))
+                                                                    technology_summary=self.technology_summary, sizing_df=self.sizing_df,
+                                                                    der_list=self.poi.der_list))
         u_logger.debug("Finished post optimization analysis")
 
     def calculate_cba(self):

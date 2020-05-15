@@ -95,7 +95,7 @@ class ControllableLoad(Load, Sizing):
 
         """
         # load + (charge - discharge)
-        effective_charge = cvx.Parameter(shape=sum(mask), value=super().get_charge(mask), name='OG Load')
+        effective_charge = super().get_charge(mask)
         if self.duration:
             effective_charge += self.variables_dict['power']
         return effective_charge

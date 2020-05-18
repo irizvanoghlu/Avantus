@@ -20,6 +20,8 @@ from pathlib import Path
 import os
 import storagevet
 from storagevet.Result import Result
+from cbaDER import CostBenefitAnalysis
+
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -36,7 +38,7 @@ class ResultDER(Result):
             Args:
                 scenario (Scenario.Scenario): scenario object after optimization has run to completion
         """
-        super().__init__(scenario)
+        super().__init__(scenario, CostBenefitAnalysis)
         self.reliability_df = pd.DataFrame()
         self.sizing_df = pd.DataFrame()
         self.load_coverage_prob = pd.DataFrame()
@@ -47,28 +49,25 @@ class ResultDER(Result):
 
         """
         super().post_analysis()
-        for name, tech in self.technologies.items():
+        for name, tech in self.technologies.items():  # TODO
             # sizing_summary for CAES is currently similar to it for Battery
             sizing_df = tech.sizing_summary()
             self.sizing_df = pd.concat([self.sizing_df, sizing_df], axis=0, sort=False)
-        # if (self.sizing_df['Duration (hours)'] > 24).any():
-        #     print('The duration of an Energy Storage System is greater than 24 hours!')
 
         # DESIGN PLOT (peak load day)
-        max_day = self.results['Original Net Load (kW)'].idxmax().date()
+        max_day = self.results['Total Load (kW)'].idxmax().date()
         max_day_data = self.results[self.results.index.date == max_day]
         time_step = pd.Index(np.arange(0, 24, self.dt), name='Timestep Beginning')
         self.peak_day_load = pd.DataFrame({'Date': max_day_data.index.date,
-                                           'Load (kW)': max_day_data['Original Net Load (kW)'].values,
+                                           'Load (kW)': max_day_data['Total Load (kW)'].values,
                                            'Net Load (kW)': max_day_data['Net Load (kW)'].values}, index=time_step)
 
-        if 'Reliability' in self.predispatch_services.keys():  # TODO: possibly make an method of Reliability --HN
+        if 'Reliability' in self.predispatch_services.keys():
             reliability = self.predispatch_services['Reliability']
             # save/calculate load coverage
             u_logger.info('Starting load coverage calculation. This may take a while.')
             self.load_coverage_prob = reliability.load_coverage_probability(self.results, self.sizing_df, self.technology_summary)
             u_logger.info('Finished load coverage calculation.')
-            # TODO: make this more dynamic
             # calculate RELIABILITY SUMMARY
             der_contributions, self.reliability_df = reliability.contribution_summary(self.technologies.keys(), self.results)
             self.results = pd.concat([self.results, der_contributions], axis=1)

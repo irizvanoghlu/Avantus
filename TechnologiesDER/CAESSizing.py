@@ -17,7 +17,6 @@ import cvxpy as cvx
 import logging
 import pandas as pd
 import numpy as np
-import storagevet.Constraint as Const
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -28,18 +27,17 @@ class CAESSizing(storagevet.CAESTech):
 
     """
 
-    def __init__(self, name,  opt_agg, params):
+    def __init__(self, name,  params):
         """ Initializes CAES class that inherits from the technology class.
         It sets the type and physical constraints of the technology.
 
         Args:
             name (string): name of technology
-            opt_agg (DataFrame): Initialized Financial Class
             params (dict): params dictionary from dataframe for one case
         """
 
         # create generic storage object
-        storagevet.CAESTech.__init__(self, name,  opt_agg, params)
+        storagevet.CAESTech.__init__(self, name,  params)
 
         self.size_constraints = []
 

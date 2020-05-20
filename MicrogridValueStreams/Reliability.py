@@ -276,9 +276,9 @@ class Reliability(ValueStream):
                 ess_properties['rte list'].append(der_inst.rte)
                 ess_properties['operation SOE min'] += der_inst.operational_min_energy()
                 ess_properties['operation SOE max'] += der_inst.operational_max_energy()
-                ess_properties['discharge max'] += der_inst.discharge_capacity()
-                ess_properties['charge max'] += der_inst.charge_capacity()
-                ess_properties['energy rating'] += der_inst.ene_max_rated
+                ess_properties['discharge max'] += der_inst.discharge_capacity(solution=True)
+                ess_properties['charge max'] += der_inst.charge_capacity(solution=True)
+                ess_properties['energy rating'] += der_inst.energy_capacity(solution=True)
         if self.n_2:
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))

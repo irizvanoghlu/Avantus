@@ -67,6 +67,51 @@ class BatterySizing(BatteryTech.Battery, Sizing):
         if self.user_duration:
             self.size_constraints += [cvx.NonPos((self.ene_max_rated / self.dis_max_rated) - self.user_duration)]
 
+    def discharge_capacity(self, solution=False):
+        """
+
+        Returns: the maximum discharge that can be attained
+
+        """
+        if not solution:
+            return self.dis_max_rated
+        else:
+            try:
+                dis_max_rated = self.dis_max_rated.value
+            except AttributeError:
+                dis_max_rated = self.dis_max_rated
+            return dis_max_rated
+
+    def charge_capacity(self, solution=False):
+        """
+
+        Returns: the maximum charge that can be attained
+
+        """
+        if not solution:
+            return self.dis_max_rated
+        else:
+            try:
+                ch_max_rated = self.ch_max_rated.value
+            except AttributeError:
+                ch_max_rated = self.ch_max_rated
+            return ch_max_rated
+
+    def energy_capacity(self, solution=False):
+        """
+
+        Returns: the maximum charge that can be attained
+
+        """
+        if not solution:
+            return self.ene_max_rated
+        else:
+            try:
+                max_rated = self.ene_max_rated.value
+            except AttributeError:
+                max_rated = self.ene_max_rated
+            return max_rated
+
     def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
@@ -114,25 +159,15 @@ class BatterySizing(BatteryTech.Battery, Sizing):
         except AttributeError:
             energy_rated = self.ene_max_rated
 
-        try:
-            ch_max_rated = self.ch_max_rated.value
-        except AttributeError:
-            ch_max_rated = self.ch_max_rated
-
-        try:
-            dis_max_rated = self.dis_max_rated.value
-        except AttributeError:
-            dis_max_rated = self.dis_max_rated
-
         sizing_results = {
             'DER': self.name,
             'Energy Rating (kWh)': energy_rated,
-            'Charge Rating (kW)': ch_max_rated,
-            'Discharge Rating (kW)': dis_max_rated,
+            'Charge Rating (kW)': self.charge_capacity(),
+            'Discharge Rating (kW)': self.discharge_capacity(),
             'Round Trip Efficiency (%)': self.rte,
             'Lower Limit on SOC (%)': self.llsoc,
             'Upper Limit on SOC (%)': self.ulsoc,
-            'Duration (hours)': energy_rated/dis_max_rated,
+            'Duration (hours)': self.calculate_duration(),
             'Capital Cost ($)': self.capital_cost_function[0],
             'Capital Cost ($/kW)': self.capital_cost_function[1],
             'Capital Cost ($/kWh)': self.capital_cost_function[2]}
@@ -144,15 +179,10 @@ class BatterySizing(BatteryTech.Battery, Sizing):
         """ Determines the duration of the storage (after solving for the size)
 
         Returns:
-        Note: unused
         """
         try:
             energy_rated = self.ene_max_rated.value
         except AttributeError:
             energy_rated = self.ene_max_rated
 
-        try:
-            dis_max_rated = self.dis_max_rated.value
-        except AttributeError:
-            dis_max_rated = self.dis_max_rated
-        return energy_rated / dis_max_rated
+        return energy_rated / self.discharge_capacity(solution=True)

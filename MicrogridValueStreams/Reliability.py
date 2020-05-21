@@ -378,3 +378,171 @@ class Reliability(ValueStream):
                 return 0
         # SIMULATE OUTAGE IN NEXT TIMESTEP
         return self.dt + self.simulate_outage(reliability_check[1:], demand_left[1:], outage_left - 1, ess_properties, next_soe)
+
+    def find_reliable(self):
+        """ this is the code that will find the minimum SOC and the minimum sizes
+        of the DERs being analyized
+
+        Returns:
+
+        """
+
+        # Rollingsum of Load
+        critical_load = self.critical_load - PV_profile * PV_max_size
+        reverse = critical_load.iloc[::-1]  # reverse the time series to use rolling function
+        reverse = reverse.rolling(self.outage_duration).sum()  # rolling function looks back, so reversing looks forward
+        Total_Load_requirement = reverse.iloc[::-1]
+        indices = np.argsort(-1 * Total_Load_requirement)
+        Analysis_indices = indices[0:self.total_outages]
+
+        startTime = time.time()
+        IsReliable = 'No'
+        Total_failures = []
+
+        while IsReliable == 'No':
+            der_list = self.sizing_optimization(Analysis_indices, self.der_list, self.initial_soc)
+
+            IsReliable, First_failure, failures = self.calc_pv(der_list, self.initial_soc)
+            Total_failures.append(failures)
+            print(IsReliable)
+            if IsReliable == 'No':
+                print(First_failure[0])
+                Analysis_indices = np.append(Analysis_indices, First_failure[0])
+                print(Analysis_indices)
+
+        endTime = time.time()
+        elapsedTime = endTime - startTime
+        print('Elapsed time (s)=%s' % elapsedTime)
+        print('Check for all outages')
+
+    def calc_pv(self, der_list, initial_soc):
+        """ Requires DERs to have a min size.
+
+        Returns:
+
+        """
+        num_scenarios = len(self.critical_load) - self.outage_duration
+
+        # collect DER data for reliability
+        total_pv_max = np.zeros(len(self.critical_load))
+        total_dg_max = 0
+        SOE_max = 0
+        SOE_min = 0
+        rte_list = []
+        ess_dch_rating = 0
+        ess_ch_rating = 0
+        for der_inst in der_list:
+            if der_inst.technology_type == 'IntermittentResource':
+                total_pv_max += der_inst.maximum_generation().values
+            if der_inst.technology_type == 'Generator':
+                total_dg_max += der_inst.discharge_capacity()
+            if der_inst.technology_type == 'ESS':
+                SOE_max += der_inst.operational_max_energy()
+                SOE_min += der_inst.operational_min_energy()
+                rte_list.append(der_inst.rte)
+                ess_dch_rating += der_inst.discharge_capacity()
+                ess_ch_rating += der_inst.charge_capacity()
+        generation = np.ones([self.outage_duration, num_scenarios]) * total_dg_max
+
+        cl_case = np.empty([self.outage_duration, num_scenarios])
+        pv_case = np.zeros([self.outage_duration, num_scenarios])
+        for i in range(0, num_scenarios):
+            cl_case[:, i] = self.critical_load[i:i + self.outage_duration]
+            pv_case[:, i] = total_pv_max[i:i + self.outage_duration]
+
+        netgen = np.around(generation + pv_case - cl_case, decimals=5)
+        netload_rel = np.around(cl_case - generation - pv_case, decimals=5)
+        SOCminreq = netload_rel / SOE_max
+        SOCminreq_total = -netgen / SOE_max
+
+        # SOC start
+        SOC_start = np.repeat(initial_soc, [1, num_scenarios])
+
+        reliability = np.zeros([self.outage_duration, num_scenarios])
+        for scenario in range(num_scenarios):
+            SOC = np.ones([self.outage_duration, 1])
+            SOC[0] = SOC_prev = SOC_start[0, scenario]
+
+            for hr in range(self.outage_duration):  # Delt is 1 hour
+
+                # Check if I have enough capactiy
+                if netload_rel[hr, scenario] > 0:
+                    if SOC_prev >= SOCminreq[hr, scenario] and ess_dch_rating >= netload_rel[hr, scenario] and SOC_prev >= SOCminreq_total[hr, scenario]:
+                        reliability[hr, scenario] = 1
+                    else:
+                        break
+                else:
+                    reliability[hr, scenario] = 1
+
+                # SOC evolution
+                if reliability[hr, scenario]:
+                    P_ch = 0
+                    P_dch = 0
+                    ES_E_prev_4ch = (1 - SOC_prev) * (SOE_max / random.choice(rte_list))
+                    ES_E_prev_4dch = SOC_prev * SOE_max
+                    if netgen[hr, scenario] > 0:
+                        # calculate the max that we can charge
+                        P_ch = min([netgen[hr, scenario], ess_ch_rating, ES_E_prev_4ch])
+
+                    elif netgen[hr, scenario] < 0:
+                        # calculate the max that we can discharge
+                        P_dch = min([-netgen[hr, scenario], ess_dch_rating, ES_E_prev_4dch])
+                    SOC_prev = SOC[hr] = SOC_prev + ((random.choice(rte_list) * P_ch) - P_dch) / SOE_max
+
+        r_index = (np.argwhere(reliability[self.outage_duration - 1, :] == 0))
+
+        Reliability_cum = np.cumprod(reliability, axis=0)
+        R = Reliability_cum.sum(axis=1)
+        total_failures = num_scenarios - R[self.outage_duration - 1]
+
+        if len(r_index):
+            is_reliable = 'No'
+            first_failure = r_index[0]
+        else:
+            is_reliable = 'Yes'
+            first_failure = 0
+        return is_reliable, first_failure, total_failures
+
+    def calculate_min_soe(self):
+        # Variables
+        # ch = cvx.Variable(Outage_length)
+        # dch = cvx.Variable(Outage_length)
+        # SOE = cvx.Variable(Outage_length)
+        #
+        # PV = cvx.Variable(Outage_length)
+        # DG = cvx.Variable(Outage_length)
+        # on_DG = cvx.Variable(Outage_length, boolean=True)
+        SOC_start = cvx.Variable(1)
+
+        obj = min(SOC_start)
+
+        PV_irr = PV_profile[j:j + Outage_length]
+        Load = Load_Profile[j:j + Outage_length]
+
+        const1 = [SOE[0] == SOC_start - dch[0] + Batt_eff * ch[0]]
+        for i in range(1, Outage_length):
+            const1.append(SOE[i] == SOE[i - 1] - dch[i] + Batt_eff * ch[i])
+
+        const1.append(PV <= cvx.multiply(PV_irr, PV_size))
+        const1.append(PV + dch - ch + DG == Load)
+
+        const1.append(dch <= ES_P)
+        const1.append(ch <= ES_P)
+        const1.append(SOE <= ES_E)
+
+        const1.append(PV >= 0)
+
+        const1.append(DG >= (on_DG * DG_params['DG_p_min']))
+        const1.append(DG <= (DG_no * DG_params['DG_rating']) * on_DG)
+
+        const1.append(ch >= 0)
+        const1.append(dch >= 0)
+        const1.append(SOE >= 0)
+
+        prob = cvx.Problem(cvx.Minimize(obj), const1)
+        prob.solve(solver=cvx.GLPK_MI)
+
+        if any(on_DG.value == 0):
+            print(j)
+
+        return np.ceil(SOC_start.value[0])

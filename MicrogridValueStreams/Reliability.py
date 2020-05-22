@@ -350,11 +350,11 @@ class Reliability(ValueStream):
             # check to see if there is space to storage energy in the ESS to save extra generation
             if ess_properties is not None and ess_properties['operation SOE max'] >= init_soe:
                 # the amount we can charge based on its current SOC
-                random_rte = random.choice(ess_properties['rte'])
+                random_rte = random.choice(ess_properties['rte list'])
                 charge_possible = (ess_properties['operation SOE max'] - init_soe) / (random_rte * self.dt)
                 charge = min(charge_possible, -current_demand_left, ess_properties['charge max'])
                 # update the state of charge of the ESS
-                next_soe = init_soe + (charge * ess_properties['rte'] * self.dt)
+                next_soe = init_soe + (charge * random_rte * self.dt)
             else:
                 # there is no space to save the extra generation, so the ess will not do anything
                 next_soe = init_soe

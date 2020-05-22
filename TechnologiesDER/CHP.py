@@ -69,11 +69,11 @@ class CHP(DER):
                      'chp_therm': cvx.Variable(shape=size, name='chp_therm', nonneg=True),
                      'chp_on': cvx.Variable(shape=size, boolean=True, name='chp_on')}
 
-        # # CHP power reservation that can contribute to the POI
-        # variables.update({'chp_pow_res_C_min': cvx.Variable(shape=size, name='charge_up_potential', nonneg=True),
-        #                   'chp_pow_res_C_max': cvx.Variable(shape=size, name='charge_down_potential', nonneg=True),
-        #                   'chp_pow_res_D_min': cvx.Variable(shape=size, name='discharge_down_potential', nonneg=True),
-        #                   'chp_pow_res_D_max': cvx.Variable(shape=size, name='discharge_up_potential', nonneg=True)})
+        # CHP power reservation that can contribute to the POI
+        variables.update({'chp_pow_res_C_min': cvx.Variable(shape=size, name='charge_up_potential', nonneg=True),
+                          'chp_pow_res_C_max': cvx.Variable(shape=size, name='charge_down_potential', nonneg=True),
+                          'chp_pow_res_D_min': cvx.Variable(shape=size, name='discharge_down_potential', nonneg=True),
+                          'chp_pow_res_D_max': cvx.Variable(shape=size, name='discharge_up_potential', nonneg=True)})
 
         return variables
 

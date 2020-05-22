@@ -162,7 +162,7 @@ class CHP(DER):
 
         """
 
-        results = super().timeseries_report()
+        results = pd.DataFrame(index=self.variables.index)
         results[self.name + ' CHP Generation (kW)'] = self.variables['chp_elec']
         results[self.name + ' CHP Thermal Generation (BTU)'] = self.variables['chp_therm']
         results[self.name + ' CHP on (y/n)'] = self.variables['chp_on']

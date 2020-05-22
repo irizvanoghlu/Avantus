@@ -184,7 +184,7 @@ class ParamsDER(Params):
             dictionary = {}
             # iterate through each tag required by the schema
             for schema_key in schema_tag:
-                # Check if attribute is in the schema
+                # Check if attribute is in the schema -- PARAMS checks this already, consider removing this recheck
                 try:
                     key = tag.find(schema_key.tag)
                     cba_value = key.find('Evaluation')
@@ -198,6 +198,11 @@ class ParamsDER(Params):
                 if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
                     valuation_entry = None
                     intended_type = key.find('Type').text
+                    # check if CBA is allowed
+                    if schema_key.get('cba') == 'n':
+                        cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
+                        continue
+
                     if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                         # if analysis, then convert each value and save as list
                         tag_key = (tag.tag, key.tag)
@@ -217,8 +222,6 @@ class ParamsDER(Params):
                         valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
                     # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
                     dictionary[key.tag] = valuation_entry
-                else:
-                    cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
             return dictionary
 
     @classmethod

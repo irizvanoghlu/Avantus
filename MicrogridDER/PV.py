@@ -17,6 +17,10 @@ from storagevet.Technology import PVSystem
 from MicrogridDER.Sizing import Sizing
 import pandas as pd
 from MicrogridDER.DERExtension import DERExtension
+import logging
+
+u_logger = logging.getLogger('User')
+e_logger = logging.getLogger('Error')
 
 
 class PV(PVSystem.PV, Sizing, DERExtension):
@@ -124,6 +128,16 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             'DER': self.name,
             'Power Capacity (kW)': rated_capacity,
             'Capital Cost ($/kW)': self.capital_cost_function}
+
+        # warn about tight sizing margins
+        # TODO is 'PV rating' ever a valid varible_name ? --AE
+        if 'PV rating' in self.variable_names:
+            sizing_margin1 = (abs(self.variables_df['PV rating'] - self.max_rated_capacity) - 0.05 * self.max_rated_capacity).values
+            sizing_margin2 = (abs(self.variables_df['PV rating'] - self.min_rated_capacity) - 0.05 * self.min_rated_capacity).values
+            if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
+                u_logger.warning("Difference between the optimal PV rated capacity and user upper/lower "
+                                 "bound constraints is less than 5% of the value of user upper/lower bound constraints")
+
         return sizing_results
 
     def update_for_evaluation(self, input_dict):
@@ -137,3 +151,13 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         cost_per_kw = input_dict.get('cost_per_kW')
         if cost_per_kw is not None:
             self.capital_cost_function = cost_per_kw
+
+    def error_checks_on_sizing(self):
+        # return False if errors occur
+        if not self.max_rated_capacity or not self.min_rated_capacity:
+            e_logger.error('Error: Please indicate min/max rated capacity to size the PV.')
+            return False
+        if self.min_rated_capacity > self.max_rated_capacity:
+            e_logger.error('Error: Required PV min rated capacity is set greater than required PV max rated capacity.')
+            return False
+        return True

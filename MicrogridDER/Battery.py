@@ -237,6 +237,28 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             'Capital Cost ($/kWh)': self.capital_cost_function[2]}
         if sizing_results['Duration (hours)'] > 24:
             u_logger.error(f'The duration of {self.name} is greater than 24 hours!')
+
+        # warn about tight sizing margins
+        # TODO clean up these warnings into a single method --AE
+        if 'ene_max_rated' in self.variable_names:
+            sizing_margin1 = (abs(self.variables['ene_max_rated'] - self.user_ene_rated_max) - 0.05 * self.user_ene_rated_max).values
+            sizing_margin2 = (abs(self.variables['ene_max_rated'] - self.user_ene_rated_min) - 0.05 * self.user_ene_rated_min).values
+            if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
+                u_logger.warning("Difference between the optimal Battery ene max rated and user upper/lower "
+                                 "bound constraints is less than 5% of the value of user upper/lower bound constraints")
+        if 'ch_max_rated' in self.variable_names:
+            sizing_margin1 = (abs(self.variables['ch_max_rated'] - self.user_ch_rated_max) - 0.05 * self.user_ch_rated_max).values
+            sizing_margin2 = (abs(self.variables['ch_max_rated'] - self.user_ch_rated_min) - 0.05 * self.user_ch_rated_min).values
+            if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
+                u_logger.warning("Difference between the optimal Battery ch max rated and user upper/lower "
+                                 "bound constraints is less than 5% of the value of user upper/lower bound constraints")
+        if 'dis_max_rated' in self.variable_names:
+            sizing_margin1 = (abs(self.variables['dis_max_rated'] - self.user_dis_rated_max) - 0.05 * self.user_dis_rated_max).values
+            sizing_margin2 = (abs(self.variables['dis_max_rated'] - self.user_dis_rated_min) - 0.05 * self.user_dis_rated_min).values
+            if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
+                u_logger.warning("Difference between the optimal Battery dis max rated and user upper/lower "
+                                 "bound constraints is less than 5% of the value of user upper/lower bound constraints")
+
         return sizing_results
 
     def calculate_duration(self):
@@ -275,3 +297,27 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             p_start_dis = input_dict.get('p_start_dis')
             if p_start_dis is not None:
                 self.p_start_dis = p_start_dis * 100
+
+    def error_checks_on_sizing(self):
+        # return False if errors occur
+        if not self.ch_max_rated:
+            if not self.user_ch_rated_max and not self.user_ch_rated_min:
+                e_logger.error('Error: Please indicate min/max charge power capacity to size the Battery.')
+                return False
+            if self.user_ch_rated_min > self.user_ch_rated_max:
+                e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
+                return False
+        if not self.dis_max_rated:
+            if not self.user_dis_rated_max and not self.user_dis_rated_min:
+                e_logger.error('Error: Please indicate min/max discharge power capacity to size the Battery.')
+                return False
+            if self.user_dis_rated_min > self.user_dis_rated_max:
+                e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
+                return False
+        if not self.user_ene_rated_max and not self.user_ene_rated_min:
+            e_logger.error('Error: Please indicate min/max energy capacity to size the Battery.')
+            return False
+        if self.user_ene_rated_min > self.user_ene_rated_max:
+            e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
+            return False
+        return True

@@ -116,6 +116,9 @@ class MicrogridScenario(Scenario):
                 return False
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
+            # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
+            # NOTE: change this conditional if there is multiple Storage technologies (POI will resolve this)
+            self.error_checks_on_sizing_with_ts_service_constraints()
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
             u_logger.info("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
@@ -159,3 +162,29 @@ class MicrogridScenario(Scenario):
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)
         return True
+
+    def error_checks_on_sizing_with_ts_service_constraints(self):
+        # perform error checks on DERs that are being sized with ts_user_constraints
+        # collect errors and raise if any were found
+        errors_found = False
+        for der in self.poi.der_list:
+            try:
+                solve_for_size = der.being_sized()
+                # only check for BatterySizing instances
+                # TODO add capability for checking other technology sizing ? --AE
+                if not isinstance(der, Battery):
+                    continue
+                max_power_size_constraint = der.user_ch_rated_max + der.user_dis_rated_max
+                for service_name, service in self.service_agg.value_streams.items():
+                    try:
+                        if service.error_checks_on_sizing_with_ts_service_constraints(max_power_size_constraint):
+                            u_logger.info(f"Finished error checks on sizing {der.name} with timeseries {service_name} service constraints...")
+                        else:
+                            errors_found = True
+                    except AttributeError:
+                        pass
+            except AttributeError:
+                pass
+        if errors_found:
+            raise Warning(f'Sizing of DERs has an error with timeseries service constraints. Please check error log.')
+

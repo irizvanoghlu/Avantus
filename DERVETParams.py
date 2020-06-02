@@ -97,8 +97,9 @@ class ParamsDER(Params):
             Returns dictionary of instances of Params, each key is a number
         """
         cls.instances = super().initialize(filename, verbose)  # everything that initialize does in Params (steps 1-4)
-        # 1) INITIALIZE ALL MUTABLE CLASS VARIABLES
+        # 1) INITIALIZE CLASS VARIABLES
         cls.sensitivity['cba_values'] = dict()
+        cls.cba_input_error_raised = False
 
         # 5) load direct data and create input template
         # determine if cba value can be given and validate

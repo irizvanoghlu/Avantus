@@ -147,25 +147,25 @@ class ParamsDER(Params):
 
         """
         template = dict()
-        template['Scenario'] = cls.flatten_tag_id(cls.read_and_validate_cba('Scenario'))
-        template['Finance'] = cls.flatten_tag_id(cls.read_and_validate_cba('Finance'))
+        template['Scenario'] = cls.flatten_tag_id(cls.read_and_validate_evaluation('Scenario'))
+        template['Finance'] = cls.flatten_tag_id(cls.read_and_validate_evaluation('Finance'))
 
         # create dictionary for CBA values for DERs
         template['ders_values'] = {
-            'Battery': cls.read_and_validate_cba('Battery'),
-            'CAES': cls.read_and_validate_cba('CAES'),
-            'PV': cls.read_and_validate_cba('PV'),  # cost_per_kW (and then recalculate capex)
-            'ICE': cls.read_and_validate_cba('ICE'),  # fuel_price,
-            'Load': cls.read_and_validate_cba('Load')
+            'Battery': cls.read_and_validate_evaluation('Battery'),
+            'CAES': cls.read_and_validate_evaluation('CAES'),
+            'PV': cls.read_and_validate_evaluation('PV'),  # cost_per_kW (and then recalculate capex)
+            'ICE': cls.read_and_validate_evaluation('ICE'),  # fuel_price,
+            # 'ControllableLoad': cls.read_and_validate_evaluation('ControllableLoad')
         }
 
         # create dictionary for CBA values for all services (from data files)
-        template['valuestream_values'] = {'User': cls.flatten_tag_id(cls.read_and_validate_cba('User')),  # only have one entry in it (key = price)
-                                          'Deferral': cls.flatten_tag_id(cls.read_and_validate_cba('Deferral'))}
+        template['valuestream_values'] = {'User': cls.flatten_tag_id(cls.read_and_validate_evaluation('User')),  # only have one entry in it (key = price)
+                                          'Deferral': cls.flatten_tag_id(cls.read_and_validate_evaluation('Deferral'))}
         return template
 
     @classmethod
-    def read_and_validate_cba(cls, name):
+    def read_and_validate_evaluation(cls, name):
         """ Read data from valuation XML file
 
         Args:
@@ -206,7 +206,7 @@ class ParamsDER(Params):
                             intended_type = key.find('Type').text
                             if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                                 # if analysis, then convert each value and save as list
-                                tag_key = (tag.tag, key.tag)
+                                tag_key = (tag.tag, key.tag, tag.get('id'))
                                 sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
 
                                 # validate each value
@@ -339,7 +339,7 @@ class ParamsDER(Params):
                 row = cls.case_definitions.iloc[index]
                 # modify the case dictionary
                 if tag_key[0] in cls.cba_input_template['ders_values'].keys():
-                    cba_dict['ders_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
+                    cba_dict['ders_values'][tag_key[0]][tag_key[2]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 elif tag_key[0] in cls.cba_input_template['valuestream_values'].keys():
                     cba_dict['valuestream_values'][tag_key[0]][tag_key[1]] = row.loc[f"CBA {tag_key}"]
                 else:

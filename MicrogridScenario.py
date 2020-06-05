@@ -13,10 +13,10 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 from MicrogridValueStreams.Reliability import Reliability
-from MicrogridDER.BatterySizing import BatterySizing
-from MicrogridDER.CAESSizing import CAESSizing
-from MicrogridDER.PVSizing import PVSizing
-from MicrogridDER.ICESizing import ICESizing
+from MicrogridDER.Battery import Battery
+from MicrogridDER.CAES import CAES
+from MicrogridDER.PV import PV
+from MicrogridDER.ICE import ICE
 from MicrogridDER.LoadControllable import ControllableLoad
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
 from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
@@ -67,10 +67,10 @@ class MicrogridScenario(Scenario):
 
         """
         technology_class_map = {
-            'CAES': CAESSizing,
-            'Battery': BatterySizing,
-            'PV': PVSizing,
-            'ICE': ICESizing,
+            'CAES': CAES,
+            'Battery': Battery,
+            'PV': PV,
+            'ICE': ICE,
             'Load': ControllableLoad
         }
 

@@ -82,45 +82,7 @@ class CostBenefitAnalysis(Financial):
         lifetime_npv_alpha = np.npv(kwargs['npv_discount_rate']/100, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
-    def initiate_cost_benefit_analysis(self, poi, valuestreams):
-        """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
-        This function should be called before any finacial methods so that the user defined evaluation
-        values are used
-
-        Args:
-            poi (POI): the management point of all active technology to access (needed to get capital and om costs)
-            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
-
-        """
-        # we deep copy because we do not want to change the original ValueStream objects
-        self.value_streams = copy.deepcopy(valuestreams)
-        self.ders = copy.deepcopy(poi.der_list)
-
-        self.place_evaluation_data()
-
-    @staticmethod
-    def update_with_evaluation(param_name, param_object, evaluation_dict, verbose):
-        """Searches through the class variables (which are dictionaries of the parameters with values to be used in the CBA)
-        and saves that value
-
-        Args:
-            param_name (str): key of the ValueStream or DER as it is saved in the appropriate dictionary
-            param_object (DER, ValueStream): the actual object that we want to edit
-            evaluation_dict (dict, None): keys are the string representation of the attribute where value is saved, and values
-                are what the attribute value should be
-
-        Returns: the param_object with attributes set to the evaluation values instead of the optimization values
-
-        """
-        if evaluation_dict:  # evaluates true if dict is not empty and the value is not None
-            for key, value in evaluation_dict.items():
-                try:
-                    setattr(param_object, key, value)
-                    print('attribute (' + param_name + ': ' + key + ') set: ' + str(value)) if verbose else None
-                except KeyError:
-                    print('No attribute ' + param_name + ': ' + key) if verbose else None
-
-    def perform_cost_benefit_analysis(self, poi, value_streams, results):
+    def preform_cost_benefit_analysis(self, technologies, value_streams, results):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
         saved in results and the set of technology and service instances that have (if any) values that the user indicated
         they wanted to use when evaluating the CBA.
@@ -129,14 +91,30 @@ class CostBenefitAnalysis(Financial):
         the technologies and services with the values the user denoted to be used for evaluating the CBA.
 
         Args:
-            poi (POI): management point of all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
+            technologies (Dict): all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
             value_streams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
 
         """
-        self.initiate_cost_benefit_analysis(poi, value_streams)
-        super().perform_cost_benefit_analysis(poi, self.value_streams, results)
+        self.initiate_cost_benefit_analysis(technologies, value_streams)
+        super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
+
+    def initiate_cost_benefit_analysis(self, technologies, valuestreams):
+        """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
+        This function should be called before any finacial methods so that the user defined evaluation
+        values are used
+
+        Args:
+            technologies (list): the management point of all active technology to access (needed to get capital and om costs)
+            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
+
+        """
+        # we deep copy because we do not want to change the original ValueStream objects
+        self.value_streams = copy.deepcopy(valuestreams)
+        self.ders = copy.deepcopy(technologies)
+
+        self.place_evaluation_data()
 
     def place_evaluation_data(self):
         """ Place the data specified in the evaluation column into the correct places. This means all the monthly data,
@@ -162,7 +140,31 @@ class CostBenefitAnalysis(Financial):
             self.tariff = self.Finance['customer_tariff']
 
         if 'User' in self.value_streams.keys():
-            self.update_with_evaluation('User', self.value_streams['User'], self.valuestream_values['User'], self.verbose)
+            self.update_with_evaluation(self.value_streams['User'], self.valuestream_values['User'], self.verbose)
 
-        for key, value in self.ders.items():
-            self.update_with_evaluation(key, value, self.ders_values[key], self.verbose)
+        for der_tag, instance_dict in self.ders_values.items():
+            for id_str, der_instance in instance_dict.items():
+                self.ders[der_tag][id_str].update_for_evaluation(der_instance)
+                # self.update_with_evaluation(self.ders[der_tag][id_str], der_instance, self.verbose)
+
+    @staticmethod
+    def update_with_evaluation(param_object, evaluation_dict, verbose):
+        """Searches through the class variables (which are dictionaries of the parameters with values to be used in the CBA)
+        and saves that value
+
+        Args:
+            param_object (DER, ValueStream): the actual object that we want to edit
+            evaluation_dict (dict, None): keys are the string representation of the attribute where value is saved, and values
+                are what the attribute value should be
+            verbose (bool): true or fla
+
+        Returns: the param_object with attributes set to the evaluation values instead of the optimization values
+
+        """
+        if evaluation_dict:  # evaluates true if dict is not empty and the value is not None
+            for key, value in evaluation_dict.items():
+                try:
+                    setattr(param_object, key, value)
+                    print('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value)) if verbose else None
+                except KeyError:
+                    print('No attribute ' + param_object.name + ': ' + key) if verbose else None

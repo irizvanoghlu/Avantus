@@ -103,6 +103,8 @@ class ControllableLoad(Load, Sizing, DERExtension):
             effective_charge += self.variables_dict['power']
         return effective_charge
 
+
+
     def get_state_of_energy(self, mask):
         """
         Args:

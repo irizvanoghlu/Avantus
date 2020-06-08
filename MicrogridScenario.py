@@ -37,6 +37,7 @@ from MicrogridPOI import MicrogridPOI
 from MicrogridServiceAggregator import MicrogridServiceAggregator
 import time
 import pandas as pd
+import numpy as np
 
 import logging
 
@@ -159,3 +160,97 @@ class MicrogridScenario(Scenario):
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)
         return True
+
+    def Reliability_based_sizing_module(self):
+
+
+        #check if you have to size for reliability
+        #if yes
+        for opt_period in self.optimization_levels.predictive.unique():
+
+            # used to select rows from time_series relevant to this optimization window
+            mask = self.optimization_levels.predictive == opt_period
+            der_list=self.poi.der_list
+            top_n_outages = 1
+            tech_specs = {}
+            soc = None
+            ess_properties = {
+                'charge max': 0,
+                'discharge max': 0,
+                'rte list': [],
+                'operation SOE min': 0,
+                'operation SOE max': 0,
+                'energy rating': 0
+            }
+
+
+            total_pv_max = np.zeros(len(self.service_agg.value_streams['Reliability'].critical_load))
+            total_dg_max = 0
+
+            for der_inst in der_list:
+                if der_inst.technology_type == 'Intermittent Resource':
+                    total_pv_max += der_inst.maximum_generation(None)
+                if der_inst.technology_type == 'Generator':
+                    total_dg_max += der_inst.discharge_capacity()
+                if der_inst.technology_type == 'Energy Storage System':
+                    ess_properties['rte list'].append(der_inst.rte)
+                    # only if not sizing
+                    # ess_properties['operation SOE min'] += der_inst.operational_min_energy()
+                    # ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                    # ess_properties['discharge max'] += der_inst.discharge_capacity(solution=False)
+                    # ess_properties['charge max'] += der_inst.charge_capacity(solution=False)
+                    # ess_properties['energy rating'] += der_inst.energy_capacity(solution=False)
+                    cost_funcs = der_inst.get_capex()
+            if self.service_agg.value_streams['Reliability'].n_2:
+                total_dg_max -= self.service_agg.value_streams['Reliability'].ice_rating
+            generation = np.repeat(total_dg_max, len(self.service_agg.value_streams['Reliability'].critical_load))
+
+            # The maximum load demand that is unserved
+            max_load_demand_unserved = np.around(self.service_agg.value_streams['Reliability'].critical_load.values - generation - total_pv_max, decimals=5)
+
+            # Sort the outages by max demand that is unserved
+            indices = np.argsort(-1 * max_load_demand_unserved)
+
+            # Find the top n analysis indices that we are going to size our DER mix for.
+            analysis_indices = indices[0:top_n_outages]
+            # calculate and check that system requirement set by value streams can be met
+            system_requirements = self.check_system_requirements()
+            consts = []
+
+            for outage_ind in (analysis_indices):
+                Outage_mask = mask
+                Outage_mask[:] = False
+                Outage_mask[outage_ind: (outage_ind + int(self.service_agg.value_streams['Reliability'].outage_duration))] = True
+
+                opt_var_size = int(np.sum(mask))
+                # set up variables
+                self.poi.initialize_optimization_variables(opt_var_size)
+                self.service_agg.initialize_optimization_variables(opt_var_size)
+
+                # grab values from the POI that is required to know calculate objective functions and constraints
+                load_sum, critical_load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_p_in, agg_p_out = self.poi.get_state_of_system(Outage_mask)
+
+
+
+                consts += [cvx.Zero(tot_net_ess+gen_sum+var_gen_sum+critical_load_sum)]
+                for der_inst in der_list:
+
+
+                    consts += der_inst.constraints(Outage_mask)
+            obj = cvx.Minimize(cost_funcs)
+            prob = cvx.Problem(obj, consts)
+            obj=prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
+
+            IsReliable = 'No'
+            Total_failures = []
+
+            while IsReliable == 'No':
+                der_list = self.sizing_optimization(mask, analysis_indices, der_list, self.soc_init,
+                                                    self.outage_duration)
+
+            new_der_list=self.service_agg.value_streams['Reliability'].size_for_Reliability(mask,der_list,time_series_data=None, technology_summary=None, sizing_df=None)
+
+            self.poi.der_list=new_der_list
+
+        #call
+        return None

@@ -461,6 +461,6 @@ class ParamsDER(Params):
             except KeyError:
                 self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
 
-        if self.DA is None and self.retailTimeShift is None and not post_facto_only:
-            self.record_input_error('Not providing DA or retailETS might cause the solver to take infinite time to solve!')
+        if self.DA is None and self.retailTimeShift is None and not self.Reliability:
+            self.record_input_error('Not providing DA or retailETS or Reliability might cause the solver to take infinite time to solve!')
         u_logger.info("Successfully prepared the value-stream (services)")

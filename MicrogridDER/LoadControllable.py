@@ -31,6 +31,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         """
         # create generic technology object
         Load.__init__(self, params)
+        Sizing.__init__(self)
         DERExtension.__init__(self, params)
 
         # input params  UNITS ARE COMMENTED TO THE RIGHT
@@ -116,7 +117,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         """
         return self.variables_dict['ene_load']
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:

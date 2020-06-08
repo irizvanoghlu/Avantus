@@ -164,14 +164,14 @@ class MicrogridScenario(Scenario):
 
     def Reliability_based_sizing_module(self):
 
-        if 'Reliability' not in self.service_agg.value_streams.key() or not self.poi.is_sizing_optimization:
+        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
             return
 
         reliability_mod = self.service_agg.value_streams['Reliability']
         # used to select rows from time_series relevant to this optimization window
         der_list = copy.deepcopy(self.poi.der_list)
         top_n_outages = 1
-        generation, total_pv_max, ess_properties = reliability_mod.get_der_limits(der_list)
+        generation, total_pv_max, ess_properties = reliability_mod.get_der_limits(der_list, True)
 
         # The maximum load demand that is unserved
         max_load_demand_unserved = np.around(reliability_mod.critical_load.values - generation - total_pv_max, decimals=5)
@@ -183,7 +183,7 @@ class MicrogridScenario(Scenario):
         analysis_indices = indices[:top_n_outages]
         # calculate and check that system requirement set by value streams can be met
         system_requirements = self.check_system_requirements()
-        outage_duration = reliability_mod.outage_duration * self.dt
+        outage_duration = int(reliability_mod.outage_duration * self.dt)
 
         consts = []
         cost_funcs = 0
@@ -192,16 +192,26 @@ class MicrogridScenario(Scenario):
 
         for outage_ind in (analysis_indices):
             Outage_mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
-            Outage_mask.iloc[outage_ind: (outage_ind + int(outage_duration))] = True
+            Outage_mask.iloc[outage_ind: (outage_ind + outage_duration)] = True
             # set up variables
-            self.poi.initialize_optimization_variables(outage_duration)
+            var_gen_sum = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')  # at POI
+            gen_sum = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')
+            tot_net_ess = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')
 
-            # grab values from the POI that is required to know calculate objective functions and constraints
-            load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_p_in, agg_p_out = self.poi.get_state_of_system(Outage_mask)
-            critical_load = cvx.Variable(value=reliability_mod.critical_load.loc[Outage_mask].value, size=outage_duration, name='critical_load')
+            for der_instance in der_list:
+                # initialize variables
+                der_instance.initialize_variables(outage_duration)
+                consts += der_instance.constraints(Outage_mask, sizing_for_rel=True)
+                if der_instance.technology_type == 'Energy Storage System':
+                    tot_net_ess += der_instance.get_net_power(Outage_mask)
+                if der_instance.technology_type == 'Generator':
+                    gen_sum += der_instance.get_discharge(Outage_mask)
+                if der_instance.technology_type == 'Intermittent Resource':
+                    var_gen_sum += der_instance.get_discharge(Outage_mask)
+
+            critical_load = cvx.Parameter(value=reliability_mod.critical_load.loc[Outage_mask].values, shape=outage_duration, name='critical_load')
             consts += [cvx.Zero(tot_net_ess+(-1)*gen_sum+(-1)*var_gen_sum+critical_load)]
-            for der_inst in der_list:
-                consts += der_inst.constraints(Outage_mask)
+
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
         obj=prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')

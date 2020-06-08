@@ -320,7 +320,7 @@ class Reliability(ValueStream):
 
         total_pv_max = np.zeros(len(self.critical_load))
         total_dg_max = 0
-
+        solution = not sizing
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource':
                 total_pv_max += der_inst.maximum_generation(None)
@@ -328,12 +328,11 @@ class Reliability(ValueStream):
                 total_dg_max += der_inst.discharge_capacity()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
-                if not sizing:
-                    ess_properties['operation SOE min'] += der_inst.operational_min_energy()
-                    ess_properties['operation SOE max'] += der_inst.operational_max_energy()
-                    ess_properties['discharge max'] += der_inst.discharge_capacity(solution=True)
-                    ess_properties['charge max'] += der_inst.charge_capacity(solution=True)
-                    ess_properties['energy rating'] += der_inst.energy_capacity(solution=True)
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy()
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                ess_properties['discharge max'] += der_inst.discharge_capacity(solution=solution)
+                ess_properties['charge max'] += der_inst.charge_capacity(solution=solution)
+                ess_properties['energy rating'] += der_inst.energy_capacity(solution=solution)
         if self.n_2:
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))

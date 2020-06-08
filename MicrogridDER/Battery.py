@@ -143,7 +143,7 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
                 effective_soe_min = self.effective_soe_min
             return effective_soe_min
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:

@@ -40,7 +40,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         # create generic technology object
         InternalCombustionEngine.ICE.__init__(self, params)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:

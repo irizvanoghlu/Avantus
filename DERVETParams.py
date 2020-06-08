@@ -126,7 +126,7 @@ class ParamsDER(Params):
         """ Initialize these following attributes of the empty Params class object.
         """
         super().__init__()
-        self.Reliability = self.flatten_tag_id(self.read_and_validate('Reliability'))  # Value Stream
+        self.Reliability = self.read_and_validate('Reliability')  # Value Stream
         self.Load = self.read_and_validate('ControllableLoad')  # DER
 
     @classmethod
@@ -450,13 +450,16 @@ class ParamsDER(Params):
         """
         super().load_services()
 
+        post_facto_only = False
+
         if self.Reliability is not None:
+            post_facto_only = self.Reliability['post_facto_only']
             self.Reliability["dt"] = self.Scenario["dt"]
             try:
                 self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
             except KeyError:
                 self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
 
-        if self.DA is None and self.retailTimeShift is None and not self.Reliability['post_facto_only']:
+        if self.DA is None and self.retailTimeShift is None and not post_facto_only:
             self.record_input_error('Not providing DA or retailETS might cause the solver to take infinite time to solve!')
         u_logger.info("Successfully prepared the value-stream (services)")

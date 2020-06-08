@@ -257,33 +257,7 @@ class Reliability(ValueStream):
         # collect information required to call simulate_outage
         tech_specs = {}
         soc = None
-        ess_properties = {
-            'charge max': 0,
-            'discharge max': 0,
-            'rte list': [],
-            'operation SOE min': 0,
-            'operation SOE max': 0,
-            'energy rating': 0
-        }
-
-        total_pv_max = np.zeros(len(self.critical_load))
-        total_dg_max = 0
-
-        for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource':
-                total_pv_max += der_inst.maximum_generation(None)
-            if der_inst.technology_type == 'Generator':
-                total_dg_max += der_inst.discharge_capacity()
-            if der_inst.technology_type == 'Energy Storage System':
-                ess_properties['rte list'].append(der_inst.rte)
-                ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=True)
-                ess_properties['operation SOE max'] += der_inst.operational_max_energy(solution=True)
-                ess_properties['discharge max'] += der_inst.discharge_capacity(solution=True)
-                ess_properties['charge max'] += der_inst.charge_capacity(solution=True)
-                ess_properties['energy rating'] += der_inst.energy_capacity(solution=True)
-        if self.n_2:
-            total_dg_max -= self.ice_rating
-        generation = np.repeat(total_dg_max, len(self.critical_load))
+        generation, total_pv_max, ess_properties = self.get_der_limits(der_list)
 
         demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
         reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max), decimals=5)
@@ -332,6 +306,38 @@ class Reliability(ValueStream):
         lcpc_df = pd.DataFrame(outage_coverage)
         lcpc_df.set_index('Outage Length (hrs)')
         return lcpc_df
+
+    def get_der_limits(self, der_list, sizing=False):
+        # collect information required to call simulate_outage
+        ess_properties = {
+            'charge max': 0,
+            'discharge max': 0,
+            'rte list': [],
+            'operation SOE min': 0,
+            'operation SOE max': 0,
+            'energy rating': 0
+        }
+
+        total_pv_max = np.zeros(len(self.critical_load))
+        total_dg_max = 0
+
+        for der_inst in der_list:
+            if der_inst.technology_type == 'Intermittent Resource':
+                total_pv_max += der_inst.maximum_generation(None)
+            if der_inst.technology_type == 'Generator':
+                total_dg_max += der_inst.discharge_capacity()
+            if der_inst.technology_type == 'Energy Storage System':
+                ess_properties['rte list'].append(der_inst.rte)
+                if not sizing:
+                    ess_properties['operation SOE min'] += der_inst.operational_min_energy()
+                    ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                    ess_properties['discharge max'] += der_inst.discharge_capacity(solution=True)
+                    ess_properties['charge max'] += der_inst.charge_capacity(solution=True)
+                    ess_properties['energy rating'] += der_inst.energy_capacity(solution=True)
+        if self.n_2:
+            total_dg_max -= self.ice_rating
+        generation = np.repeat(total_dg_max, len(self.critical_load))
+        return generation, total_pv_max, ess_properties
 
     def simulate_outage(self, reliability_check, demand_left, outage_left, ess_properties=None, init_soe=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH
@@ -385,7 +391,7 @@ class Reliability(ValueStream):
         # SIMULATE OUTAGE IN NEXT TIMESTEP
         return self.dt + self.simulate_outage(reliability_check[1:], demand_left[1:], outage_left - 1, ess_properties, next_soe)
 
-    def size_for_Reliability(self,mask,der_list,time_series_data=None, technology_summary=None, sizing_df=None):
+    def size_for_Reliability(self,mask,poi):
         """
         This part of the code finds the minimum DER size for a given top n number of outages or 'top_n_outages'.
         The default value for 'top_n_outages' is 10 but it can be changed.

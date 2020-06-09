@@ -275,8 +275,8 @@ class Reliability(ValueStream):
                 total_dg_max += der_inst.discharge_capacity()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
-                ess_properties['operation SOE min'] += der_inst.operational_min_energy()
-                ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=True)
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy(solution=True)
                 ess_properties['discharge max'] += der_inst.discharge_capacity(solution=True)
                 ess_properties['charge max'] += der_inst.charge_capacity(solution=True)
                 ess_properties['energy rating'] += der_inst.energy_capacity(solution=True)

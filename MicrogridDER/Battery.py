@@ -102,7 +102,7 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
     def energy_capacity(self, solution=False):
         """
 
-        Returns: the maximum charge that can be attained
+        Returns: the maximum energy that can be attained
 
         """
         if not solution:
@@ -113,6 +113,35 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             except AttributeError:
                 max_rated = self.ene_max_rated
             return max_rated
+
+    def operational_max_energy(self, solution=False):
+        """
+
+        Returns: the maximum energy that should stored in this DER based on user inputs
+
+        """
+        if not solution:
+            return self.effective_soe_max
+        else:
+            try:
+                effective_soe_max = self.effective_soe_max.value
+            except AttributeError:
+                effective_soe_max = self.effective_soe_max
+            return effective_soe_max
+
+    def operational_min_energy(self, solution=False):
+        """
+
+        Returns: the minimum energy that should stored in this DER based on user inputs
+        """
+        if not solution:
+            return self.effective_soe_min
+        else:
+            try:
+                effective_soe_min = self.effective_soe_min.value
+            except AttributeError:
+                effective_soe_min = self.effective_soe_min
+            return effective_soe_min
 
     def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

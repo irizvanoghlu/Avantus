@@ -15,6 +15,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import logging
 import pandas as pd
 from storagevet.POI import POI
+import cvxpy as cvx
 
 e_logger = logging.getLogger('Error')
 u_logger = logging.getLogger('User')
@@ -45,6 +46,28 @@ class MicrogridPOI(POI):
             if solve_for_size:
                 return True
         return False
+
+    def is_dcp_error(self, is_binary_formulation):
+        """ If trying to sizing power of batteries (or other DERs) AND using the binary formulation (of ESS)
+        our linear model will not be linear anymore
+
+        Args:
+            is_binary_formulation (bool):
+
+        Returns: a boolean
+
+        """
+        solve_for_size = False
+        for der_instance in self.der_list:
+            if der_instance.technology_type != 'Energy Storage System':
+                try:
+                    solve_for_size = solve_for_size or der_instance.being_sized()
+                except AttributeError:
+                    solve_for_size = solve_for_size or False
+            else:
+                power_being_sizing = isinstance(der_instance.dis_max_rated, cvx.Variable) or isinstance(der_instance.ch_max_rated, cvx.Variable)
+                solve_for_size = solve_for_size or power_being_sizing
+        return solve_for_size
 
     def sizing_summary(self):
         rows = list(map(lambda der: der.sizing_summary(), self.der_list))

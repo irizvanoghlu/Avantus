@@ -111,6 +111,9 @@ class MicrogridScenario(Scenario):
                 # whole sale markets
                 e_logger.error('Params Error: trying to size and preform post facto calculations only')
                 return False
+            if self.poi.is_dcp_error(self.incl_binary):
+                e_logger.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
+                return False
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
 

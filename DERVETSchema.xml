@@ -59,7 +59,7 @@
 	<retailTimeShift type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</retailTimeShift>
-	<ControllableLoad type="load" max_num="1">
+	<ControllableLoad type="load">
 		<name cba="n" type="string" />
 		<power_rating cba="n" min="0.0" type="float" />
 		<duration cba="n" min="0.0" type="float" />

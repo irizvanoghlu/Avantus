@@ -99,6 +99,7 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
+        self.calculate_taxes(self.pro_forma)
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -168,3 +169,15 @@ class CostBenefitAnalysis(Financial):
                     print('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value)) if verbose else None
                 except KeyError:
                     print('No attribute ' + param_object.name + ': ' + key) if verbose else None
+
+    def calculate_taxes(self, proforma):
+        """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
+        as a result
+
+        Args:
+            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+
+        Returns:
+
+        """
+        self.pro_forma = proforma

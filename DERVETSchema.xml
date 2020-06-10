@@ -195,6 +195,9 @@
 		<yearly_data_filename cba="n" optional="y" type="string" />
 		<customer_tariff_filename cba='y' type="string" />
 		<analysis_horizon_mode cba="n" allowed_values="1|2|3" type="int" />
+		<federal_tax_rate cba="n" max="100.0" min="0.0" type="float" />
+		<state_tax_rate cba="n" max="100.0" min="0.0" type="float" />
+		<property_tax_rate cba="n" max="100.0" min="0.0" type="float" />
 	</Finance>
 	<Results type="command" max_num="1">
 		<dir_absolute_path cba="n" type="string" />

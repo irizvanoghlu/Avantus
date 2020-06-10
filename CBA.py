@@ -99,7 +99,6 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
-        self.calculate_taxes(self.pro_forma)
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -170,14 +169,43 @@ class CostBenefitAnalysis(Financial):
                 except KeyError:
                     print('No attribute ' + param_object.name + ': ' + key) if verbose else None
 
-    def calculate_taxes(self, proforma):
+    def proforma_report(self, technologies, valuestreams, results):
+        """ Calculates and returns the proforma
+
+        Args:
+            technologies (list): list of technologies (needed to get capital and om costs)
+            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
+            results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
+                and ValueStream
+
+        Returns: dataframe proforma
+        """
+        proforma = super().pro_forma(technologies, valuestreams, results)
+        proforma_w_taxes = self.calculate_taxes(proforma, technologies, valuestreams, results)
+        self.pro_forma = proforma_w_taxes
+        return proforma_w_taxes
+
+    @staticmethod
+    def calculate_taxes(proforma, technologies, valuestreams, results):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
         as a result
 
         Args:
             proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+            technologies (Dict): Dict of technologies (needed to get capital and om costs)
+            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
+            results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
+                and ValueStream
 
         Returns:
 
         """
-        self.pro_forma = proforma
+        # TODO 1) Redistribute capitial cost columns according to the DER's MACRS value
+
+        # TODO 2) Calculate State tax based on the net cash flows in each year
+
+        # TODO 3) Calculate Federal tax based on the net cash flow in each year minus State taxes from that year
+
+        # TODO 4) Add the overall tax burden (= state tax + federal tax) to proforma, make sure columns are ordered s.t. yrly net is last
+
+        return proforma

@@ -170,8 +170,8 @@ class MicrogridScenario(Scenario):
         reliability_mod = self.service_agg.value_streams['Reliability']
         # used to select rows from time_series relevant to this optimization window
         der_list = copy.deepcopy(self.poi.der_list)
-        top_n_outages = 1
-        generation, total_pv_max, ess_properties = reliability_mod.get_der_limits(der_list, True)
+        top_n_outages = 10
+        generation, total_pv_max, ess_properties,demand_left,reliability_check = reliability_mod.get_der_limits(der_list, True)
 
         # The maximum load demand that is unserved
         max_load_demand_unserved = np.around(reliability_mod.critical_load.values - generation - total_pv_max, decimals=5)
@@ -185,47 +185,36 @@ class MicrogridScenario(Scenario):
         system_requirements = self.check_system_requirements()
         outage_duration = int(reliability_mod.outage_duration * self.dt)
 
-        consts = []
-        cost_funcs = 0
-        for der_instance in der_list:
-            cost_funcs += der_instance.get_capex()
-
-        for outage_ind in (analysis_indices):
-            Outage_mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
-            Outage_mask.iloc[outage_ind: (outage_ind + outage_duration)] = True
-            # set up variables
-            var_gen_sum = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')  # at POI
-            gen_sum = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')
-            tot_net_ess = cvx.Parameter(value=np.zeros(outage_duration), shape=outage_duration, name='POI-Zero')
-
-            for der_instance in der_list:
-                # initialize variables
-                der_instance.initialize_variables(outage_duration)
-                consts += der_instance.constraints(Outage_mask, sizing_for_rel=True)
-                if der_instance.technology_type == 'Energy Storage System':
-                    tot_net_ess += der_instance.get_net_power(Outage_mask)
-                if der_instance.technology_type == 'Generator':
-                    gen_sum += der_instance.get_discharge(Outage_mask)
-                if der_instance.technology_type == 'Intermittent Resource':
-                    var_gen_sum += der_instance.get_discharge(Outage_mask)
-
-            critical_load = cvx.Parameter(value=reliability_mod.critical_load.loc[Outage_mask].values, shape=outage_duration, name='critical_load')
-            consts += [cvx.Zero(tot_net_ess+(-1)*gen_sum+(-1)*var_gen_sum+critical_load)]
-
-        obj = cvx.Minimize(cost_funcs)
-        prob = cvx.Problem(obj, consts)
-        obj=prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
+        mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
 
         IsReliable = 'No'
-        Total_failures = []
+
 
         while IsReliable == 'No':
-            der_list = self.sizing_optimization(mask, analysis_indices, der_list, self.soc_init,
-                                                self.outage_duration)
+            der_list = reliability_mod.Reliability_sizing_for_analy_indices(mask,analysis_indices, der_list)
+            generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
-        new_der_list=self.service_agg.value_streams['Reliability'].size_for_Reliability(mask,der_list,time_series_data=None, technology_summary=None, sizing_df=None)
+            soc = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
+            outage_init=0
+            First_failure_ind = -1
+            while outage_init < (len(reliability_mod.critical_load)):
 
-        self.poi.der_list=new_der_list
+                longest_outage = reliability_mod.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],
+                                                      reliability_mod.outage_duration, ess_properties, soc[outage_init])
+                if longest_outage < reliability_mod.outage_duration:
+                    if longest_outage < (len(reliability_mod.critical_load) - outage_init):
+                        First_failure_ind = outage_init
+                outage_init += 1
+
+
+            if First_failure_ind>0:
+                Analysis_indices = np.append(Analysis_indices, First_failure_ind)
+            else:
+                IsReliable = 'Yes'
+        for der_inst in der_list:
+            der_inst.set_size()
+
+        self.poi.der_list=der_list
 
         #call
         return

@@ -16,6 +16,7 @@ __version__ = '0.1.1'
 from storagevet.SystemRequirement import Requirement
 import storagevet.Library as Lib
 from storagevet.ValueStreams.ValueStream import ValueStream
+from MicrogridDER.Sizing import Sizing
 import numpy as np
 import cvxpy as cvx
 import pandas as pd
@@ -40,7 +41,7 @@ class Reliability(ValueStream):
 
         # generate the generic predispatch service object
         super().__init__('Reliability', params)
-        self.outage_duration = params['target']  # must be in hours
+        self.outage_duration = int(params['target'])  # must be in hours
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
         #if self.post_facto_only:
@@ -160,7 +161,7 @@ class Reliability(ValueStream):
         """
         df_dict = {}
         u_logger.info('Starting load coverage calculation. This may take a while.')
-        df_dict['load_coverage_prob'] = self.load_coverage_probability(time_series_data, technology_summary, der_list)
+        df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list,time_series_data, technology_summary)
         u_logger.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
         if not self.post_facto_only:
@@ -235,11 +236,12 @@ class Reliability(ValueStream):
 
         self.outage_contribution_df = pd.DataFrame(contribution_arrays, index=self.critical_load.index)
 
-    def load_coverage_probability(self, results_df, technology_summary_df, der_list):
+    def load_coverage_probability(self ,der_list, results_df, technology_summary_df):
         """ Creates and returns a data frame with that reports the load coverage probability of outages that last from 0 to
         OUTAGE_LENGTH hours with the DER mix described in TECHNOLOGIES
 
         Args:
+
             results_df (DataFrame): the dataframe that consoidates all results
             technology_summary_df(DataFrame): maps DER type to user inputted name that indexes the size df
             der_list (list): list of ders
@@ -257,11 +259,7 @@ class Reliability(ValueStream):
         # collect information required to call simulate_outage
         tech_specs = {}
         soc = None
-        generation, total_pv_max, ess_properties = self.get_der_limits(der_list)
-
-        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
-        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max), decimals=5)
-
+        generation, total_pv_max, ess_properties, demand_left,reliability_check = self.get_der_limits(der_list)
         if 'Energy Storage System' in technology_summary_df['Type'].values:
             tech_specs['ess_properties'] = ess_properties
             # save the state of charge
@@ -275,12 +273,10 @@ class Reliability(ValueStream):
         # simulate outage starting on every timestep
         start = time.time()
         outage_init = 0
-        while outage_init < len(self.critical_load):
+        while outage_init < (len(self.critical_load)):
             if soc is not None:
                 tech_specs['init_soe'] = soc[outage_init]
-            longest_outage = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
-            if not self.post_facto_only and longest_outage<self.outage_duration:
-                break
+            longest_outage = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, ess_properties,tech_specs['init_soe'])
             # record value of foo in frequency count
             frequency_simulate_outage[int(longest_outage / self.dt)] += 1
             # start outage on next timestep
@@ -289,8 +285,6 @@ class Reliability(ValueStream):
         load_coverage_prob = []
         length = self.dt
         while length <= self.max_outage_duration:
-            if not self.post_facto_only and length==self.outage_duration:
-                break
             scenarios_covered = frequency_simulate_outage[int(length / self.dt):].sum()
             total_possible_scenarios = len(self.critical_load) - (length / self.dt) + 1
             percentage = scenarios_covered / total_possible_scenarios
@@ -328,15 +322,18 @@ class Reliability(ValueStream):
                 total_dg_max += der_inst.discharge_capacity()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
-                ess_properties['operation SOE min'] += der_inst.operational_min_energy()
-                ess_properties['operation SOE max'] += der_inst.operational_max_energy()
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=solution)
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy(solution=solution)
                 ess_properties['discharge max'] += der_inst.discharge_capacity(solution=solution)
                 ess_properties['charge max'] += der_inst.charge_capacity(solution=solution)
                 ess_properties['energy rating'] += der_inst.energy_capacity(solution=solution)
         if self.n_2:
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))
-        return generation, total_pv_max, ess_properties
+        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
+        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max), decimals=5)
+
+        return generation, total_pv_max, ess_properties,demand_left,reliability_check
 
     def simulate_outage(self, reliability_check, demand_left, outage_left, ess_properties=None, init_soe=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH
@@ -374,7 +371,7 @@ class Reliability(ValueStream):
             # can reliably meet the outage in that timestep: jump to SIMULATE OUTAGE IN NEXT TIMESTEP
         else:
             # check that there is enough SOC in the ESS to satisfy worst case
-            if ess_properties is not None and 0 >= (current_reliability_check * self.gamma) - init_soe:
+            if ess_properties is not None and  0 >= (current_reliability_check ) - init_soe: #* self.gamma Add it only with PV
                 # so discharge to meet the load offset by all generation
                 discharge_possible = (init_soe - ess_properties['operation SOE min']) / self.dt
                 discharge = min(discharge_possible, current_demand_left, ess_properties['discharge max'])
@@ -390,78 +387,8 @@ class Reliability(ValueStream):
         # SIMULATE OUTAGE IN NEXT TIMESTEP
         return self.dt + self.simulate_outage(reliability_check[1:], demand_left[1:], outage_left - 1, ess_properties, next_soe)
 
-    def size_for_Reliability(self,mask,poi):
-        """
-        This part of the code finds the minimum DER size for a given top n number of outages or 'top_n_outages'.
-        The default value for 'top_n_outages' is 10 but it can be changed.
 
-        Returns:
-
-        """
-        top_n_outages=10
-        tech_specs = {}
-        soc = None
-        ess_properties = {
-            'charge max': 0,
-            'discharge max': 0,
-            'rte list': [],
-            'operation SOE min': 0,
-            'operation SOE max': 0,
-            'energy rating': 0
-        }
-        total_pv_max = np.zeros(len(self.critical_load))
-        total_dg_max = 0
-
-        for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource':
-                total_pv_max += der_inst.maximum_generation(None)
-            if der_inst.technology_type == 'Generator':
-                total_dg_max += der_inst.discharge_capacity()
-            if der_inst.technology_type == 'Energy Storage System':
-                ess_properties['rte list'].append(der_inst.rte)
-                #only if not sizing
-                #ess_properties['operation SOE min'] += der_inst.operational_min_energy()
-                #ess_properties['operation SOE max'] += der_inst.operational_max_energy()
-                #ess_properties['discharge max'] += der_inst.discharge_capacity(solution=False)
-                #ess_properties['charge max'] += der_inst.charge_capacity(solution=False)
-                #ess_properties['energy rating'] += der_inst.energy_capacity(solution=False)
-        if self.n_2:
-            total_dg_max -= self.ice_rating
-        generation = np.repeat(total_dg_max, len(self.critical_load))
-
-        #The maximum load demand that is unserved
-        max_load_demand_unserved = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
-
-        #Sort the outages by max demand that is unserved
-        indices = np.argsort(-1 * max_load_demand_unserved)
-
-        #Find the top n analysis indices that we are going to size our DER mix for.
-        analysis_indices = indices[0:top_n_outages]
-
-
-        startTime = time.time()
-        IsReliable = 'No'
-        Total_failures = []
-
-        while IsReliable == 'No':
-            der_list = self.sizing_optimization(mask,analysis_indices, der_list, self.soc_init, self.outage_duration)
-
-##############
-            First_failure = self.load_coverage_probability(time_series_data, technology_summary, der_list)
-
-            #Total_failures.append(failures)
-            print(IsReliable)
-            if IsReliable == 'No':
-                print(First_failure[0])
-                Analysis_indices = np.append(Analysis_indices, First_failure[0])
-                print(Analysis_indices)
-
-        endTime = time.time()
-        elapsedTime = endTime - startTime
-        print('Elapsed time (s)=%s' % elapsedTime)
-        print('Check for all outages')
-
-    def sizing_optimization(self, mask,analysis_indices, der_list, initial_soc, outage_duration):
+    def Reliability_sizing_for_analy_indices(self, mask, analysis_indices, der_list):
         """ Sets up sizing optimization.
 
         Args:
@@ -477,55 +404,42 @@ class Reliability(ValueStream):
 
         """
 
-        SOC_start = np.ones(len(analysis_indices)) * initial_soc
 
         consts = []
         cost_funcs = 0
-        for der_inst in der_list:
-            cost_funcs += der_inst.get_capex()
+        for der_instance in der_list:
+            cost_funcs += der_instance.get_capex()
+
         for outage_ind in (analysis_indices):
+            Outage_mask = np.copy(mask)
+            Outage_mask[outage_ind: (outage_ind + (self.outage_duration))] = True
+            # set up variables
+            var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                        name='POI-Zero')  # at POI
+            gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
+            tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
 
-            Outage_mask=mask
-            Outage_mask[:]=False
+            for der_instance in der_list:
+                # initialize variables
+                der_instance.initialize_variables(self.outage_duration)
+                consts += der_instance.constraints(Outage_mask, sizing_for_rel=True)
+                if der_instance.technology_type == 'Energy Storage System':
+                    tot_net_ess += der_instance.get_net_power(Outage_mask)
+                if der_instance.technology_type == 'Generator':
+                    gen_sum += der_instance.get_discharge(Outage_mask)
+                if der_instance.technology_type == 'Intermittent Resource':
+                    var_gen_sum += der_instance.get_discharge(Outage_mask)
 
+            critical_load = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values,
+                                          shape=self.outage_duration, name='critical_load')
+            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load)]
 
-            Outage_mask[outage_ind: (outage_ind+int(outage_duration))]=True
-
-            for der_inst in der_list:
-                # initialize optimization variables
-
-                # collect capital costs of each active
-
-                # add size_constraints
-                #consts += der_inst.size_constraints
-                # add constraints that define dispatch of each DER
-                der_inst.initialize_variables(int(outage_duration))
-                consts += der_inst.constraints(Outage_mask)
-
-        # add constraints that define dispatch of DERs
-        # total_cases = self.outage_duration * total_outages
-        # for j in range(total_outages):
-        #     if (j % 1000) == 0 and verbose:
-        #         print(j)
-        #     k = datetimes[j]
-        #     PV_irr = total_pv_max[k:k + self.outage_duration]
-        #     Load = self.critical_load[k:k + self.outage_duration]
-        #
-        #     lhs = PV[(j * self.outage_duration):(j * self.outage_duration) + self.outage_duration] + dch[(j * self.outage_duration):(j * self.outage_duration) + self.outage_duration] - ch[(j * self.outage_duration):(j * self.outage_duration) + self.outage_duration]
-        #
-        #     for DG_index in range(DG_type_no):
-        #
-        #         lhs += DG[((j * self.outage_duration) + (DG_index * total_cases)):(((j * self.outage_duration) + self.outage_duration) + (DG_index * total_cases))]
-        #     consts.append(lhs == Load)
-
-
-
+        #sizing_df=Sizing.solve_and_save(cost_funcs,consts)
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
-        prob.solve( solver=cvx.GLPK_MI)#,'gp=Ture')
+        prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
 
-        return der_list #cost_funcs, consts
-
+        return der_list
 
     def calc_pv(self, der_list, initial_soc):
         """ Requires DERs to have a min size.

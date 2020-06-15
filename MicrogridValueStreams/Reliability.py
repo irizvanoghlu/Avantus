@@ -325,7 +325,7 @@ class Reliability(ValueStream):
         u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         lcpc_df = pd.DataFrame(outage_coverage)
         lcpc_df.set_index('Outage Length (hrs)')
-        return
+        return lcpc_df
 
     def simulate_outage(self, reliability_check, demand_left, outage_left, ess_properties=None, init_soe=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH

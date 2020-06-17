@@ -196,7 +196,7 @@ class CostBenefitAnalysis(Financial):
 
         Returns: dataframe proforma
         """
-        proforma = super().pro_forma(technologies, valuestreams, results)
+        proforma = super().proforma_report(technologies, valuestreams, results)
         proforma_w_taxes = self.calculate_taxes(proforma, technologies, valuestreams, results)
         return proforma_w_taxes
 
@@ -214,16 +214,15 @@ class CostBenefitAnalysis(Financial):
         Returns:
 
         """
-        # disregard CAPEX year values, bc of 1)
         proj_years = len(proforma)-1
         yearly_net = proforma.iloc[1:, -1].values
 
         # 1) Redistribute capital cost columns according to the DER's MACRS value
         capital_costs = np.zeros(proj_years)
         for der_inst in technologies:
-            macrs_yr = der_inst.macrs_term
+            macrs_yr = der_inst.macrs
             tax_schedule = self.macrs_depreciation[macrs_yr][:proj_years]
-            capital_costs += tax_schedule * proforma.loc['CAPEX Year', {der_inst.zero_column_name}]
+            capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name])
         yearly_net += capital_costs
 
         # 2) Calculate State tax based on the net cash flows in each year
@@ -237,7 +236,7 @@ class CostBenefitAnalysis(Financial):
         overall_tax_burden = state_tax + federal_tax
         # drop yearly net value column
         proforma_taxes = proforma.iloc[:, :-1]
-        proforma_taxes['Overall Tax Burden'] = [0].append(overall_tax_burden)
+        proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
         # calculate the net (sum of the row's columns)
         proforma_taxes['Yearly Net Value'] = proforma_taxes.sum(axis=1)
         # save new proforma

@@ -30,9 +30,9 @@ class DERExtension:
         self.sr_response_time = params['sr_response_time']
         self.startup_time = params['startup_time']  # startup time, default value of 0, units in minutes
 
-        self.macrs = params['macrs_term']
-        self.construction_date = params['construction_date']
-        self.operation_date = params['operation_date']
+        self.macrs = params.get('macrs_term')
+        self.construction_date = params.get('construction_date')
+        self.operation_date = params.get('operation_date')
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

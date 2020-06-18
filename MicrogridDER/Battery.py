@@ -182,19 +182,11 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
         Returns: A dataframe indexed by the terms that describe this DER's size and captial costs.
 
         """
-        # obtain the size of the battery, these may or may not be optimization variable
-        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
-        # If there is an error, then we know that it was user inputted and we just take that value instead.
-        try:
-            energy_rated = self.ene_max_rated.value
-        except AttributeError:
-            energy_rated = self.ene_max_rated
-
         sizing_results = {
             'DER': self.name,
-            'Energy Rating (kWh)': energy_rated,
-            'Charge Rating (kW)': self.charge_capacity(),
-            'Discharge Rating (kW)': self.discharge_capacity(),
+            'Energy Rating (kWh)': self.energy_capacity(solution=True),
+            'Charge Rating (kW)': self.charge_capacity(solution=True),
+            'Discharge Rating (kW)': self.discharge_capacity(solution=True),
             'Round Trip Efficiency (%)': self.rte,
             'Lower Limit on SOC (%)': self.llsoc,
             'Upper Limit on SOC (%)': self.ulsoc,

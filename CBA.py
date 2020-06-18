@@ -221,7 +221,14 @@ class CostBenefitAnalysis(Financial):
         capital_costs = np.zeros(proj_years)
         for der_inst in technologies:
             macrs_yr = der_inst.macrs
-            tax_schedule = self.macrs_depreciation[macrs_yr][:proj_years]
+            if macrs_yr is None:
+                continue
+            tax_schedule = self.macrs_depreciation[macrs_yr]
+            # extend/cut tax schedule to match length of project
+            if len(tax_schedule) < proj_years:
+                tax_schedule = tax_schedule + list(np.zeros(proj_years - len(tax_schedule)))
+            else:
+                tax_schedule = tax_schedule[:proj_years]
             capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name])
         yearly_net += capital_costs
 

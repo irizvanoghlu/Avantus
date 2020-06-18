@@ -168,3 +168,45 @@ class CostBenefitAnalysis(Financial):
                     print('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value)) if verbose else None
                 except KeyError:
                     print('No attribute ' + param_object.name + ': ' + key) if verbose else None
+
+    def payback_report(self, proforma):
+        """ calculates and saves the payback period and discounted payback period in a dataframe
+
+        Args:
+            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+
+        Returns:
+
+        """
+        self.payback = pd.DataFrame({'Payback Period': [self.payback_period(proforma), 0, 0],
+                                     'Discounted Payback Period': [self.discounted_payback_period(proforma), 0, 0],
+                                     'Net Present Value': [0] + self.npv['Lifetime Present Value'] + [0],
+                                     'Internal Rate of Return': [0, 0, self.internal_rate_of_return(proforma)],
+                                     'Cost-Benefit Ratio': [0, 0, self.cost_benefit_ratio(self.cost_benefit)]},
+                                    index=pd.Index(['Years', '$', '-']))
+
+    @staticmethod
+    def internal_rate_of_return(proforma):
+        """ calculates the discount rate that would return lifetime NPV= 0
+
+        Args:
+            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+
+        Returns: internal rate of return
+
+        """
+        return np.irr(proforma['Yearly Net Value'].values)
+
+    @staticmethod
+    def cost_benefit_ratio(cost_benefit):
+        """ calculate the cost-benefit ratio
+
+        Args:
+            cost_benefit (DataFrame):
+
+        Returns: discounted cost/discounted benefit
+
+        """
+        lifetime_discounted_cost = cost_benefit.loc['Lifetime Present Value', 'Cost ($)']
+        lifetime_discounted_benefit = cost_benefit.loc['Lifetime Present Value', 'Benefit ($)']
+        return lifetime_discounted_cost/lifetime_discounted_benefit

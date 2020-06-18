@@ -133,7 +133,7 @@ class Reliability(ValueStream):
 
             # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
             # to ensure that our DER mix can cover peak net load during any outage in the year
-            return [cvx.NonPos(cvx.max(self.critical_load.loc[mask].values - tot_variable_gen) - combined_rating)]
+            return [cvx.NonPos(cvx.max(self.critical_load.loc[mask].values - tot_variable_gen*self.nu) - combined_rating)]
         else:
             return super().constraints(mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating)
 

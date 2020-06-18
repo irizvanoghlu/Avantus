@@ -221,6 +221,7 @@ class ParamsDER(Params):
                             else:
                                 # convert to correct data type
                                 valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
+                                cls.checks_for_validate(valuation_entry, schema_key, f"{name}-{tag.get('id')}")
                             # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
                             dictionary[key.tag] = valuation_entry
                         else:

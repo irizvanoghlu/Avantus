@@ -180,7 +180,7 @@ class CostBenefitAnalysis(Financial):
         """
         self.payback = pd.DataFrame({'Payback Period': [self.payback_period(proforma), 0, 0],
                                      'Discounted Payback Period': [self.discounted_payback_period(proforma), 0, 0],
-                                     'Net Present Value': [0, self.npv.loc['Lifetime Present Value'].values(), 0],
+                                     'Net Present Value': [0] + self.npv['Lifetime Present Value'] + [0],
                                      'Internal Rate of Return': [0, 0, self.internal_rate_of_return(proforma)],
                                      'Cost-Benefit Ratio': [0, 0, self.cost_benefit_ratio(self.cost_benefit)]},
                                     index=pd.Index(['Years', '$', '-']))

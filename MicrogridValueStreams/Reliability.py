@@ -60,6 +60,7 @@ class Reliability(ValueStream):
         self.contribution_perc_df = None
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
+        self.min_soc_df=None
 
     def grow_drop_data(self, years, frequency, load_growth):
         """ Adds data by growing the given data OR drops any extra data that might have slipped in.
@@ -83,16 +84,14 @@ class Reliability(ValueStream):
             der_lst (list): list of the initialized DERs in our scenario
 
         """
-        for der in der_lst:
-            if der.tag == 'ICE':
-                self.ice_rating = der.rated_power  # save ONE random ICE's rated power in case we n-2 is true
 
         self.reliability_requirement = self.rolling_sum(self.critical_load.loc[:], self.coverage_timesteps) * self.dt
 
         if not self.post_facto_only:
             # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
             # there will be 2 constraints: one for power, one for energy
-            self.system_requirements = [Requirement('energy', 'min', self.name, self.reliability_requirement)]
+            soe_array=self.min_soc_df['soe']
+            self.system_requirements = [Requirement('energy', 'min', self.name, soe_array)]
             # this should be the constraint that makes sure the next x hours have enough energy
 
     @staticmethod
@@ -114,30 +113,6 @@ class Reliability(ValueStream):
         data = reverse.iloc[::-1]
         return data
 
-    def constraints(self, mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating):
-        """Default build constraint list method. Used by services that do not have constraints.
-
-        Args:
-            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
-                    in the subs data set
-            tot_variable_gen (Expression): the sum of the variable/intermittent generation sources
-            load_sum (list, Expression): the sum of load within the system
-            generator_out_sum (list, Expression): the sum of conventional generation within the system
-            net_ess_power (list, Expression): the sum of the net power of all the ESS in the system. flow out into the grid is negative
-            combined_rating (Dictionary): the combined rating of each DER class type
-
-        Returns:
-            A list of constraints
-        """
-        if not self.post_facto_only:
-            if self.n_2:
-                combined_rating -= self.ice_rating
-
-            # We want the minimum power capability of our DER mix in the discharge direction to be the maximum net load (load - solar)
-            # to ensure that our DER mix can cover peak net load during any outage in the year
-            return [cvx.NonPos(cvx.max(self.critical_load.loc[mask].values - tot_variable_gen*self.nu) - combined_rating)]
-        else:
-            return super().constraints(mask, load_sum, tot_variable_gen, generator_out_sum, net_ess_power, combined_rating)
 
     def timeseries_report(self):
         """ Summaries the optimization results for this Value Stream.
@@ -148,8 +123,14 @@ class Reliability(ValueStream):
         """
         report = pd.DataFrame(index=self.critical_load.index)
         if not self.post_facto_only:
-            report.loc[:, 'Total Outage Requirement (kWh)'] = self.reliability_requirement
+            report.loc[:, 'Total Critical load (kWh)'] = self.reliability_requirement
+            report.loc[:,' Reliability min State of Energy (kWh)'] = self.min_soc_df['soe']
+            report.loc[:,' Reliability min SOC (%)'] = self.min_soc_df['soc']
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
+
+        results = pd.DataFrame()
+
+
         return report
 
     def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None, der_list=None):
@@ -404,6 +385,10 @@ class Reliability(ValueStream):
 
         """
 
+        #have to include n-2 case --SJ
+        # if self.n_2:
+        #     combined_rating -= self.ice_rating
+
 
         consts = []
         cost_funcs = 0
@@ -422,7 +407,7 @@ class Reliability(ValueStream):
             for der_instance in der_list:
                 # initialize variables
                 der_instance.initialize_variables(self.outage_duration)
-                consts += der_instance.constraints(Outage_mask, sizing_for_rel=True)
+                consts += der_instance.constraints(Outage_mask, sizing_for_rel=True,find_min_soe=False)
                 if der_instance.technology_type == 'Energy Storage System':
                     tot_net_ess += der_instance.get_net_power(Outage_mask)
                 if der_instance.technology_type == 'Generator':
@@ -430,9 +415,8 @@ class Reliability(ValueStream):
                 if der_instance.technology_type == 'Intermittent Resource':
                     var_gen_sum += der_instance.get_discharge(Outage_mask)
 
-            critical_load = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values,
-                                          shape=self.outage_duration, name='critical_load')
-            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load)]
+            critical_load_arr = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values, shape=self.outage_duration)
+            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
 
         #sizing_df=Sizing.solve_and_save(cost_funcs,consts)
         obj = cvx.Minimize(cost_funcs)
@@ -441,134 +425,117 @@ class Reliability(ValueStream):
 
         return der_list
 
-    def calc_pv(self, der_list, initial_soc):
-        """ Requires DERs to have a min size.
 
-        Returns:
+    def reliability_min_soe(self,mask, der_list):
+        """ Calculates min SOE at every time step for the given DER size
+
+           Args:
+               datetimes (list): list of indices that need to be checked (correspond to datetimes of the analysis year)
+               mask
+               der_list
+
+
+           Returns:
+               functions (dict): functions or objectives of the optimization
+               constraints (list): constraints that define behaviors, constrain variables, etc. that the optimization must meet
 
         """
-        num_scenarios = len(self.critical_load) - self.outage_duration
 
-        # collect DER data for reliability
-        total_pv_max = np.zeros(len(self.critical_load))
-        total_dg_max = 0
-        SOE_max = 0
-        SOE_min = 0
-        rte_list = []
-        ess_dch_rating = 0
-        ess_ch_rating = 0
-        for der_inst in der_list:
-            if der_inst.technology_type == 'IntermittentResource':
-                total_pv_max += der_inst.maximum_generation().values
-            if der_inst.technology_type == 'Generator':
-                total_dg_max += der_inst.discharge_capacity()
-            if der_inst.technology_type == 'ESS':
-                SOE_max += der_inst.operational_max_energy()
-                SOE_min += der_inst.operational_min_energy()
-                rte_list.append(der_inst.rte)
-                ess_dch_rating += der_inst.discharge_capacity()
-                ess_ch_rating += der_inst.charge_capacity()
-        generation = np.ones([self.outage_duration, num_scenarios]) * total_dg_max
+        min_soc=np.zeros(len(mask))
 
-        cl_case = np.empty([self.outage_duration, num_scenarios])
-        pv_case = np.zeros([self.outage_duration, num_scenarios])
-        for i in range(0, num_scenarios):
-            cl_case[:, i] = self.critical_load[i:i + self.outage_duration]
-            pv_case[:, i] = total_pv_max[i:i + self.outage_duration]
+        cost_funcs = 0
+        month_min_soc = {}
+        # for der_instance in der_list:
+        #     cost_funcs += der_instance.get_capex()
 
-        netgen = np.around(generation + pv_case - cl_case, decimals=5)
-        netload_rel = np.around(cl_case - generation - pv_case, decimals=5)
-        SOCminreq = netload_rel / SOE_max
-        SOCminreq_total = -netgen / SOE_max
+        #spl_indices=np.ceil((len(mask)/1000))
+        for month in mask.index.month.unique():
 
-        # SOC start
-        SOC_start = np.repeat(initial_soc, [1, num_scenarios])
+            Outage_mask = month==mask.index.month
+            consts = []
 
-        reliability = np.zeros([self.outage_duration, num_scenarios])
-        for scenario in range(num_scenarios):
-            SOC = np.ones([self.outage_duration, 1])
-            SOC[0] = SOC_prev = SOC_start[0, scenario]
+            min_soc = {}
+            ana_ind= [a for a in range(len(mask)) if Outage_mask[a]==True]
 
-            for hr in range(self.outage_duration):  # Delt is 1 hour
+            for outage_ind in ana_ind:
 
-                # Check if I have enough capactiy
-                if netload_rel[hr, scenario] > 0:
-                    if SOC_prev >= SOCminreq[hr, scenario] and ess_dch_rating >= netload_rel[hr, scenario] and SOC_prev >= SOCminreq_total[hr, scenario]:
-                        reliability[hr, scenario] = 1
-                    else:
-                        break
+
+                Outage_mask = np.copy(mask)
+                Outage_mask[outage_ind: (outage_ind + (self.outage_duration))] = True
+                # set up variables
+                var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                            name='POI-Zero')  # at POI
+                gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                        name='POI-Zero')
+                tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                            name='POI-Zero')
+
+                for der_instance in der_list:
+                    # initialize variables
+                    der_instance.initialize_variables(self.outage_duration)
+
+                    if der_instance.technology_type == 'Energy Storage System':
+                        tot_net_ess += der_instance.get_net_power(Outage_mask)
+                        der_instance.soc_target = cvx.Variable(shape=1, name=der_instance.name +str(outage_ind)+ '-min_soc' )
+                        consts += [cvx.NonPos(der_instance.soc_target -1)]
+                        consts += [cvx.NonPos(-der_instance.soc_target)]
+                        #cost_funcs += der_instance.soc_target
+
+                        min_soc[outage_ind] = der_instance.soc_target
+
+                    if der_instance.technology_type == 'Generator':
+                        gen_sum += der_instance.get_discharge(Outage_mask)
+                    if der_instance.technology_type == 'Intermittent Resource':
+                        var_gen_sum += der_instance.get_discharge(Outage_mask)
+
+                    consts += der_instance.constraints(Outage_mask, sizing_for_rel=True, find_min_soe=True)
+
+                if outage_ind+self.outage_duration > len(mask):
+                    remaining_out_duration=len(mask)-outage_ind
+                    crit_load=np.zeros(self.outage_duration)
+                    crit_load[0:remaining_out_duration]=self.critical_load.loc[Outage_mask].values
+                    critical_load_arr = cvx.Parameter(value=crit_load,shape=self.outage_duration)
+
                 else:
-                    reliability[hr, scenario] = 1
+                    critical_load_arr = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values,
+                                                      shape=self.outage_duration)
+                consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
 
-                # SOC evolution
-                if reliability[hr, scenario]:
-                    P_ch = 0
-                    P_dch = 0
-                    ES_E_prev_4ch = (1 - SOC_prev) * (SOE_max / random.choice(rte_list))
-                    ES_E_prev_4dch = SOC_prev * SOE_max
-                    if netgen[hr, scenario] > 0:
-                        # calculate the max that we can charge
-                        P_ch = min([netgen[hr, scenario], ess_ch_rating, ES_E_prev_4ch])
+            # sizing_df=Sizing.solve_and_save(cost_funcs,consts)
+            cost_funcs=sum(min_soc.values())
+            obj = cvx.Minimize(cost_funcs)
+            prob = cvx.Problem(obj, consts)
+            start = time.time()
+            prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
+            end = time.time()
+            print(end - start)
 
-                    elif netgen[hr, scenario] < 0:
-                        # calculate the max that we can discharge
-                        P_dch = min([-netgen[hr, scenario], ess_dch_rating, ES_E_prev_4dch])
-                    SOC_prev = SOC[hr] = SOC_prev + ((random.choice(rte_list) * P_ch) - P_dch) / SOE_max
+            month_min_soc[month]=min_soc
 
-        r_index = (np.argwhere(reliability[self.outage_duration - 1, :] == 0))
+        soc_dict = {}
+        for der_instance in der_list:
 
-        Reliability_cum = np.cumprod(reliability, axis=0)
-        R = Reliability_cum.sum(axis=1)
-        total_failures = num_scenarios - R[self.outage_duration - 1]
+            if der_instance.technology_type == 'Energy Storage System':
+                # Get energy rating
+                try:
+                    energy_rating = der_instance.ene_max_rated.value
+                except AttributeError:
+                    energy_rating = der_instance.ene_max_rated
 
-        if len(r_index):
-            is_reliable = 'No'
-            first_failure = r_index[0]
-        else:
-            is_reliable = 'Yes'
-            first_failure = 0
-        return is_reliable, first_failure, total_failures
+                #Collecting soe array for all ES
+                month_min_soc_array=[]
+                outage_ind=0
+                for month in month_min_soc.keys(): # make sure this is in order
+                    for hours in range(len(month_min_soc[month])):
 
-    def calculate_min_soe(self):
-        # Variables
-        # ch = cvx.Variable(Outage_length)
-        # dch = cvx.Variable(Outage_length)
-        # SOE = cvx.Variable(Outage_length)
-        #
-        # PV = cvx.Variable(Outage_length)
-        # DG = cvx.Variable(Outage_length)
-        # on_DG = cvx.Variable(Outage_length, boolean=True)
-        SOC_start = cvx.Variable(1)
+                        month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
+                        outage_ind += 1
+                month_min_soe_array=(month_min_soc_array * energy_rating)
 
-        obj = min(SOC_start)
 
-        PV_irr = PV_profile[j:j + Outage_length]
-        Load = Load_Profile[j:j + Outage_length]
+            zippedList=list(zip(month_min_soe_array,month_min_soc_array))
+        self.min_soc_df=pd.DataFrame(zippedList ,index=mask.index, columns=['soe', 'soc'])
 
-        const1 = [SOE[0] == SOC_start - dch[0] + Batt_eff * ch[0]]
-        for i in range(1, Outage_length):
-            const1.append(SOE[i] == SOE[i - 1] - dch[i] + Batt_eff * ch[i])
+        return {}
 
-        const1.append(PV <= cvx.multiply(PV_irr, PV_size))
-        const1.append(PV + dch - ch + DG == Load)
 
-        const1.append(dch <= ES_P)
-        const1.append(ch <= ES_P)
-        const1.append(SOE <= ES_E)
-
-        const1.append(PV >= 0)
-
-        const1.append(DG >= (on_DG * DG_params['DG_p_min']))
-        const1.append(DG <= (DG_no * DG_params['DG_rating']) * on_DG)
-
-        const1.append(ch >= 0)
-        const1.append(dch >= 0)
-        const1.append(SOE >= 0)
-
-        prob = cvx.Problem(cvx.Minimize(obj), const1)
-        prob.solve(solver=cvx.GLPK_MI)
-
-        if any(on_DG.value == 0):
-            print(j)
-
-        return np.ceil(SOC_start.value[0])

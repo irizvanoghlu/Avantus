@@ -182,8 +182,8 @@ class MicrogridScenario(Scenario):
         # Find the top n analysis indices that we are going to size our DER mix for.
         analysis_indices = indices[:top_n_outages]
         # calculate and check that system requirement set by value streams can be met
-        system_requirements = self.check_system_requirements()
-        outage_duration = int(reliability_mod.outage_duration * self.dt)
+        #system_requirements = self.check_system_requirements()
+        #outage_duration = int(reliability_mod.outage_duration * self.dt)
 
         mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
 
@@ -204,15 +204,23 @@ class MicrogridScenario(Scenario):
                 if longest_outage < reliability_mod.outage_duration:
                     if longest_outage < (len(reliability_mod.critical_load) - outage_init):
                         First_failure_ind = outage_init
+                        break
                 outage_init += 1
 
 
             if First_failure_ind>0:
-                Analysis_indices = np.append(Analysis_indices, First_failure_ind)
+                analysis_indices = np.append(analysis_indices, First_failure_ind)
             else:
                 IsReliable = 'Yes'
+
+
         for der_inst in der_list:
             der_inst.set_size()
+
+        start = time.time()
+        reliability_mod.reliability_min_soe(mask, der_list)
+        end = time.time()
+        print(end-start)
 
         self.poi.der_list=der_list
 

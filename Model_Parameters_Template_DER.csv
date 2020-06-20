@@ -119,7 +119,7 @@ Reliability,.,nu,20,%,float,"[0, 100]",N/A,None,Minimum percent of PV generation
 Reliability,.,gamma,43,%,float,"[0, 100]",N/A,None,Percent of the timestep for which PV is at it's minimum generation (default=43 when dt=1),.,no,.,.,
 Reliability,.,max_outage_duration,80,hours,int,"[1,max_outage_duration)",N/A,None,Calculate the post-facto reliability for an outage that can last up to this value,.,no,.,.,
 Reliability,.,n-2,0,y/n,bool,"{1,0}",N/A,None,Optimize and preform post-facto for N-2 equipment failure (assume any single ICE generator fails--this requires ICE to be active),.,no,.,.,
-Deferral,.,planned_load_limit,15000,kW,float,"[0, max_import)",N/A,None,Max net import power flow to grid,yes,no,.,.,
+Deferral,.,planned_load_limit,15000,kW,float,"[0, max_import)",N/A,None,Max net import power flow to grid,no,no,.,.,
 Deferral,.,reverse_power_flow_limit,-15000,kW,float,"[0, max_export)",N/A,None,Max net export power flow to grid,.,no,.,.,
 Deferral,.,growth,6,%/yr,float,"[0, 100]",N/A,None,Growth Rate of deferral load,.,no,.,.,
 Deferral,.,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for deferring a T and D asset upgrade,.,no,1000,n,

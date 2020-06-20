@@ -61,6 +61,7 @@ class Reliability(ValueStream):
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
         self.min_soc_df=None
+        self.use_soc_init=False
 
     def grow_drop_data(self, years, frequency, load_growth):
         """ Adds data by growing the given data OR drops any extra data that might have slipped in.
@@ -244,9 +245,9 @@ class Reliability(ValueStream):
         if 'Energy Storage System' in technology_summary_df['Type'].values:
             tech_specs['ess_properties'] = ess_properties
             # save the state of charge
-            try:
+            if not self.use_soc_init:
                 soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']
-            except KeyError:
+            else:
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 
         end = time.time()

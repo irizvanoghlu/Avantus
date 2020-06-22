@@ -59,14 +59,9 @@ class MicrogridPOI(POI):
         """
         solve_for_size = False
         for der_instance in self.der_list:
-            if der_instance.technology_type != 'Energy Storage System':
-                try:
-                    solve_for_size = solve_for_size or der_instance.being_sized()
-                except AttributeError:
-                    solve_for_size = solve_for_size or False
-            else:
+            if der_instance.tag == 'Battery':
                 power_being_sizing = isinstance(der_instance.dis_max_rated, cvx.Variable) or isinstance(der_instance.ch_max_rated, cvx.Variable)
-                solve_for_size = solve_for_size or power_being_sizing
+                solve_for_size = solve_for_size or (power_being_sizing and is_binary_formulation)
         return solve_for_size
 
     def sizing_summary(self):

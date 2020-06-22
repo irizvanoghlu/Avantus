@@ -18,7 +18,7 @@ from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
 
 
-class ControllableLoad(Load, Sizing):
+class ControllableLoad(Load, Sizing, DERExtension):
     """ An Load object. this object does not size.
 
     """
@@ -31,6 +31,7 @@ class ControllableLoad(Load, Sizing):
         """
         # create generic technology object
         Load.__init__(self, params)
+        DERExtension.__init__(self, params)
 
         # input params  UNITS ARE COMMENTED TO THE RIGHT
         self.rated_power = params['power_rating']  # kW

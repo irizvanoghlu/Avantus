@@ -55,7 +55,7 @@ class CostBenefitAnalysis(Financial):
             self.ders_values['CAES'] = self.ders_values.pop('CAES')
 
         self.value_streams = {}
-        self.ders = {}
+        self.ders = []
 
         self.macrs_depreciation = {
             3: [33.33, 44.45, 14.81, 7.41],
@@ -107,7 +107,7 @@ class CostBenefitAnalysis(Financial):
         the technologies and services with the values the user denoted to be used for evaluating the CBA.
 
         Args:
-            technologies (Dict): all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
+            technologies (list): all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
             value_streams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
@@ -158,10 +158,13 @@ class CostBenefitAnalysis(Financial):
         if 'User' in self.value_streams.keys():
             self.update_with_evaluation(self.value_streams['User'], self.valuestream_values['User'], self.verbose)
 
-        for der_tag, instance_dict in self.ders_values.items():
-            for id_str, der_instance in instance_dict.items():
-                self.ders[der_tag][id_str].update_for_evaluation(der_instance)
-                # self.update_with_evaluation(self.ders[der_tag][id_str], der_instance, self.verbose)
+        for der_inst in self.ders:
+            der_tag = der_inst.tag
+            der_id = der_inst.id
+            evaluation_inputs = self.ders_values.get(der_tag, {}).get(der_id)
+            if evaluation_inputs is not None:
+                der_inst.update_for_evaluation(evaluation_inputs)
+
 
     @staticmethod
     def update_with_evaluation(param_object, evaluation_dict, verbose):

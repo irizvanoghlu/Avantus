@@ -42,6 +42,7 @@
 	<LF type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<CombinedMarket cba="n" type="bool" allowed_values="1|0"/>
+		<duration max="24" min="0.0" type="float" />
 	</LF>
 	<SR type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />

@@ -191,7 +191,7 @@ class MicrogridScenario(Scenario):
 
 
         while IsReliable == 'No':
-            der_list = reliability_mod.Reliability_sizing_for_analy_indices(mask,analysis_indices, der_list)
+            der_list = reliability_mod.reliability_sizing_for_analy_indices(mask, analysis_indices, der_list)
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
             soc = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
@@ -223,6 +223,3 @@ class MicrogridScenario(Scenario):
         print(end-start)
 
         self.poi.der_list=der_list
-
-        #call
-        return

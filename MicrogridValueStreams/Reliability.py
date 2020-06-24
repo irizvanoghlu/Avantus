@@ -506,24 +506,7 @@ class Reliability(ValueStream):
         #     month_min_soc[month]=min_soc
         #
         # soc_dict = {}
-        # for der_instance in der_list:
-        #
-        #     if der_instance.technology_type == 'Energy Storage System':
-        #         # Get energy rating
-        #         try:
-        #             energy_rating = der_instance.ene_max_rated.value
-        #         except AttributeError:
-        #             energy_rating = der_instance.ene_max_rated
-        #
-        #         #Collecting soe array for all ES
-        #         month_min_soc_array=[]
-        #         outage_ind=0
-        #         for month in month_min_soc.keys(): # make sure this is in order
-        #             for hours in range(len(month_min_soc[month])):
-        #
-        #                 month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
-        #                 outage_ind += 1
-        #         month_min_soe_array=(month_min_soc_array * energy_rating)
+
 
         for der_instance in der_list:
 
@@ -536,14 +519,14 @@ class Reliability(ValueStream):
                     energy_rating = der_instance.ene_max_rated
 
                 # Collecting soe array for all ES
-                month_min_soc_array = []
+                # month_min_soc_array = []
                 outage_ind = 0
-                for month in month_min_soc.keys():  # make sure this is in order
-                    for hours in range(len(month_min_soc[month])):
-
-                        month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
-                        outage_ind += 1
-                month_min_soe_array = (month_min_soc_array * energy_rating)
+                # for month in month_min_soc.keys():  # make sure this is in order
+                #     for hours in range(len(month_min_soc[month])):
+                #
+                #         month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
+                #         outage_ind += 1
+                # month_min_soe_array = (month_min_soc_array * energy_rating)
 
 
         month_min_soe_array=np.repeat(energy_rating,len(mask))
@@ -551,8 +534,51 @@ class Reliability(ValueStream):
         zippedList=list(zip(month_min_soe_array,month_min_soc_array))
         self.min_soc_df=pd.DataFrame(zippedList ,index=mask.index, columns=['soe', 'soc'])
 
+
         return {}
 
 
-                zipped_list = list(zip(month_min_soe_array, month_min_soc_array))
-                self.min_soc_df = pd.DataFrame(zipped_list, index=mask.index, columns=['soe', 'soc'])
+    def reliability_min_soe_iterative(self, mask, der_list):
+        """ Calculates min SOE at every time step for the given DER size
+
+           Args:
+               mask
+               der_list
+
+           Returns:
+               functions (dict): functions or objectives of the optimization
+               constraints (list): constraints that define behaviors, constrain variables, etc. that the optimization must meet
+
+        """
+
+        generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
+
+        outage_init = 0
+        min_soe_array = []
+        while outage_init < (len(mask)):
+            if np.mod(outage_init,100)==0:
+                print(outage_init)
+            soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
+
+            soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],self.outage_duration, ess_properties,soc[outage_init])
+
+            min_soc = np.min(soc_profile)
+            max_soc = np.max(soc_profile)
+            effective_soc = max_soc - min_soc
+            min_soe_array.append(effective_soc)
+            outage_init+=1
+        for der_instance in der_list:
+
+            if der_instance.technology_type == 'Energy Storage System':
+                # TODO multi ESS
+                # Get energy rating
+                try:
+                    energy_rating = der_instance.ene_max_rated.value
+                except AttributeError:
+                    energy_rating = der_instance.ene_max_rated
+
+        min_soc_array=(min_soe_array/energy_rating)
+        zippedList = list(zip(min_soe_array, min_soc_array))
+        self.min_soc_df = pd.DataFrame(zippedList, index=mask.index, columns=['soe', 'soc'])
+
+        return {}

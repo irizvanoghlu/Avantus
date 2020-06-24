@@ -192,6 +192,7 @@ class MicrogridScenario(Scenario):
 
         while IsReliable == 'No':
             der_list = reliability_mod.reliability_sizing_for_analy_indices(mask, analysis_indices, der_list)
+
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
             soc = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
@@ -199,8 +200,9 @@ class MicrogridScenario(Scenario):
             First_failure_ind = -1
             while outage_init < (len(reliability_mod.critical_load)):
 
-                longest_outage = reliability_mod.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],
+                soc_profile = reliability_mod.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],
                                                       reliability_mod.outage_duration, ess_properties, soc[outage_init])
+                longest_outage=len(soc_profile)
                 if longest_outage < reliability_mod.outage_duration:
                     if longest_outage < (len(reliability_mod.critical_load) - outage_init):
                         First_failure_ind = outage_init
@@ -218,7 +220,7 @@ class MicrogridScenario(Scenario):
             der_inst.set_size()
 
         start = time.time()
-        reliability_mod.reliability_min_soe(mask, der_list)
+        reliability_mod.reliability_min_soe_iterative(mask, der_list)
         end = time.time()
         print(end-start)
 

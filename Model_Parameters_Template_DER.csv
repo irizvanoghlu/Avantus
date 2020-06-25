@@ -129,3 +129,6 @@ Deferral,.,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for 
 ControllableLoad,1,name,Demand Response Tech,N/A,string,,N/A,None,Name of controllable load,no,no,.,.,
 ControllableLoad,1,power_rating,100,kW,float,,N/A,None,Maximum offset from the original load.,.,no,.,.,
 ControllableLoad,1,duration,4,hr,float,,N/A,None,Maximum time that the load can effectively 'charge' or 'discharge' at once ,.,no,.,.,
+ControllableLoad,1,nsr_response_time,10,minutes,int,"[10, nsr_response_time)",N/A,None,NSR Response Time for generation to come online,.,no,.,.,
+ControllableLoad,1,sr_response_time,10,minutes,int,"[10, sr_response_time)",N/A,None,SR Response Time for generation to come online,.,no,.,.,
+ControllableLoad,1,startup_time,0,min,int,"[0, startup_time)",N/A,None,Time (in minutes) it takes to start generating,.,no,.,.,

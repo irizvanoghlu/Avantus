@@ -126,6 +126,11 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         """
         return self.n_min != self.n_max
 
+    def set_size(self):
+        self.n =self.n.value
+
+        return
+
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
 

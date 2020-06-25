@@ -83,12 +83,16 @@ class Reliability(ValueStream):
             der_lst (list): list of the initialized DERs in our scenario
 
         """
-        if not self.post_facto_only:
-            # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
-            # there will be 2 constraints: one for power, one for energy
-            soe_array = self.min_soc_df['soe']
-            self.system_requirements = [Requirement('energy', 'min', self.name, soe_array)]
-            # this should be the constraint that makes sure the next x hours have enough energy
+        for der_instance in der_lst:
+
+            if der_instance.technology_type == 'Energy Storage System' and not self.post_facto_only and self.min_soc_df is not None:
+
+
+                # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
+                # there will be 2 constraints: one for power, one for energy
+                soe_array = self.min_soc_df['soe']
+                self.system_requirements = [Requirement('energy', 'min', self.name, soe_array)]
+                # this should be the constraint that makes sure the next x hours have enough energy
     @staticmethod
     def rolling_sum(data, window):
         """ calculate a rolling sum of the date
@@ -118,9 +122,11 @@ class Reliability(ValueStream):
         report = pd.DataFrame(index=self.critical_load.index)
         if not self.post_facto_only:
             report.loc[:, 'Total Critical Load (kWh)'] = self.reliability_requirement
+
+        report.loc[:, 'Critical Load (kW)'] = self.critical_load
+        if self.min_soc_df is not None:
             report.loc[:, 'Reliability min State of Energy (kWh)'] = self.min_soc_df['soe']
             report.loc[:, 'Reliability min SOC (%)'] = self.min_soc_df['soc']
-        report.loc[:, 'Critical Load (kW)'] = self.critical_load
 
         return report
 
@@ -246,7 +252,7 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 tech_specs['init_soe'] = soc[outage_init]
-            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, ess_properties,tech_specs['init_soe'])
+            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
             frequency_simulate_outage[int(longest_outage)] += 1
@@ -289,11 +295,12 @@ class Reliability(ValueStream):
         total_dg_max = 0
         solution = not sizing
         for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource':
+            if der_inst.technology_type == 'Intermittent Resource'  and not der_inst.being_sized():
                 total_pv_max += der_inst.maximum_generation(None)
                 ess_properties['pv present'] = True
-            if der_inst.technology_type == 'Generator':
-                total_dg_max += der_inst.discharge_capacity()
+            if der_inst.technology_type == 'Generator' and not der_inst.being_sized() :
+
+                total_dg_max += der_inst.max_power_out()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
                 ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=solution)
@@ -436,76 +443,76 @@ class Reliability(ValueStream):
         """
         min_soc = np.zeros(len(mask))
 
-        # cost_funcs = 0
-        # month_min_soc = {}
-        # # for der_instance in der_list:
-        # #     cost_funcs += der_instance.get_capex()
-        #
-        # #spl_indices=np.ceil((len(mask)/1000))
-        # for month in mask.index.month.unique():
-        #
-        #     Outage_mask = month==mask.index.month
-        #     consts = []
-        #
-        #     min_soc = {}
-        #     ana_ind= [a for a in range(len(mask)) if Outage_mask[a]==True]
-        #
-        #     for outage_ind in ana_ind:
-        #
-        #
-        #         Outage_mask = np.copy(mask)
-        #         Outage_mask[outage_ind: (outage_ind + (self.outage_duration))] = True
-        #         # set up variables
-        #         var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
-        #                                     name='POI-Zero')  # at POI
-        #         gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
-        #                                 name='POI-Zero')
-        #         tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
-        #                                     name='POI-Zero')
-        #
-        #         for der_instance in der_list:
-        #             # initialize variables
-        #             der_instance.initialize_variables(self.outage_duration)
-        #
-        #             if der_instance.technology_type == 'Energy Storage System':
-        #                 tot_net_ess += der_instance.get_net_power(Outage_mask)
-        #                 der_instance.soc_target = cvx.Variable(shape=1, name=der_instance.name +str(outage_ind)+ '-min_soc' )
-        #                 consts += [cvx.NonPos(der_instance.soc_target -1)]
-        #                 consts += [cvx.NonPos(-der_instance.soc_target)]
-        #                 #cost_funcs += der_instance.soc_target
-        #
-        #                 min_soc[outage_ind] = der_instance.soc_target
-        #
-        #             if der_instance.technology_type == 'Generator':
-        #                 gen_sum += der_instance.get_discharge(Outage_mask)
-        #             if der_instance.technology_type == 'Intermittent Resource':
-        #                 var_gen_sum += der_instance.get_discharge(Outage_mask)
-        #
-        #             consts += der_instance.constraints(Outage_mask, sizing_for_rel=True, find_min_soe=True)
-        #
-        #         if outage_ind+self.outage_duration > len(mask):
-        #             remaining_out_duration=len(mask)-outage_ind
-        #             crit_load=np.zeros(self.outage_duration)
-        #             crit_load[0:remaining_out_duration]=self.critical_load.loc[Outage_mask].values
-        #             critical_load_arr = cvx.Parameter(value=crit_load,shape=self.outage_duration)
-        #
-        #         else:
-        #             critical_load_arr = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values,
-        #                                               shape=self.outage_duration)
-        #         consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
-        #
-        #     # sizing_df=Sizing.solve_and_save(cost_funcs,consts)
-        #     cost_funcs=sum(min_soc.values())
-        #     obj = cvx.Minimize(cost_funcs)
-        #     prob = cvx.Problem(obj, consts)
-        #     start = time.time()
-        #     prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
-        #     end = time.time()
-        #     print(end - start)
-        #
-        #     month_min_soc[month]=min_soc
-        #
-        # soc_dict = {}
+        cost_funcs = 0
+        month_min_soc = {}
+        # for der_instance in der_list:
+        #     cost_funcs += der_instance.get_capex()
+
+        #spl_indices=np.ceil((len(mask)/1000))
+        for month in mask.index.month.unique():
+
+            Outage_mask = month==mask.index.month
+            consts = []
+
+            min_soc = {}
+            ana_ind= [a for a in range(len(mask)) if Outage_mask[a]==True]
+
+            for outage_ind in ana_ind:
+
+
+                Outage_mask = np.copy(mask)
+                Outage_mask[outage_ind: (outage_ind + (self.outage_duration))] = True
+                # set up variables
+                var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                            name='POI-Zero')  # at POI
+                gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                        name='POI-Zero')
+                tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration,
+                                            name='POI-Zero')
+
+                for der_instance in der_list:
+                    # initialize variables
+                    der_instance.initialize_variables(self.outage_duration)
+
+                    if der_instance.technology_type == 'Energy Storage System':
+                        tot_net_ess += der_instance.get_net_power(Outage_mask)
+                        der_instance.soc_target = cvx.Variable(shape=1, name=der_instance.name +str(outage_ind)+ '-min_soc' )
+                        consts += [cvx.NonPos(der_instance.soc_target -1)]
+                        consts += [cvx.NonPos(-der_instance.soc_target)]
+                        #cost_funcs += der_instance.soc_target
+
+                        min_soc[outage_ind] = der_instance.soc_target
+
+                    if der_instance.technology_type == 'Generator':
+                        gen_sum += der_instance.get_discharge(Outage_mask)
+                    if der_instance.technology_type == 'Intermittent Resource':
+                        var_gen_sum += der_instance.get_discharge(Outage_mask)
+
+                    consts += der_instance.constraints(Outage_mask, sizing_for_rel=True, find_min_soe=True)
+
+                if outage_ind+self.outage_duration > len(mask):
+                    remaining_out_duration=len(mask)-outage_ind
+                    crit_load=np.zeros(self.outage_duration)
+                    crit_load[0:remaining_out_duration]=self.critical_load.loc[Outage_mask].values
+                    critical_load_arr = cvx.Parameter(value=crit_load,shape=self.outage_duration)
+
+                else:
+                    critical_load_arr = cvx.Parameter(value=self.critical_load.loc[Outage_mask].values,
+                                                      shape=self.outage_duration)
+                consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
+
+            # sizing_df=Sizing.solve_and_save(cost_funcs,consts)
+            cost_funcs=sum(min_soc.values())
+            obj = cvx.Minimize(cost_funcs)
+            prob = cvx.Problem(obj, consts)
+            start = time.time()
+            prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
+            end = time.time()
+            print(end - start)
+
+            month_min_soc[month]=min_soc
+
+        #soc_dict = {}
 
 
         for der_instance in der_list:
@@ -519,18 +526,18 @@ class Reliability(ValueStream):
                     energy_rating = der_instance.ene_max_rated
 
                 # Collecting soe array for all ES
-                # month_min_soc_array = []
+                month_min_soc_array = []
                 outage_ind = 0
-                # for month in month_min_soc.keys():  # make sure this is in order
-                #     for hours in range(len(month_min_soc[month])):
-                #
-                #         month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
-                #         outage_ind += 1
-                # month_min_soe_array = (month_min_soc_array * energy_rating)
+                for month in month_min_soc.keys():  # make sure this is in order
+                    for hours in range(len(month_min_soc[month])):
+
+                        month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
+                        outage_ind += 1
+                month_min_soe_array = (month_min_soc_array * energy_rating)
 
 
-        month_min_soe_array=np.repeat(energy_rating,len(mask))
-        month_min_soc_array=np.repeat(1,len(mask))
+        #month_min_soe_array=np.repeat(energy_rating,len(mask))
+        #month_min_soc_array=np.repeat(1,len(mask))
         zippedList=list(zip(month_min_soe_array,month_min_soc_array))
         self.min_soc_df=pd.DataFrame(zippedList ,index=mask.index, columns=['soe', 'soc'])
 
@@ -551,22 +558,6 @@ class Reliability(ValueStream):
 
         """
 
-        generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
-
-        outage_init = 0
-        min_soe_array = []
-        while outage_init < (len(mask)):
-            if np.mod(outage_init,100)==0:
-                print(outage_init)
-            soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
-
-            soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],self.outage_duration, ess_properties,soc[outage_init])
-
-            min_soc = np.min(soc_profile)
-            max_soc = np.max(soc_profile)
-            effective_soc = max_soc - min_soc
-            min_soe_array.append(effective_soc)
-            outage_init+=1
         for der_instance in der_list:
 
             if der_instance.technology_type == 'Energy Storage System':
@@ -577,8 +568,31 @@ class Reliability(ValueStream):
                 except AttributeError:
                     energy_rating = der_instance.ene_max_rated
 
-        min_soc_array=(min_soe_array/energy_rating)
-        zippedList = list(zip(min_soe_array, min_soc_array))
-        self.min_soc_df = pd.DataFrame(zippedList, index=mask.index, columns=['soe', 'soc'])
+                #Check if ES is sized for Reliability:
+                if energy_rating>0:
+
+
+                    generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
+
+                    outage_init = 0
+                    min_soe_array = []
+                    while outage_init < (len(mask)):
+                        if np.mod(outage_init,100)==0:
+                            print(outage_init)
+                        soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
+
+                        soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],self.outage_duration, ess_properties,soc[outage_init])
+
+                        min_soc = np.min(soc_profile)
+                        max_soc = np.max(soc_profile)
+                        effective_soc = max_soc - min_soc
+                        min_soe_array.append(effective_soc)
+                        outage_init+=1
+
+
+                    min_soc_array=(min_soe_array/energy_rating)
+                    zippedList = list(zip(min_soe_array, min_soc_array))
+                    self.min_soc_df = pd.DataFrame(zippedList, index=mask.index, columns=['soe', 'soc'])
+
 
         return {}

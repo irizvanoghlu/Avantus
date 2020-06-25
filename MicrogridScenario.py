@@ -168,10 +168,11 @@ class MicrogridScenario(Scenario):
             return
 
         reliability_mod = self.service_agg.value_streams['Reliability']
-        # used to select rows from time_series relevant to this optimization window
         der_list = copy.deepcopy(self.poi.der_list)
+
+        #Get DER limits
         top_n_outages = 10
-        generation, total_pv_max, ess_properties,demand_left,reliability_check = reliability_mod.get_der_limits(der_list, True)
+        generation, total_pv_max, ess_properties,demand_left,reliability_check = reliability_mod.get_der_limits(der_list, False)
 
         # The maximum load demand that is unserved
         max_load_demand_unserved = np.around(reliability_mod.critical_load.values - generation - total_pv_max, decimals=5)
@@ -191,12 +192,14 @@ class MicrogridScenario(Scenario):
 
 
         while IsReliable == 'No':
+
             der_list = reliability_mod.reliability_sizing_for_analy_indices(mask, analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
             soc = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
             outage_init=0
+
             First_failure_ind = -1
             while outage_init < (len(reliability_mod.critical_load)):
 

@@ -172,59 +172,37 @@ class MicrogridScenario(Scenario):
 
         #Get DER limits
         top_n_outages = 10
-        generation, total_pv_max, ess_properties,demand_left,reliability_check = reliability_mod.get_der_limits(der_list, False)
+        _, _, _, demand_left, _ = reliability_mod.get_der_limits(der_list, True)
 
         # The maximum load demand that is unserved
-        max_load_demand_unserved = np.around(reliability_mod.critical_load.values - generation - total_pv_max, decimals=5)
+        max_load_demand_unserved = demand_left
 
         # Sort the outages by max demand that is unserved
         indices = np.argsort(-1 * max_load_demand_unserved)
 
         # Find the top n analysis indices that we are going to size our DER mix for.
         analysis_indices = indices[:top_n_outages]
-        # calculate and check that system requirement set by value streams can be met
-        #system_requirements = self.check_system_requirements()
-        #outage_duration = int(reliability_mod.outage_duration * self.dt)
 
-        mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
+        opt_index = self.optimization_levels.index
+        First_failure_ind = len(reliability_mod.critical_load)
 
-        IsReliable = 'No'
+        while First_failure_ind>0:
 
-
-        while IsReliable == 'No':
-
-            der_list = reliability_mod.reliability_sizing_for_analy_indices(mask, analysis_indices, der_list)
+            der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
-            soc = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
-            outage_init=0
+            soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
 
-            First_failure_ind = -1
-            while outage_init < (len(reliability_mod.critical_load)):
-
-                soc_profile = reliability_mod.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:],
-                                                      reliability_mod.outage_duration, ess_properties, soc[outage_init])
-                longest_outage=len(soc_profile)
-                if longest_outage < reliability_mod.outage_duration:
-                    if longest_outage < (len(reliability_mod.critical_load) - outage_init):
-                        First_failure_ind = outage_init
-                        break
-                outage_init += 1
-
-
-            if First_failure_ind>0:
-                analysis_indices = np.append(analysis_indices, First_failure_ind)
-            else:
-                IsReliable = 'Yes'
-
+            First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe)
+            analysis_indices = np.append(analysis_indices, First_failure_ind)
 
         for der_inst in der_list:
             der_inst.set_size()
 
         start = time.time()
-        reliability_mod.reliability_min_soe_iterative(mask, der_list)
+        der_list = reliability_mod.min_soe_iterative(opt_index, der_list)
         end = time.time()
         print(end-start)
 
-        self.poi.der_list=der_list
+        self.poi.der_list = der_list

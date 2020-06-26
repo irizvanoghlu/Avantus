@@ -172,28 +172,25 @@ class MicrogridScenario(Scenario):
 
         #Get DER limits
         top_n_outages = 10
-        generation, total_pv_max, ess_properties,demand_left,reliability_check = reliability_mod.get_der_limits(der_list, False)
+        _, _, _, demand_left, _ = reliability_mod.get_der_limits(der_list, True)
 
         # The maximum load demand that is unserved
-        max_load_demand_unserved = np.around(reliability_mod.critical_load.values - generation - total_pv_max, decimals=5)
+        max_load_demand_unserved = demand_left
 
         # Sort the outages by max demand that is unserved
         indices = np.argsort(-1 * max_load_demand_unserved)
 
         # Find the top n analysis indices that we are going to size our DER mix for.
         analysis_indices = indices[:top_n_outages]
-        # calculate and check that system requirement set by value streams can be met
-        #system_requirements = self.check_system_requirements()
-        #outage_duration = int(reliability_mod.outage_duration * self.dt)
 
+        # make mask once, so it can be re-used throughout the looping
         mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
 
         IsReliable = 'No'
 
-
         while IsReliable == 'No':
 
-            der_list = reliability_mod.reliability_sizing_for_analy_indices(mask, analysis_indices, der_list)
+            der_list = reliability_mod.reliability_sizing_for_analy_indices(mask.loc[:], analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
@@ -212,19 +209,17 @@ class MicrogridScenario(Scenario):
                         break
                 outage_init += 1
 
-
             if First_failure_ind>0:
                 analysis_indices = np.append(analysis_indices, First_failure_ind)
             else:
                 IsReliable = 'Yes'
 
-
         for der_inst in der_list:
             der_inst.set_size()
 
         start = time.time()
-        reliability_mod.reliability_min_soe_iterative(mask, der_list)
+        der_list = reliability_mod.reliability_min_soe_iterative(mask, der_list)
         end = time.time()
         print(end-start)
 
-        self.poi.der_list=der_list
+        self.poi.der_list = der_list

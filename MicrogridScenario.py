@@ -183,26 +183,25 @@ class MicrogridScenario(Scenario):
         # Find the top n analysis indices that we are going to size our DER mix for.
         analysis_indices = indices[:top_n_outages]
 
-        # make mask once, so it can be re-used throughout the looping
-        mask = pd.Series(np.repeat(False, len(self.optimization_levels)), self.optimization_levels.index)
-
+        opt_index = self.optimization_levels.index
         First_failure_ind = len(reliability_mod.critical_load)
+
         while First_failure_ind>0:
 
-            der_list = reliability_mod.reliability_sizing_for_analy_indices(mask.loc[:], analysis_indices, der_list)
+            der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
             soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
 
-            First_failure_ind = reliability_mod.find_first_uncovered(mask, reliability_check, demand_left, ess_properties, soe)
+            First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe)
             analysis_indices = np.append(analysis_indices, First_failure_ind)
 
         for der_inst in der_list:
             der_inst.set_size()
 
         start = time.time()
-        der_list = reliability_mod.reliability_min_soe_iterative(mask, der_list)
+        der_list = reliability_mod.min_soe_iterative(opt_index, der_list)
         end = time.time()
         print(end-start)
 

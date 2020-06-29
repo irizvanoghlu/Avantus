@@ -23,6 +23,7 @@ import pandas as pd
 import time
 import logging
 import random
+import sys
 
 u_logger = logging.getLogger('User')
 DEBUG = False
@@ -426,7 +427,7 @@ class Reliability(ValueStream):
 
         return der_list
 
-    def find_first_uncovered(self, reliability_check, demand_left, ess_properties=None, soe=None, start_indx=0):
+    def find_first_uncovered(self, reliability_check, demand_left, ess_properties=None, soe=None, start_indx=0, stop_at=600):
         """ THis function will return the first outage that is not covered with the given DERs
 
         Args:
@@ -434,7 +435,7 @@ class Reliability(ValueStream):
             demand_left (np.ndarray): the amount of load minus fuel generation and all of PV generation
             soe (list, None): if ESSs are active, then this is an array indicating the soe at the start of the outage
             start_indx (int): start index, idetifies the index of the start of the outage we are going to simulate
-
+            stop_at (int): when the start_index is divisible by this number, stop recursion
             ess_properties (dict): dictionary that describes the physical properties of the ess in the analysis
                 includes 'charge max', 'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
 
@@ -442,7 +443,7 @@ class Reliability(ValueStream):
 
         """
         # base case 1: outage_init is beyond range of critical load
-        if start_indx < (len(self.critical_load)):
+        if start_indx > (len(self.critical_load)-1):
             return -1
         # find longest possible outage
         soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], self.outage_duration, ess_properties, soe[start_indx])
@@ -451,8 +452,11 @@ class Reliability(ValueStream):
         if longest_outage < self.outage_duration:
             if longest_outage < (len(self.critical_load) - start_indx):
                 return start_indx
+        # base case 3: break recursion when you get to this (like a limit to the resursion)
+        if (start_indx + 1) % stop_at == 0:
+            return start_indx + 1
         # else, go on to test the next outage_init (increase index returned
-        return self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start_indx=start_indx+1)
+        return self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start_indx=start_indx+1, stop_at=stop_at)
 
     def min_soe_opt(self, opt_index, der_list):
         """ Calculates min SOE at every time step for the given DER size

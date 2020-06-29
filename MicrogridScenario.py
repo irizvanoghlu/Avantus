@@ -184,17 +184,21 @@ class MicrogridScenario(Scenario):
         analysis_indices = indices[:top_n_outages]
 
         opt_index = self.optimization_levels.index
-        First_failure_ind = len(reliability_mod.critical_load)
+        data_size = len(opt_index)
+        First_failure_ind = 0
 
-        while First_failure_ind>0:
-
+        # stop looping when find first uncovered == -1 (got through entire opt
+        while First_failure_ind>=0:
             der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
-            soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
-
-            First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe)
+            soe = np.repeat(reliability_mod.soc_init, data_size) * ess_properties['energy rating']
+            start = 0
+            check_at_a_time = 900  # note: if this is too large, then you will get a RecursionError
+            while start == First_failure_ind:
+                First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
+                start += check_at_a_time
             analysis_indices = np.append(analysis_indices, First_failure_ind)
 
         for der_inst in der_list:

@@ -144,7 +144,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         """
         return self.variables_dict['uene']
 
-    def get_energy_option_charge(self, mask):
+    def get_uenergy_increase(self, mask):
         """ the amount of energy in a timestep that is provided to the distribution grid
 
         Returns: the energy throughput in kWh for this technology
@@ -152,7 +152,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         """
         return self.variables_dict['uch'] * self.dt
 
-    def get_energy_option_discharge(self, mask):
+    def get_uenergy_decrease(self, mask):
         """ the amount of energy in a timestep that is taken from the distribution grid
 
         Returns: the energy throughput in kWh for this technology

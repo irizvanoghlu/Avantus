@@ -31,8 +31,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        Load.__init__(self, params)
-        DERExtension.__init__(self, params)
+        super(ControllableLoad, self).__init__(params)
 
         # input params  UNITS ARE COMMENTED TO THE RIGHT
         self.rated_power = params['power_rating']  # kW
@@ -120,7 +119,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: CVXPY parameter/variable
 
         """
-        return np.repeat(self.rated_power, sum(mask)) + self.variables_dict['power']
+        if self.duration:
+            return np.repeat(self.rated_power, sum(mask)) + self.variables_dict['power']
+        else:
+            return super().get_charge_up_schedule(mask)
 
     def get_charge_down_schedule(self, mask):
         """ the amount of charging power in the up direction (pulling power down from the grid) that
@@ -133,7 +135,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: CVXPY parameter/variable
 
         """
-        return np.repeat(self.rated_power, sum(mask)) - self.variables_dict['power']
+        if self.duration:
+            return np.repeat(self.rated_power, sum(mask)) - self.variables_dict['power']
+        else:
+            return super().get_charge_up_schedule(mask)
 
     def get_delta_uenegy(self, mask):
         """ the amount of energy, from the current SOE level the DER's state of energy changes
@@ -142,7 +147,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: the energy throughput in kWh for this technology
 
         """
-        return self.variables_dict['uene']
+        if self.duration:
+            return self.variables_dict['uene']
+        else:
+            return super().get_delta_uenegy(mask)
 
     def get_uenergy_increase(self, mask):
         """ the amount of energy in a timestep that is provided to the distribution grid
@@ -150,7 +158,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: the energy throughput in kWh for this technology
 
         """
-        return self.variables_dict['uch'] * self.dt
+        if self.duration:
+            return self.variables_dict['uch'] * self.dt
+        else:
+            return super().get_uenergy_increase(mask)
 
     def get_uenergy_decrease(self, mask):
         """ the amount of energy in a timestep that is taken from the distribution grid
@@ -158,7 +169,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: the energy throughput in kWh for this technology
 
         """
-        return self.variables_dict['udis'] * self.dt
+        if self.duration:
+            return self.variables_dict['udis'] * self.dt
+        else:
+            return super().get_uenergy_decrease(mask)
 
     def get_state_of_energy(self, mask):
         """
@@ -169,7 +183,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Returns: the state of energy as a function of time for the
 
         """
-        return self.variables_dict['ene_load']
+        if self.duration:
+            return self.variables_dict['ene_load']
+        else:
+            return super().get_state_of_energy(mask)
 
     def constraints(self, mask):
         """Default build constraint list method. Used by services that do not have constraints.

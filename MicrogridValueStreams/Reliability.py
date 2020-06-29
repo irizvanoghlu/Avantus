@@ -281,10 +281,11 @@ class Reliability(ValueStream):
     def get_der_limits(self, der_list, sizing=False):
         # collect information required to call simulate_outage
         # TODO change handling of multiple ESS
+
         ess_properties = {
             'charge max': 0,
             'discharge max': 0,
-            'rte list': [],
+            'rte list': [0],
             'operation SOE min': 0,
             'operation SOE max': 0,
             'energy rating': 0,
@@ -442,7 +443,7 @@ class Reliability(ValueStream):
 
         """
         # base case 1: outage_init is beyond range of critical load
-        if start_indx < (len(self.critical_load)):
+        if start_indx > (len(self.critical_load)):
             return -1
         # find longest possible outage
         soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], self.outage_duration, ess_properties, soe[start_indx])

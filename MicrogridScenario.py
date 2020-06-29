@@ -186,16 +186,39 @@ class MicrogridScenario(Scenario):
         opt_index = self.optimization_levels.index
         First_failure_ind = len(reliability_mod.critical_load)
 
-        while First_failure_ind>0:
+        IsReliable = 'No'
+
+        while IsReliable == 'No':
 
             der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
 
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
-            soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties['energy rating']
+            soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties[
+                'energy rating']
 
-            First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe)
-            analysis_indices = np.append(analysis_indices, First_failure_ind)
+
+            outage_init = 0
+
+            First_failure_ind = -1
+            while outage_init < (len(reliability_mod.critical_load)):
+
+                soc_profile = reliability_mod.simulate_outage(reliability_check[outage_init:],
+                                                              demand_left[outage_init:],
+                                                              reliability_mod.outage_duration, ess_properties,
+                                                              soe[outage_init])
+                longest_outage = len(soc_profile)
+                if longest_outage < reliability_mod.outage_duration:
+                    if longest_outage < (len(reliability_mod.critical_load) - outage_init):
+                        First_failure_ind = outage_init
+                        break
+                outage_init += 1
+
+            if First_failure_ind > 0:
+                analysis_indices = np.append(analysis_indices, First_failure_ind)
+            else:
+                IsReliable = 'Yes'
+
 
         for der_inst in der_list:
             der_inst.set_size()

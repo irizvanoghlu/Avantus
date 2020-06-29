@@ -128,7 +128,8 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
 
     def set_size(self):
         self.n =self.n.value
-
+        self.n_min = self.n
+        self.n_max = self.n
         return
 
     def update_for_evaluation(self, input_dict):

@@ -31,7 +31,9 @@ class ControllableLoad(Load, Sizing, DERExtension):
             params (dict): Dict of parameters for initialization
         """
         # create generic technology object
-        super(ControllableLoad, self).__init__(params)
+        Load.__init__(self, params)
+        DERExtension.__init__(self, params)
+        Sizing.__init__(self)
 
         # input params  UNITS ARE COMMENTED TO THE RIGHT
         self.rated_power = params['power_rating']  # kW

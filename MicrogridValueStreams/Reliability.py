@@ -285,7 +285,7 @@ class Reliability(ValueStream):
         ess_properties = {
             'charge max': 0,
             'discharge max': 0,
-            'rte list': [0],
+            'rte list': [],
             'operation SOE min': 0,
             'operation SOE max': 0,
             'energy rating': 0,

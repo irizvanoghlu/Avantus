@@ -174,11 +174,14 @@ class MicrogridScenario(Scenario):
         top_n_outages = 10
         _, _, _, demand_left, _ = reliability_mod.get_der_limits(der_list, True)
 
+        demand_left_df=pd.DataFrame(demand_left)
         # The maximum load demand that is unserved
-        max_load_demand_unserved = demand_left
+        #max_load_demand_unserved = demand_left
+        max_load_demand_unserved = reliability_mod.rolling_sum(demand_left_df.loc[:], reliability_mod.coverage_timesteps) * reliability_mod.dt
+
 
         # Sort the outages by max demand that is unserved
-        indices = np.argsort(-1 * max_load_demand_unserved)
+        indices=(max_load_demand_unserved.sort_values(by=0, ascending=False)).index.values
 
         # Find the top n analysis indices that we are going to size our DER mix for.
         analysis_indices = indices[:top_n_outages]
@@ -191,10 +194,20 @@ class MicrogridScenario(Scenario):
         while IsReliable == 'No':
 
             der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
+            for der_instance in der_list:
 
+                if der_instance.technology_type == 'Energy Storage System':
+                    print(der_instance.dis_max_rated.value, der_instance.ch_max_rated.value,der_instance.ene_max_rated.value)
+                if der_instance.technology_type == 'Generator':
+                    print(der_instance.n.value)
             generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
 
-            soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties[
+            no_of_ES=len(ess_properties['rte list'])
+            if no_of_ES ==0:
+                soe=np.zeros(len(reliability_mod.critical_load))
+                ess_properties=None
+            else:
+                soe = np.repeat(reliability_mod.soc_init, len(reliability_mod.critical_load)) * ess_properties[
                 'energy rating']
 
 
@@ -202,7 +215,8 @@ class MicrogridScenario(Scenario):
 
             First_failure_ind = -1
             while outage_init < (len(reliability_mod.critical_load)):
-
+                if outage_init==28:
+                    print(28)
                 soc_profile = reliability_mod.simulate_outage(reliability_check[outage_init:],
                                                               demand_left[outage_init:],
                                                               reliability_mod.outage_duration, ess_properties,

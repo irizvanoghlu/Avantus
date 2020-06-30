@@ -16,6 +16,7 @@ from storagevet.Technology import CAESTech
 import logging
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+import cvxpy as cvx
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -35,6 +36,31 @@ class CAES(CAESTech.CAES, Sizing, DERExtension):
         Sizing.__init__(self)
         DERExtension.__init__(self, params)
         CAESTech.CAES.__init__(self, params)
+
+    def constraints(self, mask, **kwargs):
+        """ Builds the master constraint list for the subset of timeseries data being optimized.
+
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+
+        Returns:
+            A list of constraints that corresponds the battery's physical constraints and its service constraints
+        """
+
+        constraint_list = super().constraints(mask, **kwargs)
+
+        constraint_list += self.size_constraints
+        if self.incl_energy_limits:
+            # add timeseries energy limits on this instance
+            ene = self.variables_dict['ene']
+            if self.limit_energy_max is not None:
+                energy_max = cvx.Parameter(value=self.limit_energy_max.loc[mask].values, shape=sum(mask))
+                constraint_list += [cvx.NonPos(ene - energy_max)]
+            if self.limit_energy_min is not None:
+                energy_min = cvx.Parameter(value=self.limit_energy_min.loc[mask].values, shape=sum(mask))
+                constraint_list += [cvx.NonPos(energy_min - ene)]
+        return constraint_list
 
     def sizing_summary(self):
         """

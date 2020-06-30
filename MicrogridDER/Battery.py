@@ -143,7 +143,7 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
                 effective_soe_min = self.effective_soe_min
             return effective_soe_min
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -154,10 +154,18 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
 
-        constraint_list = super().constraints(mask)
+        constraint_list = super().constraints(mask, **kwargs)
 
         constraint_list += self.size_constraints
-
+        if self.incl_energy_limits:
+            # add timeseries energy limits on this instance
+            ene = self.variables_dict['ene']
+            if self.limit_energy_max is not None:
+                energy_max = cvx.Parameter(value=self.limit_energy_max.loc[mask].values, shape=sum(mask))
+                constraint_list += [cvx.NonPos(ene - energy_max)]
+            if self.limit_energy_min is not None:
+                energy_min = cvx.Parameter(value=self.limit_energy_min.loc[mask].values, shape=sum(mask))
+                constraint_list += [cvx.NonPos(energy_min - ene)]
         return constraint_list
 
     def objective_function(self, mask, annuity_scalar=1):

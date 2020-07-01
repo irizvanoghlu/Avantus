@@ -411,14 +411,31 @@ class ParamsDER(Params):
         """
         def load_ts_limits(ess_inputs, tag, measurement, unit):
             input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']
-            ts_energy_max = time_series.get(input_cols[0])
-            ts_energy_min = time_series.get(input_cols[1])
-            if ts_energy_max is None and ts_energy_min is None:
-                self.record_input_error(
-                    f"Missing '{tag}: {measurement} Min ({unit})/{id_str}' or '{tag}: {measurement} Max ({unit})/{id_str}' from timeseries input." +
-                    "User indicated one needs to be applied. Please include or turn incl_ts_energy_limits off.")
-            ess_inputs.update({f'ts_{measurement.lower()}_max': ts_energy_max,
-                               f'ts_{measurement.lower()}_min': ts_energy_min})
+            ts_max = time_series.get(input_cols[0])
+            ts_min = time_series.get(input_cols[1])
+            if ts_max is None and ts_min is None:
+                self.record_input_error(f"Missing '{tag}: {measurement} Min ({unit})/{id_str}' or '{tag}: {measurement} Max ({unit})/{id_str}' " +
+                                        "from timeseries input. User indicated one needs to be applied. " +
+                                        "Please include or turn incl_ts_energy_limits off.")
+            if unit == 'kW':
+                # preform the following checks on the values in the timeseries
+                if ts_max.max() * ts_max.min() < 0:
+                    # then the max and min are not both positive or both negative -- so error
+                    self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be all positive or all negative. " +
+                                            "Please fix and rerun.")
+                if ts_min.max() * ts_min.min() < 0:
+                    # then the max and min are not both positive or both negative -- so error
+                    self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be all positive or all negative. " +
+                                            "Please fix and rerun.")
+            if unit == 'kWh':
+                # preform the following checks on the values in the timeseries
+                if ts_max.max() < 0:
+                    self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
+                if ts_min.max() < 0:
+                    self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
+
+            ess_inputs.update({f'ts_{measurement.lower()}_max': ts_max,
+                               f'ts_{measurement.lower()}_min': ts_min})
 
         time_series = self.Scenario['time_series']
         sizing_optimization = False

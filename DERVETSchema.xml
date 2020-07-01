@@ -1,4 +1,10 @@
 <schema version="1.0.0">
+	<Deferral type="service" max_num="1">
+		<planned_load_limit cba="n" min="0.0" type="float" />
+		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<price cba="y" min="0.0" type="float" />
+	</Deferral>
 	<RA type="service" max_num="1">
 		<growth max="100" min="0" type="float" />
 		<days max="366" min="0" type="int" />
@@ -65,6 +71,12 @@
 		<nsr_response_time min="0" type="int" />
 		<sr_response_time min="0" type="int" />
 		<startup_time cba="n" min="0" type="int" />
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
+		<decommisioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceble type="bool" allowed_values="1|0"/>
 	</ControllableLoad>
 	<PV type="intermittentresource">
 		<startup_time cba="n" min="0" type="int" />
@@ -74,13 +86,18 @@
 		<inv_max cba="n" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<rated_capacity cba="n" min="0.0" type="float" />
-		<cost_per_kW cba="y" min="0.0" type="float" />
+		<ccost_kW cba="y" min="0.0" type="float" />
 		<grid_charge allowed_values="1|0" cba="n" type="bool" />
 		<loc allowed_values="ac|dc" cba="n" type="string" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="n" type="float" />
 		<curtail type="bool" allowed_values="1|0"/>
+		<decommisioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceble type="bool" allowed_values="1|0"/>
+		<rcost_kW cba="n" min="0.0" type="float" />
 	</PV>
 	<ICE type="generator">
 		<name cba="n" type="string" />
@@ -100,6 +117,12 @@
 		<n_max cba="n" min="0" type="int" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
+		<decommisioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceble type="bool" allowed_values="1|0"/>
+		<rcost cba="n" min="0.0" type="float" />
+		<rcost_kW cba="n" min="0.0" type="float" />
 	</ICE>
 	<Battery type="storage">
 		<startup_time cba="n" min="0" type="int" />
@@ -133,6 +156,13 @@
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<duration_max min="0" type="float" optional="y"/>
+		<decommisioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceble type="bool" allowed_values="1|0"/>
+		<rcost cba="n" min="0.0" type="float" />
+		<rcost_kW cba="n" min="0.0" type="float" />
+		<rcost_kWh cba="n" min="0.0" type="float" />
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
@@ -166,6 +196,13 @@
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
+		<decommisioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceble type="bool" allowed_values="1|0"/>
+		<rcost cba="n" min="0.0" type="float" />
+		<rcost_kW cba="n" min="0.0" type="float" />
+		<rcost_kWh cba="n" min="0.0" type="float" />
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
@@ -202,20 +239,14 @@
 		<external_incentives allowed_values="1|0" cba="n" optional="bool" type="bool" />
 		<yearly_data_filename cba="n" optional="y" type="string" />
 		<customer_tariff_filename cba='y' type="string" />
-		<analysis_horizon_mode cba="n" allowed_values="1|2|3" type="int" />
+		<analysis_horizon_mode cba="n" allowed_values="1|2|3|4" type="int" />
 		<federal_tax_rate cba="n" max="100.0" min="0.0" type="float" />
 		<state_tax_rate cba="n" max="100.0" min="0.0" type="float" />
 		<property_tax_rate cba="n" max="100.0" min="0.0" type="float" />
 	</Finance>
-	<Results type="command" max_num="1">
+	<Results type="result" max_num="1">
 		<dir_absolute_path cba="n" type="string" />
 		<label cba="n" type="string" optional="y"/>
 		<errors_log_path cba="n" type="string" />
 	</Results>
-	<Deferral type="service" max_num="1">
-		<planned_load_limit cba="n" min="0.0" type="float" />
-		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
-		<growth cba="n" max="100.0" min="0.0" type="float" />
-		<price cba="y" min="0.0" type="float" />
-	</Deferral>
 </schema>

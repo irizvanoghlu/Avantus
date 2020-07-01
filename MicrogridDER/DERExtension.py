@@ -33,6 +33,21 @@ class DERExtension:
         self.macrs = params.get('macrs_term')
         self.construction_date = params.get('construction_date')
         self.operation_date = params.get('operation_date')
+        self.decommissioning_cost = params['decommissioning_cost']
+        self.salvage_value = params['salvage_value']
+        self.expected_lifetime = params['expected_lifetime']
+        self.replaceble = params['replaceble']
+
+        self.replacement_cost_function = []
+        rcost = params.get('rcost')
+        if rcost is not None:
+            self.replacement_cost_function.append(rcost)
+        rcost_kW = params.get('rcost_kW')
+        if rcost_kW is not None:
+            self.replacement_cost_function.append(rcost_kW)
+        rcost_kWh = params.get('rcost_kWh')
+        if rcost_kWh is not None:
+            self.replacement_cost_function.append(rcost_kWh)
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

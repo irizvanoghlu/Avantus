@@ -121,6 +121,7 @@ ICE,1,rcost,200,$/generator,float,"[0, ccost)",N/A,None,Replacement cost per gen
 DA,.,growth,0,%/yr,float,"[0, 100]",N/A,None,Growth Rate of day ahead energy prices,yes,no,.,.,
 LF,.,growth,2,%/yr,float,"[0, 100]",N/A,None,Growth Rate of Load Following Price,no,no,.,.,
 LF,.,energyprice_growth,5,%/yr,float,"[0, 100]",N/A,None,LF Energy Price growth rate,.,no,.,.,
+LF,.,duration,0,hours,float,"[0, 24]",N/A,None,Duration for energy reservation requirements,.,no,.,.,
 LF,.,CombinedMarket,1,y/n,bool,"{0,1}",N/A,None,Must the storage bid as much reg up as reg down?,.,no,.,.,
 LF,.,duration,0,hours,float,"[0, 24]",N/A,None,Duration for energy reservation requirements,.,no,.,.,
 FR,.,eou,0.3,kWh/kW-hr,float,"[0, 1]",N/A,None,Frequency Regulation Energy Option Up,no,no,.,.,

@@ -70,6 +70,18 @@ class CostBenefitAnalysis(Financial):
                  2.231]
         }
 
+    def determine_end_of_analysis(self, analysis_mode, user_given_end_year):
+        """ This method looks at the analysis horizon mode and sets up the CBA class
+        for the indicated mode
+
+        Args:
+            analysis_mode (int):
+            user_given_end_year (pd.Period):
+
+        Returns: pandas Period representation of the year that DERVET will end CBA analysis
+
+        """
+
     @staticmethod
     def annuity_scalar(start_year, end_year, opt_years, **kwargs):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
@@ -259,12 +271,14 @@ class CostBenefitAnalysis(Financial):
         Returns:
 
         """
-        self.payback = pd.DataFrame({'Payback Period': [self.payback_period(proforma), 0, 0],
-                                     'Discounted Payback Period': [self.discounted_payback_period(proforma), 0, 0],
-                                     'Net Present Value': [0] + self.npv['Lifetime Present Value'] + [0],
-                                     'Internal Rate of Return': [0, 0, self.internal_rate_of_return(proforma)],
-                                     'Cost-Benefit Ratio': [0, 0, self.cost_benefit_ratio(self.cost_benefit)]},
-                                    index=pd.Index(['Years', '$', '-']))
+        super().payback_report(proforma)
+        npv_df = pd.DataFrame({'Lifetime Net Present Value':  self.npv['Lifetime Present Value'].values},
+                              index=pd.Index(['$'], name="Unit"))
+        other_metrics = pd.DataFrame({'Internal Rate of Return': self.internal_rate_of_return(proforma),
+                                     'Cost-Benefit Ratio': self.cost_benefit_ratio(self.cost_benefit)},
+                                     index=pd.Index(['-'], name='Unit'))
+        self.payback = pd.merge(self.payback, npv_df, how='outer', on='Unit')
+        self.payback = pd.merge(self.payback, other_metrics, how='outer', on='Unit')
 
     @staticmethod
     def internal_rate_of_return(proforma):

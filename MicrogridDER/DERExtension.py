@@ -36,7 +36,7 @@ class DERExtension:
         self.decommissioning_cost = params['decommissioning_cost']
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
-        self.replaceble = params['replaceble']
+        self.replaceable = params['replaceable']
 
         self.replacement_cost_function = []
         rcost = params.get('rcost')

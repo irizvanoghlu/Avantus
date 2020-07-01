@@ -73,10 +73,10 @@
 		<startup_time cba="n" min="0" type="int" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
-		<decommisioning_cost cba="n" min="0.0" type="float" />
-		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
-		<replaceble type="bool" allowed_values="1|0"/>
+		<replaceable type="bool" allowed_values="1|0"/>
 	</ControllableLoad>
 	<PV type="intermittentresource">
 		<startup_time cba="n" min="0" type="int" />
@@ -93,10 +93,10 @@
 		<operation_date cba="n" type="Timestamp" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="n" type="float" />
 		<curtail type="bool" allowed_values="1|0"/>
-		<decommisioning_cost cba="n" min="0.0" type="float" />
-		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
-		<replaceble type="bool" allowed_values="1|0"/>
+		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost_kW cba="n" min="0.0" type="float" />
 	</PV>
 	<ICE type="generator">
@@ -117,10 +117,10 @@
 		<n_max cba="n" min="0" type="int" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
-		<decommisioning_cost cba="n" min="0.0" type="float" />
-		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
-		<replaceble type="bool" allowed_values="1|0"/>
+		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
 	</ICE>
@@ -156,10 +156,10 @@
 		<hp cba="y" min="0" type="float" />
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<duration_max min="0" type="float" optional="y"/>
-		<decommisioning_cost cba="n" min="0.0" type="float" />
-		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
-		<replaceble type="bool" allowed_values="1|0"/>
+		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<rcost_kWh cba="n" min="0.0" type="float" />
@@ -196,10 +196,10 @@
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
-		<decommisioning_cost cba="n" min="0.0" type="float" />
-		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" type="int" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
-		<replaceble type="bool" allowed_values="1|0"/>
+		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<rcost_kWh cba="n" min="0.0" type="float" />

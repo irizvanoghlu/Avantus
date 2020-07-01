@@ -409,6 +409,17 @@ class ParamsDER(Params):
         """ Interprets user given data and prepares it for each technology.
 
         """
+        def load_ts_limits(ess_inputs, tag, measurement, unit):
+            input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']
+            ts_energy_max = time_series.get(input_cols[0])
+            ts_energy_min = time_series.get(input_cols[1])
+            if ts_energy_max is None and ts_energy_min is None:
+                self.record_input_error(
+                    f"Missing '{tag}: {measurement} Min ({unit})/{id_str}' or '{tag}: {measurement} Max ({unit})/{id_str}' from timeseries input." +
+                    "User indicated one needs to be applied. Please include or turn incl_ts_energy_limits off.")
+            ess_inputs.update({f'ts_{measurement.lower()}_max': ts_energy_max,
+                               f'ts_{measurement.lower()}_min': ts_energy_min})
+
         time_series = self.Scenario['time_series']
         sizing_optimization = False
         if len(self.Battery):
@@ -418,30 +429,21 @@ class ParamsDER(Params):
 
                 # check if user wants to include timeseries constraints -> grab data
                 if battery_inputs['incl_ts_energy_limits']:
-
-                    input_cols = [f'Battery: Energy Max (kWh)/{id_str}', f'Battery: Energy Min (kWh)/{id_str}']
-                    ts_energy_max = time_series.get(input_cols[0])
-                    ts_energy_min = time_series.get(input_cols[1])
-                    if ts_energy_max is None and ts_energy_min is None:
-                        self.record_input_error(f"Missing 'Battery: Energy Min (kWh)/{id_str}' or 'Battery: Energy Max (kWh)/{id_str}' from timeseries input." +
-                                                "User indicated one needs to be applied. Please include or turn incl_ts_energy_limits off.")
-                    battery_inputs.update({'ts_energy_max': ts_energy_max,
-                                           'ts_energy_min': ts_energy_min})
+                    load_ts_limits(battery_inputs, 'Battery', 'Energy', 'kWh')
+                if battery_inputs['incl_ts_charge_limits']:
+                    load_ts_limits(battery_inputs, 'Battery', 'Charge', 'kW')
+                if battery_inputs['incl_ts_discharge_limits']:
+                    load_ts_limits(battery_inputs, 'Battery', 'Discharge', 'kW')
 
         if len(self.CAES):
             for id_str, caes_inputs in self.CAES.items():
-
                 # check if user wants to include timeseries constraints -> grab data
                 if caes_inputs['incl_ts_energy_limits']:
-
-                    input_cols = [f'CAES: Energy Max (kWh)/{id_str}', f'CAES: Energy Min (kWh)/{id_str}']
-                    ts_energy_max = time_series.get(input_cols[0])
-                    ts_energy_min = time_series.get(input_cols[1])
-                    if ts_energy_max is None and ts_energy_min is None:
-                        self.record_input_error(f"Missing 'CAES: Energy Min (kWh)/{id_str}' or 'CAES: Energy Max (kWh)/{id_str}' from timeseries input." +
-                                                "User indicated one needs to be applied. Please include or turn incl_ts_energy_limits off.")
-                    caes_inputs.update({'ts_energy_max': ts_energy_max,
-                                        'ts_energy_min': ts_energy_min})
+                    load_ts_limits(caes_inputs, 'CAES', 'Energy', 'kWh')
+                if caes_inputs['incl_ts_charge_limits']:
+                    load_ts_limits(caes_inputs, 'CAES', 'Charge', 'kW')
+                if caes_inputs['incl_ts_discharge_limits']:
+                    load_ts_limits(caes_inputs, 'CAES', 'Discharge', 'kW')
 
         if len(self.PV):
             for pv_inputs in self.PV.values():

@@ -134,8 +134,8 @@
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<duration_max min="0" type="float" optional="y"/>
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_power_limits allowed_values="1|0" cba="n" type="bool" />
-
+		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
 	</Battery>
 	<CAES type="storage">
 		<startup_time cba="n" min="0" type="int" />
@@ -167,7 +167,8 @@
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_power_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
 	</CAES>
 	<Scenario type="scenario" max_num="1">
 		<monthly_data_filename cba="y" type="string" />

@@ -70,20 +70,31 @@ class CostBenefitAnalysis(Financial):
                  2.231]
         }
 
-    def determine_end_of_analysis(self, analysis_mode, user_given_end_year):
+    def find_end_year(self, user_given_end_year):
         """ This method looks at the analysis horizon mode and sets up the CBA class
         for the indicated mode
 
         Args:
-            analysis_mode (int):
             user_given_end_year (pd.Period):
 
         Returns: pandas Period representation of the year that DERVET will end CBA analysis
 
         """
+        return pd.Period(0, freq='y')
 
-    @staticmethod
-    def annuity_scalar(start_year, end_year, opt_years, **kwargs):
+    def update_analysis_years(self, der_list):
+        """
+
+        Args:
+            der_list (list):
+
+        Returns: set of years that need to be added to the list of years that optimization is
+            run for
+
+        """
+        return {}
+
+    def annuity_scalar(self, start_year, end_year, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
         this method is sometimes called before the class is initialized (hence it has to be
         static)
@@ -101,16 +112,16 @@ class CostBenefitAnalysis(Financial):
         base_year = min(opt_years)
         yr_index = base_year - start_year.year
         while yr_index < n - 1:
-            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + kwargs['inflation_rate'] / 100)
+            dollar_per_year[yr_index + 1] = dollar_per_year[yr_index] * (1 + self.inflation_rate)
             yr_index += 1
         yr_index = base_year - start_year.year
         while yr_index > 0:
-            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (100 / (1 + kwargs['inflation_rate']))
+            dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (1 / (1 + self.inflation_rate))
             yr_index -= 1
-        lifetime_npv_alpha = np.npv(kwargs['npv_discount_rate']/100, [0] + dollar_per_year)
+        lifetime_npv_alpha = np.npv(self.npv_discount_rate, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
-    def preform_cost_benefit_analysis(self, technologies, value_streams, results):
+    def calculate(self, technologies, value_streams, results, start_year, end_year, opt_years):
         """ this function calculates the proforma, cost-benefit, npv, and payback using the optimization variable results
         saved in results and the set of technology and service instances that have (if any) values that the user indicated
         they wanted to use when evaluating the CBA.
@@ -119,14 +130,17 @@ class CostBenefitAnalysis(Financial):
         the technologies and services with the values the user denoted to be used for evaluating the CBA.
 
         Args:
-            technologies (Dict): all active technologies (provided access to ESS, generators, renewables to get capital and om costs)
+            technologies (Dict): Dict of technologies (needed to get capital and om costs)
             value_streams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
+            start_year (Period)
+            end_year (Period)
+            opt_years (list)
 
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
-        super().preform_cost_benefit_analysis(self.ders, self.value_streams, results)
+        super().calculate(self.ders, self.value_streams, results, start_year, end_year, opt_years)
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -197,7 +211,7 @@ class CostBenefitAnalysis(Financial):
                 except KeyError:
                     print('No attribute ' + param_object.name + ': ' + key) if verbose else None
 
-    def proforma_report(self, technologies, valuestreams, results):
+    def proforma_report(self, technologies, valuestreams, results, start_year, end_year, opt_years):
         """ Calculates and returns the proforma
 
         Args:
@@ -208,22 +222,28 @@ class CostBenefitAnalysis(Financial):
 
         Returns: dataframe proforma
         """
-        proforma = super().proforma_report(technologies, valuestreams, results)
-        proforma_w_taxes = self.calculate_taxes(proforma, technologies, valuestreams, results)
-        return proforma_w_taxes
+        proforma = super().proforma_report(technologies, valuestreams, results, start_year, end_year, opt_years)
+        proforma_wo_yr_net = proforma.iloc[:, :-1]
+        proforma_taxes = self.calculate_taxes(proforma, technologies)
+        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies, end_year)
+        # add decommissioning costs to proforma
+        proforma_eol = proforma_taxes.join(der_eol)
 
-    def calculate_taxes(self, proforma, technologies, valuestreams, results):
+        # sort alphabetically
+        proforma_eol.sort_index(axis=1, inplace=True)
+        # recalculate the net (sum of the row's columns)
+        proforma_taxes['Yearly Net Value'] = proforma_taxes.sum(axis=1)
+        return proforma_taxes
+
+    def calculate_taxes(self, proforma, technologies):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
-        as a result
+        as a result, then recalculates the Yearly Net Value column
 
         Args:
             proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
-            technologies (Dict): Dict of technologies (needed to get capital and om costs)
-            valuestreams (Dict): Dict of all services to calculate cost avoided or profit
-            results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
-                and ValueStream
+            technologies (list): Dict of technologies (needed to get capital and om costs)
 
-        Returns:
+        Returns: proforma considering the 'Overall Tax Burden'
 
         """
         proj_years = len(proforma) - 1
@@ -256,22 +276,43 @@ class CostBenefitAnalysis(Financial):
         # drop yearly net value column
         proforma_taxes = proforma.iloc[:, :-1]
         proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
-        # calculate the net (sum of the row's columns)
-        proforma_taxes['Yearly Net Value'] = proforma_taxes.sum(axis=1)
-        # save new proforma
-        self.pro_forma = proforma_taxes
         return proforma_taxes
 
-    def payback_report(self, proforma):
+    @staticmethod
+    def calculate_end_of_life_value(proforma, technologies, start_year, end_year):
+        """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
+        as a result
+
+        Args:
+            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+            technologies (list): Dict of technologies (needed to get capital and om costs)
+            start_year (Period)
+            end_year (Period)
+
+        """
+        end_of_life_costs = pd.DataFrame(index=proforma.index)
+        for der_inst in technologies:
+            # collect the decommissioning costs at the technology's end of life
+            decommission_pd = der_inst.decommissioning_cost(end_year)
+            end_of_life_costs = end_of_life_costs.join(decommission_pd)
+            # collect salvage value
+            salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
+            # add tp EOL dataframe
+            salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Cost": salvage_value}, index=[end_year])
+            end_of_life_costs = end_of_life_costs.join(salvage_pd)
+        end_of_life_costs = end_of_life_costs.fillna(value=0)
+
+        return end_of_life_costs
+
+    def payback_report(self, proforma, opt_years):
         """ calculates and saves the payback period and discounted payback period in a dataframe
 
         Args:
             proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
-
-        Returns:
+            opt_years (list)
 
         """
-        super().payback_report(proforma)
+        super().payback_report(proforma, opt_years)
         npv_df = pd.DataFrame({'Lifetime Net Present Value':  self.npv['Lifetime Present Value'].values},
                               index=pd.Index(['$'], name="Unit"))
         other_metrics = pd.DataFrame({'Internal Rate of Return': self.internal_rate_of_return(proforma),

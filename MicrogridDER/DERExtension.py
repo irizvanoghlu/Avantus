@@ -13,6 +13,7 @@ __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
 import numpy as np
+import pandas as pd
 
 
 class DERExtension:
@@ -33,7 +34,7 @@ class DERExtension:
         self.macrs = params.get('macrs_term')
         self.construction_date = params.get('construction_date')
         self.operation_date = params.get('operation_date')
-        self.decommissioning_cost = params['decommissioning_cost']
+        self.decommission_cost = params['decommissioning_cost']
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
         self.replaceable = params['replaceable']
@@ -71,3 +72,62 @@ class DERExtension:
         ccost_kwh = input_dict.get('ccost_kwh')
         if ccost_kwh is not None:
             self.capital_cost_function[2] = ccost_kwh
+
+    def decommissioning_cost(self, last_year):
+        """ Returns the cost of decommissioning a DER and the year the cost will be incurred
+
+        Returns: dataframe index by year that the cost applies to. if the year
+
+        """
+        cost = self.decommission_cost
+        if self.replaceable:
+            year = last_year
+        else:
+            year = pd.Period(self.operation_date.year + self.expected_lifetime)
+        if year > last_year:
+            cost = 0
+            year = last_year
+
+        return pd.DataFrame({f"{self.unique_tech_id()} Decommissioning Cost": cost}, index=[year])
+
+    def calculate_salvage_value(self, start_year, last_year):
+        """ Decode the user's input and return the salvage value
+        (1) "Sunk Cost" this option means that there is no end of analysis value
+            (salvage value = 0)
+        (2) "Linear Salvage Value" which will calculate salvage value by multiplying
+            the technology's capital cost by (remaining life/total life)
+        (3) a number (in $) for the salvage value of the technology
+            (User-specified Salvage Value)
+
+        Args:
+            last_year:
+
+        Returns: the salvage value of the technology
+
+        """
+        if self.salvage_value == 'sunk cost':
+            return 0
+        decommission_year = start_year.year + self.expected_lifetime - 1
+
+        # If the a technology has a life shorter than the analysis window with no replacement, then no salvage value applies.
+        if decommission_year < last_year and not self.replaceable:
+            return 0
+        # else keep replacing, and update the DECOMMISSION_YEAR (assume installation occurs the year after)
+        while self.replaceable and (decommission_year + 1) < last_year.year:
+            decommission_year += self.expected_lifetime
+
+        # If it has a life shorter than the analysis window but is replaced, a salvage value will be applied.
+        # If it has a life longer than the analysis window, then a salvage value will apply.
+        years_beyond_project = last_year.year - decommission_year
+
+        if years_beyond_project > 0:
+            if self.salvage_value == "linear salvage value":
+                try:
+                    capex = self.get_capex().value
+                except AttributeError:
+                    capex = self.get_capex()
+                return capex * (years_beyond_project/self.expected_lifetime)
+            else:
+                return self.salvage_value
+        else:
+            return 0

@@ -70,29 +70,29 @@ class CostBenefitAnalysis(Financial):
                  2.231]
         }
 
-    def find_end_year(self, user_given_end_year):
+    def find_end_year(self, user_given_end_year, der_list):
         """ This method looks at the analysis horizon mode and sets up the CBA class
         for the indicated mode
 
         Args:
             user_given_end_year (pd.Period):
+            der_list (list):
 
         Returns: pandas Period representation of the year that DERVET will end CBA analysis
 
         """
-        return pd.Period(0, freq='y')
-
-    def update_analysis_years(self, der_list):
-        """
-
-        Args:
-            der_list (list):
-
-        Returns: set of years that need to be added to the list of years that optimization is
-            run for
-
-        """
-        return {}
+        # (1) User-defined (this should continue to be default)
+        if self.horizon_mode == 1:
+            return user_given_end_year
+        # (2) Auto-calculate based on shortest equipment lifetime. (No size optimization)
+        if self.horizon_mode == 2:
+            pass
+        # (3) Auto-calculate based on longest equipment lifetime. (No size optimization)
+        if self.horizon_mode == 3:
+            pass
+        # (4) Carrying Cost (single technology only)
+        if self.horizon_mode == 4:
+            return pd.Period(0)
 
     def annuity_scalar(self, start_year, end_year, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
@@ -225,7 +225,7 @@ class CostBenefitAnalysis(Financial):
         proforma = super().proforma_report(technologies, valuestreams, results, start_year, end_year, opt_years)
         proforma_wo_yr_net = proforma.iloc[:, :-1]
         proforma_taxes = self.calculate_taxes(proforma, technologies)
-        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies, end_year)
+        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies,start_year, end_year)
         # add decommissioning costs to proforma
         proforma_eol = proforma_taxes.join(der_eol)
 

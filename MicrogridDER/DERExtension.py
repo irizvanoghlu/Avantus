@@ -110,10 +110,10 @@ class DERExtension:
         decommission_year = start_year.year + self.expected_lifetime - 1
 
         # If the a technology has a life shorter than the analysis window with no replacement, then no salvage value applies.
-        if decommission_year < last_year and not self.replaceable:
+        if decommission_year < last_year.year and not self.replaceable:
             return 0
         # else keep replacing, and update the DECOMMISSION_YEAR (assume installation occurs the year after)
-        while self.replaceable and (decommission_year + 1) < last_year.year:
+        while self.replaceable and decommission_year < last_year.year:
             decommission_year += self.expected_lifetime
 
         # If it has a life shorter than the analysis window but is replaced, a salvage value will be applied.

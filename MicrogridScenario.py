@@ -96,6 +96,8 @@ class MicrogridScenario(Scenario):
 
     def initialize_cba(self):
         self.financials = CostBenefitAnalysis(self.finance_inputs)
+        # set the project end year
+        self.end_year = self.financials.find_end_year(self.start_year, self.end_year, self.poi.der_list)
 
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
@@ -118,7 +120,7 @@ class MicrogridScenario(Scenario):
                 e_logger.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
                 return False
             # calculate the annuity scalar that will convert any yearly costs into a present value
-            alpha = self.financials.annuity_scalar()
+            alpha = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
             u_logger.info("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")

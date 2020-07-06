@@ -70,13 +70,14 @@ class CostBenefitAnalysis(Financial):
                  2.231]
         }
 
-    def find_end_year(self, user_given_end_year, der_list):
+    def find_end_year(self, project_start_year, user_given_end_year, der_list):
         """ This method looks at the analysis horizon mode and sets up the CBA class
         for the indicated mode
 
         Args:
-            user_given_end_year (pd.Period):
-            der_list (list):
+            project_start_year (pd.Period): the first year the project is operational
+            user_given_end_year (pd.Period): the user given last year the project is operations
+            der_list (list): list of DERs initialized with user values
 
         Returns: pandas Period representation of the year that DERVET will end CBA analysis
 
@@ -86,13 +87,27 @@ class CostBenefitAnalysis(Financial):
             return user_given_end_year
         # (2) Auto-calculate based on shortest equipment lifetime. (No size optimization)
         if self.horizon_mode == 2:
-            pass
+            shortest_lifetime = 1000  # no technology should last 1000 years -- so this is safe to hardcode
+            for der_instance in der_list:
+                shortest_lifetime = min(der_instance.expected_lifetime, shortest_lifetime)
+                if der_instance.being_sized():
+                    return pd.Period(0)  # cannot preform size optimization with mode==2
+            return project_start_year + shortest_lifetime-1
         # (3) Auto-calculate based on longest equipment lifetime. (No size optimization)
         if self.horizon_mode == 3:
-            pass
+            longest_lifetime = 0
+            for der_instance in der_list:
+                longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
+                if der_instance.being_sized():
+                    return pd.Period(0)  # cannot preform size optimization with mode==3
+            return project_start_year + longest_lifetime-1
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
-            return pd.Period(0)
+            if len(der_list) > 1:
+                return pd.Period(0)
+            else:
+                der_instance = der_list[0]
+                return project_start_year + der_instance.expected_lifetime-1
 
     def annuity_scalar(self, start_year, end_year, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
@@ -187,7 +202,6 @@ class CostBenefitAnalysis(Financial):
         for der_tag, instance_dict in self.ders_values.items():
             for id_str, der_instance in instance_dict.items():
                 self.ders[der_tag][id_str].update_for_evaluation(der_instance)
-                # self.update_with_evaluation(self.ders[der_tag][id_str], der_instance, self.verbose)
 
     @staticmethod
     def update_with_evaluation(param_object, evaluation_dict, verbose):

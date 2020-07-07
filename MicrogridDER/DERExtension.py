@@ -14,9 +14,10 @@ __version__ = 'beta'
 
 import numpy as np
 import pandas as pd
+from storagevet.Technology.DistributedEnergyResource import DER
 
 
-class DERExtension:
+class DERExtension(DER):
     """ This class is to be inherited by DER classes that want to allow the DER our generic
     DER model to extend beyond that in StorageVET
 
@@ -26,6 +27,7 @@ class DERExtension:
         """
 
         """
+        super(DERExtension, self).__init__(params)
         # try to look for DERVET specific user inputs that are shared by all DERs
         self.nsr_response_time = params['nsr_response_time']
         self.sr_response_time = params['sr_response_time']
@@ -50,8 +52,12 @@ class DERExtension:
         if rcost_kWh is not None:
             self.replacement_cost_function.append(rcost_kWh)
 
-    def get_failure_years(self, start_year, end_year):
-        """ Gets the year(s) that this instance will fail
+        self.last_operation_year = pd.Period(0)  # set this value
+        self.failure_years = []
+
+    def set_failure_years(self, start_year, end_year):
+        """ Gets the year(s) that this instance will fail and saves the information
+         as an attribute of itself
 
         Args:
             start_year (pd.Period): the first year the project is operational
@@ -61,15 +67,15 @@ class DERExtension:
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        failure_years = []
         fail_on = start_year.year + self.expected_lifetime-1
         if self.replaceable:
             while fail_on < end_year.year:
-                failure_years.append(fail_on)
+                self.failure_years.append(fail_on)
         else:
             if fail_on < end_year.year:
-                failure_years.append(fail_on)
-        return failure_years
+                self.failure_years.append(fail_on)
+        self.last_operation_year = pd.Period(fail_on)
+        return self.failure_years
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

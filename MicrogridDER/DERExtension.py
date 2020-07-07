@@ -14,10 +14,9 @@ __version__ = 'beta'
 
 import numpy as np
 import pandas as pd
-from storagevet.Technology.DistributedEnergyResource import DER
 
 
-class DERExtension(DER):
+class DERExtension:
     """ This class is to be inherited by DER classes that want to allow the DER our generic
     DER model to extend beyond that in StorageVET
 
@@ -27,7 +26,6 @@ class DERExtension(DER):
         """
 
         """
-        super(DERExtension, self).__init__(params)
         # try to look for DERVET specific user inputs that are shared by all DERs
         self.nsr_response_time = params['nsr_response_time']
         self.sr_response_time = params['sr_response_time']
@@ -52,7 +50,7 @@ class DERExtension(DER):
         if rcost_kWh is not None:
             self.replacement_cost_function.append(rcost_kWh)
 
-        self.last_operation_year = pd.Period(0)  # set this value
+        self.last_operation_year = pd.Period(year=0, freq='y')  # set this value
         self.failure_years = []
 
     def set_failure_years(self, start_year, end_year):

@@ -33,3 +33,16 @@ class CAES(CAESTech.CAES, ESSSizing):
         """
         CAESTech.CAES.__init__(self, params)
         ESSSizing.__init__(self, self.technology_type, params)
+
+    def update_for_evaluation(self, input_dict):
+        """ Updates price related attributes with those specified in the input_dictionary
+
+        Args:
+            input_dict: hold input data, keys are the same as when initialized
+
+        """
+        super().update_for_evaluation(input_dict)
+
+        heat_rate_high = input_dict.get('heat_rate_high')
+        if heat_rate_high is not None:
+            self.heat_rate_high = heat_rate_high

@@ -93,7 +93,7 @@ class CostBenefitAnalysis(Financial):
                 if der_instance.being_sized():
                     e_logger.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
-                    return pd.Period(0)  # cannot preform size optimization with mode==2
+                    return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==2
             return project_start_year + shortest_lifetime-1
         # (3) Auto-calculate based on longest equipment lifetime. (No size optimization)
         if self.horizon_mode == 3:
@@ -103,14 +103,14 @@ class CostBenefitAnalysis(Financial):
                 if der_instance.being_sized():
                     e_logger.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
-                    return pd.Period(0)  # cannot preform size optimization with mode==3
+                    return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==3
             return project_start_year + longest_lifetime-1
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
             if len(der_list) > 1:
                 e_logger.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
-                return pd.Period(0)
+                return pd.Period(year=0, freq='y')
             else:
                 der_instance = der_list[0]
                 return project_start_year + der_instance.expected_lifetime-1

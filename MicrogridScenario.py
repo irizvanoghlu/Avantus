@@ -98,6 +98,16 @@ class MicrogridScenario(Scenario):
         self.financials = CostBenefitAnalysis(self.finance_inputs)
         # set the project end year
         self.end_year = self.financials.find_end_year(self.start_year, self.end_year, self.poi.der_list)
+        if self.end_year.year == 0:
+            # some type error was recorded. throw error and exit
+            raise Exception("Error occurred while trying to determine the end of the analysis." +
+                            " Please check the error_log.log in your results folder for more information.")
+
+        # update opt_years based on this new end_year
+        add_analysis_years = self.financials.get_years_after_failures(self.start_year, self.end_year, self.poi.der_list)
+        set_opt_yrs = set(self.opt_years)
+        set_opt_yrs.update(add_analysis_years)
+        self.opt_years = list(set_opt_yrs)
 
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.

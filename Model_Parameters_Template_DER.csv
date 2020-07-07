@@ -66,7 +66,7 @@ Battery,1,p_start_dis,0,$,float,"[0, p_start_dis)",N/A,None,Startup cost to star
 Battery,1,daily_cycle_limit,1,cycles,float,"[0, daily_cycles_limit)",N/A,None,Limit the daily total discharge and ene throughput not to exceed the (number of cycles * max energy storage capacity) (inactive if 0),.,no,.,.,
 Battery,1,hp,100,kW,float,"[0, hp)",N/A,None,Housekeeping power for Auxiliary load,.,no,3,n,
 Battery,1,macrs_term,3,N/A,float,"{3,5,7,10,15,20,25,27.5,39}",N/A,None,modified accelerated cost recovery system (MACRS) depreciation term,.,no,7,n,
-Battery,1,expected_lifetime,13,years,int,,N/A,None,The estimated number of years this DER is expected to be operational,.,no,.,.,
+Battery,1,expected_lifetime,14,years,int,,N/A,None,The estimated number of years this DER is expected to be operational,.,no,.,.,
 Battery,1,replaceable,0,y/n,bool,,N/A,None,T or F to indicate whether this DER is replaceable or not at its end of life,.,no,.,.,
 Battery,1,decommissioning_cost,0,$,float,,N/A,None,The cost to decommission this DER when it has reached it's expected lifetime's end,.,no,.,.,
 Battery,1,salvage_value,0,N/A,float,,N/A,None,"Applies a financial benefit in the last year of the analysis window if the technology is not beyond its end of life. options: ""sunk cost"" meaning that there is no end of analysis value (salvage value = 0), ""linear salvage value"" which will calculate salvage value by multiplying the technology's capital cost by (remaining life/total life), or simply input a $ value to specify the salvage value of the technology.",.,no,.,.,

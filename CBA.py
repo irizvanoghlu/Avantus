@@ -91,6 +91,8 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 shortest_lifetime = min(der_instance.expected_lifetime, shortest_lifetime)
                 if der_instance.being_sized():
+                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
+                                   f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(0)  # cannot preform size optimization with mode==2
             return project_start_year + shortest_lifetime-1
         # (3) Auto-calculate based on longest equipment lifetime. (No size optimization)
@@ -99,15 +101,41 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
+                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
+                                   f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(0)  # cannot preform size optimization with mode==3
             return project_start_year + longest_lifetime-1
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
             if len(der_list) > 1:
+                e_logger.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
+                               f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(0)
             else:
                 der_instance = der_list[0]
                 return project_start_year + der_instance.expected_lifetime-1
+
+    @staticmethod
+    def get_years_after_failures(start_year, end_year, der_list):
+        """ The optimization should be re-run for every year an 'unreplacable' piece of equipment fails before the
+        lifetime of the longest-lived equipment. No need to re-run the optimization if equipment fails in some
+        year and is replaced.
+
+        Args:
+            start_year (pd.Period): the first year the project is operational
+            end_year (pd.Period): the last year the project is operational
+            der_list (list): list of DERs initialized with user values
+
+        Returns: list of the year(s) after an 'unreplacable' DER fails/reaches its end of life
+
+        """
+        yrs_failed = []
+        for der_instance in der_list:
+            if not der_instance.replaceable:
+                yrs_failed += der_instance.get_failure_years(start_year, end_year)
+        # increase the year by 1 (this will be the years that the operational DER mix will change)
+        diff_der_mix_yrs = [year+1 for year in yrs_failed if year < end_year.year]
+        return list(set(diff_der_mix_yrs))  # get rid of any duplicates
 
     def annuity_scalar(self, start_year, end_year, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits

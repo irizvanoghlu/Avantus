@@ -50,6 +50,27 @@ class DERExtension:
         if rcost_kWh is not None:
             self.replacement_cost_function.append(rcost_kWh)
 
+    def get_failure_years(self, start_year, end_year):
+        """ Gets the year(s) that this instance will fail
+
+        Args:
+            start_year (pd.Period): the first year the project is operational
+            end_year (pd.Period): the last year the project is operational
+
+        Returns: list of year(s) that this equipement fails. if replaceable, then there might
+        be more than one year (depending on when the end_year is and the lifetime of the DER)
+
+        """
+        failure_years = []
+        fail_on = start_year.year + self.expected_lifetime-1
+        if self.replaceable:
+            while fail_on < end_year.year:
+                failure_years.append(fail_on)
+        else:
+            if fail_on < end_year.year:
+                failure_years.append(fail_on)
+        return failure_years
+
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
 

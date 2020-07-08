@@ -335,7 +335,7 @@ class CostBenefitAnalysis(Financial):
         end_of_life_costs = pd.DataFrame(index=proforma.index)
         for der_inst in technologies:
             # collect the decommissioning costs at the technology's end of life
-            decommission_pd = der_inst.decommissioning_cost(end_year)
+            decommission_pd = der_inst.decommissioning_report(end_year)
             end_of_life_costs = end_of_life_costs.join(decommission_pd)
             # collect salvage value
             salvage_value = der_inst.calculate_salvage_value(start_year, end_year)

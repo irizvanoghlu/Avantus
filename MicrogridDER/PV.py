@@ -17,6 +17,7 @@ from storagevet.Technology import PVSystem
 from MicrogridDER.Sizing import Sizing
 import pandas as pd
 from MicrogridDER.DERExtension import DERExtension
+import numpy as np
 
 
 class PV(PVSystem.PV, Sizing, DERExtension):
@@ -127,6 +128,18 @@ class PV(PVSystem.PV, Sizing, DERExtension):
 
         """
         super(PV, self).update_for_evaluation(input_dict)
-        cost_per_kw = input_dict.get('cost_per_kW')
+        cost_per_kw = input_dict.get('ccost_kW')
         if cost_per_kw is not None:
             self.capital_cost_function = cost_per_kw
+
+    def replacement_cost(self):
+        """
+
+        Returns: the capex of this DER for optimization
+
+        """
+        try:
+            rated_capacity = self.rated_capacity.value
+        except AttributeError:
+            rated_capacity = self.rated_capacity
+        return np.dot(self.replacement_cost_function, [rated_capacity])

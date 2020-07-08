@@ -17,6 +17,7 @@ from storagevet.Technology.EnergyStorage import EnergyStorage
 from MicrogridDER.DERExtension import DERExtension
 import cvxpy as cvx
 import logging
+import numpy as np
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
@@ -177,8 +178,8 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             self.costs (Dict): Dict of objective costs
         """
         costs = super().objective_function(mask, annuity_scalar)
-
-        costs.update({self.name + 'capex': self.get_capex()})
+        if self.being_sized():
+            costs.update({self.name + 'capex': self.get_capex()})
         return costs
 
     def sizing_summary(self):
@@ -240,3 +241,10 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             if p_start_dis is not None:
                 self.p_start_dis = p_start_dis
 
+    def replacement_cost(self):
+        """
+
+        Returns: the cost of replacing this DER
+
+        """
+        return np.dot(self.replacement_cost_function, [1, self.discharge_capacity(True), self.energy_capacity(True)])

@@ -67,10 +67,10 @@ class DERExtension:
         """
         fail_on = start_year.year + self.expected_lifetime-1
         if self.replaceable:
-            while fail_on < end_year.year:
+            while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
         else:
-            if fail_on < end_year.year:
+            if fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
         self.last_operation_year = pd.Period(fail_on)
         return self.failure_years
@@ -98,7 +98,7 @@ class DERExtension:
         if ccost_kwh is not None:
             self.capital_cost_function[2] = ccost_kwh
 
-    def decommissioning_cost(self, last_year):
+    def decommissioning_report(self, last_year):
         """ Returns the cost of decommissioning a DER and the year the cost will be incurred
 
         Returns: dataframe index by year that the cost applies to. if the year
@@ -156,3 +156,27 @@ class DERExtension:
                 return self.salvage_value
         else:
             return 0
+
+    def replacement_cost(self):
+        """
+
+        Returns: the cost of replacing this DER
+
+        """
+        return 0
+
+    def replacement_report(self, end_year):
+        """
+
+        Args:
+            end_year (pd.Period): the last year of analysis
+
+        Returns:
+
+        """
+        report = pd.DataFrame()
+        if self.replaceable:
+            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_years if year < end_year.year])
+            report.index = replacement_yrs
+            report[f"{self.unique_tech_id()} Replacement Costs"] = self.replacement_cost()
+        return report

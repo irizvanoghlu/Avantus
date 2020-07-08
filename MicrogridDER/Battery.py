@@ -47,3 +47,18 @@ class Battery(BatteryTech.Battery, ESSSizing):
         if self.user_duration:
             self.size_constraints += [cvx.NonPos((self.ene_max_rated / self.dis_max_rated) - self.user_duration)]
 
+    def constraints(self, mask):
+        """ Builds the master constraint list for the subset of timeseries data being optimized.
+
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+
+        Returns:
+            A list of constraints that corresponds the battery's physical constraints and its service constraints
+        """
+
+        constraint_list = BatteryTech.Battery.constraints(self, mask)
+        constraint_list += self.size_constraints
+        return constraint_list
+

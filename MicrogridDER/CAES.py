@@ -34,6 +34,21 @@ class CAES(CAESTech.CAES, ESSSizing):
         CAESTech.CAES.__init__(self, params)
         ESSSizing.__init__(self, self.technology_type, params)
 
+    def objective_function(self, mask, annuity_scalar=1):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
+
+        Args:
+            mask (Series): Series of booleans used, the same length as case.power_kw
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                    the entire project lifetime (only to be set iff sizing, else alpha should not affect the aobject function)
+
+        Returns:
+            self.costs (Dict): Dict of objective costs
+        """
+        costs = CAESTech.CAES.objective_function(self, mask, annuity_scalar)
+        if self.being_sized():
+            costs.update({self.name + 'capex': self.get_capex()})
+
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
 

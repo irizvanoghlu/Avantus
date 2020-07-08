@@ -59,8 +59,10 @@ class Reliability(ValueStream):
         self.contribution_perc_df = None
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
-        self.min_soc_df=None
+        self.min_soe_df=None
         self.use_soc_init=False
+        self.soe_profile_all_0={}
+        self.soe_profile_all_1={}
 
     def grow_drop_data(self, years, frequency, load_growth):
         """ Adds data by growing the given data OR drops any extra data that might have slipped in.
@@ -86,11 +88,11 @@ class Reliability(ValueStream):
         """
         for der_instance in der_lst:
 
-            if der_instance.technology_type == 'Energy Storage System' and not self.post_facto_only and self.min_soc_df is not None:
+            if der_instance.technology_type == 'Energy Storage System' and not self.post_facto_only and self.min_soe_df is not None:
 
                 # add the power and energy constraints to ensure enough energy and power in the ESS for the next x hours
                 # there will be 2 constraints: one for power, one for energy
-                soe_array = self.min_soc_df['soe']
+                soe_array = self.min_soe_df['soe']
                 self.system_requirements = [Requirement('energy', 'min', self.name, soe_array)]
                 # this should be the constraint that makes sure the next x hours have enough energy
 
@@ -125,8 +127,10 @@ class Reliability(ValueStream):
             report.loc[:, 'Total Critical Load (kWh)'] = self.reliability_requirement
 
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
-        if self.min_soc_df is not None:
-            report.loc[:, 'Reliability min State of Energy (kWh)'] = self.min_soc_df['soe']
+        if self.min_soe_df is not None:
+            report.loc[:, 'Reliability min State of Energy (kWh)'] = self.min_soe_df['soe']
+           # report.loc[:, 'Reliability min SOE profile 0'] = self.soe_profile_all_0.values()
+           # report.loc[:, 'Reliability min SOE profile 1'] = self.soe_profile_all_1.values()
             # report.loc[:, 'Reliability min SOC (%)'] = self.min_soc_df['soc']
 
         return report
@@ -392,9 +396,6 @@ class Reliability(ValueStream):
 
         """
 
-        # have to include n-2 case --SJ
-        # if self.n_2:
-        #     combined_rating -= self.ice_rating
         consts = []
         cost_funcs = sum([der_instance.get_capex() for der_instance in der_list])
 
@@ -423,7 +424,7 @@ class Reliability(ValueStream):
 
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
-        prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
+        prob.solve(solver=cvx.GLPK_MI) #,gp=True)
 
         return der_list
 
@@ -443,7 +444,7 @@ class Reliability(ValueStream):
 
         """
         # base case 1: outage_init is beyond range of critical load
-        if start_indx > (len(self.critical_load)):
+        if start_indx >= (len(self.critical_load)):
             return -1
         # find longest possible outage
         soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], self.outage_duration, ess_properties, soe[start_indx])
@@ -497,8 +498,8 @@ class Reliability(ValueStream):
                     if der_instance.technology_type == 'Energy Storage System':
                         tot_net_ess += der_instance.get_net_power(Outage_mask)
                         der_instance.soc_target = cvx.Variable(shape=1, name=der_instance.name + str(outage_ind) + '-min_soc')
-                        consts += [cvx.NonPos(der_instance.soc_target - 1)]
-                        consts += [cvx.NonPos(-der_instance.soc_target)]
+                        consts += [cvx.NonPos(der_instance.soc_target - self.soc_init)]
+                        consts += [cvx.NonPos(-der_instance.soc_target- self.soc_init)]
 
                         min_soc[outage_ind] = der_instance.soc_target
 
@@ -544,10 +545,9 @@ class Reliability(ValueStream):
 
                         month_min_soc_array.append(month_min_soc[month][outage_ind].value[0])
                         outage_ind += 1
-                month_min_soe_array = (month_min_soc_array * energy_rating)
+                month_min_soe_array = (np.array(month_min_soc_array) * energy_rating)
 
-        self.min_soc_df = pd.DataFrame({'soe': month_min_soe_array,
-                                        'soc': month_min_soc_array}, index=opt_index)
+        self.min_soe_df = pd.DataFrame({'soe': month_min_soe_array},index=opt_index)
         return der_list
 
     def min_soe_iterative(self, opt_index, der_list):
@@ -567,24 +567,27 @@ class Reliability(ValueStream):
                 # TODO multi ESS
                 # Get energy rating
                 energy_rating = der_instance.energy_capacity(True)
-
+                min_soe_array=[]
                 # Check if ES is sized for Reliability:
                 if energy_rating>0:
 
                     generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
 
-                    soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
+                    soe = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
+                    for outage_init in range(len(opt_index)):
 
-                    min_soe_array = [self.soe_used(self.simulate_outage(reliability_check[outage_init:],
-                                                                        demand_left[outage_init:],
-                                                                        self.outage_duration,
-                                                                        ess_properties,
-                                                                        soc[outage_init])) for outage_init in range(len(opt_index))]
-                    self.min_soc_df = pd.DataFrame(min_soe_array, index=opt_index, columns=['soe'])  # eventually going to give this to ESS to apply on itself
+                        soe_outage_profile=(self.simulate_outage(reliability_check[outage_init:],
+                                             demand_left[outage_init:],
+                                             self.outage_duration,
+                                             ess_properties,
+                                             soe[outage_init]))
+                        soe_outage_profile.insert(0,soe[outage_init])
+                        min_soe_array.append(self.soe_used(soe_outage_profile))
+                    self.min_soe_df = pd.DataFrame(min_soe_array, index=opt_index, columns=['soe'])  # eventually going to give this to ESS to apply on itself
         return der_list
 
-    @staticmethod
-    def soe_used(soe_profile):
+    #@staticmethod
+    def soe_used(self,soe_profile):
         """ this is the range that the battery system as to be able to acheive during the corresponding outage in order
         for the outage to be reliabily covered
 
@@ -596,5 +599,12 @@ class Reliability(ValueStream):
         """
         min_soe = np.min(soe_profile)
         max_soe = np.max(soe_profile)
-        effective_soe = max_soe - min_soe
+        effective_soe = max_soe -min_soe
+        dict_size=len(self.soe_profile_all_0)
+        if len(soe_profile)==3:
+            self.soe_profile_all_0[dict_size]=soe_profile[1]
+            self.soe_profile_all_1[dict_size] = soe_profile[2]
+        else:
+            self.soe_profile_all_0[dict_size] = 0
+            self.soe_profile_all_1[dict_size] = 0
         return effective_soe

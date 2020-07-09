@@ -62,23 +62,23 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             if self.incl_energy_limits and self.limit_energy_max is not None:
                 e_logger.error(f'Ignoring energy max time series because {self.tag}-{self.name} sizing for energy capacity')
                 self.limit_energy_max = None
-            if not self.user_ene_rated_min:
+            if self.user_ene_rated_min:
                 self.size_constraints += [cvx.NonPos(self.user_ene_rated_min - self.ene_max_rated)]
-            if not self.user_ene_rated_max:
+            if self.user_ene_rated_max:
                 self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_ene_rated_max)]
 
         # if both the discharge and charge ratings are 0, then size for both and set them equal to each other
         if not self.ch_max_rated and not self.dis_max_rated:
             self.ch_max_rated = cvx.Variable(name='power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
-            if not self.user_ch_rated_max:
+            if self.user_ch_rated_max:
                 self.size_constraints += [cvx.NonPos(self.ch_max_rated - self.user_ch_rated_max)]
-            if not self.user_ch_rated_min:
+            if self.user_ch_rated_min:
                 self.size_constraints += [cvx.NonPos(self.user_ch_rated_min - self.ch_min_rated)]
             self.dis_max_rated = self.ch_max_rated
-            if not self.user_dis_rated_min:
+            if self.user_dis_rated_min:
                 self.size_constraints += [cvx.NonPos(self.user_dis_rated_min - self.dis_min_rated)]
-            if not self.user_dis_rated_max:
+            if self.user_dis_rated_max:
                 self.size_constraints += [cvx.NonPos(self.dis_max_rated - self.user_dis_rated_max)]
             if self.incl_charge_limits and self.limit_charge_max is not None:
                 e_logger.error(f'Ignoring charge max time series because {self.tag}-{self.name} sizing for power capacity')
@@ -93,9 +93,9 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             if self.incl_charge_limits and self.limit_charge_max is not None:
                 e_logger.error(f'Ignoring charge max time series because {self.tag}-{self.name} sizing for power capacity')
                 self.limit_charge_max = None
-            if not self.user_ch_rated_max:
+            if self.user_ch_rated_max:
                 self.size_constraints += [cvx.NonPos(self.ch_max_rated-self.user_ch_rated_max)]
-            if not self.user_ch_rated_min:
+            if self.user_ch_rated_min:
                 self.size_constraints += [cvx.NonPos(self.user_ch_rated_min-self.ch_min_rated)]
 
         elif not self.dis_max_rated:  # if the user inputted the charge rating as 0, then size for charge
@@ -104,9 +104,9 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             if self.incl_discharge_limits and self.limit_discharge_max is not None:
                 e_logger.error(f'Ignoring discharge max time series because {self.tag}-{self.name} sizing for power capacity')
                 self.limit_discharge_max = None
-            if not self.user_dis_rated_min:
+            if self.user_dis_rated_min:
                 self.size_constraints += [cvx.NonPos(self.user_dis_rated_min - self.dis_min_rated)]
-            if not self.user_dis_rated_max:
+            if self.user_dis_rated_max:
                 self.size_constraints += [cvx.NonPos(self.dis_max_rated - self.user_dis_rated_max)]
 
         if self.user_duration:
@@ -242,24 +242,24 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
 
         # warn about tight sizing margins
         # TODO clean up these warnings into a single method --AE
-        if type(self.ene_max_rated, cvx.Variable):
+        if isinstance(self.ene_max_rated, cvx.Variable):
             energy_cap = self.energy_capacity(True)
-            sizing_margin1 = (abs(energy_cap - self.user_ene_rated_max) - 0.05 * self.user_ene_rated_max).values
-            sizing_margin2 = (abs(energy_cap - self.user_ene_rated_min) - 0.05 * self.user_ene_rated_min).values
+            sizing_margin1 = (abs(energy_cap - self.user_ene_rated_max) - 0.05 * self.user_ene_rated_max)
+            sizing_margin2 = (abs(energy_cap - self.user_ene_rated_min) - 0.05 * self.user_ene_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
                 u_logger.warning("Difference between the optimal Battery ene max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
-        if type(self.ch_max_rated, cvx.Variable):
+        if isinstance(self.ch_max_rated, cvx.Variable):
             charge_cap = self.charge_capacity(True)
-            sizing_margin1 = (abs(charge_cap - self.user_ch_rated_max) - 0.05 * self.user_ch_rated_max).values
-            sizing_margin2 = (abs(charge_cap - self.user_ch_rated_min) - 0.05 * self.user_ch_rated_min).values
+            sizing_margin1 = (abs(charge_cap - self.user_ch_rated_max) - 0.05 * self.user_ch_rated_max)
+            sizing_margin2 = (abs(charge_cap - self.user_ch_rated_min) - 0.05 * self.user_ch_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
                 u_logger.warning("Difference between the optimal Battery ch max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
-        if type(self.dis_max_rated, cvx.Variable):
+        if isinstance(self.dis_max_rated, cvx.Variable):
             discharge_cap = self.discharge_capacity(True)
-            sizing_margin1 = (abs(discharge_cap - self.user_dis_rated_max) - 0.05 * self.user_dis_rated_max).values
-            sizing_margin2 = (abs(discharge_cap - self.user_dis_rated_min) - 0.05 * self.user_dis_rated_min).values
+            sizing_margin1 = (abs(discharge_cap - self.user_dis_rated_max) - 0.05 * self.user_dis_rated_max)
+            sizing_margin2 = (abs(discharge_cap - self.user_dis_rated_min) - 0.05 * self.user_dis_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
                 u_logger.warning("Difference between the optimal Battery dis max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
@@ -303,8 +303,12 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             if p_start_dis is not None:
                 self.p_start_dis = p_start_dis * 100
 
-    def error_checks_on_sizing(self):
-        # return False if errors occur
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
         if not self.ch_max_rated:
             if self.user_ch_rated_min > self.user_ch_rated_max:
                 e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')

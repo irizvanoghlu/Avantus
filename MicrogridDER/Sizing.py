@@ -12,6 +12,7 @@ __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
 import numpy as np
+import pandas as pd
 
 
 class Sizing:
@@ -37,6 +38,7 @@ class Sizing:
         Returns: A dictionary describe this DER's size and captial costs.
 
         """
+        # template = pd.DataFrame(columns=)
         # sizing_dict = {
         #     'DER': np.nan,
         #     'Energy Rating (kWh)': np.nan,
@@ -53,3 +55,11 @@ class Sizing:
         #     'Quantity': 1,
         # }
         # return sizing_dict
+
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
+        return False

@@ -56,13 +56,11 @@ class MicrogridPOI(POI):
         for der in self.der_list:
             try:
                 solve_for_size = der.being_sized()
-                try:
+                if solve_for_size:
                     if der.error_checks_on_sizing():
                         u_logger.info(f"Finished error checks on sizing {der.name}...")
                     else:
                         errors_found = True
-                except AttributeError:
-                    pass
             except AttributeError:
                 pass
         if errors_found:

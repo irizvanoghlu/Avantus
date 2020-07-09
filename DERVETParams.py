@@ -444,14 +444,10 @@ class ParamsDER(Params):
                 if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
                     sizing_optimization = True
                     # if sizing for power, with ...
-                    if self.Scenario['binary']:
-                        # the binary formulation
-                        e_logger.error('Params Error: trying to size the power of the battery with the binary formulation')
-                        return False
                     if self.SR or self.NSR or self.FR or self.LF:
                         # whole sale markets
                         if self.LF is not None and self.LF['u_ts_constraints'] is False or self.LF['d_ts_constraints'] is False:
-                            u_logger.warning('Params Warning: trying to size the power of the battery to maximize profits '
+                            self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
                                              'in wholesale markets, but LF time-series constraints is not applied.')
                         if self.SR is not None and self.SR['ts_constraints'] is False:
                             self.record_input_error('Params Warning: trying to size the power of the battery to maximize profits '
@@ -464,17 +460,14 @@ class ParamsDER(Params):
                                                     'in wholesale markets, but FR time-series constraints is not applied.')
 
                     if not battery_inputs['ch_max_rated']:
-                        if battery_inputs['user_ch_rated_max'] and battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
-                            e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
-                            return False
+                        if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
+                            self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.')
                     if not battery_inputs['dis_max_rated']:
-                        if battery_inputs['user_dis_rated_max'] and battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
-                            e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
-                            return False
+                        if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
+                            self.record_input_error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
                 if not battery_inputs['ene_max_rated']:
-                    if battery_inputs['user_ene_rated_max'] and battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
-                        e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
-                        return False
+                    if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
+                        self.record_input_error('Error: User battery min energy requirement is greater than max energy requirement.')
                     sizing_optimization = True
 
                 # check if user wants to include timeseries constraints -> grab data
@@ -499,17 +492,11 @@ class ParamsDER(Params):
             for pv_inputs in self.PV.values():
                 if not pv_inputs['rated_capacity']:
                     sizing_optimization = True
-                if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:
-                    e_logger.error('Error: Required PV min rated capacity is set greater than required PV max rated capacity.')
-                    return False
-
         if len(self.ICE):
             # add scenario case parameters to ICE parameter dictionary
             for id_str, ice_input in self.ICE.items():
                 if ice_input['n_min'] != ice_input['n_max']:
                     sizing_optimization = True
-                if ice_input['n_min'] > ice_input['n_max']:
-                    self.record_input_error(f'ICE {id_str} must have n_min < n_max')
         if sizing_optimization and not self.Scenario['n'] == 'year':
             self.record_input_error('Trying to size without setting the optimization window to \'year\'')
 

@@ -103,22 +103,9 @@ class MicrogridScenario(Scenario):
         """
         alpha = 1
         if self.poi.is_sizing_optimization:
-            if self.service_agg.is_whole_sale_market():
-                # whole sale markets
-                e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
-                return False
-            if self.service_agg.post_facto_reliability_only():
-                # whole sale markets
-                e_logger.error('Params Error: trying to size and preform post facto calculations only')
-                return False
-            if self.poi.is_dcp_error(self.incl_binary):
-                e_logger.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
-                return False
+            self.check_sizing_conditions()
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
-            # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
-            # NOTE: change this conditional if there is multiple Storage technologies (POI will resolve this)
-            self.error_checks_on_sizing_with_ts_service_constraints()
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
             u_logger.info("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
@@ -163,6 +150,33 @@ class MicrogridScenario(Scenario):
                 vs.save_variable_results(sub_index)
         return True
 
+    def check_sizing_conditions(self):
+        """ Throws an error if any DER is being sized under assumptions that will not
+        result in a solution within a reasonable amount of time.
+
+        """
+        error = False
+        if self.n == 'year':
+            e_logger.error('Trying to size without setting the optimization window to \'year\'')
+            error = error and True
+        if self.service_agg.is_whole_sale_market():
+            # whole sale markets
+            e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
+            error = error and True
+        if self.service_agg.post_facto_reliability_only():
+            # whole sale markets
+            e_logger.error('Params Error: trying to size and preform post facto calculations only')
+            error = error and True
+        if self.poi.is_dcp_error(self.incl_binary):
+            e_logger.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
+            error = error and True
+        # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
+        # NOTE: change this conditional if there is multiple Storage technologies (POI will resolve this)
+        error = error and self.error_checks_on_sizing_with_ts_service_constraints()
+        if error:
+            raise ArithmeticError("Further calculations requires that economic dispatch is solved, but "
+                                  + "no optimization was built or solved. Please check log files for more information. ")
+
     def error_checks_on_sizing_with_ts_service_constraints(self):
         """ perform error checks on DERs that are being sized with ts_user_constraints
         collect errors and raise if any were found"""
@@ -185,6 +199,4 @@ class MicrogridScenario(Scenario):
                         pass
             except AttributeError:
                 pass
-        if errors_found:
-            raise Warning(f'Sizing of DERs has an error with timeseries service constraints. Please check error log.')
-
+        return errors_found

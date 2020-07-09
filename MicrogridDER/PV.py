@@ -152,12 +152,13 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         if cost_per_kw is not None:
             self.capital_cost_function = cost_per_kw
 
-    def error_checks_on_sizing(self):
-        # return False if errors occur
-        if not self.max_rated_capacity or not self.min_rated_capacity:
-            e_logger.error('Error: Please indicate min/max rated capacity to size the PV.')
-            return False
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
         if self.min_rated_capacity > self.max_rated_capacity:
-            e_logger.error('Error: Required PV min rated capacity is set greater than required PV max rated capacity.')
-            return False
-        return True
+            e_logger.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
+            return True
+        return False

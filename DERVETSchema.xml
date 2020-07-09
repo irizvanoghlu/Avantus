@@ -42,9 +42,12 @@
         <d_ts_constraints allowed_values="1|0" cba="n" type="bool" />
 	</FR>
 	<LF type="service" max_num="1">
+		<energyprice_growth cba="n" max="100.0" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<CombinedMarket cba="n" type="bool" allowed_values="1|0"/>
 		<duration max="24" min="0.0" type="float" />
+		<u_ts_constraints allowed_values="1|0" cba="n" type="bool" />
+        <d_ts_constraints allowed_values="1|0" cba="n" type="bool" />
 	</LF>
 	<SR type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />

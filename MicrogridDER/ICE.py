@@ -16,6 +16,9 @@ import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+import logging
+
+e_logger = logging.getLogger('Error')
 
 
 class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
@@ -153,3 +156,14 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         fixed_om_cost = input_dict.get('fixed_om_cost')
         if variable_cost is not None:
             self.fixed_om = fixed_om_cost
+
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
+        if self.n_min > self.n_max:
+            e_logger.error(f'{self.unique_tech_id()} must have n_min < n_max')
+            return True
+        return False

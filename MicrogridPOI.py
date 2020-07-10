@@ -16,9 +16,7 @@ import logging
 import pandas as pd
 from storagevet.POI import POI
 import cvxpy as cvx
-
-e_logger = logging.getLogger('Error')
-u_logger = logging.getLogger('User')
+from ErrorHandelling import *
 
 
 class MicrogridPOI(POI):
@@ -58,7 +56,7 @@ class MicrogridPOI(POI):
                 solve_for_size = der.being_sized()
                 if solve_for_size:
                     if der.error_checks_on_sizing():
-                        u_logger.info(f"Finished error checks on sizing {der.name}...")
+                        LogError.debug(f"Finished error checks on sizing {der.name}...")
                     else:
                         errors_found = True
             except AttributeError:

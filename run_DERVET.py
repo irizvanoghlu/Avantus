@@ -36,10 +36,6 @@ from MicrogridResult import MicrogridResult
 from storagevet.Visualization import Visualization
 
 
-e_logger = logging.getLogger('Error')
-u_logger = logging.getLogger('User')
-
-
 class DERVET:
     """ DERVET API. This will eventually allow StorageVET to be imported and used like any
     other python library.
@@ -65,7 +61,6 @@ class DERVET:
         # Initialize the Params Object from Model Parameters and Simulation Cases
         self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
         self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
-        u_logger.info('Successfully initialized the Params class with the XML file.')
 
         if self.verbose:
             Visualization(ParamsDER).class_summary()
@@ -77,13 +72,9 @@ class DERVET:
             run = MicrogridScenario(value)
             run.set_up_poi_and_service_aggregator()
             run.fill_and_drop_extra_data()
-            continue_to_results = run.optimize_problem_loop()
+            run.optimize_problem_loop()
 
-            if continue_to_results:
-                MicrogridResult.add_instance(key, run)
-            else:
-                raise ArithmeticError("Further calculations requires that economic dispatch is solved, but "
-                                      + "no optimization was built or solved. Please check log files for more information. ")
+            MicrogridResult.add_instance(key, run)
 
         MicrogridResult.sensitivity_summary()
 

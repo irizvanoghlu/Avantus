@@ -17,10 +17,7 @@ from storagevet.Technology import PVSystem
 from MicrogridDER.Sizing import Sizing
 import pandas as pd
 from MicrogridDER.DERExtension import DERExtension
-import logging
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class PV(PVSystem.PV, Sizing, DERExtension):
@@ -135,7 +132,7 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             sizing_margin1 = (abs(self.variables_df['PV rating'] - self.max_rated_capacity) - 0.05 * self.max_rated_capacity).values
             sizing_margin2 = (abs(self.variables_df['PV rating'] - self.min_rated_capacity) - 0.05 * self.min_rated_capacity).values
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                u_logger.warning("Difference between the optimal PV rated capacity and user upper/lower "
+                LogError.warning("Difference between the optimal PV rated capacity and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
 
         return sizing_results
@@ -159,6 +156,6 @@ class PV(PVSystem.PV, Sizing, DERExtension):
 
         """
         if self.min_rated_capacity > self.max_rated_capacity:
-            e_logger.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
+            LogError.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
             return True
         return False

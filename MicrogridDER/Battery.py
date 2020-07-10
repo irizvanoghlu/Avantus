@@ -17,10 +17,8 @@ import cvxpy as cvx
 from MicrogridDER.Sizing import Sizing
 from storagevet.Technology import BatteryTech
 from MicrogridDER.DERExtension import DERExtension
+from ErrorHandelling import *
 
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
 DEBUG = False
 
 
@@ -238,7 +236,7 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             'Capital Cost ($/kW)': self.capital_cost_function[1],
             'Capital Cost ($/kWh)': self.capital_cost_function[2]}
         if sizing_results['Duration (hours)'] > 24:
-            u_logger.error(f'The duration of {self.name} is greater than 24 hours!')
+            LogError.warning(f'The duration of {self.name} is greater than 24 hours!')
 
         # warn about tight sizing margins
         # TODO clean up these warnings into a single method --AE
@@ -247,21 +245,21 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             sizing_margin1 = (abs(energy_cap - self.user_ene_rated_max) - 0.05 * self.user_ene_rated_max)
             sizing_margin2 = (abs(energy_cap - self.user_ene_rated_min) - 0.05 * self.user_ene_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                u_logger.warning("Difference between the optimal Battery ene max rated and user upper/lower "
+                LogError.warning("Difference between the optimal Battery ene max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
         if isinstance(self.ch_max_rated, cvx.Variable):
             charge_cap = self.charge_capacity(True)
             sizing_margin1 = (abs(charge_cap - self.user_ch_rated_max) - 0.05 * self.user_ch_rated_max)
             sizing_margin2 = (abs(charge_cap - self.user_ch_rated_min) - 0.05 * self.user_ch_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                u_logger.warning("Difference between the optimal Battery ch max rated and user upper/lower "
+                LogError.warning("Difference between the optimal Battery ch max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
         if isinstance(self.dis_max_rated, cvx.Variable):
             discharge_cap = self.discharge_capacity(True)
             sizing_margin1 = (abs(discharge_cap - self.user_dis_rated_max) - 0.05 * self.user_dis_rated_max)
             sizing_margin2 = (abs(discharge_cap - self.user_dis_rated_min) - 0.05 * self.user_dis_rated_min)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                u_logger.warning("Difference between the optimal Battery dis max rated and user upper/lower "
+                LogError.warning("Difference between the optimal Battery dis max rated and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
 
         return sizing_results
@@ -311,14 +309,14 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
         """
         if not self.ch_max_rated:
             if self.user_ch_rated_min > self.user_ch_rated_max:
-                e_logger.error('Error: User battery min charge power requirement is greater than max charge power requirement.')
+                LogError.error('User battery min charge power requirement is greater than max charge power requirement.')
                 return False
         if not self.dis_max_rated:
             if self.user_dis_rated_min > self.user_dis_rated_max:
-                e_logger.error('Error: User battery min discharge power requirement is greater than max discharge power requirement.')
+                LogError.error('User battery min discharge power requirement is greater than max discharge power requirement.')
                 return False
         if not self.ene_max_rated:
             if self.user_ene_rated_min > self.user_ene_rated_max:
-                e_logger.error('Error: User battery min energy requirement is greater than max energy requirement.')
+                LogError.error('User battery min energy requirement is greater than max energy requirement.')
                 return False
         return True

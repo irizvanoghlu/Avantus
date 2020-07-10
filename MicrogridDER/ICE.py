@@ -16,9 +16,7 @@ import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
-import logging
-
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
@@ -164,6 +162,6 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
 
         """
         if self.n_min > self.n_max:
-            e_logger.error(f'{self.unique_tech_id()} must have n_min < n_max')
+            LogError.error(f'{self.unique_tech_id()} must have n_min < n_max')
             return True
         return False

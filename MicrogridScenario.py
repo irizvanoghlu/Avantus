@@ -37,11 +37,7 @@ from MicrogridPOI import MicrogridPOI
 from MicrogridServiceAggregator import MicrogridServiceAggregator
 import time
 import pandas as pd
-
-import logging
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class MicrogridScenario(Scenario):
@@ -60,7 +56,7 @@ class MicrogridScenario(Scenario):
 
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
 
-        u_logger.info("ScenarioSizing initialized ...")
+        LogError.debug("ScenarioSizing initialized ...")
 
     def set_up_poi_and_service_aggregator(self):
         """ Initialize the POI and service aggregator with DERs and valuestreams to be evaluated.
@@ -108,13 +104,13 @@ class MicrogridScenario(Scenario):
             alpha = CostBenefitAnalysis.annuity_scalar(**self.finance_inputs)
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
-            u_logger.info("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
+            LogError.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
             return True
 
         # calculate and check that system requirement set by value streams can be met
         system_requirements = self.check_system_requirements()
 
-        u_logger.info("Starting optimization loop")
+        LogError.info("Starting optimization loop")
         for opt_period in self.optimization_levels.predictive.unique():
 
             # used to select rows from time_series relevant to this optimization window
@@ -125,8 +121,7 @@ class MicrogridScenario(Scenario):
                 if der.technology_type == "Energy Storage System":
                     der.apply_past_degredation(opt_period)
 
-            if self.verbose:
-                print(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {self.optimization_levels.loc[mask].index[0]} hb")
+            LogError.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {self.optimization_levels.loc[mask].index[0]} hb")
 
             # setup + run optimization then return optimal objective costs
             functions, constraints = self.set_up_optimization(mask, system_requirements,
@@ -157,24 +152,24 @@ class MicrogridScenario(Scenario):
         """
         error = False
         if self.n == 'year':
-            e_logger.error('Trying to size without setting the optimization window to \'year\'')
+            LogError.error('Trying to size without setting the optimization window to \'year\'')
             error = error and True
         if self.service_agg.is_whole_sale_market():
             # whole sale markets
-            e_logger.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
+            LogError.error('Params Error: trying to size the power of the battery to maximize profits in wholesale markets')
             error = error and True
         if self.service_agg.post_facto_reliability_only():
             # whole sale markets
-            e_logger.error('Params Error: trying to size and preform post facto calculations only')
+            LogError.error('Params Error: trying to size and preform post facto calculations only')
             error = error and True
         if self.poi.is_dcp_error(self.incl_binary):
-            e_logger.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
+            LogError.error('Params Error: trying to size power and use binary formulation results in nonlinear models')
             error = error and True
         # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
         # NOTE: change this conditional if there is multiple Storage technologies (POI will resolve this)
         error = error and self.error_checks_on_sizing_with_ts_service_constraints()
         if error:
-            raise ArithmeticError("Further calculations requires that economic dispatch is solved, but "
+            raise ParameterError("Further calculations requires that economic dispatch is solved, but "
                                   + "no optimization was built or solved. Please check log files for more information. ")
 
     def error_checks_on_sizing_with_ts_service_constraints(self):
@@ -192,7 +187,7 @@ class MicrogridScenario(Scenario):
                 for service_name, service in self.service_agg.value_streams.items():
                     try:
                         if service.error_checks_on_sizing_with_ts_service_constraints(max_power_size_constraint):
-                            u_logger.info(f"Finished error checks on sizing {der.name} with timeseries {service_name} service constraints...")
+                            LogError.debug(f"Finished error checks on sizing {der.name} with timeseries {service_name} service constraints...")
                         else:
                             errors_found = True
                     except AttributeError:

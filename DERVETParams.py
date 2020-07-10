@@ -18,9 +18,7 @@ import numpy as np
 from storagevet.Params import Params
 import os
 import copy
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class ParamsDER(Params):
@@ -243,15 +241,15 @@ class ParamsDER(Params):
 
         """
         if warning_type == "too many tags":
-            e_logger.error(f"INPUT: There are {kwargs['length']} {kwargs['tag']}'s, but only {kwargs['max']} can be defined")
+            LogError.error(f"INPUT: There are {kwargs['length']} {kwargs['tag']}'s, but only {kwargs['max']} can be defined")
 
         if warning_type == 'cba not allowed':
-            e_logger.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +
+            LogError.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} is not be used within the " +
                            "CBA module of the program. Value is ignored.")
             cls.cba_input_error_raised = raise_input_error or cls.cba_input_error_raised
         if warning_type == "cba sa length":
             cls.cba_input_error_raised = raise_input_error or cls.cba_input_error_raised
-            e_logger.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} has not enough CBA evaluatino values to "
+            LogError.error(f"INPUT: {kwargs['tag']}-{kwargs['key']} has not enough CBA evaluatino values to "
                            f"successfully complete sensitivity analysis. Please include {kwargs['required_num']} "
                            f"values, each corresponding to the Sensitivity Analysis value given")
         super().report_warning(warning_type, raise_input_error, **kwargs)
@@ -329,7 +327,7 @@ class ParamsDER(Params):
 
         # check for any entries w/ NaN to make sure everything went fine
         if np.any(cls.case_definitions == np.NAN):
-            print('There are some left over Nans in the case definition. Something went wrong.')
+            LogError.debug('There are some left over Nans in the case definition. Something went wrong.')
 
     @classmethod
     def cba_input_builder(cls):
@@ -388,14 +386,11 @@ class ParamsDER(Params):
         Params.load_scenario(self)
 
         if self.Scenario['binary']:
-            e_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
-                             'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
-                             'by turning the binary formulation flag off.')
-            u_logger.warning('Please note that the binary formulation will be used. If attemping to size, ' +
+            LogError.warning('Please note that the binary formulation will be used. If attemping to size, ' +
                              'there is a possiblity that the CVXPY will throw a "DCPError". This will resolve ' +
                              'by turning the binary formulation flag off.')
 
-        u_logger.info("Successfully prepared the Scenario and some Finance")
+        LogError.debug("Successfully prepared the Scenario and some Finance")
 
     def load_finance(self):
         """ Interprets user given data and prepares it for Finance.
@@ -554,4 +549,4 @@ class ParamsDER(Params):
                 self.LF.update({'lf_d_max': self.Scenario['time_series'].loc[:, 'LF Down Max (kW)'],
                                 'lf_d_min': self.Scenario['time_series'].loc[:, 'LF Down Min (kW)']})
 
-        u_logger.info("Successfully prepared the value-stream (services)")
+        LogError.debug("Successfully prepared the value-streams")

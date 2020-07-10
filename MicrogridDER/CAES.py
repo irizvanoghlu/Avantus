@@ -13,13 +13,9 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 from storagevet.Technology import CAESTech
-import logging
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
-import cvxpy as cvx
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class CAES(CAESTech.CAES, Sizing, DERExtension):
@@ -57,7 +53,7 @@ class CAES(CAESTech.CAES, Sizing, DERExtension):
             'Capital Cost ($/kWh)': self.capital_cost_function[2]
         }
         if (sizing_dict['Duration (hours)'] > 24).any():
-            print('The duration of an Energy Storage System is greater than 24 hours!')
+            LogError.warning('The duration of an Energy Storage System is greater than 24 hours!')
 
         return sizing_dict
 

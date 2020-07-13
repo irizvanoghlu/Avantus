@@ -15,6 +15,7 @@ __version__ = 'beta'  # beta version
 import cvxpy as cvx
 from storagevet.Technology import PVSystem
 from MicrogridDER.Sizing import Sizing
+import pandas as pd
 from MicrogridDER.DERExtension import DERExtension
 
 
@@ -85,6 +86,21 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             costs.update({self.name + 'capex': self.get_capex()})
 
         return costs
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = super(PV, self).timeseries_report()
+        if self.being_sized() and not self.curtail:
+            # convert expressions into values
+            tech_id = self.unique_tech_id()
+            results[tech_id + ' Generation (kW)'] = self.maximum_generation().value
+            results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
+        return results
 
     def sizing_summary(self):
         """

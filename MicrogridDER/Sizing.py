@@ -63,3 +63,9 @@ class Sizing:
 
         """
         return False
+
+    def max_regualtion_down(self):
+        return 0
+
+    def max_regulation_up(self):
+        return 0

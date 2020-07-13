@@ -12,12 +12,12 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import logging
 import cvxpy as cvx
 from MicrogridDER.Sizing import Sizing
 from storagevet.Technology import BatteryTech
 from MicrogridDER.DERExtension import DERExtension
 from ErrorHandelling import *
+import numpy as np
 
 DEBUG = False
 
@@ -307,16 +307,39 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
         Returns: True if there is an input error
 
         """
-        if not self.ch_max_rated:
-            if self.user_ch_rated_min > self.user_ch_rated_max:
-                LogError.error('User battery min charge power requirement is greater than max charge power requirement.')
-                return False
-        if not self.dis_max_rated:
-            if self.user_dis_rated_min > self.user_dis_rated_max:
-                LogError.error('User battery min discharge power requirement is greater than max discharge power requirement.')
-                return False
-        if not self.ene_max_rated:
-            if self.user_ene_rated_min > self.user_ene_rated_max:
-                LogError.error('User battery min energy requirement is greater than max energy requirement.')
-                return False
+        if (isinstance(self.ch_max_rated, cvx.Variable) or isinstance(self.dis_max_rated, cvx.Variable)) and self.incl_binary:
+            LogError.error(f'{self.unique_tech_id()} is being sized and binary is turned on. You will get a DCP error.')
+            return False
+        if self.user_ch_rated_min > self.user_ch_rated_max:
+            LogError.error(f'{self.unique_tech_id()} min charge power requirement is greater than max charge power requirement.')
+            return False
+        if self.user_dis_rated_min > self.user_dis_rated_max:
+            LogError.error(f'{self.unique_tech_id()} min discharge power requirement is greater than max discharge power requirement.')
+            return False
+        if self.user_ene_rated_min > self.user_ene_rated_max:
+            LogError.error(f'{self.unique_tech_id()} min energy requirement is greater than max energy requirement.')
+            return False
         return True
+
+    def max_regualtion_down(self):
+        # ability to provide regulation down through charging more
+        if isinstance(self.ch_max_rated, cvx.Variable):
+            if not self.user_ch_rated_max:
+                max_charging_range = self.user_ch_rated_max - self.ch_min_rated
+            else:
+                max_charging_range = np.infty
+        else:
+            max_charging_range = self.ch_max_rated - self.ch_min_rated
+        # ability to provide regulation down through discharging less
+        if isinstance(self.dis_max_rated, cvx.Variable):
+            if not self.user_ch_rated_max:
+                max_discharging_range = self.user_dis_rated_max - self.dis_min_rated
+            else:
+                max_discharging_range = np.infty
+        else:
+            max_discharging_range = self.dis_max_rated - self.dis_min_rated
+        return max_charging_range + max_discharging_range
+
+    def max_regulation_up(self):
+
+        return 0

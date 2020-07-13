@@ -51,20 +51,35 @@ class Battery(BatteryTech.Battery, Sizing, DERExtension):
             # recalculate the effective SOE limits s.t. they are CVXPY expressions
             self.effective_soe_min = self.llsoc * self.ene_max_rated
             self.effective_soe_max = self.ulsoc * self.ene_max_rated
+            if self.incl_energy_limits and self.limit_energy_max is not None:
+                e_logger.error(f'Ignoring energy max time series because {self.tag}-{self.name} sizing for energy capacity')
+                self.limit_energy_max = None
 
         # if both the discharge and charge ratings are 0, then size for both and set them equal to each other
         if not self.ch_max_rated and not self.dis_max_rated:
             self.ch_max_rated = cvx.Variable(name='power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
             self.dis_max_rated = self.ch_max_rated
+            if self.incl_charge_limits and self.limit_charge_max is not None:
+                e_logger.error(f'Ignoring charge max time series because {self.tag}-{self.name} sizing for power capacity')
+                self.limit_charge_max = None
+            if self.incl_discharge_limits and self.limit_discharge_max is not None:
+                e_logger.error(f'Ignoring discharge max time series because {self.tag}-{self.name} sizing for power capacity')
+                self.limit_discharge_max = None
 
         elif not self.ch_max_rated:  # if the user inputted the discharge rating as 0, then size discharge rating
             self.ch_max_rated = cvx.Variable(name='charge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.ch_max_rated)]
+            if self.incl_charge_limits and self.limit_charge_max is not None:
+                e_logger.error(f'Ignoring charge max time series because {self.tag}-{self.name} sizing for power capacity')
+                self.limit_charge_max = None
 
         elif not self.dis_max_rated:  # if the user inputted the charge rating as 0, then size for charge
             self.dis_max_rated = cvx.Variable(name='discharge_power_cap', integer=True)
             self.size_constraints += [cvx.NonPos(-self.dis_max_rated)]
+            if self.incl_discharge_limits and self.limit_discharge_max is not None:
+                e_logger.error(f'Ignoring discharge max time series because {self.tag}-{self.name} sizing for power capacity')
+                self.limit_discharge_max = None
 
         if self.user_duration:
             self.size_constraints += [cvx.NonPos((self.ene_max_rated / self.dis_max_rated) - self.user_duration)]

@@ -16,6 +16,7 @@ from storagevet.Technology import CAESTech
 import logging
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+import cvxpy as cvx
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')

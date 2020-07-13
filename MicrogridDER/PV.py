@@ -44,6 +44,20 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
 
+    def get_discharge(self, mask):
+        """ The effective discharge of this DER
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+
+        Returns: the discharge as a function of time for the
+
+        """
+        if self.being_sized():
+            return cvx.Parameter(shape=sum(mask), name='pv/rated gen', value=self.gen_per_rated.loc[mask].values) * self.rated_capacity
+        else:
+            super(PV, self).get_discharge(mask)
+
     def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
@@ -68,7 +82,7 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         costs = dict()
 
         if self.being_sized():
-            costs.update({self.name + 'capex': self.get_capex})
+            costs.update({self.name + 'capex': self.get_capex()})
 
         return costs
 

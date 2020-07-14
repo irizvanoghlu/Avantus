@@ -89,6 +89,17 @@ class MicrogridScenario(Scenario):
         # these need to be initialized after opt_agg is created
         self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
         self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
+        
+    def fill_and_drop_extra_data(self):
+        """ Go through value streams and technologies and keep data for analysis years, and add more
+        data if necessary.  ALSO creates/assigns optimization levels.
+
+        Returns: None
+
+        """
+        super(MicrogridScenario, self).fill_and_drop_extra_data()
+        # set size of ESS
+        self.poi.der_list = self.service_agg.set_size(self.poi.der_list, self.start_year)
 
     def initialize_cba(self):
         self.financials = CostBenefitAnalysis(self.finance_inputs)

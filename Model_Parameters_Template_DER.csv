@@ -209,6 +209,7 @@ Deferral,.,planned_load_limit,15000,kW,float,"[0, max_import)",N/A,None,Max net 
 Deferral,.,reverse_power_flow_limit,-15000,kW,float,"[0, max_export)",N/A,None,Max net export power flow to grid,.,no,.,.,
 Deferral,.,growth,6,%/yr,float,"[0, 100]",N/A,None,Growth Rate of deferral load,.,no,.,.,
 Deferral,.,price,10000,$/yr,float,"[0, price)",N/A,None,Yearly Cost Avoided for deferring a T and D asset upgrade,.,no,1000,n,
+Deferral,.,min_year_objective,5,yr,int,,,,,,,,,
 DR,.,days,10,days,int,"[0, 366] (or 365 in non-leap-years)",N/A,None,Number of DR events per year,no,no,,,
 DR,.,length,4,hours,string/int,"[0, 24]",N/A,None,"Length of a DR event (leave this value blank, or as 'nan', if you want to define DR events by the end time instead)",.,no,,,
 DR,.,weekend,0,y/n,bool,"{0,1}",N/A,None,DR program active on weekends,.,no,,,

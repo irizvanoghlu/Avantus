@@ -12,7 +12,6 @@ __maintainer__ = ['Evan Giarta', 'Miles Evans']
 __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 
 
-import logging
 import pandas as pd
 from storagevet.POI import POI
 import cvxpy as cvx

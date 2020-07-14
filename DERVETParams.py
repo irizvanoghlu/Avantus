@@ -12,11 +12,9 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 import xml.etree.ElementTree as et
-import logging
 import pandas as pd
 import numpy as np
 from storagevet.Params import Params
-import os
 import copy
 from ErrorHandelling import *
 

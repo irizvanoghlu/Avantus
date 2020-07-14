@@ -13,8 +13,6 @@ __version__ = 'beta'  # beta version
 
 
 import pandas as pd
-import logging
-from pathlib import Path
 from storagevet.Result import Result
 from CBA import CostBenefitAnalysis
 from ErrorHandelling import *

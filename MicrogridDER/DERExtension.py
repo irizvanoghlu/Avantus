@@ -217,6 +217,6 @@ class DERExtension:
 
         ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         ecc = capex * ecc_perc
-        per_yr = np.repeat(ecc)
+        per_yr = [ecc*(time_factor**(k-1)) for k in range(1, self.expected_lifetime + 1)]
         ecc_df = pd.DataFrame({self.zero_column_name: [0]+per_yr}, index=indx)
         return ecc_df

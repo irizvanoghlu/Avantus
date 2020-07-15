@@ -46,12 +46,12 @@ class ElectricVehicle1(DER):
         self.ch_max_rated = params['ch_max_rated']
         self.ch_min_rated = params['ch_min_rated']
 
-        self.incl_startup = params['startup']
-        self.incl_binary = params['binary']
+        self.plugin_time = params['plugin_time']
+        self.plugout_time = params['plugout_time']
+        
+        self.capital_cost_function = params['ccost']
 
-        self.capital_cost_function = [params['ccost'], params['ccost_kw'], params['ccost_kwh']]
-
-        self.fixed_om = self.fixedOM_perKW*self.dis_max_rated
+        self.fixed_om = params['fixed_om']
 
         self.variable_names = {'ene', 'ch', 'uene', 'uch', 'on_c'}
 
@@ -239,9 +239,7 @@ class ElectricVehicle1(DER):
         # account for -/+ sub-dt energy -- this is the change in energy that the battery experiences as a result of energy option
         constraint_list += [cvx.Zero(uene - (uch * self.dt))]
 
-        # the constraint below limits energy throughput and total discharge to less than or equal to
-        # (number of cycles * energy capacity) per day, for technology warranty purposes
-        # this constraint only applies when optimization window is equal to or greater than 24 hours
+
 
 
 
@@ -328,15 +326,15 @@ class ElectricVehicle1(DER):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
             # add variable o&m costs
-            dis_sub = dis.loc[dis.index.year == year]
-            pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
+            # dis_sub = dis.loc[dis.index.year == year]
+            # pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
 
             # add startup costs
-            if self.incl_startup:
-                start_c_sub = self.variables_df['start_c'].loc[self.variables_df['start_c'].index.year == year]
-                pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Charging Costs'] = -np.sum(start_c_sub * self.p_start_ch)
-                start_d_sub = self.variables_df['start_d'].loc[self.variables_df['start_d'].index.year == year]
-                pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Discharging Costs'] = -np.sum(start_d_sub * self.p_start_dis)
+            # if self.incl_startup:
+            #     start_c_sub = self.variables_df['start_c'].loc[self.variables_df['start_c'].index.year == year]
+            #     pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Charging Costs'] = -np.sum(start_c_sub * self.p_start_ch)
+            #     start_d_sub = self.variables_df['start_d'].loc[self.variables_df['start_d'].index.year == year]
+            #     pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Discharging Costs'] = -np.sum(start_d_sub * self.p_start_dis)
 
         return pro_forma
 
@@ -372,17 +370,17 @@ class ElectricVehicle2(DER):
         # input params
         # note: these should never be changed in simulation (i.e from degradation)
 
-        self.max_load_ctrl = params['Max_load_ctrl'] # maximum amount of baseline EV load that can be shed as a percentage of the original load
-        self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA, deferral) as a percentage of the baseline load
+        self.max_load_ctrl = params['Max_load_ctrl'/100.0 # maximum amount of baseline EV load that can be shed as a percentage of the original load
+#        self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA, deferral) as a percentage of the baseline load
         self.lost_load_cost = params['lost_load_cost']
         
         self.EV_load_TS = params['EV_baseline']
 
-        self.capital_cost_function = [params['ccost'], params['ccost_kw'], params['ccost_kwh']]
+        self.capital_cost = params['ccost']
 
-        self.fixed_om = self.fixedOM_perKW*self.dis_max_rated
-
-        self.variable_names = {'ene', 'ch', 'uene', 'uch'}
+        self.fixed_om = params['fixed_om']
+        
+        self.variable_names = {'ch'}
 
         self.zero_column_name = f'{self.unique_tech_id()} Capital Cost'  # used for proforma creation
         self.fixed_column_name = f'{self.unique_tech_id()} Fixed O&M Cost'  # used for proforma creation
@@ -427,8 +425,7 @@ class ElectricVehicle2(DER):
 
         """
         self.variables_dict = {
-            'ch': cvx.Variable(shape=size, name=self.name + '-ch'),
-            'uch': cvx.Variable(shape=size, name=self.name + '-uch'),
+            'ch': cvx.Variable(shape=size, name=self.name + '-ch')
         }
 
         if self.incl_binary:
@@ -495,13 +492,13 @@ class ElectricVehicle2(DER):
 
 
 
-    def get_energy_option_charge(self, mask):
-        """ the amount of energy in a timestep that is provided to the distribution grid
+    # def get_energy_option_charge(self, mask):
+    #     """ the amount of energy in a timestep that is provided to the distribution grid
 
-        Returns: the energy throughput in kWh for this technology
+    #     Returns: the energy throughput in kWh for this technology
 
-        """
-        return self.variables_dict['uch'] * self.dt
+    #     """
+    #     return self.variables_dict['uch'] * self.dt
 
 
     def objective_function(self, mask, annuity_scalar=1):
@@ -520,7 +517,9 @@ class ElectricVehicle2(DER):
 
         costs = {
             self.name + ' fixed_om': self.fixed_om * annuity_scalar,
-            self.name + ' var_om': var_om
+            self.name + ' var_om': var_om,
+            self.name + ' lost_load_cost': cvx.sum( self.EV_load_TS[mask] - ch)*self.lost_load_cost # added to account for lost load
+            
         }
         # add startup objective costs
 
@@ -543,7 +542,7 @@ class ElectricVehicle2(DER):
         # optimization variables
 
         ch = self.variables_dict['ch']
-        uch = self.variables_dict['uch']
+        # uch = self.variables_dict['uch']
 
        
         # constraints on the ch/dis power
@@ -641,15 +640,10 @@ class ElectricVehicle2(DER):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
             # add variable o&m costs
-            dis_sub = dis.loc[dis.index.year == year]
-            pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
+            # dis_sub = dis.loc[dis.index.year == year]
+            # pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
 
-            # add startup costs
-            if self.incl_startup:
-                start_c_sub = self.variables_df['start_c'].loc[self.variables_df['start_c'].index.year == year]
-                pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Charging Costs'] = -np.sum(start_c_sub * self.p_start_ch)
-                start_d_sub = self.variables_df['start_d'].loc[self.variables_df['start_d'].index.year == year]
-                pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Discharging Costs'] = -np.sum(start_d_sub * self.p_start_dis)
+
 
         return pro_forma
 

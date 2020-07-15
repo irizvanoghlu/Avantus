@@ -31,6 +31,7 @@ class DERExtension:
         self.sr_response_time = params['sr_response_time']
         self.startup_time = params['startup_time']  # startup time, default value of 0, units in minutes
 
+        # CBA terms shared by all DERs
         self.macrs = params.get('macrs_term')
         self.construction_date = params.get('construction_date')
         self.operation_date = params.get('operation_date')
@@ -38,6 +39,8 @@ class DERExtension:
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
         self.replaceable = params['replaceable']
+        self.acr = params['acr'] / 100
+        self.escalation_rate = params['ter'] / 100
 
         self.replacement_cost_function = []
         rcost = params.get('rcost')
@@ -191,3 +194,29 @@ class DERExtension:
             report.index = replacement_yrs
             report[f"{self.unique_tech_id()} Replacement Costs"] = self.replacement_cost()
         return report
+
+    def economic_carrying_cost(self, d, indx):
+        """ assumes length of project is the lifetime expectancy of this DER
+
+        Args:
+            d (float): discount rate
+        Returns: dataframe report of yearly economic carrying cost
+
+        """
+        try:
+            capex = self.get_capex().value
+        except AttributeError:
+            capex = self.get_capex()
+        acr = self.acr * capex
+
+        k_factor = [acr / ((1 + d)**k) for k in range(1, self.expected_lifetime + 1)]
+        k_factor = sum(k_factor)
+
+        time_factor = (1+self.escalation_rate)/(1+d)
+        repalcement_factor = 1 / (1 - (time_factor**self.expected_lifetime))
+
+        ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
+        ecc = capex * ecc_perc
+        per_yr = np.repeat(ecc)
+        ecc_df = pd.DataFrame({self.zero_column_name: [0]+per_yr}, index=indx)
+        return ecc_df

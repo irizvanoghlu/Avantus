@@ -263,16 +263,22 @@ class CostBenefitAnalysis(Financial):
             valuestreams (Dict): Dict of all services to calculate cost avoided or profit
             results (DataFrame): DataFrame of all the concatenated timseries_report() method results from each DER
                 and ValueStream
+            start_year (Period)
+            end_year (Period)
+            opt_years (list)
 
         Returns: dataframe proforma
         """
         proforma = super().proforma_report(technologies, valuestreams, results, start_year, end_year, opt_years)
         proforma_wo_yr_net = proforma.iloc[:, :-1]
         proforma_taxes = self.calculate_taxes(proforma, technologies)
-        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies,start_year, end_year)
+        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies, start_year, end_year)
         # add decommissioning costs to proforma
         proforma_eol = proforma_taxes.join(der_eol)
-
+        if self.report_annualized_values:
+            # already checked to make sure there is only 1 DER
+            # replace capital cost columns with economic_carrying cost
+            proforma_eol.update(technologies[0].economic_carrying_cost(self.npv_discount_rate, proforma_eol.index))
         # sort alphabetically
         proforma_eol.sort_index(axis=1, inplace=True)
         # recalculate the net (sum of the row's columns)

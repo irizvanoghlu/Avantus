@@ -77,6 +77,8 @@
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
 		<replaceable type="bool" allowed_values="1|0"/>
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
 	</ControllableLoad>
 	<PV type="intermittentresource">
 		<startup_time cba="n" min="0" type="int" />
@@ -98,6 +100,8 @@
 		<expected_lifetime cba="n" type="int" />
 		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost_kW cba="n" min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
 	</PV>
 	<ICE type="generator">
 		<name cba="n" type="string" />
@@ -123,6 +127,8 @@
 		<replaceable type="bool" allowed_values="1|0"/>
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
 	</ICE>
 	<Battery type="storage">
 		<startup_time cba="n" min="0" type="int" />
@@ -163,6 +169,8 @@
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<rcost_kWh cba="n" min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
@@ -203,6 +211,8 @@
 		<rcost cba="n" min="0.0" type="float" />
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<rcost_kWh cba="n" min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
 		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
 		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />

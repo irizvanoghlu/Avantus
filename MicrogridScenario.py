@@ -144,9 +144,15 @@ class MicrogridScenario(Scenario):
 
             # used to select rows from time_series relevant to this optimization window
             mask = self.optimization_levels.predictive == opt_period
+            sub_index = self.optimization_levels.loc[mask].index
+
+            # drop any ders that are not operational
+            self.poi.drop_unoperational_ders(sub_index)
+            if not len(self.poi.active_ders):
+                return True
 
             # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
-            for der in self.poi.der_list:
+            for der in self.poi.active_ders:
                 if der.technology_type == "Energy Storage System":
                     der.apply_past_degredation(opt_period)
 
@@ -160,8 +166,7 @@ class MicrogridScenario(Scenario):
             objective_values = self.run_optimization(functions, constraints, opt_period)
 
             # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
-            sub_index = self.optimization_levels.loc[mask].index
-            for der in self.poi.der_list:
+            for der in self.poi.active_ders:
                 if der.technology_type == "Energy Storage System":
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 
@@ -169,7 +174,7 @@ class MicrogridScenario(Scenario):
             self.objective_values = pd.concat([self.objective_values, objective_values])
 
             # record the solution of the variables and run again
-            for der in self.poi.der_list:
+            for der in self.poi.active_ders:
                 der.save_variable_results(sub_index)
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)

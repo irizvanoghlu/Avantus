@@ -50,7 +50,7 @@ class DERExtension:
         if rcost_kWh is not None:
             self.replacement_cost_function.append(rcost_kWh)
 
-        self.last_operation_year = pd.Period(year=0, freq='y')  # set this value
+        self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
         self.failure_years = []
 
     def set_failure_years(self, start_year, end_year):
@@ -74,6 +74,17 @@ class DERExtension:
                 self.failure_years.append(fail_on)
         self.last_operation_year = pd.Period(fail_on)
         return self.failure_years
+
+    def operational(self, year):
+        """
+
+        Args:
+            year (pd.Period):
+
+        Returns: a boolean, indicating if this DER is operational during the given year
+
+        """
+        return year <= self.last_operation_year
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

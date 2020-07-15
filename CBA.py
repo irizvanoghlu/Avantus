@@ -44,6 +44,7 @@ class CostBenefitAnalysis(Financial):
         self.state_tax_rate = financial_params['state_tax_rate']/100
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
+        self.report_annualized_values = False
 
         self.Scenario = financial_params['CBA']['Scenario']
         self.Finance = financial_params['CBA']['Finance']
@@ -107,6 +108,7 @@ class CostBenefitAnalysis(Financial):
             return project_start_year + longest_lifetime-1
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
+            self.report_annualized_values = True
             if len(der_list) > 1:
                 e_logger.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")

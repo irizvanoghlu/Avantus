@@ -186,6 +186,9 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().calculate(self.ders, self.value_streams, results, start_year, end_year, opt_years)
+        if self.report_annualized_values:
+            # reset proforma to an empty dataframe
+            self.pro_forma = pd.DataFrame()
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.

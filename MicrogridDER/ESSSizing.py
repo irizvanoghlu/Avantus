@@ -28,14 +28,14 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
 
     """
 
-    def __init__(self, ess_type, params):
+    def __init__(self, tag, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            ess_type (str): A unique string name for the technology being added
+            tag (str): A unique string name for the technology being added
             params (dict): Dict of parameters
         """
-        EnergyStorage.__init__(self, ess_type, params)
+        EnergyStorage.__init__(self, tag, params)
         DERExtension.__init__(self, params)
         Sizing.__init__(self)
         # if the user inputted the energy rating as 0, then size for energy rating

@@ -58,7 +58,7 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         if self.being_sized():
             return cvx.Parameter(shape=sum(mask), name='pv/rated gen', value=self.gen_per_rated.loc[mask].values) * self.rated_capacity
         else:
-            super(PV, self).get_discharge(mask)
+            return super(PV, self).get_discharge(mask)
 
     def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

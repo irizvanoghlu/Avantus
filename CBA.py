@@ -114,8 +114,13 @@ class CostBenefitAnalysis(Financial):
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(year=0, freq='y')
             else:
-                der_instance = der_list[0]
-                return project_start_year + der_instance.expected_lifetime-1
+                # require that e < d
+                only_tech = der_list[0]
+                if only_tech.escalation_rate >= self.npv_discount_rate:
+                    e_logger.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
+                                   f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
+                    return pd.Period(year=0, freq='y')
+                return project_start_year + only_tech.expected_lifetime-1
 
     @staticmethod
     def get_years_after_failures(start_year, end_year, der_list):
@@ -186,9 +191,6 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().calculate(self.ders, self.value_streams, results, start_year, end_year, opt_years)
-        if self.report_annualized_values:
-            # reset proforma to an empty dataframe
-            self.pro_forma = pd.DataFrame()
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -280,13 +282,18 @@ class CostBenefitAnalysis(Financial):
         proforma_eol = proforma_taxes.join(der_eol)
         if self.report_annualized_values:
             # already checked to make sure there is only 1 DER
+            tech = technologies[0]
             # replace capital cost columns with economic_carrying cost
-            proforma_eol.update(technologies[0].economic_carrying_cost(self.npv_discount_rate, proforma_eol.index))
+            ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, proforma_eol.index)
+            # drop original Capital Cost
+            proforma_eol = proforma_eol.drop(columns=[tech.zero_column_name])
+            # add the ECC to the proforma
+            proforma_eol = proforma_eol.join(ecc_df)
         # sort alphabetically
         proforma_eol.sort_index(axis=1, inplace=True)
         # recalculate the net (sum of the row's columns)
-        proforma_taxes['Yearly Net Value'] = proforma_taxes.sum(axis=1)
-        return proforma_taxes
+        proforma_eol['Yearly Net Value'] = proforma_eol.sum(axis=1)
+        return proforma_eol
 
     def calculate_taxes(self, proforma, technologies):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid

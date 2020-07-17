@@ -87,7 +87,7 @@ class DERExtension:
         Returns: a boolean, indicating if this DER is operational during the given year
 
         """
-        return year <= self.last_operation_year
+        return year <= self.last_operation_year.year
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
@@ -122,7 +122,7 @@ class DERExtension:
         if self.replaceable:
             year = last_year
         else:
-            year = pd.Period(self.operation_date.year + self.expected_lifetime)
+            year = pd.Period(self.operation_date.year + self.expected_lifetime-1)
         if year > last_year:
             cost = 0
             year = last_year
@@ -159,7 +159,7 @@ class DERExtension:
         # If it has a life longer than the analysis window, then a salvage value will apply.
         years_beyond_project = last_year.year - decommission_year
 
-        if years_beyond_project > 0:
+        if years_beyond_project >= 0:
             if self.salvage_value == "linear salvage value":
                 try:
                     capex = self.get_capex().value
@@ -218,5 +218,5 @@ class DERExtension:
         ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         ecc = capex * ecc_perc
         per_yr = [ecc*(time_factor**(k-1)) for k in range(1, self.expected_lifetime + 1)]
-        ecc_df = pd.DataFrame({self.zero_column_name: [0]+per_yr}, index=indx)
+        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': [0] + per_yr}, index=indx)
         return ecc_df

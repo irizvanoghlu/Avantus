@@ -40,7 +40,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
 
         # create generic storage object
         BatteryTech.Battery.__init__(self, params)
-        ESSSizing.__init__(self, self.technology_type, params)
+        ESSSizing.__init__(self, self.tag, params)
 
         self.user_duration = params['duration_max']
 

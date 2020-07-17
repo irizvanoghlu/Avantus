@@ -138,8 +138,7 @@ class CostBenefitAnalysis(Financial):
         """
         yrs_failed = []
         for der_instance in der_list:
-            if not der_instance.replaceable:
-                yrs_failed += der_instance.set_failure_years(start_year, end_year)
+            yrs_failed += der_instance.set_failure_years(start_year, end_year)
         # increase the year by 1 (this will be the years that the operational DER mix will change)
         diff_der_mix_yrs = [year+1 for year in yrs_failed if year < end_year.year]
         return list(set(diff_der_mix_yrs))  # get rid of any duplicates

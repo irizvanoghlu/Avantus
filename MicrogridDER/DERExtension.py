@@ -72,6 +72,7 @@ class DERExtension:
         if self.replaceable:
             while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
+                fail_on += 1
         else:
             if fail_on <= end_year.year:
                 self.failure_years.append(fail_on)

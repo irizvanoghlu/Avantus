@@ -72,7 +72,7 @@ class DERExtension:
         if self.replaceable:
             while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
-                fail_on += 1
+                fail_on += self.expected_lifetime
         else:
             if fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
@@ -128,7 +128,7 @@ class DERExtension:
             cost = 0
             year = last_year
 
-        return pd.DataFrame({f"{self.unique_tech_id()} Decommissioning Cost": cost}, index=[year])
+        return pd.DataFrame({f"{self.unique_tech_id()} Decommissioning Cost": -cost}, index=[year])
 
     def calculate_salvage_value(self, start_year, last_year):
         """ Decode the user's input and return the salvage value
@@ -147,18 +147,18 @@ class DERExtension:
         """
         if self.salvage_value == 'sunk cost':
             return 0
-        decommission_year = start_year.year + self.expected_lifetime - 1
+        last_decommission_year = start_year.year + self.expected_lifetime - 1
 
         # If the a technology has a life shorter than the analysis window with no replacement, then no salvage value applies.
-        if decommission_year < last_year.year and not self.replaceable:
+        if last_decommission_year < last_year.year and not self.replaceable:
             return 0
         # else keep replacing, and update the DECOMMISSION_YEAR (assume installation occurs the year after)
-        while self.replaceable and decommission_year < last_year.year:
-            decommission_year += self.expected_lifetime
+        while self.replaceable and last_decommission_year < last_year.year:
+            last_decommission_year += self.expected_lifetime
 
         # If it has a life shorter than the analysis window but is replaced, a salvage value will be applied.
         # If it has a life longer than the analysis window, then a salvage value will apply.
-        years_beyond_project = last_year.year - decommission_year
+        years_beyond_project = last_year.year - last_decommission_year
 
         if years_beyond_project >= 0:
             if self.salvage_value == "linear salvage value":
@@ -192,8 +192,8 @@ class DERExtension:
         report = pd.DataFrame()
         if self.replaceable:
             replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_years if year < end_year.year])
-            report.index = replacement_yrs
-            report[f"{self.unique_tech_id()} Replacement Costs"] = self.replacement_cost()
+            report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
+                                  index=replacement_yrs)
         return report
 
     def economic_carrying_cost(self, d, indx):

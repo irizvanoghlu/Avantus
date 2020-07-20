@@ -64,10 +64,37 @@
 	<retailTimeShift type="service" max_num="1">
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 	</retailTimeShift>
-	<ControllableLoad type="load">
+	<ElectricVehicle1 type="load">
 		<name cba="n" type="string" />
-		<power_rating cba="n" min="0.0" type="float" />
-		<duration cba="n" min="0.0" type="float" />
+		<ch_min_rated cba="n" min="0.0" type="float" />
+		<ch_max_rated cba="n" min="0.0" type="float" />
+		<ene_target cba="n" min="0.0" type="float" />
+		<plugin_time min="0" max="23" type="int" />
+		<plugout_time min="0" max="23" type="int" />
+		<ccost cba="y" min="0.0" type="float" />
+		<fixed_om cba="y" min="0.0" type="float" />
+		<!--		cba terms -->
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceable type="bool" allowed_values="1|0"/>
+		<rcost min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ElectricVehicle1>
+	<ElectricVehicle2 type="load">
+		<name cba="n" type="string" />
+		<lost_load_cost cba="n" min="0.0" type="float" />
+		<ccost cba="y" min="0.0" type="float" />
+		<fixed_om cba="y" min="0.0" type="float" />
+		<max_load_ctrl min="0" max="100" type="int" />
+		<!--		cba terms -->
 		<nsr_response_time min="0" type="int" />
 		<sr_response_time min="0" type="int" />
 		<startup_time cba="n" min="0" type="int" />
@@ -77,24 +104,45 @@
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
 		<replaceable type="bool" allowed_values="1|0"/>
+		<rcost min="0.0" type="float" />
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
-	</ControllableLoad>
-	<PV type="intermittentresource">
-		<startup_time cba="n" min="0" type="int" />
-		<name cba="n" type="string" />
+		<!--		all DERs have these inputs-->
 		<nsr_response_time cba="n" min="0" type="int" />
 		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ElectricVehicle2>
+	<ControllableLoad type="load">
+		<name cba="n" type="string" />
+		<power_rating cba="n" min="0.0" type="float" />
+		<duration cba="n" min="0.0" type="float" />
+		<!--		cba terms -->
+		<construction_date cba="n" type="Timestamp" />
+		<operation_date cba="n" type="Timestamp" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceable type="bool" allowed_values="1|0"/>
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ControllableLoad>
+	<PV type="intermittentresource">
+		<name cba="n" type="string" />
 		<inv_max cba="n" min="0.0" type="float" />
 		<growth cba="n" max="100.0" min="0.0" type="float" />
 		<rated_capacity cba="n" min="0.0" type="float" />
 		<ccost_kW cba="y" min="0.0" type="float" />
 		<grid_charge allowed_values="1|0" cba="n" type="bool" />
 		<loc allowed_values="ac|dc" cba="n" type="string" />
+		<curtail type="bool" allowed_values="1|0"/>
+		<!--		cba terms -->
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
 		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="n" type="float" />
-		<curtail type="bool" allowed_values="1|0"/>
 		<decommissioning_cost cba="n" min="0.0" type="float" />
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
@@ -102,14 +150,14 @@
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
 	</PV>
 	<ICE type="generator">
 		<name cba="n" type="string" />
-		<nsr_response_time cba="n" min="0" type="int" />
-		<sr_response_time cba="n" min="0" type="int" />
-		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="n" type="float" />
 		<min_power cba="n" min="0.0" type="float" />
-		<startup_time cba="n" min="0" type="int" />
 		<efficiency cba="n" min="0.0" type="float" />
 		<fuel_cost cba="y" min="0.0" type="float" />
 		<variable_om_cost cba="y" min="0.0" type="float" />
@@ -119,6 +167,8 @@
 		<ccost_kW cba="y" min="0.0" type="float" />
 		<n_min cba="n" min="0" type="int" />
 		<n_max cba="n" min="0" type="int" />
+		<!--		cba terms -->
+		<macrs_term allowed_values="3|5|7|10|15|20|25|27.5|39" cba="n" type="float" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
 		<decommissioning_cost cba="n" min="0.0" type="float" />
@@ -129,12 +179,13 @@
 		<rcost_kW cba="n" min="0.0" type="float" />
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
-	</ICE>
-	<Battery type="storage">
-		<startup_time cba="n" min="0" type="int" />
-		<name cba="n" type="string" />
+		<!--		all DERs have these inputs-->
 		<nsr_response_time cba="n" min="0" type="int" />
 		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ICE>
+	<Battery type="storage">
+		<name cba="n" type="string" />
 		<startup allowed_values="1|0" cba="y" type="bool" />
 		<ccost cba="y" min="0.0" type="float" />
 		<ccost_kw cba="y" min="0.0" type="float" />
@@ -160,8 +211,12 @@
 		<p_start_dis cba="n" min="0" type="float" />
 		<daily_cycle_limit cba="n" min="0" type="float" />
 		<hp cba="y" min="0" type="float" />
-		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<duration_max min="0" type="float" optional="y"/>
+		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
+		<!--		cba terms -->
+		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<decommissioning_cost cba="n" min="0.0" type="float" />
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
@@ -171,15 +226,13 @@
 		<rcost_kWh cba="n" min="0.0" type="float" />
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
-		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
-	</Battery>
-	<CAES type="storage">
-		<startup_time cba="n" min="0" type="int" />
-		<name type="string" />
+		<!--		all DERs have these inputs-->
 		<nsr_response_time cba="n" min="0" type="int" />
 		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</Battery>
+	<CAES type="storage">
+		<name type="string" />
 		<daily_cycle_limit min="0" type="float" />
 		<heat_rate_high min="0.0" type="float" />
 		<startup type="bool" allowed_values="1|0"/>
@@ -201,6 +254,10 @@
 		<p_start_ch min="0" type="float" />
 		<p_start_dis min="0" type="float" />
 		<duration_max min="0" type="float" optional="y"/>
+		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
+		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
+		<!--		cba terms -->
 		<macrs_term cba="n" allowed_values="3|5|7|10|15|20|25|27.5|39" type="float" />
 		<construction_date cba="n" type="Timestamp" />
 		<operation_date cba="n" type="Timestamp" />
@@ -213,9 +270,10 @@
 		<rcost_kWh cba="n" min="0.0" type="float" />
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
-		<incl_ts_energy_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_charge_limits allowed_values="1|0" cba="n" type="bool" />
-		<incl_ts_discharge_limits allowed_values="1|0" cba="n" type="bool" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
 	</CAES>
 	<Scenario type="scenario" max_num="1">
 		<monthly_data_filename cba="y" type="string" />

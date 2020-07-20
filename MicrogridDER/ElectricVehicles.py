@@ -16,13 +16,16 @@ import logging
 import cvxpy as cvx
 import numpy as np
 import pandas as pd
-from .DistributedEnergyResource import DER
+from storagevet.Technology.DistributedEnergyResource import DER
+from MicrogridDER.DERExtension import DERExtension
+from MicrogridDER.Sizing import Sizing
+
 
 u_logger = logging.getLogger('User')
 e_logger = logging.getLogger('Error')
 
 
-class ElectricVehicle1(DER):
+class ElectricVehicle1(DER, Sizing, DERExtension):
     """ A general template for storage object
 
     We define "storage" as anything that can affect the quantity of load/power being delivered or used. Specific
@@ -35,13 +38,12 @@ class ElectricVehicle1(DER):
         """ Initialize all technology with the following attributes.
 
         Args:
-            ess_type (str): A unique string name for the technology being added
             params (dict): Dict of parameters
         """
         # create generic technology object
-        DER.__init__(self, 'Controllable electric vehicles', params)
-        # input params
-        # note: these should never be changed in simulation (i.e from degradation)
+        DER.__init__(self, 'ElectricVehicle1', 'Controllable electric vehicles', params)
+        Sizing.__init__(self)
+        DERExtension.__init__(self, params)
         self.ene_target = params['ene_target']
         self.ch_max_rated = params['ch_max_rated']
         self.ch_min_rated = params['ch_min_rated']
@@ -52,13 +54,14 @@ class ElectricVehicle1(DER):
         self.capital_cost_function = params['ccost']
 
         self.fixed_om = params['fixed_om']
+        self.incl_binary = params['binary']
 
         self.variable_names = {'ene', 'ch', 'uene', 'uch', 'on_c'}
 
-        self.zero_column_name = f'{self.unique_tech_id()} Capital Cost'  # used for proforma creation
-        self.fixed_column_name = f'{self.unique_tech_id()} Fixed O&M Cost'  # used for proforma creation
-        
-
+        # initialize any attributes you want to set and use later
+        self.plugin_times_index = None
+        self.plugout_times_index = None
+        self.unplugged_index = None
 
     # def charge_capacity(self):
     #     """
@@ -67,8 +70,6 @@ class ElectricVehicle1(DER):
 
     #     """
     #     return self.ch_max_rated
-
-
 
     def initialize_variables(self, size):
         """ Adds optimization variables to dictionary
@@ -98,7 +99,6 @@ class ElectricVehicle1(DER):
             self.variable_names.update(['on_c'])
             self.variables_dict.update({'on_c': cvx.Variable(shape=size, boolean=True, name=self.name + '-on_c')})
 
-
     def get_state_of_energy(self, mask):
         """
         Args:
@@ -109,8 +109,6 @@ class ElectricVehicle1(DER):
 
         """
         return self.variables_dict['ene']
-
-
 
     def get_charge(self, mask):
         """
@@ -126,7 +124,7 @@ class ElectricVehicle1(DER):
     def get_capex(self):
         """ Returns the capex of a given technology
         """
-        return np.dot(self.capital_cost_function, [1, self.dis_max_rated, self.ene_max_rated])
+        return self.capital_cost_function
 
     def get_charge_up_schedule(self, mask):
         """ the amount of charging power in the up direction (supplying power up into the grid) that
@@ -154,7 +152,6 @@ class ElectricVehicle1(DER):
         """
         return self.ch_max_rated - self.variables_dict['ch']
 
-
     def get_delta_uenegy(self, mask):
         """ the amount of energy, from the current SOE level the DER's state of energy changes
         from subtimestep energy shifting
@@ -164,7 +161,7 @@ class ElectricVehicle1(DER):
         """
         return self.variables_dict['uene']
 
-    def get_energy_option_charge(self, mask):
+    def get_uenergy_increase(self, mask):
         """ the amount of energy in a timestep that is provided to the distribution grid
 
         Returns: the energy throughput in kWh for this technology
@@ -172,11 +169,16 @@ class ElectricVehicle1(DER):
         """
         return self.variables_dict['uch'] * self.dt
 
-
-
     def get_active_times(self, mask):
-        
-        compute_plugin_index = pd.DataFrame(index==mask.index)
+        """
+
+        Args:
+            mask:
+
+        Returns:
+
+        """
+        compute_plugin_index = pd.DataFrame(index=mask.index)
         compute_plugin_index['plugin'] = compute_plugin_index.index.hour == self.plugin_time
         compute_plugin_index['plugout'] = compute_plugin_index.index.hour == self.plugout_time
         compute_plugin_index['unplugged'] = False
@@ -191,8 +193,6 @@ class ElectricVehicle1(DER):
         self.plugin_times_index = compute_plugin_index['plugin']
         self.unplugged_index = compute_plugin_index['unplugged']
         
-        
-        
     def constraints(self, mask):
         """Default build constraint list method. Used by services that do not have constraints.
 
@@ -204,7 +204,6 @@ class ElectricVehicle1(DER):
             A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows flexibility to provide other grid services
         """
         constraint_list = []
-        size = int(np.sum(mask))
         self.get_active_times(mask.loc[mask,:]) #constructing the array that indicates whether the ev is plugged or not
 
         # optimization variables
@@ -232,19 +231,12 @@ class ElectricVehicle1(DER):
         # constraints to make sure that the ev does nothing when it is unplugged
         constraint_list += [cvx.NonPos(on_c[self.unplugged_index])]
         
-        constraint_list += [cvx.NonPos(self.ene - self.ene_target])]
-        
-
+        # constraint_list += [cvx.NonPos(self.ene - self.ene_target])]  Fix this
 
         # account for -/+ sub-dt energy -- this is the change in energy that the battery experiences as a result of energy option
         constraint_list += [cvx.Zero(uene - (uch * self.dt))]
 
-
-
-
-
         return constraint_list
-
 
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
@@ -254,51 +246,15 @@ class ElectricVehicle1(DER):
 
         """
         tech_id = self.unique_tech_id()
-        results = super().timeseries_report()
-        results[tech_id + ' Discharge (kW)'] = self.variables_df['dis']
+        results = pd.DataFrame(index=self.variables_df.index)
         results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = self.variables_df['dis'] - self.variables_df['ch']
+        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
         results[tech_id + ' State of Energy (kWh)'] = self.variables_df['ene']
 
         results[tech_id + ' Energy Option (kWh)'] = self.variables_df['uene']
         results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
-        results[tech_id + ' Discharge Option (kW)'] = self.variables_df['udis']
-        try:
-            energy_rating = self.ene_max_rated.value
-        except AttributeError:
-            energy_rating = self.ene_max_rated
-
-        results[tech_id + ' SOC (%)'] = self.variables_df['ene'] / energy_rating
 
         return results
-
-    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None):
-        """Calculates any service related dataframe that is reported to the user.
-
-        Args:
-            monthly_data:
-            time_series_data:
-            technology_summary:
-            sizing_df:
-
-        Returns: dictionary of DataFrames of any reports that are value stream specific
-            keys are the file name that the df will be saved with
-        """
-        return {f"{self.name.replace(' ', '_')}_dispatch_map": self.dispatch_map()}
-
-    def dispatch_map(self):
-        """ Takes the Net Power of the Storage System and tranforms it into a heat map
-
-        Returns:
-
-        """
-        dispatch = pd.DataFrame(self.variables_df['dis'] - self.variables_df['ch'])
-        dispatch.columns = ['Power']
-        dispatch.loc[:, 'date'] = self.variables_df.index.date
-        dispatch.loc[:, 'hour'] = (self.variables_df.index + pd.Timedelta('1s')).hour + 1
-        dispatch = dispatch.reset_index(drop=True)
-        dispatch_map = dispatch.pivot_table(values='Power', index='hour', columns='date')
-        return dispatch_map
 
     def proforma_report(self, opt_years, results):
         """ Calculates the proforma that corresponds to participation in this value stream
@@ -316,40 +272,16 @@ class ElectricVehicle1(DER):
 
         """
         pro_forma = DER.proforma_report(self, opt_years, results)
-        tech_id = self.unique_tech_id()
         pro_forma[self.fixed_column_name] = 0
-
-        dis = self.variables_df['dis']
 
         for year in opt_years:
             # add fixed o&m costs
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
-            # add variable o&m costs
-            # dis_sub = dis.loc[dis.index.year == year]
-            # pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
-
-            # add startup costs
-            # if self.incl_startup:
-            #     start_c_sub = self.variables_df['start_c'].loc[self.variables_df['start_c'].index.year == year]
-            #     pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Charging Costs'] = -np.sum(start_c_sub * self.p_start_ch)
-            #     start_d_sub = self.variables_df['start_d'].loc[self.variables_df['start_d'].index.year == year]
-            #     pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Start Discharging Costs'] = -np.sum(start_d_sub * self.p_start_dis)
-
         return pro_forma
-
-    def verbose_results(self):
-        """ Results to be collected iff verbose -- added to the opt_results df
-
-        Returns: a DataFrame
-
-        """
-        results = pd.DataFrame(index=self.variables_df.index)
-        return results
-    
     
 
-class ElectricVehicle2(DER):
+class ElectricVehicle2(DER, Sizing, DERExtension):
     """ A general template for storage object
 
     We define "storage" as anything that can affect the quantity of load/power being delivered or used. Specific
@@ -362,39 +294,24 @@ class ElectricVehicle2(DER):
         """ Initialize all technology with the following attributes.
 
         Args:
-            ess_type (str): A unique string name for the technology being added
             params (dict): Dict of parameters
         """
         # create generic technology object
-        DER.__init__(self, 'Partially controllable electric vehicles', params)
+        DER.__init__(self, 'ElectricVehicle2', 'Partially controllable electric vehicles', params)
         # input params
         # note: these should never be changed in simulation (i.e from degradation)
 
-        self.max_load_ctrl = params['Max_load_ctrl'/100.0 # maximum amount of baseline EV load that can be shed as a percentage of the original load
+        self.max_load_ctrl = params['Max_load_ctrl']/100.0  # maximum amount of baseline EV load that can be shed as a percentage of the original load
 #        self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA, deferral) as a percentage of the baseline load
         self.lost_load_cost = params['lost_load_cost']
-        
+        self.incl_binary = params['binary']
         self.EV_load_TS = params['EV_baseline']
 
-        self.capital_cost = params['ccost']
+        self.capital_cost_function = params['ccost']
 
         self.fixed_om = params['fixed_om']
         
         self.variable_names = {'ch'}
-
-        self.zero_column_name = f'{self.unique_tech_id()} Capital Cost'  # used for proforma creation
-        self.fixed_column_name = f'{self.unique_tech_id()} Fixed O&M Cost'  # used for proforma creation
-
-
-
-    def charge_capacity(self):
-        """
-
-        Returns: the maximum charge that can be attained
-
-        """
-        return self.ch_max_rated
-
 
     def qualifying_capacity(self, event_length):
         """ Describes how much power the DER can discharge to qualify for RA or DR. Used to determine
@@ -432,20 +349,6 @@ class ElectricVehicle2(DER):
             self.variable_names.update(['on_c'])
             self.variables_dict.update({'on_c': cvx.Variable(shape=size, boolean=True, name=self.name + '-on_c')})
 
-
-    def get_state_of_energy(self, mask):
-        """
-        Args:
-            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
-                in the subs data set
-
-        Returns: the state of energy as a function of time for the
-
-        """
-        return self.variables_dict['ene']
-
-
-
     def get_charge(self, mask):
         """
         Args:
@@ -460,7 +363,7 @@ class ElectricVehicle2(DER):
     def get_capex(self):
         """ Returns the capex of a given technology
         """
-        return np.dot(self.capital_cost_function, [1, self.dis_max_rated, self.ene_max_rated])
+        return self.capital_cost_function
 
     def get_charge_up_schedule(self, mask):
         """ the amount of charging power in the up direction (supplying power up into the grid) that
@@ -490,17 +393,6 @@ class ElectricVehicle2(DER):
         """
         return -self.variables_dict['ch'] + self.EV_load_TS[mask]
 
-
-
-    # def get_energy_option_charge(self, mask):
-    #     """ the amount of energy in a timestep that is provided to the distribution grid
-
-    #     Returns: the energy throughput in kWh for this technology
-
-    #     """
-    #     return self.variables_dict['uch'] * self.dt
-
-
     def objective_function(self, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
@@ -514,10 +406,9 @@ class ElectricVehicle2(DER):
         """
 
         # create objective expression for variable om based on discharge activity
-
+        ch = self.variables_dict['ch']
         costs = {
             self.name + ' fixed_om': self.fixed_om * annuity_scalar,
-            self.name + ' var_om': var_om,
             self.name + ' lost_load_cost': cvx.sum( self.EV_load_TS[mask] - ch)*self.lost_load_cost # added to account for lost load
             
         }
@@ -538,27 +429,20 @@ class ElectricVehicle2(DER):
         constraint_list = []
         size = int(np.sum(mask))
 
-
         # optimization variables
 
         ch = self.variables_dict['ch']
         # uch = self.variables_dict['uch']
-
        
         # constraints on the ch/dis power
-        constraint_list += [cvx.NonPos(ch -  self.EV_load_TS[mask])]
+        constraint_list += [cvx.NonPos(ch - self.EV_load_TS[mask])]
         constraint_list += [cvx.NonPos((1-self.max_load_ctrl)*self.EV_load_TS[mask]-ch)]
-        
 
         # the constraint below limits energy throughput and total discharge to less than or equal to
         # (number of cycles * energy capacity) per day, for technology warranty purposes
         # this constraint only applies when optimization window is equal to or greater than 24 hours
 
-
-
         return constraint_list
-
-
 
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
@@ -568,51 +452,11 @@ class ElectricVehicle2(DER):
 
         """
         tech_id = self.unique_tech_id()
-        results = super().timeseries_report()
-        results[tech_id + ' Discharge (kW)'] = self.variables_df['dis']
+        results = pd.DataFrame(index=self.variables_df.index)
         results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = self.variables_df['dis'] - self.variables_df['ch']
-        results[tech_id + ' State of Energy (kWh)'] = self.variables_df['ene']
-
-        results[tech_id + ' Energy Option (kWh)'] = self.variables_df['uene']
-        results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
-        results[tech_id + ' Discharge Option (kW)'] = self.variables_df['udis']
-        try:
-            energy_rating = self.ene_max_rated.value
-        except AttributeError:
-            energy_rating = self.ene_max_rated
-
-        results[tech_id + ' SOC (%)'] = self.variables_df['ene'] / energy_rating
+        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
 
         return results
-
-    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None):
-        """Calculates any service related dataframe that is reported to the user.
-
-        Args:
-            monthly_data:
-            time_series_data:
-            technology_summary:
-            sizing_df:
-
-        Returns: dictionary of DataFrames of any reports that are value stream specific
-            keys are the file name that the df will be saved with
-        """
-        return {f"{self.name.replace(' ', '_')}_dispatch_map": self.dispatch_map()}
-
-    def dispatch_map(self):
-        """ Takes the Net Power of the Storage System and tranforms it into a heat map
-
-        Returns:
-
-        """
-        dispatch = pd.DataFrame(self.variables_df['dis'] - self.variables_df['ch'])
-        dispatch.columns = ['Power']
-        dispatch.loc[:, 'date'] = self.variables_df.index.date
-        dispatch.loc[:, 'hour'] = (self.variables_df.index + pd.Timedelta('1s')).hour + 1
-        dispatch = dispatch.reset_index(drop=True)
-        dispatch_map = dispatch.pivot_table(values='Power', index='hour', columns='date')
-        return dispatch_map
 
     def proforma_report(self, opt_years, results):
         """ Calculates the proforma that corresponds to participation in this value stream
@@ -630,28 +474,10 @@ class ElectricVehicle2(DER):
 
         """
         pro_forma = DER.proforma_report(self, opt_years, results)
-        tech_id = self.unique_tech_id()
         pro_forma[self.fixed_column_name] = 0
-
-        dis = self.variables_df['dis']
 
         for year in opt_years:
             # add fixed o&m costs
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
-            # add variable o&m costs
-            # dis_sub = dis.loc[dis.index.year == year]
-            # pro_forma.loc[pd.Period(year=year, freq='y'), tech_id + ' Variable O&M Cost'] = -self.variable_om * self.dt * np.sum(dis_sub) * 1e-3
-
-
-
         return pro_forma
-
-    def verbose_results(self):
-        """ Results to be collected iff verbose -- added to the opt_results df
-
-        Returns: a DataFrame
-
-        """
-        results = pd.DataFrame(index=self.variables_df.index)
-        return results

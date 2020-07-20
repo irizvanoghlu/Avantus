@@ -277,12 +277,13 @@ class CostBenefitAnalysis(Financial):
         """
         proforma = super().proforma_report(technologies, valuestreams, results, start_year, end_year, opt_years)
         proforma_wo_yr_net = proforma.iloc[:, :-1]
-        proforma = self.calculate_taxes(proforma, technologies)
-        der_eol = self.calculate_end_of_life_value(proforma_wo_yr_net, technologies, start_year, end_year)
+        proforma = self.replacement_costs(proforma_wo_yr_net, technologies, end_year)
+        proforma = self.zero_out_dead_der_costs(proforma, technologies, end_year)
+        der_eol = self.calculate_end_of_life_value(proforma, technologies, start_year, end_year)
         # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
-        proforma = self.replacement_costs(proforma, technologies, end_year)
-        proforma = self.zero_out_dead_der_costs(proforma, technologies, start_year, end_year)
+        proforma = self.calculate_taxes(proforma, technologies)
+
         if self.report_annualized_values:
             # already checked to make sure there is only 1 DER
             tech = technologies[0]
@@ -298,7 +299,8 @@ class CostBenefitAnalysis(Financial):
         proforma['Yearly Net Value'] = proforma.sum(axis=1)
         return proforma
 
-    def replacement_costs(self, proforma, technologies, end_year):
+    @staticmethod
+    def replacement_costs(proforma, technologies, end_year):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
         as a result
 
@@ -314,14 +316,14 @@ class CostBenefitAnalysis(Financial):
             proforma = proforma.fillna(value=0)
         return proforma
 
-    def zero_out_dead_der_costs(self, proforma, technologies, start_year, end_year):
+    @staticmethod
+    def zero_out_dead_der_costs(proforma, technologies, end_year):
         """ Determines years of the project that a DER is past its expected lifetime, then
         zeros out the costs for those years (for each DER in the project)
 
         Args:
             proforma:
             technologies:
-            start_year (Period)
             end_year (Period)
 
         Returns: updated proforma
@@ -332,10 +334,34 @@ class CostBenefitAnalysis(Financial):
                 last_operating_year = der_isnt.last_operation_year
                 if end_year > last_operating_year:
                     column_mask = proforma.columns.str.contains(der_isnt.unique_tech_id(), regex=False)
-
                     proforma.loc[last_operating_year + 1:, column_mask] = 0
-
         return proforma
+
+    @staticmethod
+    def calculate_end_of_life_value(proforma, technologies, start_year, end_year):
+        """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
+        as a result
+
+        Args:
+            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
+            technologies (list): Dict of technologies (needed to get capital and om costs)
+            start_year (Period)
+            end_year (Period)
+
+        """
+        end_of_life_costs = pd.DataFrame(index=proforma.index)
+        for der_inst in technologies:
+            # collect the decommissioning costs at the technology's end of life
+            decommission_pd = der_inst.decommissioning_report(end_year)
+            end_of_life_costs = end_of_life_costs.join(decommission_pd)
+            # collect salvage value
+            salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
+            # add tp EOL dataframe
+            salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
+            end_of_life_costs = end_of_life_costs.join(salvage_pd)
+        end_of_life_costs = end_of_life_costs.fillna(value=0)
+
+        return end_of_life_costs
 
     def calculate_taxes(self, proforma, technologies):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
@@ -348,8 +374,8 @@ class CostBenefitAnalysis(Financial):
         Returns: proforma considering the 'Overall Tax Burden'
 
         """
-        proj_years = len(proforma) - 1
-        yearly_net = proforma.iloc[1:, -1].values
+        proj_years = len(proforma) -1
+        yearly_net = proforma.iloc[1:, :].sum(axis=1).values
 
         # 1) Redistribute capital cost columns according to the DER's MACRS value
         capital_costs = np.zeros(proj_years)
@@ -379,32 +405,6 @@ class CostBenefitAnalysis(Financial):
         proforma_taxes = proforma.iloc[:, :-1]
         proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
         return proforma_taxes
-
-    @staticmethod
-    def calculate_end_of_life_value(proforma, technologies, start_year, end_year):
-        """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
-        as a result
-
-        Args:
-            proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
-            technologies (list): Dict of technologies (needed to get capital and om costs)
-            start_year (Period)
-            end_year (Period)
-
-        """
-        end_of_life_costs = pd.DataFrame(index=proforma.index)
-        for der_inst in technologies:
-            # collect the decommissioning costs at the technology's end of life
-            decommission_pd = der_inst.decommissioning_report(end_year)
-            end_of_life_costs = end_of_life_costs.join(decommission_pd)
-            # collect salvage value
-            salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
-            # add tp EOL dataframe
-            salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Cost": salvage_value}, index=[end_year])
-            end_of_life_costs = end_of_life_costs.join(salvage_pd)
-        end_of_life_costs = end_of_life_costs.fillna(value=0)
-
-        return end_of_life_costs
 
     def payback_report(self, proforma, opt_years):
         """ calculates and saves the payback period and discounted payback period in a dataframe

@@ -33,8 +33,8 @@ class DERExtension:
 
         # CBA terms shared by all DERs
         self.macrs = params.get('macrs_term')
-        self.construction_date = params.get('construction_date')
-        self.operation_date = params.get('operation_date')
+        self.construction_year = params.get('construction_year')
+        self.operation_year = params.get('operation_year')
         self.decommission_cost = params['decommissioning_cost']
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
@@ -56,19 +56,18 @@ class DERExtension:
         self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
         self.failure_years = []
 
-    def set_failure_years(self, start_year, end_year):
+    def set_failure_years(self, end_year):
         """ Gets the year(s) that this instance will fail and saves the information
          as an attribute of itself
 
         Args:
-            start_year (pd.Period): the first year the project is operational
             end_year (pd.Period): the last year the project is operational
 
         Returns: list of year(s) that this equipement fails. if replaceable, then there might
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        fail_on = start_year.year + self.expected_lifetime-1
+        fail_on = self.operation_year.year + self.expected_lifetime-1
         if self.replaceable:
             while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
@@ -83,12 +82,12 @@ class DERExtension:
         """
 
         Args:
-            year (pd.Period):
+            year (int):
 
         Returns: a boolean, indicating if this DER is operational during the given year
 
         """
-        return year <= self.last_operation_year.year
+        return self.last_operation_year.year >= year >= self.operation_year.year
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
@@ -123,7 +122,7 @@ class DERExtension:
         if self.replaceable:
             year = last_year
         else:
-            year = pd.Period(self.operation_date.year + self.expected_lifetime-1)
+            year = pd.Period(self.operation_year.year + self.expected_lifetime-1)
         if year > last_year:
             year = last_year
 
@@ -220,6 +219,27 @@ class DERExtension:
 
         ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         ecc = capex * ecc_perc
-        per_yr = [-ecc*(time_factor**(k-1)) for k in range(1, self.expected_lifetime + 1)]
-        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': [0] + per_yr}, index=indx)
+        per_yr = [-ecc*(time_factor**(k-1)) if not isinstance(year, str) and self.construction_year.year <= year.year <= self.last_operation_year.year
+                  else 0 for k, year in enumerate(indx.values)]
+        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': per_yr}, index=indx)
         return ecc_df
+
+    def put_capital_cost_on_construction_year(self, indx):
+        """
+
+        Args:
+            indx:
+
+        Returns:
+
+        """
+        start_year = indx[1]
+        if self.construction_year.year < start_year.year:
+            return pd.DataFrame(index=indx)
+        capex_df = pd.DataFrame({self.zero_column_name: np.zeros(len(indx))}, index=indx)
+        try:
+            capex = self.get_capex().value
+        except AttributeError:
+            capex = self.get_capex()
+        capex_df.loc[self.construction_year, self.zero_column_name] = capex
+        return capex_df

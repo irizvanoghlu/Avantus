@@ -87,6 +87,7 @@ class MicrogridResult(Result):
         else:
             savepath = self.dir_abs_path
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
+        self.financials.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
         if self.verbose:
             print('DER results have been saved to: ' + savepath)
         u_logger.info('DER results have been saved to: ' + savepath)

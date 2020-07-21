@@ -129,8 +129,9 @@ class Reliability(ValueStream):
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
         if self.min_soe_df is not None:
             report.loc[:, 'Reliability min State of Energy (kWh)'] = self.min_soe_df['soe']
-           # report.loc[:, 'Reliability min SOE profile 0'] = self.soe_profile_all_0.values()
-           # report.loc[:, 'Reliability min SOE profile 1'] = self.soe_profile_all_1.values()
+            #These two lines have to commented out if using optimized soe routine
+            report.loc[:, 'Reliability min SOE profile 0'] = self.soe_profile_all_0.values()
+            report.loc[:, 'Reliability min SOE profile 1'] = self.soe_profile_all_1.values()
             # report.loc[:, 'Reliability min SOC (%)'] = self.min_soc_df['soc']
 
         return report
@@ -420,7 +421,7 @@ class Reliability(ValueStream):
                     var_gen_sum += der_instance.get_discharge(mask)
 
             critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=self.outage_duration)
-            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
+            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * (self.nu * var_gen_sum) + critical_load_arr)]
 
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
@@ -496,10 +497,13 @@ class Reliability(ValueStream):
                     der_instance.initialize_variables(self.outage_duration)
 
                     if der_instance.technology_type == 'Energy Storage System':
+
                         tot_net_ess += der_instance.get_net_power(Outage_mask)
                         der_instance.soc_target = cvx.Variable(shape=1, name=der_instance.name + str(outage_ind) + '-min_soc')
-                        consts += [cvx.NonPos(der_instance.soc_target - self.soc_init)]
-                        consts += [cvx.NonPos(-der_instance.soc_target- self.soc_init)]
+
+                        #Assuming Soc_init is the soc reservation required for other services
+                        consts += [cvx.NonPos(der_instance.soc_target - 1)] # check to include ulsoc
+                        consts += [cvx.NonPos(-der_instance.soc_target+ (1-self.soc_init))]
 
                         min_soc[outage_ind] = der_instance.soc_target
 

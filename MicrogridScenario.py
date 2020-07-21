@@ -190,6 +190,8 @@ class MicrogridScenario(Scenario):
         data_size = len(opt_index)
         First_failure_ind = 0
 
+        ##Check if no ES is required
+
         # stop looping when find first uncovered == -1 (got through entire opt
         while First_failure_ind>=0:
             der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
@@ -219,13 +221,17 @@ class MicrogridScenario(Scenario):
             if der_inst.being_sized():
                 der_inst.set_size()
 
-        start = time.time()
-        #This is a faster method to find approximate min SOE
-        #der_list = reliability_mod.min_soe_iterative(opt_index, der_list)
+        #check if there is ES in the der_list before determing the min SOE profile
+        for der_inst in der_list:
+            if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated>0:
 
-        # This is a faster method to find optimal min SOE
-        der_list = reliability_mod.min_soe_opt(opt_index, der_list)
-        end = time.time()
-        print(end-start)
+                start = time.time()
+                #This is a faster method to find approximate min SOE
+                der_list = reliability_mod.min_soe_iterative(opt_index, der_list)
+
+                # This is a faster method to find optimal min SOE
+                #der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+                end = time.time()
+                print(end-start)
 
         self.poi.der_list = der_list

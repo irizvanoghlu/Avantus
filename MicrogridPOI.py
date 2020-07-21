@@ -46,6 +46,14 @@ class MicrogridPOI(POI):
                 return True
         return False
 
+    def grab_active_ders(self, indx):
+        """ drops DER that are not considered active in the optimization window's horizon
+
+        """
+        year = indx.year[0]
+        active_ders = [der_instance for der_instance in self.der_list if der_instance.operational(year)]
+        self.active_ders = active_ders
+
     def error_checks_on_sizing(self):
         # perform error checks on DERs that are being sized
         # collect errors and raise if any were found

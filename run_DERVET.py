@@ -71,6 +71,7 @@ class DERVET:
         for key, value in self.cases.items():
             run = MicrogridScenario(value)
             run.set_up_poi_and_service_aggregator()
+            run.initialize_cba()
             run.fill_and_drop_extra_data()
             run.optimize_problem_loop()
 

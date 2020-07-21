@@ -32,7 +32,7 @@ class ParamsDER(Params):
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
     # set schema loction based on the location of this file (this should override the global value within Params.py
-    schema_location = Path(__file__).absolute().with_name('DERVETSchema.xml')
+    schema_location = Path(__file__).absolute().with_name('SchemaDER.xml')
 
     sensitivity = {"attributes": dict(), "coupled": list(), 'cba_values': dict()}
     cba_input_error_raised = False

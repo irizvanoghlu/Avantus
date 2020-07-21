@@ -16,6 +16,7 @@ import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+import numpy as np
 
 
 class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
@@ -90,21 +91,25 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         Returns: A dictionary describe this DER's size and captial costs.
 
         """
-        # obtain the size of the battery, these may or may not be optimization variable
-        # therefore we check to see if it is by trying to get its value attribute in a try-except statement.
-        # If there is an error, then we know that it was user inputted and we just take that value instead.
-        try:
-            n = self.n.value
-        except AttributeError:
-            n = self.n
-
         sizing_results = {
             'DER': self.name,
             'Power Capacity (kW)': self.rated_power,
             'Capital Cost ($)': self.capital_cost_function[0],
             'Capital Cost ($/kW)': self.capital_cost_function[1],
-            'Quantity': n}
+            'Quantity': self.number_of_generators()}
         return sizing_results
+
+    def number_of_generators(self):
+        """
+
+        Returns: number of generators, the value of N
+
+        """
+        try:
+            n = self.n.value
+        except AttributeError:
+            n = self.n
+        return n
 
     def max_power_out(self):
         """
@@ -112,10 +117,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         Returns: the maximum power that can be outputted by this genset
 
         """
-        try:
-            power_out = self.n.value * self.rated_power
-        except AttributeError:
-            power_out = self.n * self.rated_power
+        power_out = self.number_of_generators() * self.rated_power
         return power_out
 
     def being_sized(self):
@@ -159,3 +161,12 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         fixed_om_cost = input_dict.get('fixed_om_cost')
         if variable_cost is not None:
             self.fixed_om = fixed_om_cost
+
+    def replacement_cost(self):
+        """
+
+        Returns: the cost of replacing this DER
+
+        """
+        return np.dot(self.replacement_cost_function, [self.number_of_generators(), self.discharge_capacity()])
+

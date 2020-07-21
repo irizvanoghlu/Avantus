@@ -409,19 +409,65 @@ class ParamsDER(Params):
         """ Interprets user given data and prepares it for each technology.
 
         """
+        def load_ts_limits(ess_inputs, tag, measurement, unit):
+            input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']
+            ts_max = time_series.get(input_cols[0])
+            ts_min = time_series.get(input_cols[1])
+            if ts_max is None and ts_min is None:
+                self.record_input_error(f"Missing '{tag}: {measurement} Min ({unit})/{id_str}' or '{tag}: {measurement} Max ({unit})/{id_str}' " +
+                                        "from timeseries input. User indicated one needs to be applied. " +
+                                        "Please include or turn incl_ts_energy_limits off.")
+            if unit == 'kW':
+                # preform the following checks on the values in the timeseries
+                if ts_max.max() * ts_max.min() < 0:
+                    # then the max and min are not both positive or both negative -- so error
+                    self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be all positive or all negative. " +
+                                            "Please fix and rerun.")
+                if ts_min.max() * ts_min.min() < 0:
+                    # then the max and min are not both positive or both negative -- so error
+                    self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be all positive or all negative. " +
+                                            "Please fix and rerun.")
+            if unit == 'kWh':
+                # preform the following checks on the values in the timeseries
+                if ts_max.max() < 0:
+                    self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
+                if ts_min.max() < 0:
+                    self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
+
+            ess_inputs.update({f'ts_{measurement.lower()}_max': ts_max,
+                               f'ts_{measurement.lower()}_min': ts_min})
+
         time_series = self.Scenario['time_series']
         sizing_optimization = False
         if len(self.Battery):
-            for battery_inputs in self.Battery.values():
+            for id_str, battery_inputs in self.Battery.items():
                 if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated'] or not battery_inputs['ene_max_rated']:
                     sizing_optimization = True
+
+                # check if user wants to include timeseries constraints -> grab data
+                if battery_inputs['incl_ts_energy_limits']:
+                    load_ts_limits(battery_inputs, 'Battery', 'Energy', 'kWh')
+                if battery_inputs['incl_ts_charge_limits']:
+                    load_ts_limits(battery_inputs, 'Battery', 'Charge', 'kW')
+                if battery_inputs['incl_ts_discharge_limits']:
+                    load_ts_limits(battery_inputs, 'Battery', 'Discharge', 'kW')
+
+        if len(self.CAES):
+            for id_str, caes_inputs in self.CAES.items():
+                # check if user wants to include timeseries constraints -> grab data
+                if caes_inputs['incl_ts_energy_limits']:
+                    load_ts_limits(caes_inputs, 'CAES', 'Energy', 'kWh')
+                if caes_inputs['incl_ts_charge_limits']:
+                    load_ts_limits(caes_inputs, 'CAES', 'Charge', 'kW')
+                if caes_inputs['incl_ts_discharge_limits']:
+                    load_ts_limits(caes_inputs, 'CAES', 'Discharge', 'kW')
 
         if len(self.PV):
             for pv_inputs in self.PV.values():
                 if not pv_inputs['rated_capacity']:
                     sizing_optimization = True
 
-        if self.ICE is not None:
+        if len(self.ICE):
             # add scenario case parameters to ICE parameter dictionary
             for id_str, ice_input in self.ICE.items():
                 if ice_input['n_min'] != ice_input['n_max']:

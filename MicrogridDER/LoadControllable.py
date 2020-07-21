@@ -247,7 +247,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         """
         results = super().timeseries_report()
         if self.duration:
-            results[f"{self.unique_tech_id()} Effective Load (kW)"] = self.effective_load()
+            results[f"{self.unique_tech_id()} Load (kW)"] = self.effective_load()
             results[f"{self.unique_tech_id()} Load Offset (kW)"] = self.variables_df.loc[:, 'power']
         return results
 

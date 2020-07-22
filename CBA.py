@@ -193,8 +193,7 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().calculate(self.ders, self.value_streams, results, start_year, end_year, opt_years)
-        tech_list = [item for sublist in [list(instance_dict.values()) for instance_dict in self.ders.values()] for item in sublist]
-        self.create_equipment_lifetime_report(tech_list)
+        self.create_equipment_lifetime_report(self.ders)
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.

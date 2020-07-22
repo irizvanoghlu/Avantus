@@ -112,6 +112,17 @@ class MicrogridScenario(Scenario):
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)
 
+    def reliability_based_sizing_module(self):
+        """ runs the reliability based sizing module if the correct combination of inputs allows/
+        indicates to run it.
+
+        """
+        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
+            return
+
+        der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
+        self.poi.der_list = der_list
+
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
 
@@ -152,7 +163,7 @@ class MicrogridScenario(Scenario):
             # drop any ders that are not operational
             self.poi.grab_active_ders(sub_index)
             if not len(self.poi.active_ders):
-                return True
+                continue
 
             # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.active_ders:
@@ -182,77 +193,3 @@ class MicrogridScenario(Scenario):
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)
         return True
-
-    def Reliability_based_sizing_module(self):
-
-        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
-            return
-
-        reliability_mod = self.service_agg.value_streams['Reliability']
-        der_list = copy.deepcopy(self.poi.der_list)
-
-        #Get DER limits
-        top_n_outages = 10
-        _, _, _, demand_left, _ = reliability_mod.get_der_limits(der_list, True)
-
-        demand_left_df=pd.DataFrame(demand_left)
-        # The maximum load demand that is unserved
-        #max_load_demand_unserved = demand_left
-        max_load_demand_unserved = reliability_mod.rolling_sum(demand_left_df.loc[:], reliability_mod.coverage_timesteps) * reliability_mod.dt
-
-
-        # Sort the outages by max demand that is unserved
-        indices=(max_load_demand_unserved.sort_values(by=0, ascending=False)).index.values
-
-        # Find the top n analysis indices that we are going to size our DER mix for.
-        analysis_indices = indices[:top_n_outages]
-
-        opt_index = self.optimization_levels.index
-        data_size = len(opt_index)
-        First_failure_ind = 0
-
-        ##Check if no ES is required
-
-        # stop looping when find first uncovered == -1 (got through entire opt
-        while First_failure_ind>=0:
-            der_list = reliability_mod.size_for_outages(opt_index, analysis_indices, der_list)
-            for der_instance in der_list:
-
-                if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
-                    print(der_instance.dis_max_rated.value, der_instance.ch_max_rated.value,der_instance.ene_max_rated.value)
-                if der_instance.technology_type == 'Generator' and der_instance.being_sized():
-                    print(der_instance.n.value)
-            generation, total_pv_max, ess_properties, demand_left, reliability_check = reliability_mod.get_der_limits(der_list)
-            print(analysis_indices)
-            no_of_ES = len(ess_properties['rte list'])
-            if no_of_ES == 0:
-                soe = np.zeros(data_size)
-                ess_properties = None
-            else:
-                soe = np.repeat(reliability_mod.soc_init, data_size) * ess_properties[
-                    'energy rating']
-            start = 0
-            check_at_a_time = 900  # note: if this is too large, then you will get a RecursionError
-            while start == First_failure_ind:
-                First_failure_ind = reliability_mod.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
-                start += check_at_a_time
-            analysis_indices = np.append(analysis_indices, First_failure_ind)
-
-        for der_inst in der_list:
-            if der_inst.being_sized():
-                der_inst.set_size()
-
-        #check if there is ES in the der_list before determing the min SOE profile
-        for der_inst in der_list:
-            if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated>0:
-
-                start = time.time()
-                #This is a faster method to find approximate min SOE
-                der_list = reliability_mod.min_soe_iterative(opt_index, der_list)
-
-                # This is a faster method to find optimal min SOE
-                #der_list = reliability_mod.min_soe_opt(opt_index, der_list)
-                end = time.time()
-                print(end-start)
-
-        self.poi.der_list = der_list

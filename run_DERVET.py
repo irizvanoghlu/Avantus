@@ -78,9 +78,8 @@ class DERVET:
             run.set_up_poi_and_service_aggregator()
             run.initialize_cba()
             run.fill_and_drop_extra_data()
-
-            #add a optimization for reliability
-            run.Reliability_based_sizing_module()
+            # add a optimization for reliability
+            run.reliability_based_sizing_module()
             continue_to_results = run.optimize_problem_loop()
 
             if continue_to_results:

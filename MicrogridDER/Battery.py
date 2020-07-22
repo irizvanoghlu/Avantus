@@ -59,6 +59,5 @@ class Battery(BatteryTech.Battery, ESSSizing):
         """
 
         constraint_list = BatteryTech.Battery.constraints(self, mask, **kwargs)
-        constraint_list += self.size_constraints
         return constraint_list
 

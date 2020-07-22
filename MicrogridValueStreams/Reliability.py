@@ -23,6 +23,7 @@ import pandas as pd
 import time
 import logging
 import random
+import copy
 import sys
 
 u_logger = logging.getLogger('User')
@@ -77,6 +78,77 @@ class Reliability(ValueStream):
         """
         self.critical_load = Lib.fill_extra_data(self.critical_load, years, load_growth, frequency)
         self.critical_load = Lib.drop_extra_data(self.critical_load, years)
+
+    def sizing_module(self, der_lst, opt_index):
+        """ sizing module
+
+        Args:
+            der_lst: list of ders, where some ders need to be sized
+            opt_index: pandas index of the full analysis horizon
+
+        Returns: list of ders with size solved for the objective of reliability
+
+        """
+        der_list = copy.deepcopy(der_lst)
+
+        top_n_outages = 10
+        data_size = len(opt_index)
+        First_failure_ind = 0
+
+        # Get DER limits
+        _, _, _, demand_left, _ = self.get_der_limits(der_list, True)
+
+        demand_left_df = pd.DataFrame(demand_left)  # TODO
+        # The maximum load demand that is unserved
+        # max_load_demand_unserved = demand_left
+        max_load_demand_unserved = self.rolling_sum(demand_left_df.loc[:], self.coverage_timesteps) * self.dt
+
+        # Sort the outages by max demand that is unserved
+        indices = (max_load_demand_unserved.sort_values(by=0, ascending=False)).index.values
+
+        # Find the top n analysis indices that we are going to size our DER mix for.
+        analysis_indices = indices[:top_n_outages]
+
+        # stop looping when find first uncovered == -1 (got through entire opt
+        while First_failure_ind >= 0:
+            der_list = self.size_for_outages(opt_index, analysis_indices, der_list)
+            for der_instance in der_list:
+
+                if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
+                    print(der_instance.dis_max_rated.value, der_instance.ch_max_rated.value, der_instance.ene_max_rated.value)
+                if der_instance.technology_type == 'Generator' and der_instance.being_sized():
+                    print(der_instance.n.value)
+            generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
+            print(analysis_indices)
+            no_of_ES = len(ess_properties['rte list'])
+            if no_of_ES == 0:
+                soe = np.zeros(data_size)
+                ess_properties = None
+            else:
+                soe = np.repeat(self.soc_init, data_size) * ess_properties['energy rating']
+            start = 0
+            check_at_a_time = 900  # note: if this is too large, then you will get a RecursionError
+            while start == First_failure_ind:
+                First_failure_ind = self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
+                start += check_at_a_time
+            analysis_indices = np.append(analysis_indices, First_failure_ind)
+
+        for der_inst in der_list:
+            if der_inst.being_sized():
+                der_inst.set_size()
+
+        # check if there is ES in the der_list before determing the min SOE profile
+        for der_inst in der_list:
+            if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated > 0:
+                start = time.time()
+                # This is a faster method to find approximate min SOE
+                der_list = self.min_soe_iterative(opt_index, der_list)
+
+                # This is a faster method to find optimal min SOE
+                # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+                end = time.time()
+                print(end - start)
+        return der_list
 
     def calculate_system_requirements(self, der_lst):
         """ Calculate the system requirements that must be meet regardless of what other value streams are active

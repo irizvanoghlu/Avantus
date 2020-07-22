@@ -1,0 +1,815 @@
+{
+    "input": {
+        "Scenario": {
+            "@active": "yes",
+            "monthly_data_filename": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv",
+                "Type": "string"
+            },
+            "time_series_filename": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": ".\\Data\\test1.csv",
+                "Value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv",
+                "Type": "string"
+            },
+            "dt": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "float"
+            },
+            "opt_years": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2017",
+                "Type": "list/int"
+            },
+            "start_year": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2017",
+                "Type": "Period"
+            },
+            "end_year": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2030",
+                "Type": "Period"
+            },
+            "n": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "month",
+                "Type": "string/int"
+            },
+            "incl_site_load": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "bool"
+            },
+            "no_import": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "no_export": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "def_growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "6",
+                "Type": "float"
+            },
+            "verbose": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "verbose_opt": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "binary": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "bool"
+            },
+            "slack": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "ownership": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "customer",
+                "Type": "string"
+            },
+            "location": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "customer",
+                "Type": "string"
+            },
+            "kappa_ene_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            },
+            "kappa_ene_min": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            },
+            "kappa_dis_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            },
+            "kappa_dis_min": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            },
+            "kappa_ch_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            },
+            "kappa_ch_min": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100000",
+                "Type": "float"
+            }
+        },
+        "Finance": {
+            "@active": "yes",
+            "inflation_rate": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3",
+                "Type": "float"
+            },
+            "npv_discount_rate": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "7",
+                "Type": "float"
+            },
+            "yearly_data_filename": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": ".\\dervet\\storagevet\\Data\\yearly_data.csv",
+                "Type": "string"
+            },
+            "external_incentives": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "bool"
+            },
+            "customer_tariff_filename": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": ".\\dervet\\storagevet\\Data\\tariff.csv",
+                "Type": "string"
+            },
+            "analysis_horizon_mode": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "int"
+            }
+        },
+        "Results": {
+            "@active": "no",
+            "dir_absolute_path": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "enter absolute path here",
+                "Type": "string"
+            },
+            "label": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "_2MW_5hr",
+                "Type": "string"
+            },
+            "errors_log_path": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "Enter absolute path here  (include the folder name you want the file to be contained inside)",
+                "Type": "string"
+            }
+        },
+        "Battery": {
+            "@active": "yes",
+            "name": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2MW-5hr",
+                "Type": "string"
+            },
+            "ccost": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "ccost_kw": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100",
+                "Type": "float"
+            },
+            "ccost_kwh": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "800",
+                "Type": "float"
+            },
+            "startup": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "fixedOM": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "10",
+                "Type": "float"
+            },
+            "OMexpenses": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "float"
+            },
+            "ch_max_rated": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2000",
+                "Type": "float"
+            },
+            "dis_max_rated": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2000",
+                "Type": "float"
+            },
+            "ch_min_rated": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "dis_min_rated": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "ene_max_rated": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "10000",
+                "Type": "float"
+            },
+            "duration_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "ulsoc": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100",
+                "Type": "float"
+            },
+            "llsoc": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "5",
+                "Type": "float"
+            },
+            "rte": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "85",
+                "Type": "float"
+            },
+            "sdr": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "construction_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            },
+            "operation_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            },
+            "soc_target": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "50",
+                "Type": "float"
+            },
+            "yearly_degrade": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "int"
+            },
+            "incl_cycle_degrade": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "cycle_life_filename": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": ".\\dervet\\storagevet\\Data\\Battery_Cycle_Life.csv",
+                "Type": "string"
+            },
+            "p_start_ch": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "p_start_dis": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            },
+            "daily_cycle_limit": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "float"
+            },
+            "hp": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100",
+                "Type": "float"
+            },
+            "macrs_term": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3",
+                "Type": "float"
+            }
+        },
+        "PV": {
+            "@active": "yes",
+            "name": {
+                "@analysis": "no",
+                "Coupled": "nan",
+                "Sensitivity_Parameters": "nan",
+                "Value": "solar1",
+                "Type": "string"
+            },
+            "inv_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3000",
+                "Type": "float"
+            },
+            "loc": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "ac",
+                "Type": "string"
+            },
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "5",
+                "Type": "float"
+            },
+            "cost_per_kW": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "200",
+                "Type": "float"
+            },
+            "macrs_term": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3",
+                "Type": "float"
+            },
+            "rated_capacity": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100",
+                "Type": "float"
+            },
+            "grid_charge": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "construction_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            },
+            "operation_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            }
+        },
+        "ICE": {
+            "@active": "no",
+            "name": {
+                "@analysis": "no",
+                "Coupled": "nan",
+                "Sensitivity_Parameters": "nan",
+                "Value": "ice gen",
+                "Type": "string"
+            },
+            "rated_power": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "4000",
+                "Type": "float"
+            },
+            "min_power": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "100",
+                "Type": "float"
+            },
+            "startup_time": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "int"
+            },
+            "efficiency": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0.15",
+                "Type": "float"
+            },
+            "fuel_cost": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3.5",
+                "Type": "float"
+            },
+            "variable_om_cost": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "10",
+                "Type": "float"
+            },
+            "fixed_om_cost": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "12",
+                "Type": "float"
+            },
+            "ccost_kW": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "200",
+                "Type": "float"
+            },
+            "ccost": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "200",
+                "Type": "float"
+            },
+            "macrs_term": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3",
+                "Type": "float"
+            },
+            "n_min": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2",
+                "Type": "int"
+            },
+            "n_max": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2",
+                "Type": "int"
+            },
+            "construction_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            },
+            "operation_date": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1/1/2017",
+                "Type": "Timestamp"
+            }
+        },
+        "DA": {
+            "@active": "yes",
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            }
+        },
+        "FR": {
+            "@active": "no",
+            "ku": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0.3",
+                "Type": "float"
+            },
+            "kd": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0.3",
+                "Type": "float"
+            },
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2",
+                "Type": "float"
+            },
+            "energyprice_growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "5",
+                "Type": "float"
+            },
+            "CombinedMarket": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "1",
+                "Type": "bool"
+            },
+            "duration": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            }
+        },
+        "SR": {
+            "@active": "no",
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "3",
+                "Type": "float"
+            },
+            "duration": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            }
+        },
+        "NSR": {
+            "@active": "no",
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "2",
+                "Type": "float"
+            },
+            "duration": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "float"
+            }
+        },
+        "DCM": {
+            "@active": "no",
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "5",
+                "Type": "float"
+            }
+        },
+        "retailTimeShift": {
+            "@active": "no",
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "5",
+                "Type": "float"
+            }
+        },
+        "User": {
+            "@active": "no",
+            "price": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "10000",
+                "Type": "float"
+            }
+        },
+        "Backup": {
+            "@active": "no"
+        },
+        "Reliability": {
+            "@active": "yes",
+            "target": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "4",
+                "Type": "float"
+            },
+            "post_facto_only": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            },
+            "nu": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "20",
+                "Type": "float"
+            },
+            "gamma": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "43",
+                "Type": "float"
+            },
+            "max_outage_duration": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "80",
+                "Type": "int"
+            },
+            "n-2": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "0",
+                "Type": "bool"
+            }
+        },
+        "Deferral": {
+            "@active": "no",
+            "planned_load_limit": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "15000",
+                "Type": "float"
+            },
+            "reverse_power_flow_limit": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "-15000",
+                "Type": "float"
+            },
+            "growth": {
+                "@analysis": "no",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "6",
+                "Type": "float"
+            },
+            "price": {
+                "@analysis": ".",
+                "Coupled": "None",
+                "Sensitivity_Parameters": "nan",
+                "Value": "10000",
+                "Type": "float"
+            }
+        }
+    }
+}

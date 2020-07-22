@@ -78,9 +78,9 @@ class MicrogridResult(Result):
         """
         super().save_as_csv(instance_key, sensitivity)
         if sensitivity:
-            savepath = self.dir_abs_path + "\\" + str(instance_key)
+            savepath = self.dir_abs_path / str(instance_key)
         else:
             savepath = self.dir_abs_path
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         self.financials.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
-        LogError.info('DER results have been saved to: ' + savepath)
+        LogError.info(f'DER results have been saved to: {savepath}')

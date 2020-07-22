@@ -160,7 +160,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
 
-        constraint_list = super().constraints(mask)
+        constraint_list = super().constraints(mask,**kwargs)
 
         constraint_list += self.size_constraints
 

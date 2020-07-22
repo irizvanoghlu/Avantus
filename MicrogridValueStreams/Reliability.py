@@ -91,7 +91,7 @@ class Reliability(ValueStream):
         """
         der_list = copy.deepcopy(der_lst)
 
-        top_n_outages = 10
+        top_n_outages = 1
         data_size = len(opt_index)
         First_failure_ind = 0
 

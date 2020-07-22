@@ -1,6 +1,6 @@
 Tag,ID,Key,Optimization Value,Units,Type,Allowed Values,Sensitivity Parameters,Coupled,Description,Active,Sensitivity Analysis,Evaluation Value,Evaluation Active,Options/Notes
 Scenario,.,monthly_data_filename,.\dervet\storagevet\Data\Monthly_Data.csv,N/A,string,valid file path to a monthly data file,N/A,None,N/A,yes,no,.\dervet\storagevet\Data\Monthly_Data.csv,n,
-Scenario,.,time_series_filename,.\dervet\storagevet\Data\hourly_timeseries.csv,N/A,string,valid file path to a time series data file,.\Data\test1.csv,None,N/A,.,no,.\dervet\storagevet\Data\hourly_timeseries.csv,n,
+Scenario,.,time_series_filename,.\dervet\storagevet\Data\hourly_timeseries_Ventura.csv,N/A,string,valid file path to a time series data file,.\Data\test1.csv,None,N/A,.,no,.\dervet\storagevet\Data\hourly_timeseries.csv,n,
 Scenario,.,dt,1,hours,float,"(0,1]",N/A,None,Time step in the time series data file,.,no,.,.,
 Scenario,.,opt_years,2017,year,list/int,the year number(s) specified here must appear in the time series file,N/A,None,which years to run optimization for. You must have data for these years in the time series file.,.,no,.,.,
 Scenario,.,start_year,2017,year,Period,opt_years must be between start_year and end_year,N/A,None,first year of analysis,.,no,2017,n,
@@ -57,7 +57,7 @@ Battery,1,rte,85,%,float,"[0, 100] ",N/A,None,Energy Storage Round Trip Efficien
 Battery,1,sdr,0,%/hr,float,"[0, 99]",N/A,None,Energy Storage Self-Discharge Rate,.,no,.,.,
 Battery,1,construction_year,2017,year,Period,,N/A,None,Construction Date of the System,.,no,.,.,
 Battery,1,operation_year,2017,year,Period,,N/A,None,Operation Date of the System,.,no,.,.,
-Battery,1,soc_target,50,%,float,"[0, 100] ",N/A,None,The SOC the storage system will return to after every optimization window,.,no,.,.,
+Battery,1,soc_target,100,%,float,"[0, 100] ",N/A,None,The SOC the storage system will return to after every optimization window,.,no,.,.,
 Battery,1,yearly_degrade,0,N/A,int,"[0, 100] ",N/A,None,% degradation per year. This calendar degradation combines with cycling degradation to get total degradation.,.,no,.,.,
 Battery,1,incl_cycle_degrade,0,N/A,bool,"{0,1}",N/A,None,T or F to include degradation per year,.,no,.,.,
 Battery,1,cycle_life_filename,.\dervet\storagevet\Data\Battery_Cycle_Life.csv,N/A,string,valid file path to a degradation data file,N/A,None,"For our rainflow model, defines the buckets and the number of cycles per bucket the battery can with stand before requiring replacement",.,no,.,.,

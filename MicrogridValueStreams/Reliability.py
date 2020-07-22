@@ -91,23 +91,27 @@ class Reliability(ValueStream):
         """
         der_list = copy.deepcopy(der_lst)
 
-        top_n_outages = 1
+        top_n_outages = 10
         data_size = len(opt_index)
         First_failure_ind = 0
 
         # Get DER limits
         _, _, _, demand_left, _ = self.get_der_limits(der_list, True)
 
-        demand_left_df = pd.DataFrame(demand_left)  # TODO
+        #demand_left_df = pd.DataFrame(demand_left)  # TODO
         # The maximum load demand that is unserved
         # max_load_demand_unserved = demand_left
-        max_load_demand_unserved = self.rolling_sum(demand_left_df.loc[:], self.coverage_timesteps) * self.dt
+        #max_load_demand_unserved = self.rolling_sum(demand_left_df.loc[:], self.coverage_timesteps) * self.dt
 
         # Sort the outages by max demand that is unserved
-        indices = (max_load_demand_unserved.sort_values(by=0, ascending=False)).index.values
+        #indices = (max_load_demand_unserved.sort_values(by=0, ascending=False)).index.values
+
+
+        # Sort the outages by max demand that is unserved
+        indices = np.argsort(-1 * self.reliability_requirement)
 
         # Find the top n analysis indices that we are going to size our DER mix for.
-        analysis_indices = indices[:top_n_outages]
+        analysis_indices = indices[:top_n_outages].values
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while First_failure_ind >= 0:
@@ -128,10 +132,12 @@ class Reliability(ValueStream):
                 soe = np.repeat(self.soc_init, data_size) * ess_properties['energy rating']
             start = 0
             check_at_a_time = 900  # note: if this is too large, then you will get a RecursionError
+            First_failure_ind=0
             while start == First_failure_ind:
                 First_failure_ind = self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
                 start += check_at_a_time
             analysis_indices = np.append(analysis_indices, First_failure_ind)
+
 
         for der_inst in der_list:
             if der_inst.being_sized():

@@ -188,31 +188,33 @@ class MicrogridScenario(Scenario):
             error = error and True
         # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
         # NOTE: change this conditional if there is multiple Storage technologies (POI will resolve this)
-        error = error and self.error_checks_on_sizing_with_ts_service_constraints()
+        error = error and self.check_for_infeasible_regulation_constraints_with_system_size()
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is solved, but "
                                   + "no optimization was built or solved. Please check log files for more information. ")
 
-    def error_checks_on_sizing_with_ts_service_constraints(self):
+    def check_for_infeasible_regulation_constraints_with_system_size(self):
         """ perform error checks on DERs that are being sized with ts_user_constraints
         collect errors and raise if any were found"""
-        errors_found = False
-        for der in self.poi.der_list:
-            try:
-                solve_for_size = der.being_sized()
-                # only check for BatterySizing instances
-                # TODO add capability for checking other technology sizing ? --AE
-                if not isinstance(der, Battery):
-                    continue
-                max_power_size_constraint = der.user_ch_rated_max + der.user_dis_rated_max
-                for service_name, service in self.service_agg.value_streams.items():
-                    try:
-                        if service.error_checks_on_sizing_with_ts_service_constraints(max_power_size_constraint):
-                            LogError.debug(f"Finished error checks on sizing {der.name} with timeseries {service_name} service constraints...")
-                        else:
-                            errors_found = True
-                    except AttributeError:
-                        pass
-            except AttributeError:
-                pass
-        return errors_found
+        # down
+        has_errors = False
+        max_p_sch_down = sum([der_inst.max_p_schedule_down() for der_inst in self.poi.der_list])
+        min_p_res_down = sum([service.min_regulation_down() for service in self.service_agg.value_streams.values()])
+        diff = max_p_sch_down - min_p_res_down
+        negative_vals = (diff.values < 0)
+        if negative_vals.any():
+            first_time = diff.index[negative_vals][0]
+            LogError.error('The sum of minimum power regulation down exceeds the maximum possible power capacities that ' +
+                           f'can provide regulation down, first occurring at time {first_time}.')
+            has_errors = True
+        # up
+        max_p_sch_up = sum([der_inst.max_p_schedule_up() for der_inst in self.poi.der_list])
+        min_p_res_up = sum([service.min_regulation_up() for service in self.service_agg.value_streams.values()])
+        diff = max_p_sch_up - min_p_res_up
+        negative_vals = (diff.values < 0)
+        if negative_vals.any():
+            first_time = diff.index[negative_vals][0]
+            LogError.error('The sum of minimum power regulation up exceeds the maximum possible power capacities that ' +
+                           f'can provide regulation down, first occurring at time {first_time}.')
+            has_errors = True
+        return has_errors

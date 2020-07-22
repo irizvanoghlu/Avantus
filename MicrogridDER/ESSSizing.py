@@ -327,7 +327,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             LogError.error(f'{self.unique_tech_id()} min energy requirement is greater than max energy requirement.')
             return True
 
-    def max_regulation_down(self):
+    def max_p_schedule_down(self):
         # ability to provide regulation down through charging more
         if isinstance(self.ch_max_rated, cvx.Variable):
             if not self.user_ch_rated_max:

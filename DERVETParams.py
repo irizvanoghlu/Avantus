@@ -133,6 +133,7 @@ class ParamsDER(Params):
         Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
 
         """
+        is_dervet_specific_tech_active = not len
         super().bad_active_combo(dervet=True)
 
     @classmethod

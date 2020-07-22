@@ -176,7 +176,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         """
         return np.dot(self.replacement_cost_function, [self.number_of_generators(), self.discharge_capacity()])
 
-    def max_regulation_down(self):
+    def max_p_schedule_down(self):
         # ability to provide regulation down through discharging less
         if isinstance(self.n, cvx.Variable):
             if not self.n_max:

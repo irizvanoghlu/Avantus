@@ -263,8 +263,8 @@ class ControllableLoad(Load, Sizing, DERExtension):
         }
         return sizing_results
 
-    def max_regulation_down(self):
+    def max_p_schedule_down(self):
         # ability to provide regulation down through discharging less
         if not self.duration:
-            return super().max_regulation_down()
+            return super().max_p_schedule_down()
         return self.rated_power

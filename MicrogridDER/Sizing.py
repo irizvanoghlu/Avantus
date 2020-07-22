@@ -66,8 +66,8 @@ class Sizing:
         """
         return False
 
-    def max_regulation_down(self):
+    def max_p_schedule_down(self):
         return 0
 
-    def max_regulation_up(self):
-        return self.max_regulation_down()
+    def max_p_schedule_up(self):
+        return 0

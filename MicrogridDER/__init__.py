@@ -1,2 +1,2 @@
-__all__ = ['Sizing', 'PV', 'Battery', 'ICE', 'DERExtension']
+__all__ = ['Sizing', 'PV', 'Battery', 'ICE', 'DERExtension', ]
 

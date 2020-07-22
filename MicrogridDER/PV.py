@@ -15,7 +15,6 @@ __version__ = 'beta'  # beta version
 import cvxpy as cvx
 from storagevet.Technology import PVSystem
 from MicrogridDER.Sizing import Sizing
-import pandas as pd
 from MicrogridDER.DERExtension import DERExtension
 from ErrorHandelling import *
 import numpy as np
@@ -128,10 +127,9 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             'Capital Cost ($/kW)': self.capital_cost_function}
 
         # warn about tight sizing margins
-        # TODO is 'PV rating' ever a valid varible_name ? --AE
-        if 'PV rating' in self.variable_names:
-            sizing_margin1 = (abs(self.variables_df['PV rating'] - self.max_rated_capacity) - 0.05 * self.max_rated_capacity).values
-            sizing_margin2 = (abs(self.variables_df['PV rating'] - self.min_rated_capacity) - 0.05 * self.min_rated_capacity).values
+        if isinstance(self.rated_capacity, cvx.Variable):
+            sizing_margin1 = (abs(self.rated_capacity - self.max_rated_capacity) - 0.05 * self.max_rated_capacity).values
+            sizing_margin2 = (abs(self.rated_capacity - self.min_rated_capacity) - 0.05 * self.min_rated_capacity).values
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
                 LogError.warning("Difference between the optimal PV rated capacity and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
@@ -159,7 +157,6 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         if self.min_rated_capacity > self.max_rated_capacity:
             LogError.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
             return True
-        return False
 
     def replacement_cost(self):
         """

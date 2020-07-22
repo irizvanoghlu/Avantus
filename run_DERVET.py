@@ -34,6 +34,7 @@ from MicrogridScenario import MicrogridScenario
 from DERVETParams import ParamsDER
 from MicrogridResult import MicrogridResult
 from storagevet.Visualization import Visualization
+from ErrorHandelling import *
 
 
 class DERVET:
@@ -80,8 +81,7 @@ class DERVET:
         MicrogridResult.sensitivity_summary()
 
         ends = time.time()
-        print("DERVET runtime: ") if self.verbose else None
-        print(ends - starts) if self.verbose else None
+        LogError.info(f"DERVET runtime: {ends - starts}")
 
         return MicrogridResult
 
@@ -108,5 +108,3 @@ if __name__ == '__main__':
 
     case = DERVET(arguments.parameters_filename, verbose=arguments.verbose, ignore_cba_valuation=True)
     case.solve()
-
-    # print("Program is done.")

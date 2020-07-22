@@ -101,7 +101,7 @@ class MicrogridScenario(Scenario):
 
         # update opt_years based on this new end_year
         add_analysis_years = self.financials.get_years_after_failures(self.start_year, self.end_year, self.poi.der_list)
-        print(add_analysis_years)
+        LogError.debug(add_analysis_years)
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)

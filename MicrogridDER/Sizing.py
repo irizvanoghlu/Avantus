@@ -13,6 +13,7 @@ __version__ = 'beta'
 
 import numpy as np
 import pandas as pd
+from ErrorHandelling import *
 
 
 class Sizing:
@@ -22,6 +23,7 @@ class Sizing:
     """
 
     def __init__(self):
+        LogError.debug(f"Initializing {__name__}")
         self.size_constraints = []
 
     def being_sized(self):
@@ -64,8 +66,8 @@ class Sizing:
         """
         return False
 
-    def max_regualtion_down(self):
+    def max_regulation_down(self):
         return 0
 
     def max_regulation_up(self):
-        return 0
+        return self.max_regulation_down()

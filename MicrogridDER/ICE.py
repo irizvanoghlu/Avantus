@@ -176,3 +176,13 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         """
         return np.dot(self.replacement_cost_function, [self.number_of_generators(), self.discharge_capacity()])
 
+    def max_regulation_down(self):
+        # ability to provide regulation down through discharging less
+        if isinstance(self.n, cvx.Variable):
+            if not self.n_max:
+                max_discharging_range = (self.n_max * self.rated_power) - self.p_min
+            else:
+                max_discharging_range = np.infty
+        else:
+            max_discharging_range = self.max_power_out() - self.p_min
+        return max_discharging_range

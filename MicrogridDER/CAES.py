@@ -28,8 +28,8 @@ class CAES(CAESTech.CAES, ESSSizing):
         Args:
             params (dict): Dict of parameters for initialization
         """
-        CAESTech.CAES.__init__(self, params)
-        ESSSizing.__init__(self, self.technology_type, params)
+        LogError.debug(f"Initializing {__name__}")
+        super().__init__(params)  # CAESTech.CAES->ESSizing->EnergyStorage->DER->Sizing
 
     def objective_function(self, mask, annuity_scalar=1):
         """ Generates the objective function related to a technology. Default includes O&M which can be 0
@@ -42,7 +42,7 @@ class CAES(CAESTech.CAES, ESSSizing):
         Returns:
             self.costs (Dict): Dict of objective costs
         """
-        costs = CAESTech.CAES.objective_function(self, mask, annuity_scalar)
+        costs = super().objective_function(mask, annuity_scalar)
         if self.being_sized():
             costs.update({self.name + 'capex': self.get_capex()})
 

@@ -57,18 +57,8 @@ class MicrogridPOI(POI):
     def error_checks_on_sizing(self):
         # perform error checks on DERs that are being sized
         # collect errors and raise if any were found
-        errors_found = False
-        for der in self.der_list:
-            try:
-                solve_for_size = der.being_sized()
-                if solve_for_size:
-                    if der.error_checks_on_sizing():
-                        LogError.debug(f"Finished error checks on sizing {der.name}...")
-                    else:
-                        errors_found = True
-            except AttributeError:
-                pass
-        if errors_found:
+        errors_found = [1 if der.sizing_error() else 0 for der in self.der_list]
+        if sum(errors_found):
             raise Warning(f'Sizing of DERs has an error. Please check error log.')
 
     def is_dcp_error(self, is_binary_formulation):

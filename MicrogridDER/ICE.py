@@ -164,7 +164,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
 
         """
         if self.n_min > self.n_max:
-            LogError.error(f'{self.unique_tech_id()} must have n_min < n_max')
+            TellUser.error(f'{self.unique_tech_id()} must have n_min < n_max')
             return True
         return False
 

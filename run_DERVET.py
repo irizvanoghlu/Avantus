@@ -81,7 +81,7 @@ class DERVET:
         MicrogridResult.sensitivity_summary()
 
         ends = time.time()
-        LogError.info(f"DERVET runtime: {ends - starts}")
+        TellUser.info(f"DERVET runtime: {ends - starts}")
 
         return MicrogridResult
 

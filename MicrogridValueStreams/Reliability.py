@@ -157,9 +157,9 @@ class Reliability(ValueStream):
 
         """
         df_dict = {}
-        LogError.info('Starting load coverage calculation. This may take a while.')
+        TellUser.info('Starting load coverage calculation. This may take a while.')
         df_dict['load_coverage_prob'] = self.load_coverage_probability(time_series_data, technology_summary, der_list)
-        LogError.info('Finished load coverage calculation.')
+        TellUser.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
         if not self.post_facto_only:
             self.contribution_summary(technology_summary, time_series_data)
@@ -295,7 +295,7 @@ class Reliability(ValueStream):
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 
         end = time.time()
-        LogError.info(f'Critical Load Coverage Curve overhead time: {end - start}')
+        TellUser.info(f'Critical Load Coverage Curve overhead time: {end - start}')
         # simulate outage starting on every timestep
         start = time.time()
         outage_init = 0
@@ -321,7 +321,7 @@ class Reliability(ValueStream):
                            # '# of simulations where the outage lasts up to and including': frequency_simulate_outage,
                            'Load Coverage Probability (%)': load_coverage_prob}  # first index is prob of covering outage of 0 hours (P=100%)
         end = time.time()
-        LogError.info(f'Critical Load Coverage Curve calculation time: {end - start}')
+        TellUser.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         lcpc_df = pd.DataFrame(outage_coverage)
         lcpc_df.set_index('Outage Length (hrs)')
         return lcpc_df

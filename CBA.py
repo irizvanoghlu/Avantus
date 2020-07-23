@@ -256,9 +256,9 @@ class CostBenefitAnalysis(Financial):
             for key, value in evaluation_dict.items():
                 try:
                     setattr(param_object, key, value)
-                    LogError.debug('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value))
+                    TellUser.debug('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value))
                 except KeyError:
-                    LogError.debug('No attribute ' + param_object.name + ': ' + key)
+                    TellUser.debug('No attribute ' + param_object.name + ': ' + key)
 
     def proforma_report(self, technologies, valuestreams, results, start_year, end_year, opt_years):
         """ Calculates and returns the proforma

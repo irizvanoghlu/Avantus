@@ -59,7 +59,10 @@ class MicrogridPOI(POI):
         # collect errors and raise if any were found
         errors_found = [1 if der.sizing_error() else 0 for der in self.der_list]
         if sum(errors_found):
-            raise Warning(f'Sizing of DERs has an error. Please check error log.')
+            raise ParameterError(f'Sizing of DERs has an error. Please check error log.')
+
+    def is_any_sizable_der_missing_power_max(self):
+        return bool(sum([1 if not der_inst.max_power_defined else 0 for der_inst in self.der_list]))
 
     def is_dcp_error(self, is_binary_formulation):
         """ If trying to sizing power of batteries (or other DERs) AND using the binary formulation (of ESS)
@@ -74,8 +77,7 @@ class MicrogridPOI(POI):
         solve_for_size = False
         for der_instance in self.der_list:
             if der_instance.tag == 'Battery':
-                power_being_sizing = isinstance(der_instance.dis_max_rated, cvx.Variable) or isinstance(der_instance.ch_max_rated, cvx.Variable)
-                solve_for_size = solve_for_size or (power_being_sizing and is_binary_formulation)
+                solve_for_size = solve_for_size or (der_instance.is_power_sizing() and is_binary_formulation)
         return solve_for_size
 
     def sizing_summary(self):

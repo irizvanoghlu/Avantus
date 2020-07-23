@@ -128,10 +128,10 @@ class PV(PVSystem.PV, Sizing, DERExtension):
 
         # warn about tight sizing margins
         if isinstance(self.rated_capacity, cvx.Variable):
-            sizing_margin1 = (abs(self.rated_capacity - self.max_rated_capacity) - 0.05 * self.max_rated_capacity).values
-            sizing_margin2 = (abs(self.rated_capacity - self.min_rated_capacity) - 0.05 * self.min_rated_capacity).values
+            sizing_margin1 = (abs(self.rated_capacity.value - self.max_rated_capacity) - 0.05 * self.max_rated_capacity)
+            sizing_margin2 = (abs(self.rated_capacity.value - self.min_rated_capacity) - 0.05 * self.min_rated_capacity)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                LogError.warning("Difference between the optimal PV rated capacity and user upper/lower "
+                TellUser.warning("Difference between the optimal PV rated capacity and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
 
         return sizing_results
@@ -155,8 +155,11 @@ class PV(PVSystem.PV, Sizing, DERExtension):
 
         """
         if self.min_rated_capacity > self.max_rated_capacity:
-            LogError.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
+            TellUser.error(f'{self.unique_tech_id()} requires min_rated_capacity < max_rated_capacity.')
             return True
+
+    def max_power_defined(self):
+        return self.is_power_sizing() and not self.max_rated_capacity
 
     def replacement_cost(self):
         """

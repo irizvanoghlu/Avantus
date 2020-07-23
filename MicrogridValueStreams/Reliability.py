@@ -122,8 +122,10 @@ class Reliability(ValueStream):
                     print(der_instance.dis_max_rated.value, der_instance.ch_max_rated.value, der_instance.ene_max_rated.value)
                 if der_instance.technology_type == 'Generator' and der_instance.being_sized():
                     print(der_instance.n.value)
+                if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
+                    print(der_instance.rated_capacity.value)
             generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
-            print(analysis_indices)
+
             no_of_ES = len(ess_properties['rte list'])
             if no_of_ES == 0:
                 soe = np.zeros(data_size)
@@ -137,7 +139,7 @@ class Reliability(ValueStream):
                 First_failure_ind = self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
                 start += check_at_a_time
             analysis_indices = np.append(analysis_indices, First_failure_ind)
-
+            print(analysis_indices)
 
         for der_inst in der_list:
             if der_inst.being_sized():
@@ -380,7 +382,7 @@ class Reliability(ValueStream):
         solution = not sizing
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not sizing):
-                total_pv_max += der_inst.maximum_generation(None)
+                total_pv_max += der_inst.maximum_generation(label_selection='Reliability')
                 ess_properties['pv present'] = True
             if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not sizing):
                 total_dg_max += der_inst.max_power_out()
@@ -395,8 +397,8 @@ class Reliability(ValueStream):
         if self.n_2:
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))
-        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
-        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max), decimals=5)
+        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5) #, np.around(
+        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max),decimals=5)  #np.around(), decimals=5)
 
         return generation, total_pv_max, ess_properties, demand_left, reliability_check
 

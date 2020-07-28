@@ -1,10 +1,4 @@
 <schema version="1.0.0">
-	<Deferral type="service" max_num="1">
-		<planned_load_limit cba="n" min="0.0" type="float" />
-		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
-		<growth cba="n" max="100.0" min="0.0" type="float" />
-		<price cba="y" min="0.0" type="float" />
-	</Deferral>
 	<RA type="service" max_num="1">
 		<growth max="100" min="0" type="float" />
 		<days max="366" min="0" type="int" />

@@ -12,17 +12,13 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import logging
 from storagevet.Finances import Financial
 import numpy as np
 import copy
 import pandas as pd
-
+from ErrorHandelling import *
 
 SATURDAY = 5
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
 
 
 class CostBenefitAnalysis(Financial):
@@ -45,6 +41,7 @@ class CostBenefitAnalysis(Financial):
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
         self.report_annualized_values = False
+        self.equipment_lifetime_report = pd.DataFrame()
 
         self.Scenario = financial_params['CBA']['Scenario']
         self.Finance = financial_params['CBA']['Finance']
@@ -138,7 +135,7 @@ class CostBenefitAnalysis(Financial):
         """
         rerun_opt_on = []
         for der_instance in der_list:
-            yrs_failed = der_instance.set_failure_years(start_year, end_year)
+            yrs_failed = der_instance.set_failure_years(end_year)
             if not der_instance.replaceable:
                 rerun_opt_on += yrs_failed
         # increase the year by 1 (this will be the years that the operational DER mix will change)
@@ -192,6 +189,8 @@ class CostBenefitAnalysis(Financial):
         """
         self.initiate_cost_benefit_analysis(technologies, value_streams)
         super().calculate(self.ders, self.value_streams, results, start_year, end_year, opt_years)
+        tech_list = [item for sublist in [list(instance_dict.values()) for instance_dict in self.ders.values()] for item in sublist]
+        self.create_equipment_lifetime_report(tech_list)
 
     def initiate_cost_benefit_analysis(self, technologies, valuestreams):
         """ Prepares all the attributes in this instance of cbaDER with all the evaluation values.
@@ -257,9 +256,9 @@ class CostBenefitAnalysis(Financial):
             for key, value in evaluation_dict.items():
                 try:
                     setattr(param_object, key, value)
-                    print('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value)) if verbose else None
+                    TellUser.debug('attribute (' + param_object.name + ': ' + key + ') set: ' + str(value))
                 except KeyError:
-                    print('No attribute ' + param_object.name + ': ' + key) if verbose else None
+                    TellUser.debug('No attribute ' + param_object.name + ': ' + key)
 
     def proforma_report(self, technologies, valuestreams, results, start_year, end_year, opt_years):
         """ Calculates and returns the proforma
@@ -279,6 +278,7 @@ class CostBenefitAnalysis(Financial):
         proforma_wo_yr_net = proforma.iloc[:, :-1]
         proforma = self.replacement_costs(proforma_wo_yr_net, technologies, end_year)
         proforma = self.zero_out_dead_der_costs(proforma, technologies, end_year)
+        proforma = self.update_capital_cost_construction_year(proforma, technologies)
         der_eol = self.calculate_end_of_life_value(proforma, technologies, start_year, end_year)
         # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
@@ -335,6 +335,23 @@ class CostBenefitAnalysis(Financial):
                 if end_year > last_operating_year:
                     column_mask = proforma.columns.str.contains(der_isnt.unique_tech_id(), regex=False)
                     proforma.loc[last_operating_year + 1:, column_mask] = 0
+        return proforma
+
+    @staticmethod
+    def update_capital_cost_construction_year(proforma, technologies):
+        """ Determines years of the project that a DER is past its expected lifetime, then
+        zeros out the costs for those years (for each DER in the project)
+
+        Args:
+            proforma:
+            technologies:
+
+        Returns: updated proforma
+
+        """
+        for der_isnt in technologies:
+            capex_df = der_isnt.put_capital_cost_on_construction_year(proforma.index)
+            proforma.update(capex_df)
         return proforma
 
     @staticmethod
@@ -448,3 +465,14 @@ class CostBenefitAnalysis(Financial):
         lifetime_discounted_cost = cost_benefit.loc['Lifetime Present Value', 'Cost ($)']
         lifetime_discounted_benefit = cost_benefit.loc['Lifetime Present Value', 'Benefit ($)']
         return lifetime_discounted_cost/lifetime_discounted_benefit
+
+    def create_equipment_lifetime_report(self, der_lst):
+        """
+
+        Args:
+            der_lst:
+
+        """
+        data = {der_inst.unique_tech_id(): [der_inst.construction_year, der_inst.operation_year, der_inst.last_operation_year]
+                for der_inst in der_lst}
+        self.equipment_lifetime_report = pd.DataFrame(data, index=['Beginning of Life', 'Operation Begins', 'End of Life'])

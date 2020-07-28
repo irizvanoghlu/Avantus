@@ -16,6 +16,7 @@ import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+from ErrorHandelling import *
 import numpy as np
 
 
@@ -156,6 +157,17 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         if variable_cost is not None:
             self.fixed_om = fixed_om_cost
 
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
+        if self.n_min > self.n_max:
+            TellUser.error(f'{self.unique_tech_id()} must have n_min < n_max')
+            return True
+        return False
+
     def replacement_cost(self):
         """
 
@@ -164,3 +176,13 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         """
         return np.dot(self.replacement_cost_function, [self.number_of_generators(), self.discharge_capacity()])
 
+    def max_p_schedule_down(self):
+        # ability to provide regulation down through discharging less
+        if isinstance(self.n, cvx.Variable):
+            if not self.n_max:
+                max_discharging_range = (self.n_max * self.rated_power) - self.p_min
+            else:
+                max_discharging_range = np.infty
+        else:
+            max_discharging_range = self.max_power_out() - self.p_min
+        return max_discharging_range

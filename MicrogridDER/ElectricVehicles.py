@@ -298,6 +298,8 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         """
         # create generic technology object
         DER.__init__(self, 'ElectricVehicle2', 'Partially controllable electric vehicles', params)
+        Sizing.__init__(self)
+        DERExtension.__init__(self, params)
         # input params
         # note: these should never be changed in simulation (i.e from degradation)
 

@@ -387,7 +387,7 @@ class ParamsDER(Params):
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 
-    def load_technology(self):
+    def load_technology(self, names_list=None):
         """ Interprets user given data and prepares it for each technology.
 
         """

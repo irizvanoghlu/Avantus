@@ -123,8 +123,8 @@
 		<ccost cba="y" min="0.0" type="float" />
 		<fixed_om cba="y" min="0.0" type="float" />
 		<!--		cba terms -->
-		<construction_date cba="n" type="Timestamp" />
-		<operation_date cba="n" type="Timestamp" />
+		<construction_year cba="n" type="Period" />
+		<operation_year cba="n" type="Period" />
 		<decommissioning_cost cba="n" min="0.0" type="float" />
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />
@@ -147,8 +147,8 @@
 		<nsr_response_time min="0" type="int" />
 		<sr_response_time min="0" type="int" />
 		<startup_time cba="n" min="0" type="int" />
-		<construction_date cba="n" type="Timestamp" />
-		<operation_date cba="n" type="Timestamp" />
+		<construction_year cba="n" type="Period" />
+		<operation_year cba="n" type="Period" />
 		<decommissioning_cost cba="n" min="0.0" type="float" />
 		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
 		<expected_lifetime cba="n" type="int" />

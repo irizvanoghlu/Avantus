@@ -58,6 +58,11 @@ class MicrogridScenario(Scenario):
 
         """
         Scenario.__init__(self, input_tree)
+        
+        self.technology_inputs_map.update({
+            'ElectricVehicle1': input_tree.ElectricVehicle1,
+            'ElectricVehicle2': input_tree.ElectricVehicle2
+        })        
 
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
 
@@ -76,6 +81,8 @@ class MicrogridScenario(Scenario):
             'ElectricVehicle1': ElectricVehicle1,
             'ElectricVehicle2': ElectricVehicle2
         }
+        
+
 
         value_stream_class_map = {
             'Deferral': Deferral,

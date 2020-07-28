@@ -128,8 +128,7 @@ class ParamsDER(Params):
         super().__init__()
         self.Reliability = self.read_and_validate('Reliability')  # Value Stream
         self.Load = self.read_and_validate('ControllableLoad')  # DER
-        self.ElectricVehicle1 = self.read_and_validate('ElectricVehicle1')
-        self.ElectricVehicle2 = self.read_and_validate('ElectricVehicle2')
+
 
     @classmethod
     def bad_active_combo(cls):
@@ -167,6 +166,7 @@ class ParamsDER(Params):
         return template
 
     @classmethod
+
     def read_and_validate_evaluation(cls, name):
         """ Read data from valuation XML file
 
@@ -407,14 +407,10 @@ class ParamsDER(Params):
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 
-    def load_technology(self, name_lst=None):
+    def load_technology(self):
         """ Interprets user given data and prepares it for each technology.
 
         """
-        time_series = self.Scenario['time_series']
-        dt = self.Scenario['dt']
-        binary = self.Scenario['binary']
-
         def load_ts_limits(ess_inputs, tag, measurement, unit):
             input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']
             ts_max = time_series.get(input_cols[0])
@@ -495,48 +491,7 @@ class ParamsDER(Params):
 
                 load_inputs.update({'dt': self.Scenario['dt'],
                                     'growth': self.Scenario['def_growth']})
-
-        # TECHNOLOGIES THAT ARE DER_VET SPECIFIC
-        names_list = []
-        if self.ElectricVehicle1 is not None:
-            for id_str, ev1_input in self.Battery.items():
-                # max ratings should not be greater than the min rating for power and energy
-                if ev1_input['ch_min_rated'] > ev1_input['ch_max_rated']:
-                    self.record_input_error(f"EV1 #{id_str} ch_max_rated < ch_min_rated. ch_max_rated should be greater than ch_min_rated")
-                if (ev1_input['plugin_time'] > 23) or (ev1_input['plugin_time'] < 0):
-                    self.record_input_error(f"EV1 #{id_str} plug-in time (hour) must be a value between 0 and 23")
-
-                if (ev1_input['plugout_time'] > 23) or (ev1_input['plugout_time'] < 0):
-                    self.record_input_error(f"EV1 #{id_str} plug-out time (hour) must be a value between 0 and 23")
-
-                if ev1_input['ene_target'] < 0:
-                    self.record_input_error(f"EV1 #{id_str} energy target must be nonnegative")
-                # add scenario case parameters to battery parameter dictionary
-
-                # check this code with Halley
-                ev1_input.update({'binary': binary,
-                                  'dt': dt})
-                names_list.append(ev1_input['name'])
-
-        if self.ElectricVehicle2 is not None:
-            for id_str, ev_input in self.ElectricVehicle2.items():
-                # max ratings should not be greater than the min rating for power and energy
-                if (ev_input['max_load_ctrl'] < 0) or (ev_input['max_load_ctrl'] > 1):  # TODO can be done in schema
-                    self.record_input_error(f"EV2 #{id_str} max_load_ctrl is a ratio (between 0 and 1) of EV load that can be relied upon")
-
-                # should we have a check for time series data?
-
-                ev_input.update({'binary': binary,
-                                 'dt': dt})
-                names_list.append(ev_input['name'])
-
-                try:
-                    ev_input.update({'EV_baseline': time_series.loc[:, f'EV fleet/{id_str}'],
-                                     # 'growth': self.Scenario['def_growth'],
-                                     'dt': dt})
-                except KeyError:
-                    self.record_input_error(f"Missing 'EV fleet/{id_str}' from timeseries input. Please include EV load.")
-        super().load_technology(names_list)
+        super().load_technology()
 
     def load_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).

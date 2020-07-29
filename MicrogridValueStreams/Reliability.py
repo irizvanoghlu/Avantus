@@ -133,7 +133,7 @@ class Reliability(ValueStream):
             else:
                 soe = np.repeat(self.soc_init, data_size) * ess_properties['energy rating']
             start = 0
-            check_at_a_time = 900  # note: if this is too large, then you will get a RecursionError
+            check_at_a_time = 500  # note: if this is too large, then you will get a RecursionError
             First_failure_ind=0
             while start == First_failure_ind:
                 First_failure_ind = self.find_first_uncovered(reliability_check, demand_left, ess_properties, soe, start, check_at_a_time)
@@ -382,7 +382,7 @@ class Reliability(ValueStream):
         solution = not sizing
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not sizing):
-                total_pv_max += der_inst.maximum_generation(label_selection='Reliability')
+                total_pv_max += der_inst.maximum_generation() #label_selection='Reliability')
                 ess_properties['pv present'] = True
             if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not sizing):
                 total_dg_max += der_inst.max_power_out()

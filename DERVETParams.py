@@ -272,7 +272,7 @@ class ParamsDER(Params):
         for ts_file in ts_files:
             cls.referenced_data['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
         for md_file in md_files:
-            cls.referenced_data['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
+            cls.referenced_data['monthly_data'][md_file] = cls.process_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
         for ct_file in ct_files:
             cls.referenced_data['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
         for yr_file in yr_files:
@@ -366,7 +366,7 @@ class ParamsDER(Params):
         scenario['frequency'] = freq
         if 'time_series_filename' in scenario.keys():
             time_series = cls.referenced_data['time_series'][scenario['time_series_filename']]
-            scenario["time_series"] = cls.preprocess_timeseries(time_series, freq)
+            scenario["time_series"] = cls.process_time_series(time_series, freq)
         if 'monthly_data_filename' in scenario.keys():
             scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
 

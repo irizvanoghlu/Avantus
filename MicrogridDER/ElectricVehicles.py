@@ -54,7 +54,8 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         self.capital_cost_function = params['ccost']
 
         self.fixed_om = params['fixed_om']
-        self.incl_binary = params['binary']
+        self.incl_binary = False #params['binary'] #TODO
+        
 
         self.variable_names = {'ene', 'ch', 'uene', 'uch', 'on_c'}
 
@@ -62,6 +63,7 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         self.plugin_times_index = None
         self.plugout_times_index = None
         self.unplugged_index = None
+        
 
     # def charge_capacity(self):
     #     """
@@ -185,9 +187,9 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
     
 
         if self.plugin_time < self.plugout_time: # plugin time and plugout time must be different
-            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) and (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
+            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) * (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
         elif self.plugin_time > self.plugout_time:
-            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) or (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
+            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) | (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
 
         self.plugout_times_index = compute_plugin_index['plugout']
         self.plugin_times_index = compute_plugin_index['plugin']
@@ -203,8 +205,17 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         Returns:
             A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows flexibility to provide other grid services
         """
+        
+ 
         constraint_list = []
-        self.get_active_times(mask.loc[mask,:]) #constructing the array that indicates whether the ev is plugged or not
+        self.get_active_times(mask.loc[mask]) #constructing the array that indicates whether the ev is plugged or not
+        
+        # print(self.plugin_times_index.iloc[0:24])
+        # print(self.plugout_times_index.iloc[0:24])
+        # print(self.unplugged_index.iloc[0:24])
+        # print('Ene target :' + str(self.ene_target))
+        # print('Charging max :' + str(self.ch_max_rated))
+        # print('Charging min :' + str(self.ch_min_rated))
 
         # optimization variables
         ene = self.variables_dict['ene']
@@ -217,25 +228,47 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         constraint_list += [cvx.Zero(ene[self.plugin_times_index])]
 
         # energy evolution generally for every time step
-        constraint_list += [cvx.Zero(ene[1:] - ene[:-1]  - ( self.dt * ch[:-1]) - uene[:-1])]
+        
+        numeric_unplugged_index = pd.Series(range(len(self.unplugged_index)),index = self.unplugged_index.index ).loc[self.unplugged_index]
+        ene_ini_window = 0
+        
+        if numeric_unplugged_index.iloc[0] == 0: # energy evolution for the EV, only during plugged times
+            constraint_list += [cvx.Zero(ene[numeric_unplugged_index.iloc[0]]-ene_ini_window)]
+            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index.iloc[1:])] - ene[list(numeric_unplugged_index.iloc[1:]-1)]  - ( self.dt * ch[list(numeric_unplugged_index.iloc[1:]-1)]) )] #- uene[list(numeric_unplugged_index.iloc[1:]-1)])]
+        else:
+            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index)] - ene[list(numeric_unplugged_index-1)]  - ( self.dt * ch[list(numeric_unplugged_index-1)]) )]#- uene[list(numeric_unplugged_index-1)])]            
+        # constraint_list += [cvx.Zero(ene[1:] - ene[:-1]  - ( self.dt * ch[:-1]) - uene[:-1])]
 
         # energy at plugout times must be greater or equal to energy target
-        constraint_list += [cvx.NonPos(self.ene_target - ene[self.plugout_times_index])]
+            
+        numeric_plugout_time_index =    pd.Series(range(len(self.plugout_times_index)),index = self.plugout_times_index.index ).loc[self.plugout_times_index]
         
-        constraint_list += [cvx.NonPos(ene[self.plugout_times_index])]
-
+        # the next few lines make sure that the state of energy at the end of the chargign period is equal to the target
+        if numeric_plugout_time_index[0] == 0:
+            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index.iloc[1:]-1)]  - ( self.dt * ch[list(numeric_plugout_time_index.iloc[1:]-1)]) )] #- uene[list(numeric_plugout_time_index.iloc[1:]-1)])]
+        else: 
+            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index-1)]  - ( self.dt * ch[list(numeric_plugout_time_index-1)]) )]#- uene[list(numeric_plugout_time_index-1)])]           
+            
+        constraint_list += [cvx.Zero(ene[list(numeric_plugout_time_index)] - self.ene_target) ]
+            
         # constraints on the ch/dis power
-        constraint_list += [cvx.NonPos(ch - (on_c * self.ch_max_rated))]
-        constraint_list += [cvx.NonPos((on_c * self.ch_min_rated) - ch)]
         
+        # make it MILP or not depending on user selection
+        if self.incl_binary:
+
+            constraint_list += [cvx.NonPos(ch - (on_c * self.ch_max_rated))]
+            constraint_list += [cvx.NonPos((on_c * self.ch_min_rated) - ch)]
+        else:
+            constraint_list += [cvx.NonPos(ch - (self.ch_max_rated))]
+            constraint_list += [cvx.NonPos(- ch)]
+       
         # constraints to make sure that the ev does nothing when it is unplugged
-        constraint_list += [cvx.NonPos(on_c[self.unplugged_index])]
-        
-        # constraint_list += [cvx.NonPos(self.ene - self.ene_target])]  Fix this
+        constraint_list += [cvx.NonPos(ch[ ~self.unplugged_index])]
 
         # account for -/+ sub-dt energy -- this is the change in energy that the battery experiences as a result of energy option
-        constraint_list += [cvx.Zero(uene - (uch * self.dt))]
-
+        # constraint_list += [cvx.Zero(uene - (uch * self.dt))]
+        constraint_list += [cvx.Zero((uch))]
+        constraint_list += [cvx.Zero((uene))]
         return constraint_list
 
     def timeseries_report(self):
@@ -279,7 +312,29 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
         return pro_forma
+    def sizing_summary(self):
+        """ Creates the template for sizing df that each DER must fill to report their size.
     
+        Returns: A dictionary describe this DER's size and captial costs.
+    
+        """
+        # template = pd.DataFrame(columns=)
+        sizing_dict = {
+            'DER': np.nan,
+            'Energy Rating (kWh)': np.nan,
+            'Charge Rating (kW)': np.nan,
+            'Discharge Rating (kW)': np.nan,
+            'Round Trip Efficiency (%)': np.nan,
+            'Lower Limit on SOC (%)': np.nan,
+            'Upper Limit on SOC (%)': np.nan,
+            'Duration (hours)': np.nan,
+            'Capital Cost ($)': np.nan,
+            'Capital Cost ($/kW)': np.nan,
+            'Capital Cost ($/kWh)': np.nan,
+            'Power Capacity (kW)': np.nan,
+            'Quantity': 1,
+        }
+        return sizing_dict
 
 class ElectricVehicle2(DER, Sizing, DERExtension):
     """ A general template for storage object
@@ -483,3 +538,26 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
         return pro_forma
+    def sizing_summary(self):
+        """ Creates the template for sizing df that each DER must fill to report their size.
+    
+        Returns: A dictionary describe this DER's size and captial costs.
+    
+        """
+        # template = pd.DataFrame(columns=)
+        sizing_dict = {
+            'DER': np.nan,
+            'Energy Rating (kWh)': np.nan,
+            'Charge Rating (kW)': np.nan,
+            'Discharge Rating (kW)': np.nan,
+            'Round Trip Efficiency (%)': np.nan,
+            'Lower Limit on SOC (%)': np.nan,
+            'Upper Limit on SOC (%)': np.nan,
+            'Duration (hours)': np.nan,
+            'Capital Cost ($)': np.nan,
+            'Capital Cost ($/kW)': np.nan,
+            'Capital Cost ($/kWh)': np.nan,
+            'Power Capacity (kW)': np.nan,
+            'Quantity': 1,
+        }
+        return sizing_dict

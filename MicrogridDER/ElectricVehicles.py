@@ -19,10 +19,7 @@ import pandas as pd
 from storagevet.Technology.DistributedEnergyResource import DER
 from MicrogridDER.DERExtension import DERExtension
 from MicrogridDER.Sizing import Sizing
-
-
-u_logger = logging.getLogger('User')
-e_logger = logging.getLogger('Error')
+from ErrorHandelling import *
 
 
 class ElectricVehicle1(DER, Sizing, DERExtension):
@@ -40,8 +37,9 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters
         """
+        TellUser.debug(f"Initializing ElectricVehicle1")
         # create generic technology object
-        DER.__init__(self, 'ElectricVehicle1', 'Controllable electric vehicles', params)
+        DER.__init__(self, 'ElectricVehicle1', 'Electric Vehicle', params)
         Sizing.__init__(self)
         DERExtension.__init__(self, params)
         self.ene_target = params['ene_target']
@@ -50,12 +48,11 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
 
         self.plugin_time = params['plugin_time']
         self.plugout_time = params['plugout_time']
-        
+
         self.capital_cost_function = params['ccost']
 
         self.fixed_om = params['fixed_om']
-        self.incl_binary = False #params['binary'] #TODO
-        
+        self.incl_binary = False  # params['binary'] #TODO
 
         self.variable_names = {'ene', 'ch', 'uene', 'uch', 'on_c'}
 
@@ -63,7 +60,6 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         self.plugin_times_index = None
         self.plugout_times_index = None
         self.unplugged_index = None
-        
 
     # def charge_capacity(self):
     #     """
@@ -91,8 +87,8 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         self.variables_dict = {
             'ene': cvx.Variable(shape=size, name=self.name + '-ene'),
             'ch': cvx.Variable(shape=size, name=self.name + '-ch'),
-            'uene': cvx.Variable(shape=size, name=self.name + '-uene'),
-            'uch': cvx.Variable(shape=size, name=self.name + '-uch'),
+            'uene': cvx.Variable(shape=size, name=self.name + '-uene'),  # TODO you can switch to parameter, where value == np.zeros(size)  -HN
+            'uch': cvx.Variable(shape=size, name=self.name + '-uch'),  # TODO you can switch to parameter, where value == np.zeros(size)  -HN
             'on_c': cvx.Parameter(shape=size, name=self.name + '-on_c', value=np.ones(size)),
 
         }
@@ -184,17 +180,18 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         compute_plugin_index['plugin'] = compute_plugin_index.index.hour == self.plugin_time
         compute_plugin_index['plugout'] = compute_plugin_index.index.hour == self.plugout_time
         compute_plugin_index['unplugged'] = False
-    
 
-        if self.plugin_time < self.plugout_time: # plugin time and plugout time must be different
-            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) * (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
+        if self.plugin_time < self.plugout_time:  # plugin time and plugout time must be different
+            compute_plugin_index.loc[
+                (compute_plugin_index.index.hour >= self.plugin_time) * (compute_plugin_index.index.hour < self.plugout_time), 'unplugged'] = True
         elif self.plugin_time > self.plugout_time:
-            compute_plugin_index.loc[(compute_plugin_index.index.hour >= self.plugin_time) | (compute_plugin_index.index.hour < self.plugout_time),'unplugged'] = True
+            compute_plugin_index.loc[
+                (compute_plugin_index.index.hour >= self.plugin_time) | (compute_plugin_index.index.hour < self.plugout_time), 'unplugged'] = True
 
         self.plugout_times_index = compute_plugin_index['plugout']
         self.plugin_times_index = compute_plugin_index['plugin']
         self.unplugged_index = compute_plugin_index['unplugged']
-        
+
     def constraints(self, mask):
         """Default build constraint list method. Used by services that do not have constraints.
 
@@ -203,13 +200,13 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
                     in the subs data set
 
         Returns:
-            A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows flexibility to provide other grid services
+            A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows
+            flexibility to provide other grid services
         """
-        
- 
+
         constraint_list = []
-        self.get_active_times(mask.loc[mask]) #constructing the array that indicates whether the ev is plugged or not
-        
+        self.get_active_times(mask.loc[mask])  # constructing the array that indicates whether the ev is plugged or not
+
         # print(self.plugin_times_index.iloc[0:24])
         # print(self.plugout_times_index.iloc[0:24])
         # print(self.unplugged_index.iloc[0:24])
@@ -228,47 +225,51 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         constraint_list += [cvx.Zero(ene[self.plugin_times_index])]
 
         # energy evolution generally for every time step
-        
-        numeric_unplugged_index = pd.Series(range(len(self.unplugged_index)),index = self.unplugged_index.index ).loc[self.unplugged_index]
+
+        numeric_unplugged_index = pd.Series(range(len(self.unplugged_index)), index=self.unplugged_index.index).loc[self.unplugged_index]
         ene_ini_window = 0
-        
-        if numeric_unplugged_index.iloc[0] == 0: # energy evolution for the EV, only during plugged times
-            constraint_list += [cvx.Zero(ene[numeric_unplugged_index.iloc[0]]-ene_ini_window)]
-            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index.iloc[1:])] - ene[list(numeric_unplugged_index.iloc[1:]-1)]  - ( self.dt * ch[list(numeric_unplugged_index.iloc[1:]-1)]) )] #- uene[list(numeric_unplugged_index.iloc[1:]-1)])]
+
+        if numeric_unplugged_index.iloc[0] == 0:  # energy evolution for the EV, only during plugged times
+            constraint_list += [cvx.Zero(ene[numeric_unplugged_index.iloc[0]] - ene_ini_window)]
+            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index.iloc[1:])] - ene[list(numeric_unplugged_index.iloc[1:] - 1)] - (
+                        self.dt * ch[list(numeric_unplugged_index.iloc[1:] - 1)]))]  # - uene[list(numeric_unplugged_index.iloc[1:]-1)])]
         else:
-            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index)] - ene[list(numeric_unplugged_index-1)]  - ( self.dt * ch[list(numeric_unplugged_index-1)]) )]#- uene[list(numeric_unplugged_index-1)])]            
+            constraint_list += [cvx.Zero(ene[list(numeric_unplugged_index)] - ene[list(numeric_unplugged_index - 1)] - (
+                        self.dt * ch[list(numeric_unplugged_index - 1)]))]  # - uene[list(numeric_unplugged_index-1)])]
         # constraint_list += [cvx.Zero(ene[1:] - ene[:-1]  - ( self.dt * ch[:-1]) - uene[:-1])]
 
         # energy at plugout times must be greater or equal to energy target
-            
-        numeric_plugout_time_index =    pd.Series(range(len(self.plugout_times_index)),index = self.plugout_times_index.index ).loc[self.plugout_times_index]
-        
+
+        numeric_plugout_time_index = pd.Series(range(len(self.plugout_times_index)), index=self.plugout_times_index.index).loc[
+            self.plugout_times_index]
+
         # the next few lines make sure that the state of energy at the end of the chargign period is equal to the target
         if numeric_plugout_time_index[0] == 0:
-            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index.iloc[1:]-1)]  - ( self.dt * ch[list(numeric_plugout_time_index.iloc[1:]-1)]) )] #- uene[list(numeric_plugout_time_index.iloc[1:]-1)])]
-        else: 
-            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index-1)]  - ( self.dt * ch[list(numeric_plugout_time_index-1)]) )]#- uene[list(numeric_plugout_time_index-1)])]           
-            
-        constraint_list += [cvx.Zero(ene[list(numeric_plugout_time_index)] - self.ene_target) ]
-            
+            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index.iloc[1:] - 1)] - (
+                        self.dt * ch[list(numeric_plugout_time_index.iloc[1:] - 1)]))]  # - uene[list(numeric_plugout_time_index.iloc[1:]-1)])]
+        else:
+            constraint_list += [cvx.Zero(self.ene_target - ene[list(numeric_plugout_time_index - 1)] - (
+                        self.dt * ch[list(numeric_plugout_time_index - 1)]))]  # - uene[list(numeric_plugout_time_index-1)])]
+
+        constraint_list += [cvx.Zero(ene[list(numeric_plugout_time_index)] - self.ene_target)]
+
         # constraints on the ch/dis power
-        
+
         # make it MILP or not depending on user selection
         if self.incl_binary:
-
             constraint_list += [cvx.NonPos(ch - (on_c * self.ch_max_rated))]
             constraint_list += [cvx.NonPos((on_c * self.ch_min_rated) - ch)]
         else:
-            constraint_list += [cvx.NonPos(ch - (self.ch_max_rated))]
+            constraint_list += [cvx.NonPos(ch - self.ch_max_rated)]
             constraint_list += [cvx.NonPos(- ch)]
-       
+
         # constraints to make sure that the ev does nothing when it is unplugged
-        constraint_list += [cvx.NonPos(ch[ ~self.unplugged_index])]
+        constraint_list += [cvx.NonPos(ch[~self.unplugged_index])]
 
         # account for -/+ sub-dt energy -- this is the change in energy that the battery experiences as a result of energy option
         # constraint_list += [cvx.Zero(uene - (uch * self.dt))]
-        constraint_list += [cvx.Zero((uch))]
-        constraint_list += [cvx.Zero((uene))]
+        constraint_list += [cvx.Zero(uch)]  # TODO: you can set the variable to be parameters instead  -HN
+        constraint_list += [cvx.Zero(uene)]  # TODO: you can set the variable to be parameters instead  -HN
         return constraint_list
 
     def timeseries_report(self):
@@ -312,6 +313,7 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
         return pro_forma
+
     def sizing_summary(self):
         """ Creates the template for sizing df that each DER must fill to report their size.
     
@@ -336,6 +338,7 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         }
         return sizing_dict
 
+
 class ElectricVehicle2(DER, Sizing, DERExtension):
     """ A general template for storage object
 
@@ -351,15 +354,17 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters
         """
+        TellUser.debug(f"Initializing ElectricVehicle2")
         # create generic technology object
-        DER.__init__(self, 'ElectricVehicle2', 'Partially controllable electric vehicles', params)
+        DER.__init__(self, 'ElectricVehicle2', 'Electric Vehicle', params)
         Sizing.__init__(self)
         DERExtension.__init__(self, params)
         # input params
         # note: these should never be changed in simulation (i.e from degradation)
 
-        self.max_load_ctrl = params['Max_load_ctrl']/100.0  # maximum amount of baseline EV load that can be shed as a percentage of the original load
-#        self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA, deferral) as a percentage of the baseline load
+        self.max_load_ctrl = params[
+                                 'Max_load_ctrl'] / 100.0  # maximum amount of baseline EV load that can be shed as a percentage of the original load
+        # self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA) as a percentage of the baseline load
         self.lost_load_cost = params['lost_load_cost']
         self.incl_binary = params['binary']
         self.EV_load_TS = params['EV_baseline']
@@ -367,7 +372,7 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         self.capital_cost_function = params['ccost']
 
         self.fixed_om = params['fixed_om']
-        
+
         self.variable_names = {'ch'}
 
     def qualifying_capacity(self, event_length):
@@ -435,7 +440,7 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         
 
         """
-        return self.variables_dict['ch']-(1-self.max_load_ctrl)*self.EV_load_TS[mask]
+        return self.variables_dict['ch'] - (1 - self.max_load_ctrl) * self.EV_load_TS[mask]
 
     def get_charge_down_schedule(self, mask):
         """ the amount of charging power in the up direction (pulling power down from the grid) that
@@ -466,8 +471,8 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         ch = self.variables_dict['ch']
         costs = {
             self.name + ' fixed_om': self.fixed_om * annuity_scalar,
-            self.name + ' lost_load_cost': cvx.sum( self.EV_load_TS[mask] - ch)*self.lost_load_cost # added to account for lost load
-            
+            self.name + ' lost_load_cost': cvx.sum(self.EV_load_TS[mask] - ch) * self.lost_load_cost  # added to account for lost load
+
         }
         # add startup objective costs
 
@@ -481,19 +486,19 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
                     in the subs data set
 
         Returns:
-            A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows flexibility to provide other grid services
+            A list of constraints that corresponds the EV requirement to collect the required energy to operate. It also allows
+            flexibility to provide other grid services
         """
         constraint_list = []
-        size = int(np.sum(mask))
 
         # optimization variables
 
         ch = self.variables_dict['ch']
         # uch = self.variables_dict['uch']
-       
+
         # constraints on the ch/dis power
         constraint_list += [cvx.NonPos(ch - self.EV_load_TS[mask])]
-        constraint_list += [cvx.NonPos((1-self.max_load_ctrl)*self.EV_load_TS[mask]-ch)]
+        constraint_list += [cvx.NonPos((1 - self.max_load_ctrl) * self.EV_load_TS[mask] - ch)]
 
         # the constraint below limits energy throughput and total discharge to less than or equal to
         # (number of cycles * energy capacity) per day, for technology warranty purposes
@@ -538,6 +543,7 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
             pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
 
         return pro_forma
+
     def sizing_summary(self):
         """ Creates the template for sizing df that each DER must fill to report their size.
     

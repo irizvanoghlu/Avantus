@@ -16,6 +16,7 @@ import pandas as pd
 from storagevet.POI import POI
 import cvxpy as cvx
 from ErrorHandelling import *
+import numpy as np
 
 
 class MicrogridPOI(POI):
@@ -85,3 +86,93 @@ class MicrogridPOI(POI):
         sizing_df = pd.DataFrame(rows)
         sizing_df.set_index('DER')
         return sizing_df
+
+    def get_state_of_system(self, mask):
+        """ POI method to measure the state of POI depending on available types of DERs. used in SET_UP_OPTIMIZATION
+        Builds extends StorageVET's method to take into account types of technologies added by DERVET
+
+        Args:
+            mask (DataFrame): DataFrame of booleans used, the same length as time_series. The value is true if the
+                        corresponding column in time_series is included in the data to be optimized.
+
+        Returns:
+            aggregation of loads
+            aggregation of generation from variable resources
+            aggregation of generation from other sources
+            total net power from ESSs
+            total state of energy stored in the system
+            aggregation of all the power flows into the POI
+            aggregation of all the power flows out if the POI
+        """
+        opt_var_size = sum(mask)
+        load_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+        var_gen_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+        gen_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
+        tot_net_ess = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
+        total_soe = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
+        agg_power_flows_in = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+        agg_power_flows_out = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+
+        for der_instance in self.active_ders:
+            # add the state of the der's power over time & stored energy over time to system's
+            agg_power_flows_in += der_instance.get_charge(mask)
+            agg_power_flows_out += der_instance.get_discharge(mask)
+
+            if der_instance.technology_type == 'Load':
+                load_sum += der_instance.get_charge(mask)
+            if der_instance.technology_type == 'Electric Vehicle':
+                load_sum += der_instance.get_charge(mask)
+                total_soe += der_instance.get_state_of_energy(mask)
+
+            if der_instance.technology_type == 'Energy Storage System':
+                total_soe += der_instance.get_state_of_energy(mask)
+                tot_net_ess += der_instance.get_net_power(mask)
+            if der_instance.technology_type == 'Generator':
+                gen_sum += der_instance.get_discharge(mask)
+            if der_instance.technology_type == 'Intermittent Resource':
+                var_gen_sum += der_instance.get_discharge(mask)
+        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out
+
+    def merge_reports(self, index):
+        """ Collects and merges the optimization results for all DERs into
+        Builds extends StorageVET's method to take into account types of technologies added by DERVET
+
+        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
+            pertaining to this instance
+
+        """
+        results = pd.DataFrame(index=index)
+        monthly_data = pd.DataFrame()
+
+        # initialize all the data columns that will ALWAYS be present in our results
+        results.loc[:, 'Total Original Load (kW)'] = 0
+        results.loc[:, 'Total Load (kW)'] = 0
+        results.loc[:, 'Total Generation (kW)'] = 0
+        results.loc[:, 'Total Storage Power (kW)'] = 0
+        results.loc[:, 'Aggregated State of Energy (kWh)'] = 0
+
+        for der_instance in self.der_list:
+            report_df = der_instance.timeseries_report()
+            results = pd.concat([report_df, results], axis=1)
+            if der_instance.technology_type in ['Generator', 'Intermittent Resource']:
+                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Generation (kW)']
+            if der_instance.technology_type == 'Energy Storage System':
+                results.loc[:, 'Total Storage Power (kW)'] += results[f'{der_instance.unique_tech_id()} Power (kW)']
+                results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']
+            if der_instance.technology_type == 'Load':
+                results.loc[:, 'Total Original Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
+                if der_instance.tag == "ControllableLoad":
+                    results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Load (kW)']
+                else:
+                    results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
+            if der_instance.technology_type == 'Electric Vehicle':
+                results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Charge (kW)']
+                if der_instance.tag == 'ElectricVehicle1':
+                    results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']
+            report = der_instance.monthly_report()
+            monthly_data = pd.concat([monthly_data, report], axis=1, sort=False)
+            # assumes the orginal net load only does not contain the Storage system
+
+            # net load is the load see at the POI
+            results.loc[:, 'Net Load (kW)'] = results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - results.loc[:, 'Total Storage Power (kW)']
+        return results, monthly_data

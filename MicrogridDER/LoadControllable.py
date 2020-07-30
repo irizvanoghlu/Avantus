@@ -17,6 +17,7 @@ import numpy as np
 from storagevet.Technology.Load import Load
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+from ErrorHandelling import *
 
 
 class ControllableLoad(Load, Sizing, DERExtension):
@@ -30,6 +31,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters for initialization
         """
+        TellUser.debug(f"Initializing {__name__}")
         # create generic technology object
         Load.__init__(self, params)
         DERExtension.__init__(self, params)

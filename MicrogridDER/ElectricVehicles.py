@@ -363,7 +363,7 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         # note: these should never be changed in simulation (i.e from degradation)
 
         self.max_load_ctrl = params[
-                                 'Max_load_ctrl'] / 100.0  # maximum amount of baseline EV load that can be shed as a percentage of the original load
+                                 'max_load_ctrl'] / 100.0  # maximum amount of baseline EV load that can be shed as a percentage of the original load
         # self.qualifying_cap = params['qualifying_cap'] #capacity that can be used for 'capacity' services (DR, RA) as a percentage of the baseline load
         self.lost_load_cost = params['lost_load_cost']
         self.incl_binary = params['binary']
@@ -471,7 +471,7 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         ch = self.variables_dict['ch']
         costs = {
             self.name + ' fixed_om': self.fixed_om * annuity_scalar,
-            self.name + ' lost_load_cost': cvx.sum(self.EV_load_TS[mask] - ch) * self.lost_load_cost  # added to account for lost load
+            self.name + ' lost_load_cost': cvx.sum(self.EV_load_TS[mask].values - ch) * self.lost_load_cost  # added to account for lost load
 
         }
         # add startup objective costs
@@ -497,8 +497,8 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         # uch = self.variables_dict['uch']
 
         # constraints on the ch/dis power
-        constraint_list += [cvx.NonPos(ch - self.EV_load_TS[mask])]
-        constraint_list += [cvx.NonPos((1 - self.max_load_ctrl) * self.EV_load_TS[mask] - ch)]
+        constraint_list += [cvx.NonPos(ch - self.EV_load_TS[mask].values)]
+        constraint_list += [cvx.NonPos((1 - self.max_load_ctrl) * self.EV_load_TS[mask].values - ch)]
 
         # the constraint below limits energy throughput and total discharge to less than or equal to
         # (number of cycles * energy capacity) per day, for technology warranty purposes

@@ -122,7 +122,7 @@ class MicrogridPOI(POI):
                 load_sum += der_instance.get_charge(mask)
             if der_instance.technology_type == 'Electric Vehicle':
                 load_sum += der_instance.get_charge(mask)
-                total_soe += der_instance.get_state_of_energy(mask)
+                # total_soe += der_instance.get_state_of_energy(mask)
 
             if der_instance.technology_type == 'Energy Storage System':
                 total_soe += der_instance.get_state_of_energy(mask)

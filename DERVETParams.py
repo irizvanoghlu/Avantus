@@ -126,6 +126,7 @@ class ParamsDER(Params):
         self.Reliability = self.read_and_validate('Reliability')  # Value Stream
         self.Load = self.read_and_validate('ControllableLoad')  # DER
 
+
     @classmethod
     def bad_active_combo(cls):
         """ Based on what the user has indicated as active (and what the user has not), predict whether or not
@@ -163,6 +164,7 @@ class ParamsDER(Params):
         return template
 
     @classmethod
+
     def read_and_validate_evaluation(cls, name):
         """ Read data from valuation XML file
 
@@ -385,7 +387,7 @@ class ParamsDER(Params):
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 
-    def load_technology(self):
+    def load_technology(self, names_list=None):
         """ Interprets user given data and prepares it for each technology.
 
         """

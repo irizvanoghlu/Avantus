@@ -18,6 +18,7 @@ from MicrogridDER.CAES import CAES
 from MicrogridDER.PV import PV
 from MicrogridDER.ICE import ICE
 from MicrogridDER.LoadControllable import ControllableLoad
+from MicrogridDER.ElectricVehicles import ElectricVehicle1, ElectricVehicle2
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
 from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
 from storagevet.ValueStreams.NonspinningReserve import NonspinningReserve
@@ -53,6 +54,11 @@ class MicrogridScenario(Scenario):
 
         """
         Scenario.__init__(self, input_tree)
+        
+        self.technology_inputs_map.update({
+            'ElectricVehicle1': input_tree.ElectricVehicle1,
+            'ElectricVehicle2': input_tree.ElectricVehicle2
+        })        
 
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
 
@@ -67,8 +73,12 @@ class MicrogridScenario(Scenario):
             'Battery': Battery,
             'PV': PV,
             'ICE': ICE,
-            'Load': ControllableLoad
+            'Load': ControllableLoad,
+            'ElectricVehicle1': ElectricVehicle1,
+            'ElectricVehicle2': ElectricVehicle2
         }
+        
+
 
         value_stream_class_map = {
             'Deferral': Deferral,

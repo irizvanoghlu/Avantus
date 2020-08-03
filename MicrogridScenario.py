@@ -124,6 +124,12 @@ class MicrogridScenario(Scenario):
         if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
             return
 
+        # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
+        num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
+        if num_ess > 1:
+            TellUser.error("Multiple ESS sizing with this reliability module is not implemented yet.")
+            raise ArithmeticError('See dervet.log for more information.')
+
         der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
         self.poi.der_list = der_list
 
@@ -194,7 +200,7 @@ class MicrogridScenario(Scenario):
         """
         error = False
         # make sure the optimization horizon is the whole year
-        if self.n != 'year':
+        if self.n != 'year' and 'Reliability' not in self.service_agg.value_streams.keys():
             TellUser.error('Trying to size without setting the optimization window to \'year\'')
             error = True
         # any wholesale markets active?

@@ -21,12 +21,11 @@ import numpy as np
 import cvxpy as cvx
 import pandas as pd
 import time
-import logging
 import random
+from ErrorHandelling import *
 import copy
 import sys
 
-u_logger = logging.getLogger('User')
 DEBUG = False
 
 
@@ -224,9 +223,9 @@ class Reliability(ValueStream):
 
         """
         df_dict = {}
-        u_logger.info('Starting load coverage calculation. This may take a while.')
+        TellUser.info('Starting load coverage calculation. This may take a while.')
         df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list,time_series_data, technology_summary)
-        u_logger.info('Finished load coverage calculation.')
+        TellUser.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
         if not self.post_facto_only:
             self.contribution_summary(technology_summary, time_series_data)
@@ -328,7 +327,7 @@ class Reliability(ValueStream):
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 
         end = time.time()
-        u_logger.info(f'Critical Load Coverage Curve overhead time: {end - start}')
+        TellUser.info(f'Critical Load Coverage Curve overhead time: {end - start}')
 
         # 2) simulate outage starting on every timestep
         start = time.time()
@@ -359,7 +358,7 @@ class Reliability(ValueStream):
         outage_coverage = {'Outage Length (hrs)': np.arange(self.dt, self.max_outage_duration + self.dt, self.dt),
                            'Load Coverage Probability (%)': load_coverage_prob}
         end = time.time()
-        u_logger.info(f'Critical Load Coverage Curve calculation time: {end - start}')
+        TellUser.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         lcpc_df = pd.DataFrame(outage_coverage)
         lcpc_df.set_index('Outage Length (hrs)')
         return lcpc_df

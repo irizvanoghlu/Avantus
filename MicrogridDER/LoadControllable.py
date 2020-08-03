@@ -17,6 +17,7 @@ import numpy as np
 from storagevet.Technology.Load import Load
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+from ErrorHandelling import *
 
 
 class ControllableLoad(Load, Sizing, DERExtension):
@@ -30,6 +31,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters for initialization
         """
+        TellUser.debug(f"Initializing {__name__}")
         # create generic technology object
         Load.__init__(self, params)
         Sizing.__init__(self)
@@ -263,3 +265,9 @@ class ControllableLoad(Load, Sizing, DERExtension):
             'Duration (hours)': self.duration
         }
         return sizing_results
+
+    def max_p_schedule_down(self):
+        # ability to provide regulation down through discharging less
+        if not self.duration:
+            return super().max_p_schedule_down()
+        return self.rated_power

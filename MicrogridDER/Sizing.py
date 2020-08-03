@@ -11,6 +11,7 @@ __maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
+from ErrorHandelling import *
 import numpy as np
 import pandas as pd
 import cvxpy as cvx
@@ -23,6 +24,7 @@ class Sizing:
     """
 
     def __init__(self):
+        TellUser.debug(f"Initializing {__name__}")
         self.size_constraints = []
 
     def being_sized(self):
@@ -39,6 +41,7 @@ class Sizing:
         Returns: A dictionary describe this DER's size and captial costs.
 
         """
+        # template = pd.DataFrame(columns=)
         # sizing_dict = {
         #     'DER': np.nan,
         #     'Energy Rating (kWh)': np.nan,
@@ -55,6 +58,29 @@ class Sizing:
         #     'Quantity': 1,
         # }
         # return sizing_dict
+
+    def sizing_error(self):
+        """
+
+        Returns: True if there is an input error
+
+        """
+        return False
+
+    def max_p_schedule_down(self):
+        return 0
+
+    def max_p_schedule_up(self):
+        return self.max_p_schedule_down()
+
+    def is_discharge_sizing(self):
+        return self.being_sized()
+
+    def is_power_sizing(self):
+        return self.being_sized()
+
+    def max_power_defined(self):
+        return True
 
     # def sizing_optimization(self, datetimes, der_list, initial_soc, verbose=True):
     #     """ Sets up sizing optimization.

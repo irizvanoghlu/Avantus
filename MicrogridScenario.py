@@ -18,6 +18,7 @@ from MicrogridDER.CAES import CAES
 from MicrogridDER.PV import PV
 from MicrogridDER.ICE import ICE
 from MicrogridDER.LoadControllable import ControllableLoad
+from MicrogridDER.ElectricVehicles import ElectricVehicle1, ElectricVehicle2
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
 from storagevet.ValueStreams.FrequencyRegulation import FrequencyRegulation
 from storagevet.ValueStreams.NonspinningReserve import NonspinningReserve
@@ -54,6 +55,11 @@ class MicrogridScenario(Scenario):
         """
         Scenario.__init__(self, input_tree)
 
+        self.technology_inputs_map.update({
+            'ElectricVehicle1': input_tree.ElectricVehicle1,
+            'ElectricVehicle2': input_tree.ElectricVehicle2
+        })
+
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
 
         TellUser.debug("ScenarioSizing initialized ...")
@@ -67,8 +73,12 @@ class MicrogridScenario(Scenario):
             'Battery': Battery,
             'PV': PV,
             'ICE': ICE,
-            'Load': ControllableLoad
+            'Load': ControllableLoad,
+            'ElectricVehicle1': ElectricVehicle1,
+            'ElectricVehicle2': ElectricVehicle2
         }
+
+
 
         value_stream_class_map = {
             'Deferral': Deferral,
@@ -117,6 +127,23 @@ class MicrogridScenario(Scenario):
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)
 
+    def reliability_based_sizing_module(self):
+        """ runs the reliability based sizing module if the correct combination of inputs allows/
+        indicates to run it.
+
+        """
+        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
+            return
+
+        # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
+        num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
+        if num_ess > 1:
+            TellUser.error("Multiple ESS sizing with this reliability module is not implemented yet.")
+            raise ArithmeticError('See dervet.log for more information.')
+
+        der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
+        self.poi.der_list = der_list
+
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
 
@@ -147,7 +174,7 @@ class MicrogridScenario(Scenario):
             # drop any ders that are not operational
             self.poi.grab_active_ders(sub_index)
             if not len(self.poi.active_ders):
-                return True
+                continue
 
             # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.active_ders:
@@ -184,7 +211,7 @@ class MicrogridScenario(Scenario):
         """
         error = False
         # make sure the optimization horizon is the whole year
-        if self.n != 'year':
+        if self.n != 'year' and 'Reliability' not in self.service_agg.value_streams.keys():
             TellUser.error('Trying to size without setting the optimization window to \'year\'')
             error = True
         # any wholesale markets active?

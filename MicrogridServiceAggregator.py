@@ -16,6 +16,7 @@ class MicrogridServiceAggregator(ServiceAggregator):
     into energy markets
 
     """
+
     def post_facto_reliability_only(self):
         """
 

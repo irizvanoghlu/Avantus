@@ -17,6 +17,7 @@ import numpy as np
 from storagevet.Technology.Load import Load
 from MicrogridDER.Sizing import Sizing
 from MicrogridDER.DERExtension import DERExtension
+from ErrorHandelling import *
 
 
 class ControllableLoad(Load, Sizing, DERExtension):
@@ -30,8 +31,10 @@ class ControllableLoad(Load, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters for initialization
         """
+        TellUser.debug(f"Initializing {__name__}")
         # create generic technology object
         Load.__init__(self, params)
+        Sizing.__init__(self)
         DERExtension.__init__(self, params)
         Sizing.__init__(self)
 
@@ -190,7 +193,7 @@ class ControllableLoad(Load, Sizing, DERExtension):
         else:
             return super().get_state_of_energy(mask)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """Default build constraint list method. Used by services that do not have constraints.
 
         Args:

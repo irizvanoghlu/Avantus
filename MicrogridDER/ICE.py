@@ -42,7 +42,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         # create generic technology object
         InternalCombustionEngine.ICE.__init__(self, params)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -128,6 +128,12 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
 
         """
         return self.n_min != self.n_max
+
+    def set_size(self):
+        self.n =self.n.value
+        self.n_min = self.n
+        self.n_max = self.n
+        return
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

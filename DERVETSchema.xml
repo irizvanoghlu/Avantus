@@ -107,6 +107,54 @@
 		<acr cba="n" max="100.0" min="0.0" type="float" />
 		<ter cba="n" max="100.0" min="0.0" type="float" />
 	</PV>
+	<ElectricVehicle1 type="load">
+		<name cba="n" type="string" />
+		<ch_min_rated cba="n" min="0.0" type="float" />
+		<ch_max_rated cba="n" min="0.0" type="float" />
+		<ene_target cba="n" min="0.0" type="float" />
+		<plugin_time min="0" max="23" type="int" />
+		<plugout_time min="0" max="23" type="int" />
+		<ccost cba="y" min="0.0" type="float" />
+		<fixed_om cba="y" min="0.0" type="float" />
+		<!--		cba terms -->
+		<construction_year cba="n" type="Period" />
+		<operation_year cba="n" type="Period" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceable type="bool" allowed_values="1|0"/>
+		<rcost min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ElectricVehicle1>
+	<ElectricVehicle2 type="load">
+		<name cba="n" type="string" />
+		<lost_load_cost cba="n" min="0.0" type="float" />
+		<ccost cba="y" min="0.0" type="float" />
+		<fixed_om cba="y" min="0.0" type="float" />
+		<max_load_ctrl min="0" max="100" type="int" />
+		<!--		cba terms -->
+		<nsr_response_time min="0" type="int" />
+		<sr_response_time min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+		<construction_year cba="n" type="Period" />
+		<operation_year cba="n" type="Period" />
+		<decommissioning_cost cba="n" min="0.0" type="float" />
+		<salvage_value cba="n" allowed_values="sunk cost|linear salvage value|BOUND" min="0" type="string/int" />
+		<expected_lifetime cba="n" type="int" />
+		<replaceable type="bool" allowed_values="1|0"/>
+		<rcost min="0.0" type="float" />
+		<acr cba="n" max="100.0" min="0.0" type="float" />
+		<ter cba="n" max="100.0" min="0.0" type="float" />
+		<!--		all DERs have these inputs-->
+		<nsr_response_time cba="n" min="0" type="int" />
+		<sr_response_time cba="n" min="0" type="int" />
+		<startup_time cba="n" min="0" type="int" />
+	</ElectricVehicle2>
 	<ICE type="generator">
 		<name cba="n" type="string" />
 		<nsr_response_time cba="n" min="0" type="int" />

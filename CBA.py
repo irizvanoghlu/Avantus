@@ -89,7 +89,7 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 shortest_lifetime = min(der_instance.expected_lifetime, shortest_lifetime)
                 if der_instance.being_sized():
-                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
+                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==2
             return project_start_year + shortest_lifetime-1
@@ -99,7 +99,7 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
-                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
+                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==3
             return project_start_year + longest_lifetime-1
@@ -107,14 +107,14 @@ class CostBenefitAnalysis(Financial):
         if self.horizon_mode == 4:
             self.report_annualized_values = True
             if len(der_list) > 1:
-                e_logger.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
+                TellUser.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(year=0, freq='y')
             else:
                 # require that e < d
                 only_tech = der_list[0]
                 if only_tech.escalation_rate >= self.npv_discount_rate:
-                    e_logger.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
+                    TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
                                    f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
                     return pd.Period(year=0, freq='y')
                 return project_start_year + only_tech.expected_lifetime-1

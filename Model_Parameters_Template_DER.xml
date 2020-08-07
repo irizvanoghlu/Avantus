@@ -614,6 +614,134 @@
             <Sensitivity_Parameters>nan</Sensitivity_Parameters>
         </ter>
     </PV>
+    <PV active="no" id="2">
+        <name analysis="no">
+            <Coupled>nan</Coupled>
+            <Value>solar1</Value>
+            <Type>string</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </name>
+        <curtail analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>bool</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </curtail>
+        <startup_time analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>int</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </startup_time>
+        <inv_max analysis="no">
+            <Coupled>None</Coupled>
+            <Value>3000</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </inv_max>
+        <loc analysis="no">
+            <Coupled>None</Coupled>
+            <Value>ac</Value>
+            <Type>string</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </loc>
+        <growth analysis="no">
+            <Coupled>None</Coupled>
+            <Value>5</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </growth>
+        <ccost_kW analysis="no">
+            <Coupled>None</Coupled>
+            <Value>200</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        <Evaluation active="n">200</Evaluation></ccost_kW>
+        <nsr_response_time analysis="no">
+            <Coupled>None</Coupled>
+            <Value>10</Value>
+            <Type>int</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </nsr_response_time>
+        <sr_response_time analysis="no">
+            <Coupled>None</Coupled>
+            <Value>10</Value>
+            <Type>int</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </sr_response_time>
+        <macrs_term analysis="no">
+            <Coupled>None</Coupled>
+            <Value>3</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        <Evaluation active="n">0</Evaluation></macrs_term>
+        <rated_capacity analysis="no">
+            <Coupled>None</Coupled>
+            <Value>100</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </rated_capacity>
+        <grid_charge analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>bool</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </grid_charge>
+        <construction_year analysis="no">
+            <Coupled>None</Coupled>
+            <Value>2017</Value>
+            <Type>Period</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </construction_year>
+        <operation_year analysis="no">
+            <Coupled>None</Coupled>
+            <Value>2017</Value>
+            <Type>Period</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </operation_year>
+        <expected_lifetime analysis="no">
+            <Coupled>None</Coupled>
+            <Value>13</Value>
+            <Type>int</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </expected_lifetime>
+        <replaceable analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>bool</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </replaceable>
+        <decommissioning_cost analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </decommissioning_cost>
+        <salvage_value analysis="no">
+            <Coupled>None</Coupled>
+            <Value>0</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </salvage_value>
+        <rcost_kW analysis="no">
+            <Coupled>None</Coupled>
+            <Value>200</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        <Evaluation active="n">200</Evaluation></rcost_kW>
+        <acr analysis="no">
+            <Coupled>None</Coupled>
+            <Value>10</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </acr>
+        <ter analysis="no">
+            <Coupled>None</Coupled>
+            <Value>7</Value>
+            <Type>float</Type>
+            <Sensitivity_Parameters>nan</Sensitivity_Parameters>
+        </ter>
+    </PV>
 
     <ICE active="no" id="1">
         <name analysis="no">

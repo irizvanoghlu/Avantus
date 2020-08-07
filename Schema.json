@@ -7,23 +7,27 @@
             "planned_load_limit": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "reverse_power_flow_limit": {
                 "cba": "n",
                 "max": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "growth": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "price": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/year"
             }
         },
         "RA": {
@@ -32,17 +36,20 @@
             "growth": {
                 "max": "100",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "days": {
                 "max": "366",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "days"
             },
             "length": {
                 "max": "24",
                 "min": "1",
-                "type": "int"
+                "type": "int",
+                "unit": "hours"
             },
             "dispmode": {
                 "type": "bool",
@@ -59,35 +66,42 @@
             "days": {
                 "max": "366",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "days"
             },
             "length": {
                 "max": "24",
                 "min": "0",
-                "type": "string/int"
+                "type": "string/int",
+                "unit": "hours"
             },
             "weekend": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "program_start_hour": {
                 "max": "24",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "hours"
             },
             "program_end_hour": {
                 "max": "24",
                 "min": "0",
-                "type": "string/int"
+                "type": "string/int",
+                "unit": "hours"
             },
             "day_ahead": {
-                "min": "0",
+                "allowed_values": "1|0",
+                "unit": "yes/no",
                 "type": "bool"
             },
             "growth": {
                 "max": "100",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             }
         },
         "Reliability": {
@@ -96,40 +110,47 @@
             "target": {
                 "cba": "n",
                 "min": "1.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             },
             "post_facto_initial_soc": {
                 "cba": "n",
                 "min": "0",
                 "max": "100",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "post_facto_only": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "nu": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "gamma": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "max_outage_duration": {
                 "cba": "n",
                 "min": "1",
-                "type": "int"
+                "type": "int",
+                "unit": "hours"
             },
             "n-2": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             }
         },
         "Backup": {
@@ -142,7 +163,8 @@
             "price": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/year"
             }
         },
         "DA": {
@@ -152,7 +174,8 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             }
         },
         "FR": {
@@ -162,36 +185,42 @@
                 "cba": "n",
                 "max": "1.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kWh/kW-hr"
             },
             "eod": {
                 "cba": "n",
                 "max": "1.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kWh/kW-hr"
             },
             "growth": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "energyprice_growth": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "CombinedMarket": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "duration": {
                 "cba": "n",
                 "max": "24",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             }
         },
         "LF": {
@@ -201,17 +230,20 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "CombinedMarket": {
                 "cba": "n",
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "duration": {
                 "max": "24",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             }
         },
         "SR": {
@@ -221,13 +253,15 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "duration": {
                 "cba": "n",
                 "max": "24",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             }
         },
         "NSR": {
@@ -237,13 +271,15 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "duration": {
                 "cba": "n",
                 "max": "24",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             }
         },
         "DCM": {
@@ -253,7 +289,8 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             }
         },
         "retailTimeShift": {
@@ -263,7 +300,8 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             }
         },
         "ControllableLoad": {
@@ -275,38 +313,46 @@
             "power_rating": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "duration": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             },
             "nsr_response_time": {
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "sr_response_time": {
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "startup_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
-            "construction_date": {
+            "construction_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
-            "operation_date": {
+            "operation_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
             "decommissioning_cost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "salvage_value": {
                 "cba": "n",
@@ -316,23 +362,27 @@
             },
             "expected_lifetime": {
                 "cba": "n",
-                "type": "int"
+                "type": "int",
+                "unit": "years"
             },
             "replaceable": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "acr": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "ter": {
                 "cba": "n",
                 "max": "100.0",
-                "min": "0.0",
-                "type": "float"
+                "min": "-100.0",
+                "type": "float",
+                "unit": "%"
             }
         },
         "PV": {
@@ -340,7 +390,8 @@
             "startup_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "name": {
                 "cba": "n",
@@ -349,51 +400,60 @@
             "nsr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "sr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "inv_max": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "growth": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%/year"
             },
             "rated_capacity": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ccost_kW": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "grid_charge": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "loc": {
                 "allowed_values": "ac|dc",
                 "cba": "n",
                 "type": "string"
             },
-            "construction_date": {
+            "construction_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
-            "operation_date": {
+            "operation_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
             "macrs_term": {
                 "allowed_values": "3|5|7|10|15|20|25|27.5|39",
@@ -402,12 +462,14 @@
             },
             "curtail": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "decommissioning_cost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "salvage_value": {
                 "cba": "n",
@@ -417,28 +479,33 @@
             },
             "expected_lifetime": {
                 "cba": "n",
-                "type": "int"
+                "type": "int",
+                "unit": "years"
             },
             "replaceable": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "rcost_kW": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "acr": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "ter": {
                 "cba": "n",
                 "max": "100.0",
-                "min": "0.0",
-                "type": "float"
+                "min": "-100.0",
+                "type": "float",
+                "unit": "%"
             }
         },
         "ICE": {
@@ -450,12 +517,14 @@
             "nsr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "sr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "macrs_term": {
                 "allowed_values": "3|5|7|10|15|20|25|27.5|39",
@@ -465,70 +534,84 @@
             "min_power": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "startup_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "efficiency": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "gal/kWh"
             },
             "fuel_cost": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/gal"
             },
             "variable_om_cost": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kWh"
             },
             "fixed_om_cost": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/year"
             },
             "rated_power": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ccost": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "ccost_kW": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "n_min": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "generators"
             },
             "n_max": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "generators"
             },
-            "construction_date": {
+            "construction_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
-            "operation_date": {
+            "operation_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
             "decommissioning_cost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "salvage_value": {
                 "cba": "n",
@@ -538,7 +621,8 @@
             },
             "expected_lifetime": {
                 "cba": "n",
-                "type": "int"
+                "type": "int",
+                "unit": "years"
             },
             "replaceable": {
                 "type": "bool",
@@ -547,24 +631,28 @@
             "rcost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "rcost_kW": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "acr": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "ter": {
                 "cba": "n",
                 "max": "100.0",
-                "min": "0.0",
-                "type": "float"
+                "min": "-100.0",
+                "type": "float",
+                "unit": "%"
             }
         },
         "Battery": {
@@ -572,7 +660,8 @@
             "startup_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "name": {
                 "cba": "n",
@@ -581,139 +670,163 @@
             "nsr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "sr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "startup": {
                 "allowed_values": "1|0",
                 "cba": "y",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yea/no"
             },
             "ccost": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "ccost_kw": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "ccost_kwh": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kWh"
             },
             "fixedOM": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW-yr"
             },
             "OMexpenses": {
                 "cba": "y",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/MWh"
             },
             "ch_max_rated": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ch_min_rated": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "dis_max_rated": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "dis_min_rated": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ene_max_rated": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kWh"
             },
             "ulsoc": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "llsoc": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "rte": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "sdr": {
                 "cba": "n",
                 "max": "99.9",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "soc_target": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "incl_cycle_degrade": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "yearly_degrade": {
                 "cba": "n",
                 "max": "100",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "%"
             },
             "cycle_life_filename": {
                 "type": "string"
             },
-            "construction_date": {
+            "construction_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period"
             },
-            "operation_date": {
+            "operation_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period"
             },
             "p_start_ch": {
                 "cba": "n",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "p_start_dis": {
                 "cba": "n",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "daily_cycle_limit": {
                 "cba": "n",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "cycles"
             },
             "hp": {
                 "cba": "y",
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "macrs_term": {
                 "cba": "n",
@@ -723,12 +836,14 @@
             "duration_max": {
                 "min": "0",
                 "type": "float",
-                "optional": "y"
+                "optional": "y",
+                "unit": "hours"
             },
             "decommissioning_cost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "salvage_value": {
                 "cba": "n",
@@ -738,53 +853,63 @@
             },
             "expected_lifetime": {
                 "cba": "n",
-                "type": "int"
+                "type": "int",
+                "unit": "years"
             },
             "replaceable": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "rcost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "rcost_kW": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "rcost_kWh": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kWh"
             },
             "acr": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "ter": {
                 "cba": "n",
                 "max": "100.0",
-                "min": "0.0",
-                "type": "float"
+                "min": "-100.0",
+                "type": "float",
+                "unit": "%"
             },
             "incl_ts_energy_limits": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "incl_ts_charge_limits": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "incl_ts_discharge_limits": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             }
         },
         "CAES": {
@@ -792,7 +917,8 @@
             "startup_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "name": {
                 "type": "string"
@@ -800,119 +926,145 @@
             "nsr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "sr_response_time": {
                 "cba": "n",
                 "min": "0",
-                "type": "int"
+                "type": "int",
+                "unit": "minutes"
             },
             "daily_cycle_limit": {
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "yes/no"
             },
             "heat_rate_high": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "BTU/kWh"
             },
             "startup": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "ccost": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "ccost_kw": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "ccost_kwh": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "fixedOM": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW-yr"
             },
             "OMexpenses": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/MWh"
             },
             "ch_max_rated": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ch_min_rated": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "dis_max_rated": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "dis_min_rated": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ene_max_rated": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "kW"
             },
             "ulsoc": {
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "llsoc": {
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "rte": {
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "sdr": {
                 "max": "99.9",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "soc_target": {
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "p_start_ch": {
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "p_start_dis": {
                 "min": "0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "duration_max": {
                 "min": "0",
                 "type": "float",
-                "optional": "y"
+                "optional": "y",
+                "unit": "hours"
             },
             "macrs_term": {
                 "cba": "n",
                 "allowed_values": "3|5|7|10|15|20|25|27.5|39",
                 "type": "float"
             },
-            "construction_date": {
+            "construction_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
-            "operation_date": {
+            "operation_year": {
                 "cba": "n",
-                "type": "Timestamp"
+                "type": "Period",
+                "unit": "year"
             },
             "decommissioning_cost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "salvage_value": {
                 "cba": "n",
@@ -922,38 +1074,45 @@
             },
             "expected_lifetime": {
                 "cba": "n",
-                "type": "int"
+                "type": "int",
+                "unit": "years"
             },
             "replaceable": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "rcost": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$"
             },
             "rcost_kW": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kW"
             },
             "rcost_kWh": {
                 "cba": "n",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "$/kWh"
             },
             "acr": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "ter": {
                 "cba": "n",
                 "max": "100.0",
-                "min": "0.0",
-                "type": "float"
+                "min": "-100.0",
+                "type": "float",
+                "unit": "%"
             },
             "incl_ts_energy_limits": {
                 "allowed_values": "1|0",
@@ -986,61 +1145,73 @@
                 "cba": "n",
                 "max": "1.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "hours"
             },
             "opt_years": {
                 "cba": "n",
                 "max": "2100",
                 "min": "1800",
-                "type": "list/int"
+                "type": "list/int",
+                "unit": "year"
             },
             "start_year": {
                 "cba": "y",
-                "type": "Period"
+                "type": "Period",
+                "unit": "year"
             },
             "end_year": {
                 "cba": "y",
-                "type": "Period"
+                "type": "Period",
+                "unit": "year"
             },
             "n": {
                 "allowed_values": "month|year|BOUND",
                 "cba": "n",
                 "max": "366",
                 "min": "0",
-                "type": "string/int"
+                "type": "string/int",
+                "unit": "hours"
             },
             "incl_site_load": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "max_export": {
                 "type": "float",
-                "min": "0.0"
+                "min": "0.0",
+                "unit": "kW"
             },
             "max_import": {
                 "type": "float",
-                "max": "0.0"
+                "max": "0.0",
+                "unit": "kW"
             },
             "apply_interconnection_constraints": {
                 "type": "bool",
-                "allowed_values": "1|0"
+                "allowed_values": "1|0",
+                "unit": "yes/no"
             },
             "def_growth": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "binary": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "slack": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "kappa_ene_max": {
                 "cba": "n",
@@ -1069,12 +1240,14 @@
             "verbose": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "verbose_opt": {
                 "allowed_values": "1|0",
                 "cba": "n",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "location": {
                 "cba": "n",
@@ -1094,19 +1267,22 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "npv_discount_rate": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "external_incentives": {
                 "allowed_values": "1|0",
                 "cba": "n",
                 "optional": "bool",
-                "type": "bool"
+                "type": "bool",
+                "unit": "yes/no"
             },
             "yearly_data_filename": {
                 "cba": "n",
@@ -1126,19 +1302,22 @@
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "state_tax_rate": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             },
             "property_tax_rate": {
                 "cba": "n",
                 "max": "100.0",
                 "min": "0.0",
-                "type": "float"
+                "type": "float",
+                "unit": "%"
             }
         },
         "Results": {

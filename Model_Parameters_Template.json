@@ -650,166 +650,167 @@
             }
         },
         "PV": {
-            "active": "no",
-            "id": "1",
-            "name": {
-                "analysis": "no",
-                "Coupled": "nan",
-                "Value": "solar1",
-                "Sensitivity_Parameters": "nan",
-                "Type": "string"
-            },
-            "curtail": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "bool"
-            },
-            "startup_time": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "int"
-            },
-            "inv_max": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "3000",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float"
-            },
-            "loc": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "ac",
-                "Sensitivity_Parameters": "nan",
-                "Type": "string"
-            },
-            "growth": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "5",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float"
-            },
-            "ccost_kW": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "200",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float",
-                "Evaluation": {
-                    "active": "n",
-                    "": "200"
+            "1": {
+                "active": "no",
+                "name": {
+                    "analysis": "no",
+                    "Coupled": "nan",
+                    "Value": "solar1",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "string"
+                },
+                "curtail": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "bool"
+                },
+                "startup_time": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "int"
+                },
+                "inv_max": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "3000",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float"
+                },
+                "loc": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "ac",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "string"
+                },
+                "growth": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "5",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float"
+                },
+                "ccost_kW": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "200",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float",
+                    "Evaluation": {
+                        "active": "n",
+                        "value": "200"
+                    }
+                },
+                "nsr_response_time": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "10",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "int"
+                },
+                "sr_response_time": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "10",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "int"
+                },
+                "macrs_term": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "3",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float",
+                    "Evaluation": {
+                        "active": "n",
+                        "": "0"
+                    }
+                },
+                "rated_capacity": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "100",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float"
+                },
+                "grid_charge": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "bool"
+                },
+                "construction_date": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "1/1/2017",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "Timestamp"
+                },
+                "operation_date": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "1/1/2017",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "Timestamp"
+                },
+                "expected_lifetime": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "13",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "int"
+                },
+                "replaceable": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "bool"
+                },
+                "decommissioning_cost": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float"
+                },
+                "salvage_value": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "0",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float"
+                },
+                "rcost_kW": {
+                    "analysis": "no",
+                    "Coupled": "None",
+                    "Value": "200",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "float",
+                    "Evaluation": {
+                        "active": "n",
+                        "": "200"
+                    }
+                },
+                "acr": {
+                    "analysis": "no",
+                    "Coupled": "nan",
+                    "Value": "10",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "nan"
+                },
+                "ter": {
+                    "analysis": "no",
+                    "Coupled": "nan",
+                    "Value": "7",
+                    "Sensitivity_Parameters": "nan",
+                    "Type": "nan"
                 }
-            },
-            "nsr_response_time": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "10",
-                "Sensitivity_Parameters": "nan",
-                "Type": "int"
-            },
-            "sr_response_time": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "10",
-                "Sensitivity_Parameters": "nan",
-                "Type": "int"
-            },
-            "macrs_term": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "3",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float",
-                "Evaluation": {
-                    "active": "n",
-                    "": "0"
-                }
-            },
-            "rated_capacity": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "100",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float"
-            },
-            "grid_charge": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "bool"
-            },
-            "construction_date": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "1/1/2017",
-                "Sensitivity_Parameters": "nan",
-                "Type": "Timestamp"
-            },
-            "operation_date": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "1/1/2017",
-                "Sensitivity_Parameters": "nan",
-                "Type": "Timestamp"
-            },
-            "expected_lifetime": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "13",
-                "Sensitivity_Parameters": "nan",
-                "Type": "int"
-            },
-            "replaceable": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "bool"
-            },
-            "decommissioning_cost": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float"
-            },
-            "salvage_value": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "0",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float"
-            },
-            "rcost_kW": {
-                "analysis": "no",
-                "Coupled": "None",
-                "Value": "200",
-                "Sensitivity_Parameters": "nan",
-                "Type": "float",
-                "Evaluation": {
-                    "active": "n",
-                    "": "200"
-                }
-            },
-            "acr": {
-                "analysis": "no",
-                "Coupled": "nan",
-                "Value": "10",
-                "Sensitivity_Parameters": "nan",
-                "Type": "nan"
-            },
-            "ter": {
-                "analysis": "no",
-                "Coupled": "nan",
-                "Value": "7",
-                "Sensitivity_Parameters": "nan",
-                "Type": "nan"
             }
         },
         "ICE": {

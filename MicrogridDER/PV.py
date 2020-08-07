@@ -67,7 +67,7 @@ class PV(PVSystem.PV, Sizing, DERExtension):
         else:
             return super(PV, self).get_discharge(mask)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Returns:

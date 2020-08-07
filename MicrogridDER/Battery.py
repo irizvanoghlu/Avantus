@@ -41,7 +41,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
             #     TellUser.error("Cannot set a")
             self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -52,5 +52,5 @@ class Battery(BatteryTech.Battery, ESSSizing):
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
 
-        constraint_list = super().constraints(mask)  # BatteryTech.Battery->ESSSizing->EnergyStorage
+        constraint_list = super().constraints(mask, **kwargs)  # BatteryTech.Battery->ESSSizing->EnergyStorage
         return constraint_list

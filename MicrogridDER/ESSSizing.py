@@ -191,7 +191,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
                 effective_soe_min = self.effective_soe_min
             return effective_soe_min
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Args:
@@ -202,7 +202,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
 
-        constraint_list = super().constraints(mask)
+        constraint_list = super().constraints(mask,**kwargs)
         constraint_list += self.size_constraints
         if self.incl_energy_limits:
             # add timeseries energy limits on this instance
@@ -248,6 +248,13 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
         if self.being_sized():
             costs.update({self.name + 'capex': self.get_capex()})
         return costs
+
+
+    def set_size(self):
+        self.dis_max_rated=self.discharge_capacity(solution=True)
+        self.ch_max_rated=self.charge_capacity(solution=True)
+        self.ene_max_rated=self.energy_capacity(solution=True)
+        return
 
     def sizing_summary(self):
         """

@@ -1,9 +1,9 @@
 """
-Sizing Module
+Continuous Sizing Module
 
 """
 
-__author__ = 'Halley Nathwani'
+__author__ = 'Andrew Etringer and Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
 __license__ = 'EPRI'
@@ -17,13 +17,13 @@ import pandas as pd
 import cvxpy as cvx
 
 
-class Sizing:
+class ContinuousSizing:
     """ This class is to be inherited by DER classes that want to also define the ability
-    to optimal size of itself
+    to optimally size itself by kW of energy capacity
 
     """
 
-    def __init__(self):
+    def __init__(self, params):
         TellUser.debug(f"Initializing {__name__}")
         self.size_constraints = []
 
@@ -35,10 +35,22 @@ class Sizing:
         """
         return bool(len(self.size_constraints))
 
-    def sizing_summary(self):
-        """ Creates the template for sizing df that each DER must fill to report their size.
+    def sizing_objective(self):
+        """ Generates the objective function related to a technology. Default includes O&M which can be 0
 
-        Returns: A dictionary describe this DER's size and captial costs.
+        Returns:
+            dict of objective costs
+        """
+        costs = {}
+        if self.being_sized():
+            costs[self.name + ' capex'] = self.get_capex()
+
+        return costs
+
+    def sizing_summary(self):
+        """
+
+        Returns: A dictionary describe this DER's size and capital costs.
 
         """
         # template = pd.DataFrame(columns=)

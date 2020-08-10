@@ -17,6 +17,9 @@ from MicrogridDER.Battery import Battery
 from MicrogridDER.CAES import CAES
 from MicrogridDER.PV import PV
 from MicrogridDER.ICE import ICE
+from MicrogridDER.DieselGenset import DieselGenset
+from MicrogridDER.CombustionTurbine import CT
+from MicrogridDER.CombinedHeatPower import CHP
 from MicrogridDER.LoadControllable import ControllableLoad
 from MicrogridDER.ElectricVehicles import ElectricVehicle1, ElectricVehicle2
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
@@ -61,6 +64,11 @@ class MicrogridScenario(Scenario):
         })
 
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
+        self.technology_inputs_map.update({
+            'DieselGenset': input_tree.DieselGenset,
+            'CT': input_tree.CT,
+            'CHP': input_tree.CHP,
+        })
 
         TellUser.debug("ScenarioSizing initialized ...")
 
@@ -73,9 +81,12 @@ class MicrogridScenario(Scenario):
             'Battery': Battery,
             'PV': PV,
             'ICE': ICE,
+            'DieselGenset': DieselGenset,
+            'CT': CT,
+            'CHP': CHP,
             'Load': ControllableLoad,
             'ElectricVehicle1': ElectricVehicle1,
-            'ElectricVehicle2': ElectricVehicle2
+            'ElectricVehicle2': ElectricVehicle2,
         }
 
 

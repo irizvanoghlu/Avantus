@@ -98,9 +98,9 @@ class DERExtension:
             input_dict: hold input data, keys are the same as when initialized
 
         """
-        marcs_term = input_dict.get('macrs_term')
-        if marcs_term is not None:
-            self.macrs = marcs_term
+        macrs_term = input_dict.get('macrs_term')
+        if macrs_term is not None:
+            self.macrs = macrs_term
 
         ccost = input_dict.get('ccost')
         if ccost is not None:
@@ -113,6 +113,18 @@ class DERExtension:
         ccost_kwh = input_dict.get('ccost_kwh')
         if ccost_kwh is not None:
             self.capital_cost_function[2] = ccost_kwh
+
+    def update_price_signals(self, id_str, monthly_data=None, time_series_data=None):
+        """ Updates attributes related to price signals with new price signals that are saved in
+        the arguments of the method. Only updates the price signals that exist, and does not require all
+        price signals needed for this service.
+
+        Args:
+            monthly_data (DataFrame): monthly data after pre-processing
+            time_series_data (DataFrame): time series data after pre-processing
+
+        """
+        pass
 
     def decommissioning_report(self, last_year):
         """ Returns the cost of decommissioning a DER and the year the cost will be incurred
@@ -238,10 +250,10 @@ class DERExtension:
         start_year = indx[1]
         if self.construction_year.year < start_year.year:
             return pd.DataFrame(index=indx)
-        capex_df = pd.DataFrame({self.zero_column_name: np.zeros(len(indx))}, index=indx)
+        capex_df = pd.DataFrame({self.zero_column_name(): np.zeros(len(indx))}, index=indx)
         try:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        capex_df.loc[self.construction_year, self.zero_column_name] = capex
+        capex_df.loc[self.construction_year, self.zero_column_name()] = capex
         return capex_df

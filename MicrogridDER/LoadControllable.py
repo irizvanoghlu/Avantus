@@ -15,12 +15,12 @@ __version__ = 'beta'
 import cvxpy as cvx
 import numpy as np
 from storagevet.Technology.Load import Load
-from MicrogridDER.Sizing import Sizing
+from MicrogridDER.ContinuousSizing import ContinuousSizing
 from MicrogridDER.DERExtension import DERExtension
 from ErrorHandelling import *
 
 
-class ControllableLoad(Load, Sizing, DERExtension):
+class ControllableLoad(Load, DERExtension, ContinuousSizing):
     """ An Load object. this object does not size.
 
     """
@@ -34,9 +34,8 @@ class ControllableLoad(Load, Sizing, DERExtension):
         TellUser.debug(f"Initializing {__name__}")
         # create generic technology object
         Load.__init__(self, params)
-        Sizing.__init__(self)
         DERExtension.__init__(self, params)
-        Sizing.__init__(self)
+        ContinuousSizing.__init__(self, params)
 
         # input params  UNITS ARE COMMENTED TO THE RIGHT
         self.rated_power = params['power_rating']  # kW

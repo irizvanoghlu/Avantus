@@ -213,15 +213,8 @@ class CostBenefitAnalysis(Financial):
         that is active and has different values specified to evaluate the CBA with.
 
         """
-        try:
-            monthly_data = self.Scenario['monthly_data']
-        except KeyError:
-            monthly_data = None
-
-        try:
-            time_series = self.Scenario['time_series']
-        except KeyError:
-            time_series = None
+        monthly_data = self.Scenario.get('monthly_data')
+        time_series = self.Scenario.get('time_series')
 
         if time_series is not None or monthly_data is not None:
             for value_stream in self.value_streams.values():
@@ -292,7 +285,7 @@ class CostBenefitAnalysis(Financial):
             # replace capital cost columns with economic_carrying cost
             ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, proforma.index)
             # drop original Capital Cost
-            proforma = proforma.drop(columns=[tech.zero_column_name])
+            proforma = proforma.drop(columns=[tech.zero_column_name()])
             # add the ECC to the proforma
             proforma = proforma.join(ecc_df)
         # sort alphabetically
@@ -408,7 +401,7 @@ class CostBenefitAnalysis(Financial):
                 tax_schedule = tax_schedule + list(np.zeros(proj_years - len(tax_schedule)))
             else:
                 tax_schedule = tax_schedule[:proj_years]
-            capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name])
+            capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name()])
         yearly_net += capital_costs
 
         # 2) Calculate State tax based on the net cash flows in each year

@@ -32,6 +32,8 @@ class ParamsDER(Params):
     schema_location = Path(__file__).absolute().with_name('Schema.json')
     cba_input_error_raised = False
     cba_input_template = None
+    # TODO add to this as needed --AE
+    dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV']
 
     @staticmethod
     def csv_to_xml(csv_filename, verbose=False, ignore_cba_valuation=False):
@@ -125,6 +127,9 @@ class ParamsDER(Params):
         super().__init__()
         self.Reliability = self.read_and_validate('Reliability')  # Value Stream
         self.Load = self.read_and_validate('ControllableLoad')  # DER
+        self.DieselGenset = self.read_and_validate('DieselGenset')
+        self.CT = self.read_and_validate('CT')
+        self.CHP = self.read_and_validate('CHP')
 
 
     @classmethod
@@ -135,8 +140,10 @@ class ParamsDER(Params):
         Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
 
         """
-        is_dervet_specific_tech_active = not len
-        super().bad_active_combo(dervet=True)
+        active_ders_list = [(k if v else None) for k,v in cls.template.cba_template_struct()['ders_values'].items()]
+        dervet_specific_tech_active_set = set(active_ders_list) & set(ParamsDER.dervet_only_der_list)
+
+        super().bad_active_combo(dervet=True, other_ders=bool(dervet_specific_tech_active_set))
 
     @classmethod
     def cba_template_struct(cls):
@@ -153,8 +160,11 @@ class ParamsDER(Params):
         template['ders_values'] = {
             'Battery': cls.read_and_validate_evaluation('Battery'),
             'CAES': cls.read_and_validate_evaluation('CAES'),
+            'CT': cls.read_and_validate_evaluation('CT'),
+            'CHP': cls.read_and_validate_evaluation('CHP'),
             'PV': cls.read_and_validate_evaluation('PV'),  # cost_per_kW (and then recalculate capex)
             'ICE': cls.read_and_validate_evaluation('ICE'),  # fuel_price,
+            'DieselGenset': cls.read_and_validate_evaluation('DieselGenset'),  # fuel_price,
             # 'ControllableLoad': cls.read_and_validate_evaluation('ControllableLoad')
         }
 
@@ -202,7 +212,11 @@ class ParamsDER(Params):
                     # did the user mark cba input as active?
                     if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
                         # check if you are allowed to input Evaulation value for the give key
-                        if schema_key_attr.get('cba')[0].lower() in ['y', '1']:
+                        cba_allowed = schema_key_attr.get('cba')
+                        if cba_allowed is None or cba_allowed[0].lower() in ['n', '0']:
+                            cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
+                            continue
+                        else:
                             valuation_entry = None
                             intended_type = key.find('Type').text
                             if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
@@ -224,8 +238,6 @@ class ParamsDER(Params):
                                 cls.checks_for_validate(valuation_entry, schema_key_attr, schema_key_name, f"{name}-{id_str}")
                             # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
                             dictionary[key.tag] = valuation_entry
-                        else:
-                            cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
                 # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
                 tag_data_struct[tag.get('id')] = dictionary
         return tag_data_struct
@@ -436,6 +448,39 @@ class ParamsDER(Params):
 
                 load_inputs.update({'dt': self.Scenario['dt'],
                                     'growth': self.Scenario['def_growth']})
+        if len(self.CHP):
+            if not self.Scenario['incl_thermal_load']:
+                TellUser.warning('with incl_thermal_load = 0, CHP will ignore any site thermal loads.')
+            for id_str, chp_inputs in self.CHP.items():
+                chp_inputs.update({'dt': self.Scenario['dt']})
+
+                # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
+                if self.Scenario['incl_thermal_load']:
+                    try:
+                        chp_inputs.update({'site_heating_load': time_series.loc[:, 'Site Heating Load (BTU/hr)']})
+                    except KeyError:
+                        self.record_input_error("CHP is missing 'Site Heating Load (BTU/hr)' from timeseries data input")
+
+                try:
+                    chp_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
+                                                                                       self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
+                except KeyError:
+                    self.record_input_error("Missing 'Natural Gas Price ($/MillionBTU)' from monthly data input")
+
+        if len(self.CT):
+            for id_str, ct_inputs in self.CT.items():
+                ct_inputs.update({'dt': self.Scenario['dt']})
+
+                try:
+                    ct_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
+                                                                                       self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
+                except KeyError:
+                    self.record_input_error("Missing 'Natural Gas Price ($/MillionBTU)' from monthly data input")
+
+        if len(self.DieselGenset):
+            for id_str, inputs in self.DieselGenset.items():
+                inputs.update({'dt': self.Scenario['dt']})
+
         super().load_technology()
 
     def load_ts_limits(self, id_str, inputs_dct, tag, measurement, unit, time_series):

@@ -29,7 +29,7 @@ class ParamsDER(Params):
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
     # set schema location based on the location of this file (this should override the global value within Params.py
-    schema_location = Path(__file__).absolute().with_name('DERVETSchema.xml')
+    schema_location = Path(__file__).absolute().with_name('Schema.json')
     cba_input_error_raised = False
     cba_input_template = None
 
@@ -164,7 +164,6 @@ class ParamsDER(Params):
         return template
 
     @classmethod
-
     def read_and_validate_evaluation(cls, name):
         """ Read data from valuation XML file
 
@@ -176,10 +175,10 @@ class ParamsDER(Params):
             or None if no values are active.
 
         """
-        schema_tag = cls.schema_tree.find(name)
+        schema_tag = cls.schema_dct.get("tags").get(name)
         # Check if tag is in schema (SANITY CHECK)
         if schema_tag is None:
-            cls.report_warning("missing tag", tag=name, raise_input_error=False)
+            # cls.report_warning("missing tag", tag=name, raise_input_error=False)
             # warn user that the tag given is not in the schema
             return
         tag_elems = cls.xmlTree.findall(name)
@@ -190,10 +189,12 @@ class ParamsDER(Params):
         for tag in tag_elems:
             # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
             if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
+                id_str = tag.get('id')
                 dictionary = {}
                 # iterate through each key required by the schema
-                for schema_key in schema_tag:
-                    key = tag.find(schema_key.tag)
+                schema_key_dict = schema_tag.get("keys")
+                for schema_key_name, schema_key_attr in schema_key_dict.items():
+                    key = tag.find(schema_key_name)
                     cba_value = key.find('Evaluation')
                     # if we dont have a cba_value, skip to next key
                     if cba_value is None:
@@ -201,17 +202,16 @@ class ParamsDER(Params):
                     # did the user mark cba input as active?
                     if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
                         # check if you are allowed to input Evaulation value for the give key
-                        if schema_key.get('cba')[0].lower() in ['y', '1']:
+                        if schema_key_attr.get('cba')[0].lower() in ['y', '1']:
                             valuation_entry = None
                             intended_type = key.find('Type').text
                             if key.get('analysis')[0].lower() == 'y' or key.get('analysis')[0].lower() == '1':
                                 # if analysis, then convert each value and save as list
                                 tag_key = (tag.tag, key.tag, tag.get('id'))
                                 sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
-
                                 # validate each value
                                 for values in sensitivity_values:
-                                    cls.checks_for_validate(values, schema_key, name)
+                                    cls.checks_for_validate(values, schema_key_attr, schema_key_name, f"{name}-{id_str}")
 
                                 #  check to make sure the length match with sensitivity analysis value set length
                                 required_values = len(cls.sensitivity['attributes'][tag_key])
@@ -221,7 +221,7 @@ class ParamsDER(Params):
                             else:
                                 # convert to correct data type
                                 valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
-                                cls.checks_for_validate(valuation_entry, schema_key, f"{name}-{tag.get('id')}")
+                                cls.checks_for_validate(valuation_entry, schema_key_attr, schema_key_name, f"{name}-{id_str}")
                             # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
                             dictionary[key.tag] = valuation_entry
                         else:

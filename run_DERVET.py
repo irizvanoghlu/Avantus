@@ -13,14 +13,11 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
-import sys
-from pathlib import Path
-import os.path
 import logging
 import time
-from datetime import datetime
 import argparse
-import pandas as pd
+import os
+import sys
 
 # ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
 
@@ -31,15 +28,13 @@ storagevet_path = os.path.join(sys.path[0], 'storagevet')
 # add storagevet (source root) to PYTHONPATH
 sys.path.insert(0, storagevet_path)
 
-from ScenarioSizing import ScenarioSizing
-from ParamsDER import ParamsDER
-from cbaDER import CostBenefitAnalysis
-from ResultDER import ResultDER
+
+import storagevet
+from MicrogridScenario import MicrogridScenario
+from DERVETParams import ParamsDER
+from MicrogridResult import MicrogridResult
 from storagevet.Visualization import Visualization
-
-
-e_logger = logging.getLogger('Error')
-u_logger = logging.getLogger('User')
+from ErrorHandelling import *
 
 
 class DERVET:
@@ -66,12 +61,7 @@ class DERVET:
 
         # Initialize the Params Object from Model Parameters and Simulation Cases
         self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
-        self.results = ResultDER.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
-        u_logger.info('Successfully initialized the Params class with the XML file.')
-
-        # # Initialize the CBA module
-        # CostBenefitAnalysis.initialize_evaluation()
-        # u_logger.info('Successfully initialized the CBA class with the XML file.')
+        self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
 
         if self.verbose:
             Visualization(ParamsDER).class_summary()
@@ -80,22 +70,22 @@ class DERVET:
         starts = time.time()
 
         for key, value in self.cases.items():
-            run = ScenarioSizing(value)
-            run.add_technology()  # adds all technologies from input maps (input_tree)
-            run.add_services()  # inits all services from input maps  (input_tree)
+            run = MicrogridScenario(value)
+            run.set_up_poi_and_service_aggregator()
+            run.initialize_cba()
             run.fill_and_drop_extra_data()
-            run.add_control_constraints()
+            # add a optimization for reliability
+            run.reliability_based_sizing_module()
             run.optimize_problem_loop()
 
-            ResultDER.add_instance(key, run)
+            MicrogridResult.add_instance(key, run)
 
-        ResultDER.sensitivity_summary()
+        MicrogridResult.sensitivity_summary()
 
         ends = time.time()
-        print("DERVET runtime: ") if self.verbose else None
-        print(ends - starts) if self.verbose else None
+        TellUser.info(f"DERVET runtime: {ends - starts}")
 
-        return ResultDER
+        return MicrogridResult
 
 
 if __name__ == '__main__':
@@ -120,5 +110,3 @@ if __name__ == '__main__':
 
     case = DERVET(arguments.parameters_filename, verbose=arguments.verbose, ignore_cba_valuation=True)
     case.solve()
-
-    # print("Program is done.")

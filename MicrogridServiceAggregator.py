@@ -43,18 +43,20 @@ class MicrogridServiceAggregator(ServiceAggregator):
         Returns: der_list with size minimums
 
         """
-        deferral = self.value_streams['Deferral']
+        deferral = self.value_streams.get('Deferral')
         min_year = deferral.min_years
-        last_year_to_defer = start_year.year + min_year-1
+        last_year_to_defer = start_year.year + min_year - 1
         p_e_req = deferral.deferral_df.loc[last_year_to_defer, :]
         min_power = p_e_req.loc['Power Capacity Requirement (kW)']
         min_energy = p_e_req.loc['Energy Capacity Requirement (kWh)']
-        der_lst[0].ch_max_rated = min_power
-        der_lst[0].dis_max_rated = min_power
-        der_lst[0].ene_max_rated = min_energy
-        # der_lst[0].size_constraints += [cvx.NonPos(min_energy - der_lst[0].ene_max_rated)]
-        # der_lst[0].size_constraints += [cvx.NonPos(min_power - der_lst[0].ch_max_rated)]
-        # der_lst[0].size_constraints += [cvx.NonPos(min_power - der_lst[0].dis_max_rated)]
+        if len(self.value_streams.keys()) > 1:
+            der_lst[0].size_constraints += [cvx.NonPos(min_energy - der_lst[0].ene_max_rated)]
+            der_lst[0].size_constraints += [cvx.NonPos(min_power - der_lst[0].ch_max_rated)]
+            der_lst[0].size_constraints += [cvx.NonPos(min_power - der_lst[0].dis_max_rated)]
+        else:
+            der_lst[0].ch_max_rated = min_power
+            der_lst[0].dis_max_rated = min_power
+            der_lst[0].ene_max_rated = min_energy
         return der_lst
 
     def does_wholesale_markets_have_max_defined(self):

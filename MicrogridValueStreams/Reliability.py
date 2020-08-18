@@ -61,7 +61,7 @@ class Reliability(ValueStream):
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
         self.min_soe_df=None
-        self.use_soc_init=False
+        self.use_soc_init=True
         self.soe_profile_all_0={}
         self.soe_profile_all_1={}
 
@@ -338,7 +338,7 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 tech_specs['init_soe'] = soc[outage_init]
-            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
+            outage_soc_profile = self.simulate_outage(generation[outage_init:], total_pv_max[outage_init:],self.critical_load[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
             frequency_simulate_outage[int(longest_outage)] += 1
@@ -364,7 +364,7 @@ class Reliability(ValueStream):
         lcpc_df.set_index('Outage Length (hrs)')
         return lcpc_df
 
-    def get_der_limits(self, der_list, sizing=False):
+    def get_der_limits(self, der_list, sizing=False,Load_shed=False):
         # collect information required to call simulate_outage
         # TODO change handling of multiple ESS
         ess_properties = {
@@ -402,7 +402,70 @@ class Reliability(ValueStream):
 
         return generation, total_pv_max, ess_properties, demand_left, reliability_check
 
-    def simulate_outage(self, reliability_check, demand_left, outage_left, ess_properties=None, init_soe=None):
+    # def simulate_outage(self, reliability_check, demand_left, outage_left, ess_properties=None, init_soe=None):
+    #     """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH
+    #     or the iteration loop hits the end of any of the array arguments.
+    #     Updates and tracks the SOC throughout the outage
+    #
+    #     Args:
+    #         reliability_check (np.ndarray): the amount of load minus fuel generation and a percentage of PV generation
+    #         demand_left (np.ndarray): the amount of load minus fuel generation and all of PV generation
+    #         init_soe (float, None): the soc of the ESS (if included in analysis) at the beginning of time t
+    #         outage_left (int): the length of outage yet to be simulated
+    #         ess_properties (dict): dictionary that describes the physical properties of the ess in the analysis
+    #             includes 'charge max', 'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
+    #
+    #     Returns: an 1 x M dimensional list where M is the SOC at each index in time,
+    #
+    #     TODO return an N x M dimensional list where N is the number of ESS present and M is the SOC at each index in time
+    #
+    #     """
+    #     # base case: when to terminate recursion
+    #     if outage_left == 0 or not len(reliability_check):
+    #         return []
+    #     current_reliability_check = reliability_check[0]
+    #     current_demand_left = demand_left[0]
+    #     if 0 >= current_reliability_check:
+    #         # check to see if there is space to storage energy in the ESS to save extra generation
+    #         if ess_properties is not None and ess_properties['operation SOE max'] >= init_soe:
+    #             # the amount we can charge based on its current SOC
+    #             random_rte = random.choice(ess_properties['rte list'])
+    #             charge_possible = (ess_properties['operation SOE max'] - init_soe) / (random_rte * self.dt)
+    #             charge = min(charge_possible, -current_demand_left, ess_properties['charge max'])
+    #             # update the state of charge of the ESS
+    #             next_soe = init_soe + (charge * random_rte * self.dt)
+    #         else:
+    #             # there is no space to save the extra generation, so the ess will not do anything
+    #             next_soe = init_soe
+    #     # can reliably meet the outage in that timestep: jump to SIMULATE OUTAGE IN NEXT TIMESTEP
+    #     else:
+    #         # check that there is enough SOC in the ESS to satisfy worst case
+    #         if ess_properties is not None:
+    #             # if there is pv present, then buffer energy require based on pv variability
+    #             if ess_properties['pv present']:
+    #                 energy_check = (current_reliability_check * self.gamma) - init_soe
+    #             else:
+    #                 energy_check = current_reliability_check - init_soe
+    #             if 0 >= energy_check:
+    #                 # so discharge to meet the load offset by all generation
+    #                 discharge_possible = (init_soe - ess_properties['operation SOE min']) / self.dt
+    #                 discharge = min(discharge_possible, current_demand_left, ess_properties['discharge max'])
+    #                 if discharge < current_demand_left:
+    #                     # can't discharge enough to meet demand
+    #                     return []
+    #                 # update the state of charge of the ESS
+    #                 next_soe = init_soe - (discharge * self.dt)
+    #                 # we can reliably meet the outage in that timestep: jump to SIMULATE OUTAGE IN NEXT TIMESTEP
+    #             else:
+    #                 # there is not enough energy in the ESS to cover the load reliabily
+    #                 return []
+    #         else:
+    #             # there is no more that can be discharged to meet the load requirement
+    #             return []
+    #     # SIMULATE OUTAGE IN NEXT TIMESTEP
+    #     return [next_soe] + self.simulate_outage(reliability_check[1:], demand_left[1:], outage_left - 1, ess_properties, next_soe)
+
+    def simulate_outage(self, generation, total_pv_max,load_profile, outage_left, ess_properties=None, init_soe=None):
         """ Simulate an outage that starts with lasting only1 hour and will either last as long as MAX_OUTAGE_LENGTH
         or the iteration loop hits the end of any of the array arguments.
         Updates and tracks the SOC throughout the outage
@@ -420,11 +483,23 @@ class Reliability(ValueStream):
         TODO return an N x M dimensional list where N is the number of ESS present and M is the SOC at each index in time
 
         """
+
         # base case: when to terminate recursion
-        if outage_left == 0 or not len(reliability_check):
+        if outage_left == 0 or not len(load_profile):
             return []
-        current_reliability_check = reliability_check[0]
-        current_demand_left = demand_left[0]
+
+        #Outage_Progress count
+        Outage_progress_hour=self.max_outage_duration-outage_left
+        if Outage_progress_hour<2: #Assuming the dt is 1 hour
+            load_shed_perc=1
+        elif Outage_progress_hour < 4:
+            load_shed_perc = 0.50
+        else:
+            load_shed_perc = 0.25
+
+        current_demand_left = np.around(load_profile.values[0]*load_shed_perc - generation[0] - total_pv_max[0], decimals=5)  # , np.around(
+        current_reliability_check = np.around(load_profile.values[0]*load_shed_perc - generation[0] - (self.nu * total_pv_max[0]),decimals=5)  # np.around(), decimals=5)
+
         if 0 >= current_reliability_check:
             # check to see if there is space to storage energy in the ESS to save extra generation
             if ess_properties is not None and ess_properties['operation SOE max'] >= init_soe:
@@ -463,7 +538,7 @@ class Reliability(ValueStream):
                 # there is no more that can be discharged to meet the load requirement
                 return []
         # SIMULATE OUTAGE IN NEXT TIMESTEP
-        return [next_soe] + self.simulate_outage(reliability_check[1:], demand_left[1:], outage_left - 1, ess_properties, next_soe)
+        return [next_soe] + self.simulate_outage(generation[1:], total_pv_max[1:],load_profile[1:], outage_left - 1, ess_properties, next_soe)
 
     def size_for_outages(self, opt_index, outage_start_indices, der_list):
         """ Sets up sizing optimization.

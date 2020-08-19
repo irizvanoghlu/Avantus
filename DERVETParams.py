@@ -18,6 +18,7 @@ from storagevet.Params import Params
 import copy
 from ErrorHandelling import *
 from pathlib import Path
+import json
 
 
 class ParamsDER(Params):
@@ -36,7 +37,7 @@ class ParamsDER(Params):
     dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV']
 
     @staticmethod
-    def csv_to_xml(csv_filename, verbose=False, ignore_cba_valuation=False):
+    def csv_to_json(csv_filename, ignore_cba_valuation=False):
         """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
         corresponds the values used to evaluate the CBA.
 
@@ -44,7 +45,6 @@ class ParamsDER(Params):
             csv_filename (string): name of csv file
             ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
                 testing purposes)
-            verbose (bool): whether or not to print to console for more feedback
 
 
         Returns:
@@ -52,7 +52,7 @@ class ParamsDER(Params):
 
 
         """
-        xml_filename = Params.csv_to_xml(csv_filename, verbose)
+        json_filename = Params.csv_to_json(csv_filename)
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
@@ -60,26 +60,33 @@ class ParamsDER(Params):
         if not ignore_cba_valuation and 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
             # then add values to XML
 
-            # open and read xml file
-            xml_tree = et.parse(xml_filename)
-            xml_root = xml_tree.getroot()
+            # open and read json file
+            json_tree = json.load(open(json_filename))
 
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
             for obj in csv_data.Tag.unique():
-                mask = csv_data.Tag == obj
-                tag = xml_root.find(obj)
-                # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
-                for ind, row in csv_data[mask].iterrows():
-                    # skip adding to XML if no value is given
-                    if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
-                        continue
-                    key = tag.find(row['Key'])
-                    cba_eval = et.SubElement(key, 'Evaluation')
-                    cba_eval.text = str(row['Evaluation Value'])
-                    cba_eval.set('active', str(row['Evaluation Active']))
-            xml_tree.write(xml_filename)
+                # select all TAG rows
+                tag_sub = csv_data.loc[csv_data.Tag == obj]
+                # loop through each unique value in ID
+                for id_str in tag_sub.ID.unique():
+                    # select rows with given ID_STR
+                    id_tag_sub = tag_sub.loc[tag_sub.ID == id_str]
+                    # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
+                    for _, row in id_tag_sub.iterrows():
+                        # skip adding to JSON if no value is given
+                        if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
+                            continue
+                        else:
+                            key_attrib = json_tree['tags'][obj][id_str]['keys'][row['Key']]
+                            key_attrib['evaluation'] = {
+                                "active": str(row['Evaluation Active']),
+                                "value": str(row['Evaluation Value'])
+                            }
+            # dump json at original file location
+            with open(json_filename, 'w') as json_file:
+                json.dump(json_tree, json_file, sort_keys=True, indent=4)
 
-        return xml_filename
+        return json_filename
 
     @classmethod
     def initialize(cls, filename, verbose):
@@ -131,7 +138,6 @@ class ParamsDER(Params):
         self.CT = self.read_and_validate('CT')
         self.CHP = self.read_and_validate('CHP')
 
-
     @classmethod
     def bad_active_combo(cls):
         """ Based on what the user has indicated as active (and what the user has not), predict whether or not
@@ -175,6 +181,23 @@ class ParamsDER(Params):
 
     @classmethod
     def read_and_validate_evaluation(cls, name):
+        """ Read data from valuation XML file
+
+        Args:
+            name (str): name of root element in xml file
+
+        Returns: A dictionary where keys are the ID value and the key is a dictionary
+            filled with values provided by user that will be used by the CBA class
+            or None if no values are active.
+
+        """
+        if '.json' == cls.filename.suffix:
+            return cls.read_and_validate_evaluation_json(name)
+        if '.xml' == cls.filename.suffix:
+            return cls.read_and_validate_evaluation_xml(name)
+
+    @classmethod
+    def read_and_validate_evaluation_xml(cls, name):
         """ Read data from valuation XML file
 
         Args:
@@ -240,6 +263,82 @@ class ParamsDER(Params):
                             dictionary[key.tag] = valuation_entry
                 # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
                 tag_data_struct[tag.get('id')] = dictionary
+        return tag_data_struct
+
+    @classmethod
+    def read_and_validate_evaluation_json(cls, name):
+        """ Read data from valuation json file
+
+        Args:
+            name (str): name of root element in json file
+
+        Returns: A dictionary where keys are the ID value and the key is a dictionary
+            filled with values provided by user that will be used by the CBA class
+            or None if no values are active.
+
+        """
+        schema_tag = cls.schema_dct.get("tags").get(name)
+        # Check if tag is in schema (SANITY CHECK)
+        if schema_tag is None:
+            # cls.report_warning("missing tag", tag=name, raise_input_error=False)
+            # warn user that the tag given is not in the schema
+            return
+        # check to see if user includes the tag within the provided json
+        user_tag = cls.json_tree.get(name)
+        if user_tag is None:
+            return
+        tag_data_struct = {}
+        for tag_name, tag_attrib in user_tag.items():
+            # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
+            active_tag = tag_attrib.get('active')
+            if active_tag is not None and (active_tag[0].lower() == "y" or active_tag[0] == "1"):
+                id_str = tag_attrib.get('id')
+                dictionary = {}
+                # grab the user given keys
+                user_keys = tag_attrib.get('keys')
+                # iterate through each key required by the schema
+                schema_key_dict = schema_tag.get("keys")
+                for schema_key_name, schema_key_attr in schema_key_dict.items():
+                    key_attrib = user_keys.get(schema_key_name)
+                    cba_value = key_attrib.get('evaluation')
+                    # if we dont have a cba_value, skip to next key
+                    if cba_value is None:
+                        continue
+                    # did the user mark cba input as active?
+                    if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
+                        # check if you are allowed to input Evaulation value for the give key
+                        cba_allowed = schema_key_attr.get('cba')
+                        if cba_allowed is None or cba_allowed[0].lower() in ['n', '0']:
+                            cls.report_warning('cba not allowed', tag=name, key=schema_key_name, raise_input_error=False)
+                            continue
+                        else:
+                            valuation_entry = None
+                            intended_type = key_attrib.get('type')
+                            key_sensitivity = key_attrib.get('sensitivity')
+                            if key_sensitivity is not None:
+                                key_sensitivity_active = key_sensitivity.get('active')
+                                if key_sensitivity_active is not None and (
+                                        key_sensitivity_active[0].lower() == "y" or key_sensitivity_active[0] == "1"):
+                                    # if analysis, then convert each value and save as list
+                                    tag_key = (tag_name, schema_key_name, id_str)
+                                    sensitivity_values = cls.extract_data(cba_value.get('value'), intended_type)
+                                    # validate each value
+                                    for values in sensitivity_values:
+                                        cls.checks_for_validate(values, schema_key_attr, schema_key_name, f"{name}-{id_str}")
+
+                                    #  check to make sure the length match with sensitivity analysis value set length
+                                    required_values = len(cls.sensitivity['attributes'][tag_key])
+                                    if required_values != len(sensitivity_values):
+                                        cls.report_warning('cba sa length', tag=name, key=schema_key_name, required_num=required_values)
+                                    cls.sensitivity['cba_values'][tag_key] = sensitivity_values
+                            else:
+                                # convert to correct data type
+                                valuation_entry = cls.convert_data_type(cba_value.get('value'), intended_type)
+                                cls.checks_for_validate(valuation_entry, schema_key_attr, schema_key_name, f"{name}-{id_str}")
+                            # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
+                            dictionary[schema_key_name] = valuation_entry
+                # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
+                tag_data_struct[id_str] = dictionary
         return tag_data_struct
 
     @classmethod

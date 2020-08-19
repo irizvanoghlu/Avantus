@@ -131,7 +131,6 @@ class ParamsDER(Params):
         self.CT = self.read_and_validate('CT')
         self.CHP = self.read_and_validate('CHP')
 
-
     @classmethod
     def bad_active_combo(cls):
         """ Based on what the user has indicated as active (and what the user has not), predict whether or not
@@ -140,10 +139,9 @@ class ParamsDER(Params):
         Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
 
         """
-        active_ders_list = [(k if v else None) for k,v in cls.template.cba_template_struct()['ders_values'].items()]
-        dervet_specific_tech_active_set = set(active_ders_list) & set(ParamsDER.dervet_only_der_list)
-
-        super().bad_active_combo(dervet=True, other_ders=bool(dervet_specific_tech_active_set))
+        slf = cls.template
+        other_ders = not len(slf.CHP) and not len(slf.CT) and not len(slf.DieselGenset)
+        super().bad_active_combo(dervet=True, other_ders=other_ders)
 
     @classmethod
     def cba_template_struct(cls):
@@ -174,7 +172,6 @@ class ParamsDER(Params):
         return template
 
     @classmethod
-
     def read_and_validate_evaluation(cls, name):
         """ Read data from valuation XML file
 

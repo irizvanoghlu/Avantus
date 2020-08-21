@@ -1,10 +1,4 @@
 <schema version="1.0.0">
-	<Deferral type="service" max_num="1">
-		<planned_load_limit cba="n" min="0.0" type="float" />
-		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
-		<growth cba="n" max="100.0" min="0.0" type="float" />
-		<price cba="y" min="0.0" type="float" />
-	</Deferral>
 	<RA type="service" max_num="1">
 		<growth max="100" min="0" type="float" />
 		<days max="366" min="0" type="int" />
@@ -373,7 +367,7 @@
 		<opt_years cba="n" max="2100" min="1800" type="list/int" />
 		<start_year cba="n" type="Period" />
 		<end_year cba="n" type="Period" />
-		<n allowed_values="month|year|BOUND" cba="n" max="366" min="0" type="string/int" />
+		<n allowed_values="month|year|BOUND" cba="n" max="8764" min="2" type="string/int" />
 		<incl_site_load allowed_values="1|0" cba="n" type="bool" />
 		<incl_thermal_load allowed_values="1|0" cba="n" type="bool" />
 		<max_export type="float" min="0.0"/>
@@ -409,4 +403,11 @@
 		<label cba="n" type="string" optional="y"/>
 		<errors_log_path cba="n" type="string" />
 	</Results>
+	<Deferral type="service" max_num="1">
+		<planned_load_limit cba="n" min="0.0" type="float" />
+		<reverse_power_flow_limit cba="n" max="0.0" type="float" />
+		<growth cba="n" max="100.0" min="0.0" type="float" />
+		<price cba="y" min="0.0" type="float" />
+		<min_year_objective cba="n" max="0.0" type="int" />
+	</Deferral>
 </schema>

@@ -358,11 +358,12 @@ class ParamsDER(Params):
                 else:
                     cba_dict[tag_key_id[0]][tag_key_id[2]][tag_key_id[1]] = row.loc[f"CBA {tag_key_id}"]
             # flatten dictionaries for VS, Scenario, and Fiances & prepare referenced data
-            cba_dict = cls.load_and_prepare_cba(cba_dict, cls.instances[index].Scenario['frequency'])
+            case = cls.instances[index]
+            cba_dict = cls.load_and_prepare_cba(cba_dict, case.Scenario['frequency'], case.Scenario['dt'], case.Scenario['opt_years'])
             cls.instances[index].Finance['CBA'] = cba_dict
 
     @classmethod
-    def load_and_prepare_cba(cls, cba_dict, freq):
+    def load_and_prepare_cba(cls, cba_dict, freq, dt, opt_years):
         """ Flattens each tag that the Schema has defined to only have 1 allowed. Loads data sets that are specified by the '_filename' parameters
 
         Returns a params class where the tag attributes that are not allowed to have more than one set of key inputs are just dictionaries of
@@ -377,7 +378,7 @@ class ParamsDER(Params):
         scenario['frequency'] = freq
         if 'time_series_filename' in scenario.keys():
             time_series = cls.referenced_data['time_series'][scenario['time_series_filename']]
-            scenario["time_series"] = cls.process_time_series(time_series, freq)
+            scenario["time_series"] = cls.process_time_series(time_series, freq, dt, opt_years)
         if 'monthly_data_filename' in scenario.keys():
             scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
 

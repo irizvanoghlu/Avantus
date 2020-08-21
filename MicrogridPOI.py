@@ -174,7 +174,7 @@ class MicrogridPOI(POI):
             report_df = der_instance.timeseries_report()
             results = pd.concat([report_df, results], axis=1)
             if der_instance.technology_type in ['Generator', 'Intermittent Resource']:
-                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Generation (kW)']
+                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Electric Generation (kW)']
             if der_instance.technology_type == 'Energy Storage System':
                 results.loc[:, 'Total Storage Power (kW)'] += results[f'{der_instance.unique_tech_id()} Power (kW)']
                 results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']

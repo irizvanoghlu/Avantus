@@ -146,10 +146,9 @@ class ParamsDER(Params):
         Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
 
         """
-        active_ders_list = [(k if v else None) for k,v in cls.template.cba_template_struct()['ders_values'].items()]
-        dervet_specific_tech_active_set = set(active_ders_list) & set(ParamsDER.dervet_only_der_list)
-
-        super().bad_active_combo(dervet=True, other_ders=bool(dervet_specific_tech_active_set))
+        slf = cls.template
+        other_ders = not len(slf.CHP) and not len(slf.CT) and not len(slf.DieselGenset)
+        super().bad_active_combo(dervet=True, other_ders=other_ders)
 
     @classmethod
     def cba_template_struct(cls):
@@ -385,7 +384,7 @@ class ParamsDER(Params):
         for ts_file in ts_files:
             cls.referenced_data['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
         for md_file in md_files:
-            cls.referenced_data['monthly_data'][md_file] = cls.preprocess_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
+            cls.referenced_data['monthly_data'][md_file] = cls.process_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
         for ct_file in ct_files:
             cls.referenced_data['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
         for yr_file in yr_files:
@@ -460,11 +459,12 @@ class ParamsDER(Params):
                 else:
                     cba_dict[tag_key_id[0]][tag_key_id[2]][tag_key_id[1]] = row.loc[f"CBA {tag_key_id}"]
             # flatten dictionaries for VS, Scenario, and Fiances & prepare referenced data
-            cba_dict = cls.load_and_prepare_cba(cba_dict, cls.instances[index].Scenario['frequency'])
+            case = cls.instances[index]
+            cba_dict = cls.load_and_prepare_cba(cba_dict, case.Scenario['frequency'], case.Scenario['dt'], case.Scenario['opt_years'])
             cls.instances[index].Finance['CBA'] = cba_dict
 
     @classmethod
-    def load_and_prepare_cba(cls, cba_dict, freq):
+    def load_and_prepare_cba(cls, cba_dict, freq, dt, opt_years):
         """ Flattens each tag that the Schema has defined to only have 1 allowed. Loads data sets that are specified by the '_filename' parameters
 
         Returns a params class where the tag attributes that are not allowed to have more than one set of key inputs are just dictionaries of
@@ -479,7 +479,7 @@ class ParamsDER(Params):
         scenario['frequency'] = freq
         if 'time_series_filename' in scenario.keys():
             time_series = cls.referenced_data['time_series'][scenario['time_series_filename']]
-            scenario["time_series"] = cls.preprocess_timeseries(time_series, freq)
+            scenario["time_series"] = cls.process_time_series(time_series, freq, dt, opt_years)
         if 'monthly_data_filename' in scenario.keys():
             scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
 

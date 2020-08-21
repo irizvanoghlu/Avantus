@@ -75,4 +75,4 @@ class MicrogridServiceAggregator(ServiceAggregator):
         return error
 
     def any_max_participation_constraints_not_included(self):
-        return bool(sum([1 if not vs.max_participation_is_defined() else 0 for vs in self.value_streams]))
+        return bool(sum([1 if not vs.max_participation_is_defined() and name in {'LF', 'SR', 'NSR', 'FR'} else 0 for name, vs in self.value_streams.items()]))

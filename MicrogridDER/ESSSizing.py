@@ -130,9 +130,9 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             return self.effective_soe_max
         else:
             try:
-                effective_soe_max = self.effective_soe_max.value
+                effective_soe_max = self.ulsoc * self.ene_max_rated.value
             except AttributeError:
-                effective_soe_max = self.effective_soe_max
+                effective_soe_max = self.ulsoc * self.ene_max_rated
             return effective_soe_max
 
     def operational_min_energy(self, solution=False):
@@ -144,9 +144,9 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             return self.effective_soe_min
         else:
             try:
-                effective_soe_min = self.effective_soe_min.value
+                effective_soe_min = self.llsoc * self.ene_max_rated.value
             except AttributeError:
-                effective_soe_min = self.effective_soe_min
+                effective_soe_min = self.llsoc * self.ene_max_rated
             return effective_soe_min
 
     def constraints(self, mask, **kwargs):

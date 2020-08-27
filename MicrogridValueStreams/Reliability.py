@@ -60,7 +60,7 @@ class Reliability(ValueStream):
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
         self.min_soe_df=None
-        self.use_soc_init=False
+        self.use_soc_init=False # --TODO  Change this False if there if optimization runs before pf curve is run
         self.soe_profile_all_0={}
         self.soe_profile_all_1={}
 

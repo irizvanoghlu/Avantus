@@ -187,6 +187,8 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
         self.dis_max_rated=self.discharge_capacity(solution=True)
         self.ch_max_rated=self.charge_capacity(solution=True)
         self.ene_max_rated=self.energy_capacity(solution=True)
+        self.effective_soe_min = self.operational_min_energy(solution=True)
+        self.effective_soe_max = self.operational_max_energy(solution=True)
         return
 
     def sizing_summary(self):

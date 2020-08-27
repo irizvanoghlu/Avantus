@@ -110,6 +110,26 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
         return results
 
+    def set_size(self):
+        self.rated_capacity=self.rated_PV_capacity(solution=True)
+
+        return
+
+    def rated_PV_capacity(self, solution=False):
+        """
+
+        Returns: the maximum energy that can be attained
+
+        """
+        if not solution:
+            return self.rated_capacity
+        else:
+            try:
+                max_rated = self.rated_capacity.value
+            except AttributeError:
+                max_rated = self.rated_capacity
+            return max_rated
+
     def sizing_summary(self):
         """
 

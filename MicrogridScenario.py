@@ -132,6 +132,8 @@ class MicrogridScenario(Scenario):
 
         der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
         self.poi.der_list = der_list
+        #Resetting sizing flag. It doesn't size for other services.
+        self.poi.is_sizing_optimization=False
 
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.

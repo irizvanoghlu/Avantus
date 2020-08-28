@@ -60,7 +60,7 @@ class Reliability(ValueStream):
         self.outage_contribution_df = None
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
         self.min_soe_df=None
-        self.use_soc_init=False # --TODO  Change this False if there if optimization runs before pf curve is run
+        self.use_soc_init=False
         self.soe_profile_all_0={}
         self.soe_profile_all_1={}
 
@@ -151,7 +151,7 @@ class Reliability(ValueStream):
                 # This is a faster method to find approximate min SOE
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
-                # This is a faster method to find optimal min SOE
+                # This is a slower method to find optimal min SOE
                 # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
                 end = time.time()
                 print(end - start)
@@ -322,7 +322,7 @@ class Reliability(ValueStream):
             tech_specs['ess_properties'] = ess_properties
             # save the state of charge
             if not self.use_soc_init:
-                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']
+                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']  #''Reliability min State of Energy (kWh)']
             else:
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 
@@ -337,7 +337,6 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 tech_specs['init_soe'] = soc[outage_init]
-
             outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], self.max_outage_duration, **tech_specs)
             #outage_soc_profile = self.simulate_outage(generation[outage_init:], total_pv_max[outage_init:],self.critical_load[outage_init:], self.max_outage_duration, **tech_specs)
             # record value of foo in frequency count
@@ -444,14 +443,14 @@ class Reliability(ValueStream):
             if ess_properties is not None:
                 # if there is pv present, then buffer energy require based on pv variability
                 if ess_properties['pv present']:
-                    energy_check = (current_reliability_check * self.gamma) - init_soe
+                    energy_check = np.around((current_reliability_check * self.gamma) - init_soe,decimals=5)
                 else:
-                    energy_check = current_reliability_check - init_soe
+                    energy_check = np.around(current_reliability_check - init_soe,decimals=5)
                 if 0 >= energy_check:
                     # so discharge to meet the load offset by all generation
                     discharge_possible = (init_soe - ess_properties['operation SOE min']) / self.dt
                     discharge = min(discharge_possible, current_demand_left, ess_properties['discharge max'])
-                    if discharge < current_demand_left:
+                    if 0<np.around(current_demand_left-discharge,decimals=5):
                         # can't discharge enough to meet demand
                         return []
                     # update the state of charge of the ESS

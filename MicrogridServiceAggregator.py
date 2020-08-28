@@ -24,6 +24,15 @@ class MicrogridServiceAggregator(ServiceAggregator):
         """
         return len(self.value_streams.keys()) == 1 and 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only
 
+    def post_facto_reliability_only_Boolean(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto calculations only when sizing
+
+        """
+        return self.value_streams['Reliability'].post_facto_only # --TODO Check why this required with Halley
+
+
     def is_whole_sale_market(self):
         """
 

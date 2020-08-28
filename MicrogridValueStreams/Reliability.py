@@ -61,6 +61,7 @@ class Reliability(ValueStream):
         self.ice_rating = 0  # this is the rating of all DERs (expect for the intermittent resources)
         self.min_soe_df=None
         self.use_soc_init=False
+        self.use_user_const=False
         self.soe_profile_all_0={}
         self.soe_profile_all_1={}
 
@@ -321,7 +322,9 @@ class Reliability(ValueStream):
         if 'Energy Storage System' in technology_summary_df['Type'].values:
             tech_specs['ess_properties'] = ess_properties
             # save the state of charge
-            if not self.use_soc_init:
+            if self.use_user_const:
+                soc = results_df.loc[:, 'Aggregate Energy Min (kWh)']
+            elif self.use_soc_init :
                 soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']  #''Reliability min State of Energy (kWh)']
             else:
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']

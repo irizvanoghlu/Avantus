@@ -149,8 +149,16 @@ class MicrogridScenario(Scenario):
             alpha = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
-            self.service_agg.value_streams['Reliability'].use_soc_init=True #SOC_init will be used since there is no SOC profile.
             TellUser.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
+            self.service_agg.value_streams['Reliability'].use_soc_init = True
+            TellUser.warning("SOC_init will be used for Post-Facto Calculation")
+        elif self.service_agg.post_facto_reliability_only_and_User_constraint():
+            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run. Energy min profile from User_constraint will be used")
+            self.service_agg.value_streams['Reliability'].use_user_const = True
+            # calculate and check that system requirement set by value streams can be met
+            system_requirements = self.check_system_requirements()
+
+
             return True
 
         # calculate and check that system requirement set by value streams can be met

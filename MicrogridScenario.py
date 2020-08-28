@@ -121,7 +121,7 @@ class MicrogridScenario(Scenario):
         indicates to run it.
 
         """
-        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization or self.service_agg.post_facto_reliability_only_Boolean :
+        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization or self.service_agg.post_facto_reliability_only_Boolean() :
             return
 
         # require only 1 ESS is present. we have to work on extending this module to multiple ESSs

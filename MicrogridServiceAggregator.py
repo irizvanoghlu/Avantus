@@ -35,11 +35,18 @@ class MicrogridServiceAggregator(ServiceAggregator):
     def post_facto_reliability_only_and_User_constraint(self):
         """
 
-        Returns: A boolean that is true if Reliability is doing post facto calculations only when sizing
+        Returns: A boolean that is true if Reliability is doing post facto and user-defined constraint is true
 
         """
-        return 'Reliability' in self.value_streams.keys() and 'User' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only # --TODO Check why this required with Halley
+        return len(self.value_streams.keys()) == 2 and 'Reliability' in self.value_streams.keys() and 'User' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only # --TODO Check why this required with Halley
 
+    def is_Reliability_only_value_stream(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto and user-defined constraint is true
+
+        """
+        return len(self.value_streams.keys()) == 1 and 'Reliability' in self.value_streams.keys()
 
     def is_whole_sale_market(self):
         """

@@ -276,7 +276,12 @@ class Reliability(ValueStream):
 
         ess_names = technology_summary_df.loc[technology_summary_df['Type'] == 'Energy Storage System']
         if len(ess_names):
-            ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
+            try:
+                ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
+
+            except KeyError:
+                ess_outage = results.loc[:, 'Reliability min State of Energy (kWh)']
+
             # try to cover as much of the outage that can be with the ES
             net_outage_energy = outage_energy - ess_outage
             # ESS might have more energy than in the outage, so dont let energy go negative
@@ -324,8 +329,11 @@ class Reliability(ValueStream):
             # save the state of charge
             if self.use_user_const:
                 soc = results_df.loc[:, 'Aggregate Energy Min (kWh)']
-            elif self.use_soc_init :
-                soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']  #''Reliability min State of Energy (kWh)']
+            elif not self.use_soc_init :
+                try:
+                    soc = results_df.loc[:, 'Aggregated State of Energy (kWh)']
+                except KeyError:
+                    soc = results_df.loc[:, 'Reliability min State of Energy (kWh)']
             else:
                 soc = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
 

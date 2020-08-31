@@ -135,7 +135,7 @@ class MicrogridScenario(Scenario):
         #Resetting sizing flag. It doesn't size for other services.
         self.poi.is_sizing_optimization=False
         if self.service_agg.is_Reliability_only_value_stream():
-            self.need_opt_prob_loop = False
+            self.poi.need_opt_prob_loop = False
 
 
     def optimize_problem_loop(self, **kwargs):
@@ -161,7 +161,7 @@ class MicrogridScenario(Scenario):
             # calculate and check that system requirement set by value streams can be met
             system_requirements = self.check_system_requirements()
 
-        if self.need_opt_prob_loop ==False:
+        if self.poi.need_opt_prob_loop ==False:
 
 
             return True

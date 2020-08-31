@@ -228,10 +228,10 @@ class Reliability(ValueStream):
         df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list,time_series_data, technology_summary)
         TellUser.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
-        if not self.post_facto_only:
-            self.contribution_summary(technology_summary, time_series_data)
-            df_dict['outage_energy_contributions'] = self.outage_contribution_df
-            df_dict['reliability_summary'] = self.contribution_perc_df
+        # if not self.post_facto_only:
+        #     self.contribution_summary(technology_summary, time_series_data)
+        #     df_dict['outage_energy_contributions'] = self.outage_contribution_df
+        #     df_dict['reliability_summary'] = self.contribution_perc_df
         return df_dict
 
     def contribution_summary(self, technology_summary_df, results):
@@ -408,7 +408,7 @@ class Reliability(ValueStream):
         if self.n_2:
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))
-        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5) #, np.around(
+        demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
         reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max),decimals=5)  #np.around(), decimals=5)
 
         return generation, total_pv_max, ess_properties, demand_left, reliability_check

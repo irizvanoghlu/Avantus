@@ -18,6 +18,7 @@ from storagevet.Params import Params
 import copy
 from ErrorHandelling import *
 from pathlib import Path
+import json
 
 
 class ParamsDER(Params):
@@ -29,14 +30,14 @@ class ParamsDER(Params):
              Need to change the summary functions for pre-visualization every time the Params class is changed - TN
     """
     # set schema location based on the location of this file (this should override the global value within Params.py
-    schema_location = Path(__file__).absolute().with_name('DERVETSchema.xml')
+    schema_location = Path(__file__).absolute().with_name('Schema.json')
     cba_input_error_raised = False
     cba_input_template = None
     # TODO add to this as needed --AE
     dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV']
 
     @staticmethod
-    def csv_to_xml(csv_filename, verbose=False, ignore_cba_valuation=False):
+    def csv_to_json(csv_filename, ignore_cba_valuation=False):
         """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
         corresponds the values used to evaluate the CBA.
 
@@ -44,7 +45,6 @@ class ParamsDER(Params):
             csv_filename (string): name of csv file
             ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
                 testing purposes)
-            verbose (bool): whether or not to print to console for more feedback
 
 
         Returns:
@@ -52,34 +52,44 @@ class ParamsDER(Params):
 
 
         """
-        xml_filename = Params.csv_to_xml(csv_filename, verbose)
+        json_filename = Params.csv_to_json(csv_filename)
 
         # open csv to read into dataframe and blank xml file to write to
         csv_data = pd.read_csv(csv_filename)
+        # check if there was an ID column, if not then add one filled with '.'
+        if 'ID' not in csv_data.columns:
+            csv_data['ID'] = np.repeat('', len(csv_data))
         # check to see if Evaluation rows are included
         if not ignore_cba_valuation and 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
             # then add values to XML
 
-            # open and read xml file
-            xml_tree = et.parse(xml_filename)
-            xml_root = xml_tree.getroot()
+            # open and read json file
+            json_tree = json.load(open(json_filename))
 
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
             for obj in csv_data.Tag.unique():
-                mask = csv_data.Tag == obj
-                tag = xml_root.find(obj)
-                # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
-                for ind, row in csv_data[mask].iterrows():
-                    # skip adding to XML if no value is given
-                    if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
-                        continue
-                    key = tag.find(row['Key'])
-                    cba_eval = et.SubElement(key, 'Evaluation')
-                    cba_eval.text = str(row['Evaluation Value'])
-                    cba_eval.set('active', str(row['Evaluation Active']))
-            xml_tree.write(xml_filename)
+                # select all TAG rows
+                tag_sub = csv_data.loc[csv_data.Tag == obj]
+                # loop through each unique value in ID
+                for id_str in tag_sub.ID.unique():
+                    # select rows with given ID_STR
+                    id_tag_sub = tag_sub.loc[tag_sub.ID == id_str]
+                    # middle loop for each object's elements and is sensitivity is needed: max_ch_rated, ene_rated, price, etc.
+                    for _, row in id_tag_sub.iterrows():
+                        # skip adding to JSON if no value is given
+                        if row['Key'] is np.nan or row['Evaluation Value'] == '.' or row['Evaluation Active'] == '.':
+                            continue
+                        else:
+                            key_attrib = json_tree['tags'][obj][str(id_str)]['keys'][row['Key']]
+                            key_attrib['evaluation'] = {
+                                "active": str(row['Evaluation Active']),
+                                "value": str(row['Evaluation Value'])
+                            }
+            # dump json at original file location
+            with open(json_filename, 'w') as json_file:
+                json.dump(json_tree, json_file, sort_keys=True, indent=4)
 
-        return xml_filename
+        return json_filename
 
     @classmethod
     def initialize(cls, filename, verbose):
@@ -109,7 +119,7 @@ class ParamsDER(Params):
 
         # report back any warning associated with the 'Evaulation' column
         if cls.cba_input_error_raised:
-            raise AssertionError("The model parameter has some errors associated to it in the CBA column. Please fix and rerun.")
+            raise ModelParameterError("The model parameter has some errors associated to it in the CBA column. Please fix and rerun.")
 
         # 6) if SA, update case definitions to define which CBA values will apply for each case
         cls.add_evaluation_to_case_definitions()
@@ -130,6 +140,8 @@ class ParamsDER(Params):
         self.DieselGenset = self.read_and_validate('DieselGenset')
         self.CT = self.read_and_validate('CT')
         self.CHP = self.read_and_validate('CHP')
+        self.ElectricVehicle1 = self.read_and_validate('ElectricVehicle1')
+        self.ElectricVehicle2 = self.read_and_validate('ElectricVehicle2')
 
     @classmethod
     def bad_active_combo(cls):
@@ -183,10 +195,27 @@ class ParamsDER(Params):
             or None if no values are active.
 
         """
-        schema_tag = cls.schema_tree.find(name)
+        if '.json' == cls.filename.suffix:
+            return cls.read_and_validate_evaluation_json(name)
+        if '.xml' == cls.filename.suffix:
+            return cls.read_and_validate_evaluation_xml(name)
+
+    @classmethod
+    def read_and_validate_evaluation_xml(cls, name):
+        """ Read data from valuation XML file
+
+        Args:
+            name (str): name of root element in xml file
+
+        Returns: A dictionary where keys are the ID value and the key is a dictionary
+            filled with values provided by user that will be used by the CBA class
+            or None if no values are active.
+
+        """
+        schema_tag = cls.schema_dct.get("tags").get(name)
         # Check if tag is in schema (SANITY CHECK)
         if schema_tag is None:
-            cls.report_warning("missing tag", tag=name, raise_input_error=False)
+            # cls.report_warning("missing tag", tag=name, raise_input_error=False)
             # warn user that the tag given is not in the schema
             return
         tag_elems = cls.xmlTree.findall(name)
@@ -197,10 +226,12 @@ class ParamsDER(Params):
         for tag in tag_elems:
             # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
             if tag.get('active')[0].lower() == "y" or tag.get('active')[0] == "1":
+                id_str = tag.get('id')
                 dictionary = {}
                 # iterate through each key required by the schema
-                for schema_key in schema_tag:
-                    key = tag.find(schema_key.tag)
+                schema_key_dict = schema_tag.get("keys")
+                for schema_key_name, schema_key_attr in schema_key_dict.items():
+                    key = tag.find(schema_key_name)
                     cba_value = key.find('Evaluation')
                     # if we dont have a cba_value, skip to next key
                     if cba_value is None:
@@ -208,7 +239,7 @@ class ParamsDER(Params):
                     # did the user mark cba input as active?
                     if cba_value.get('active')[0].lower() == "y" or cba_value.get('active')[0] == "1":
                         # check if you are allowed to input Evaulation value for the give key
-                        cba_allowed = schema_key.get('cba')
+                        cba_allowed = schema_key_attr.get('cba')
                         if cba_allowed is None or cba_allowed[0].lower() in ['n', '0']:
                             cls.report_warning('cba not allowed', tag=name, key=key.tag, raise_input_error=False)
                             continue
@@ -219,10 +250,9 @@ class ParamsDER(Params):
                                 # if analysis, then convert each value and save as list
                                 tag_key = (tag.tag, key.tag, tag.get('id'))
                                 sensitivity_values = cls.extract_data(key.find('Evaluation').text, intended_type)
-
                                 # validate each value
                                 for values in sensitivity_values:
-                                    cls.checks_for_validate(values, schema_key, name)
+                                    cls.checks_for_validate(values, schema_key_attr, schema_key_name, f"{name}-{id_str}")
 
                                 #  check to make sure the length match with sensitivity analysis value set length
                                 required_values = len(cls.sensitivity['attributes'][tag_key])
@@ -232,11 +262,84 @@ class ParamsDER(Params):
                             else:
                                 # convert to correct data type
                                 valuation_entry = cls.convert_data_type(key.find('Evaluation').text, intended_type)
-                                cls.checks_for_validate(valuation_entry, schema_key, f"{name}-{tag.get('id')}")
+                                cls.checks_for_validate(valuation_entry, schema_key_attr, schema_key_name, f"{name}-{id_str}")
                             # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
                             dictionary[key.tag] = valuation_entry
                 # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
                 tag_data_struct[tag.get('id')] = dictionary
+        return tag_data_struct
+
+    @classmethod
+    def read_and_validate_evaluation_json(cls, name):
+        """ Read data from valuation json file
+
+        Args:
+            name (str): name of root element in json file
+
+        Returns: A dictionary where keys are the ID value and the key is a dictionary
+            filled with values provided by user that will be used by the CBA class
+            or None if no values are active.
+
+        """
+        schema_tag = cls.schema_dct.get("tags").get(name)
+        # Check if tag is in schema (SANITY CHECK)
+        if schema_tag is None:
+            # cls.report_warning("missing tag", tag=name, raise_input_error=False)
+            # warn user that the tag given is not in the schema
+            return
+        # check to see if user includes the tag within the provided json
+        user_tag = cls.json_tree.get(name)
+        if user_tag is None:
+            return
+        tag_data_struct = {}
+        for tag_id, tag_attrib in user_tag.items():
+            # This statement checks if the first character is 'y' or '1', if true it creates a dictionary.
+            active_tag = tag_attrib.get('active')
+            if active_tag is not None and (active_tag[0].lower() == "y" or active_tag[0] == "1"):
+                dictionary = {}
+                # grab the user given keys
+                user_keys = tag_attrib.get('keys')
+                # iterate through each key required by the schema
+                schema_key_dict = schema_tag.get("keys")
+                for schema_key_name, schema_key_attr in schema_key_dict.items():
+                    key_attrib = user_keys.get(schema_key_name)
+                    cba_value = key_attrib.get('evaluation')
+                    # if we dont have a cba_value, skip to next key
+                    if cba_value is None:
+                        continue
+                    # did the user mark cba input as active?
+                    cba_active = cba_value.get('active')
+                    if cba_active[0].lower() in ["y", "1"]:
+                        # check if you are allowed to input Evaulation value for the give key
+                        cba_allowed = schema_key_attr.get('cba')
+                        if cba_allowed is None or cba_allowed[0].lower() in ['n', '0']:
+                            cls.report_warning('cba not allowed', tag=name, key=schema_key_name, raise_input_error=False)
+                            continue
+                        else:
+                            valuation_entry = None
+                            intended_type = key_attrib.get('type')
+                            key_sensitivity = key_attrib.get('sensitivity')
+                            if key_sensitivity is not None and key_sensitivity.get('active', 'no')[0].lower() in ["y", "1"]:
+                                # if analysis, then convert each value and save as list
+                                tag_key = (name, schema_key_name, tag_id)
+                                sensitivity_values = cls.extract_data(cba_value.get('value'), intended_type)
+                                # validate each value
+                                for values in sensitivity_values:
+                                    cls.checks_for_validate(values, schema_key_attr, schema_key_name, f"{name}-{tag_id}")
+
+                                #  check to make sure the length match with sensitivity analysis value set length
+                                required_values = len(cls.sensitivity['attributes'][tag_key])
+                                if required_values != len(sensitivity_values):
+                                    cls.report_warning('cba sa length', tag=name, key=schema_key_name, required_num=required_values)
+                                cls.sensitivity['cba_values'][tag_key] = sensitivity_values
+                            else:
+                                # convert to correct data type
+                                valuation_entry = cls.convert_data_type(cba_value.get('value'), intended_type)
+                                cls.checks_for_validate(valuation_entry, schema_key_attr, schema_key_name, f"{name}-{tag_id}")
+                            # save evaluation value OR save a place for the sensitivity value to fill in the dictionary later w/ None
+                            dictionary[schema_key_name] = valuation_entry
+                # save set of KEYS (in the dictionary) to the TAG that it belongs to (multiple dictionaries if mutliple IDs)
+                tag_data_struct[tag_id] = dictionary
         return tag_data_struct
 
     @classmethod
@@ -403,6 +506,8 @@ class ParamsDER(Params):
         """
 
         time_series = self.Scenario['time_series']
+        dt = self.Scenario['dt']
+        binary = self.Scenario['binary']
         if len(self.Battery):
             for id_str, battery_inputs in self.Battery.items():
                 if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
@@ -444,13 +549,13 @@ class ParamsDER(Params):
                 except KeyError:
                     self.record_input_error(f"Missing 'Site Load (kW)/{id_str}' from timeseries input. Please include a site load.")
 
-                load_inputs.update({'dt': self.Scenario['dt'],
+                load_inputs.update({'dt': dt,
                                     'growth': self.Scenario['def_growth']})
         if len(self.CHP):
             if not self.Scenario['incl_thermal_load']:
                 TellUser.warning('with incl_thermal_load = 0, CHP will ignore any site thermal loads.')
             for id_str, chp_inputs in self.CHP.items():
-                chp_inputs.update({'dt': self.Scenario['dt']})
+                chp_inputs.update({'dt': dt})
 
                 # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
                 if self.Scenario['incl_thermal_load']:
@@ -467,7 +572,7 @@ class ParamsDER(Params):
 
         if len(self.CT):
             for id_str, ct_inputs in self.CT.items():
-                ct_inputs.update({'dt': self.Scenario['dt']})
+                ct_inputs.update({'dt': dt})
 
                 try:
                     ct_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
@@ -477,9 +582,35 @@ class ParamsDER(Params):
 
         if len(self.DieselGenset):
             for id_str, inputs in self.DieselGenset.items():
-                inputs.update({'dt': self.Scenario['dt']})
+                inputs.update({'dt': dt})
 
-        super().load_technology()
+        if self.ElectricVehicle1 is not None:
+            for id_str, ev1_input in self.ElectricVehicle1.items():
+                # max ratings should not be greater than the min rating for power and energy
+                if ev1_input['ch_min_rated'] > ev1_input['ch_max_rated']:
+                    self.record_input_error(f"EV1 #{id_str} ch_max_rated < ch_min_rated. ch_max_rated should be greater than ch_min_rated")
+                # add scenario case parameters to battery parameter dictionary
+
+                # check this code with Halley
+                ev1_input.update({'binary': binary,
+                                  'dt': dt})
+                names_list.append(ev1_input['name'])
+
+        if self.ElectricVehicle2 is not None:
+            for id_str, ev_input in self.ElectricVehicle2.items():
+                # should we have a check for time series data?
+
+                ev_input.update({'binary': binary,
+                                 'dt': dt})
+                names_list.append(ev_input['name'])
+
+                try:
+                    ev_input.update({'EV_baseline': time_series.loc[:, f'EV fleet/{id_str}'],
+                                     'dt': dt})
+                except KeyError:
+                    self.record_input_error(f"Missing 'EV fleet/{id_str}' from timeseries input. Please include EV load.")
+
+        super().load_technology(names_list)
 
     def load_ts_limits(self, id_str, inputs_dct, tag, measurement, unit, time_series):
         input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']

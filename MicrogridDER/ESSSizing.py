@@ -12,7 +12,7 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-from MicrogridDER.Sizing import Sizing
+from MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology.EnergyStorage import EnergyStorage
 from MicrogridDER.DERExtension import DERExtension
 import cvxpy as cvx
@@ -20,22 +20,21 @@ from ErrorHandelling import *
 import numpy as np
 
 
-class ESSSizing(EnergyStorage, DERExtension, Sizing):
+class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
     """ Extended ESS class that can also be sized
 
     """
 
-    def __init__(self, tag, params):
+    def __init__(self, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            tag (str): A unique string name for the technology being added
             params (dict): Dict of parameters
         """
         TellUser.debug(f"Initializing {__name__}")
-        EnergyStorage.__init__(self, tag, params)
+        EnergyStorage.__init__(self, params)
         DERExtension.__init__(self, params)
-        Sizing.__init__(self)
+        ContinuousSizing.__init__(self, params)
         self.incl_energy_limits = params.get('incl_ts_energy_limits', False)  # this is an input included in the dervet schema only --HN
         if self.incl_energy_limits:
             self.limit_energy_max = params['ts_energy_max'].fillna(self.ene_max_rated)
@@ -245,8 +244,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             self.costs (Dict): Dict of objective costs
         """
         costs = super().objective_function(mask, annuity_scalar)
-        if self.being_sized():
-            costs.update({self.name + 'capex': self.get_capex()})
+        costs.update(self.sizing_objective())
         return costs
 
 
@@ -367,7 +365,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             if not self.user_ch_rated_max:
                 max_charging_range = self.user_ch_rated_max - self.ch_min_rated
             else:
-                max_charging_range = np.infty
+                max_charging_range = np.inf
         else:
             max_charging_range = self.ch_max_rated - self.ch_min_rated
         # ability to provide regulation down through discharging less
@@ -375,7 +373,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             if not self.user_ch_rated_max:
                 max_discharging_range = self.user_dis_rated_max - self.dis_min_rated
             else:
-                max_discharging_range = np.infty
+                max_discharging_range = np.inf
         else:
             max_discharging_range = self.dis_max_rated - self.dis_min_rated
         return max_charging_range + max_discharging_range

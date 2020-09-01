@@ -17,6 +17,9 @@ from MicrogridDER.Battery import Battery
 from MicrogridDER.CAES import CAES
 from MicrogridDER.PV import PV
 from MicrogridDER.ICE import ICE
+from MicrogridDER.DieselGenset import DieselGenset
+from MicrogridDER.CombustionTurbine import CT
+from MicrogridDER.CombinedHeatPower import CHP
 from MicrogridDER.LoadControllable import ControllableLoad
 from MicrogridDER.ElectricVehicles import ElectricVehicle1, ElectricVehicle2
 from storagevet.ValueStreams.DAEnergyTimeShift import DAEnergyTimeShift
@@ -57,11 +60,13 @@ class MicrogridScenario(Scenario):
 
         self.technology_inputs_map.update({
             'ElectricVehicle1': input_tree.ElectricVehicle1,
-            'ElectricVehicle2': input_tree.ElectricVehicle2
+            'ElectricVehicle2': input_tree.ElectricVehicle2,
+            'DieselGenset': input_tree.DieselGenset,
+            'CT': input_tree.CT,
+            'CHP': input_tree.CHP,
         })
-
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
-
+        self.deferral_sizing = False
         TellUser.debug("ScenarioSizing initialized ...")
 
     def set_up_poi_and_service_aggregator(self):
@@ -73,12 +78,13 @@ class MicrogridScenario(Scenario):
             'Battery': Battery,
             'PV': PV,
             'ICE': ICE,
+            'DieselGenset': DieselGenset,
+            'CT': CT,
+            'CHP': CHP,
             'Load': ControllableLoad,
             'ElectricVehicle1': ElectricVehicle1,
-            'ElectricVehicle2': ElectricVehicle2
+            'ElectricVehicle2': ElectricVehicle2,
         }
-
-
 
         value_stream_class_map = {
             'Deferral': Deferral,
@@ -99,6 +105,64 @@ class MicrogridScenario(Scenario):
         # these need to be initialized after opt_agg is created
         self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
         self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
+
+        if self.poi.is_sizing_optimization:
+            # if Deferral is active -- require that only DER active is ESS and there is only 1 DER total
+            if 'Deferral' in self.service_agg.value_streams.keys():
+                if len(self.poi.der_list) != 1 or self.poi.der_list[0].technology_type != "Energy Storage System":
+                    TellUser.error('Sizing for deferring an asset upgrade is only implemented for a one ESS case.')
+                    raise ParameterError("No optimization was built or solved. Please check log files for more information. ")
+                # deferral sizing will set the size of the ESS, so no need to check other sizing conditions.
+                self.deferral_sizing = True
+            else:
+                self.check_sizing_conditions()
+
+    def check_sizing_conditions(self):
+        """ Throws an error if any DER is being sized under assumptions that will not
+        result in a solution within a reasonable amount of time.
+
+        """
+        error = False
+        # make sure the optimization horizon is the whole year
+        if self.n != 'year' and 'Reliability' not in self.service_agg.value_streams.keys():
+            TellUser.error('Trying to size without setting the optimization window to \'year\'')
+            error = True
+        # any wholesale markets active?
+        if self.service_agg.is_whole_sale_market():
+            TellUser.warning('trying to size the power of the battery to maximize profits in wholesale markets.' +
+                             ' We will not run analysis power capacity is not limited by the DERs or through market participation constraints.')
+            # check that either (1) or (2) is true
+            # 1) if all wholesale markets has a max defined
+            not_all_markets_have_max = self.service_agg.any_max_participation_constraints_not_included()
+            # 2) for each technology, if power is being sized and max is defined
+            not_all_power_max_defined = self.poi.is_any_sizable_der_missing_power_max()
+            # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
+            participation_constraints_are_infeasible = self.check_for_infeasible_regulation_constraints_with_system_size()
+            error = error or not_all_markets_have_max or not_all_power_max_defined or participation_constraints_are_infeasible
+        # check if only have Reliability and post_facto_only==1
+        if self.service_agg.post_facto_reliability_only():
+            TellUser.error('trying to size and preform post facto calculations only')
+            error = True
+        # check if binary will create a DCP error based on formulation
+        if self.poi.is_dcp_error(self.incl_binary):
+            TellUser.error('trying to size power and use binary formulation results in nonlinear models')
+            error = True
+
+        if error:
+            raise ParameterError("Further calculations requires that economic dispatch is solved, but "
+                                 + "no optimization was built or solved. Please check log files for more information. ")
+        
+    def fill_and_drop_extra_data(self):
+        """ Go through value streams and technologies and keep data for analysis years, and add more
+        data if necessary.  ALSO creates/assigns optimization levels.
+
+        Returns: None
+
+        """
+        super(MicrogridScenario, self).fill_and_drop_extra_data()
+        if self.deferral_sizing:
+            # set size of ESS
+            self.poi.der_list = self.service_agg.set_size(self.poi.der_list, self.start_year)
 
     def initialize_cba(self):
         self.financials = CostBenefitAnalysis(self.finance_inputs)
@@ -142,7 +206,6 @@ class MicrogridScenario(Scenario):
         """
         alpha = 1
         if self.poi.is_sizing_optimization:
-            self.check_sizing_conditions()
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
@@ -192,41 +255,6 @@ class MicrogridScenario(Scenario):
             for vs in self.service_agg.value_streams.values():
                 vs.save_variable_results(sub_index)
         return True
-
-    def check_sizing_conditions(self):
-        """ Throws an error if any DER is being sized under assumptions that will not
-        result in a solution within a reasonable amount of time.
-
-        """
-        error = False
-        # make sure the optimization horizon is the whole year
-        if self.n != 'year' and 'Reliability' not in self.service_agg.value_streams.keys():
-            TellUser.error('Trying to size without setting the optimization window to \'year\'')
-            error = True
-        # any wholesale markets active?
-        if self.service_agg.is_whole_sale_market():
-            TellUser.warning('trying to size the power of the battery to maximize profits in wholesale markets.' +
-                             ' We will not run analysis power capacity is not limited by the DERs or through market participation constraints.')
-            # check that either (1) or (2) is true
-            # 1) if all wholesale markets has a max defined
-            not_all_markets_have_max = self.service_agg.any_max_participation_constraints_not_included()
-            # 2) for each technology, if power is being sized and max is defined
-            not_all_power_max_defined = self.poi.is_any_sizable_der_missing_power_max()
-            # add validation step here to check on compatibility of the tech size constraints and timeseries service constraints
-            participation_constraints_are_infeasible = self.check_for_infeasible_regulation_constraints_with_system_size()
-            error = error or not_all_markets_have_max or not_all_power_max_defined or participation_constraints_are_infeasible
-        # check if only have Reliability and post_facto_only==1
-        if self.service_agg.post_facto_reliability_only():
-            TellUser.error('trying to size and preform post facto calculations only')
-            error = True
-        # check if binary will create a DCP error based on formulation
-        if self.poi.is_dcp_error(self.incl_binary):
-            TellUser.error('trying to size power and use binary formulation results in nonlinear models')
-            error = True
-
-        if error:
-            raise ParameterError("Further calculations requires that economic dispatch is solved, but "
-                                 + "no optimization was built or solved. Please check log files for more information. ")
 
     def check_for_infeasible_regulation_constraints_with_system_size(self):
         """ perform error checks on DERs that are being sized with ts_user_constraints

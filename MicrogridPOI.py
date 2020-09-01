@@ -103,6 +103,8 @@ class MicrogridPOI(POI):
             total state of energy stored in the system
             aggregation of all the power flows into the POI
             aggregation of all the power flows out if the POI
+            aggregation of thermal heating power (heat recovered)
+            aggregation of thermal cooling power (cold recovered)
         """
         opt_var_size = sum(mask)
         load_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
@@ -112,6 +114,8 @@ class MicrogridPOI(POI):
         total_soe = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
         agg_power_flows_in = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
         agg_power_flows_out = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+        agg_thermal_heating_power = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
+        agg_thermal_cooling_power = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
 
         for der_instance in self.active_ders:
             # add the state of the der's power over time & stored energy over time to system's
@@ -131,7 +135,22 @@ class MicrogridPOI(POI):
                 gen_sum += der_instance.get_discharge(mask)
             if der_instance.technology_type == 'Intermittent Resource':
                 var_gen_sum += der_instance.get_discharge(mask)
-        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out
+
+            # thermal (hot and cold) power recovered
+            if der_instance.is_hot:
+                if self.site_heating_load is None:
+                    TellUser.warning(f'A heat source technology is active: {der_instance.tag}, but you have set the scenario parameter incl_thermal_load to False. The thermal load will be ignored.')
+                else:
+                    TellUser.debug(f'adding heat recovered from this DER: {der_instance.tag}')
+                    agg_thermal_heating_power += der_instance.get_heat_recovered(mask)
+            if der_instance.is_cold:
+                if self.site_cooling_load is None:
+                    TellUser.warning(f'A cold source technology is active: {der_instance.tag}, but you have set the scenario parameter incl_thermal_load to False. The thermal load will be ignored.')
+                else:
+                    TellUser.debug(f'adding cold recovered from this DER: {der_instance.tag}')
+                    agg_thermal_cooling_power += der_instance.get_cold_recovered(mask)
+
+        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out, agg_thermal_heating_power, agg_thermal_cooling_power
 
     def merge_reports(self, index):
         """ Collects and merges the optimization results for all DERs into
@@ -155,7 +174,7 @@ class MicrogridPOI(POI):
             report_df = der_instance.timeseries_report()
             results = pd.concat([report_df, results], axis=1)
             if der_instance.technology_type in ['Generator', 'Intermittent Resource']:
-                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Generation (kW)']
+                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Electric Generation (kW)']
             if der_instance.technology_type == 'Energy Storage System':
                 results.loc[:, 'Total Storage Power (kW)'] += results[f'{der_instance.unique_tech_id()} Power (kW)']
                 results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']

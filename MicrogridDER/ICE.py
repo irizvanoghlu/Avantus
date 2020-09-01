@@ -14,14 +14,13 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
-from MicrogridDER.Sizing import Sizing
-from MicrogridDER.DERExtension import DERExtension
 from ErrorHandelling import *
 import numpy as np
+from MicrogridDER.RotatingGeneratorSizing import RotatingGeneratorSizing
 
 
-class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
-    """ An ICE generator
+class ICE(InternalCombustionEngine.ICE, RotatingGeneratorSizing):
+    """ An ICE generator, with sizing optimization
 
     """
 
@@ -31,16 +30,8 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         Args:
             params (dict): Dict of parameters for initialization
         """
-        Sizing.__init__(self)
-        DERExtension.__init__(self, params)
-        self.n_min = params['n_min']  # generators
-        self.n_max = params['n_max']  # generators
-        if self.being_sized():
-            params['n'] = cvx.Variable(integer=True, name='generators')
-        else:
-            params['n'] = self.n_max
-        # create generic technology object
-        InternalCombustionEngine.ICE.__init__(self, params)
+        TellUser.debug(f"Initializing {__name__}")
+        super().__init__(params)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -52,21 +43,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        ice_gen = self.variables_dict['ice_gen']
-        on_ice = self.variables_dict['on_ice']
         constraint_list = super().constraints(mask)
-
-        if self.being_sized():
-            # take only the first constraint from parent class - second will cause a DCP error, so we add other constraints here to
-            # cover that constraint
-            constraint_list = [constraint_list[0]]
-
-            constraint_list += [cvx.NonPos(ice_gen - cvx.multiply(self.rated_power * self.n_max, on_ice))]
-            constraint_list += [cvx.NonPos(ice_gen - self.n * self.rated_power)]
-
-            constraint_list += [cvx.NonPos(self.n_min - self.n)]
-            constraint_list += [cvx.NonPos(self.n - self.n_max)]
-
         return constraint_list
 
     def objective_function(self, mask, annuity_scalar=1):
@@ -81,59 +58,8 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
             self.costs (Dict): Dict of objective costs
         """
         costs = super().objective_function(mask, annuity_scalar)
-        if self.being_sized():
-            costs[self.name + '_ccost'] = self.get_capex()
 
         return costs
-
-    def sizing_summary(self):
-        """
-
-        Returns: A dictionary describe this DER's size and captial costs.
-
-        """
-        sizing_results = {
-            'DER': self.name,
-            'Power Capacity (kW)': self.rated_power,
-            'Capital Cost ($)': self.capital_cost_function[0],
-            'Capital Cost ($/kW)': self.capital_cost_function[1],
-            'Quantity': self.number_of_generators()}
-        return sizing_results
-
-    def number_of_generators(self):
-        """
-
-        Returns: number of generators, the value of N
-
-        """
-        try:
-            n = self.n.value
-        except AttributeError:
-            n = self.n
-        return n
-
-    def max_power_out(self):
-        """
-
-        Returns: the maximum power that can be outputted by this genset
-
-        """
-        power_out = self.number_of_generators() * self.rated_power
-        return power_out
-
-    def being_sized(self):
-        """ checks itself to see if this instance is being sized
-
-        Returns: true if being sized, false if not being sized
-
-        """
-        return self.n_min != self.n_max
-
-    def set_size(self):
-        self.n =self.n.value
-        self.n_min = self.n
-        self.n_max = self.n
-        return
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary
@@ -143,52 +69,7 @@ class ICE(InternalCombustionEngine.ICE, Sizing, DERExtension):
 
         """
         super().update_for_evaluation(input_dict)
-        # ccost = input_dict.get('ccost')
-        # if ccost is not None:
-        #     self.capital_cost_function[0] = ccost
-        #
-        ccost_kw = input_dict.get('ccost_kW')
-        if ccost_kw is not None:
-            self.capital_cost_function[1] = ccost_kw
 
         fuel_cost = input_dict.get('fuel_cost')
         if fuel_cost is not None:
             self.fuel_cost = fuel_cost
-
-        variable_cost = input_dict.get('variable_om_cost')
-        if variable_cost is not None:
-            self.variable_om = variable_cost
-
-        fixed_om_cost = input_dict.get('fixed_om_cost')
-        if variable_cost is not None:
-            self.fixed_om = fixed_om_cost
-
-    def sizing_error(self):
-        """
-
-        Returns: True if there is an input error
-
-        """
-        if self.n_min > self.n_max:
-            TellUser.error(f'{self.unique_tech_id()} must have n_min < n_max')
-            return True
-        return False
-
-    def replacement_cost(self):
-        """
-
-        Returns: the cost of replacing this DER
-
-        """
-        return np.dot(self.replacement_cost_function, [self.number_of_generators(), self.discharge_capacity()])
-
-    def max_p_schedule_down(self):
-        # ability to provide regulation down through discharging less
-        if isinstance(self.n, cvx.Variable):
-            if not self.n_max:
-                max_discharging_range = (self.n_max * self.rated_power) - self.p_min
-            else:
-                max_discharging_range = np.infty
-        else:
-            max_discharging_range = self.max_power_out() - self.p_min
-        return max_discharging_range

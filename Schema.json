@@ -30,6 +30,12 @@
                         "min": "0.0",
                         "type": "float",
                         "unit": "$/year"
+                    },
+                    "min_year_objective": {
+                        "cba": "n",
+                        "min": "0",
+                        "type": "int",
+                        "unit": "years"
                     }
                 }
             },
@@ -164,7 +170,8 @@
             },
             "Backup": {
                 "type": "service",
-                "max_num": "1"
+                "max_num": "1",
+                "keys": {}
             },
             "User": {
                 "type": "service",

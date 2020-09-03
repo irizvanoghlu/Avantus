@@ -18,11 +18,11 @@ import numpy as np
 import pandas as pd
 from storagevet.Technology.DistributedEnergyResource import DER
 from MicrogridDER.DERExtension import DERExtension
-from MicrogridDER.Sizing import Sizing
+from MicrogridDER.ContinuousSizing import ContinuousSizing
 from ErrorHandelling import *
 
 
-class ElectricVehicle1(DER, Sizing, DERExtension):
+class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
     """ A general template for storage object
 
     We define "storage" as anything that can affect the quantity of load/power being delivered or used. Specific
@@ -39,9 +39,13 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         """
         TellUser.debug(f"Initializing ElectricVehicle1")
         # create generic technology object
-        DER.__init__(self, 'ElectricVehicle1', 'Electric Vehicle', params)
-        Sizing.__init__(self)
+        DER.__init__(self, params)
+        ContinuousSizing.__init__(self, params)
         DERExtension.__init__(self, params)
+
+        self.technology_type = 'Electric Vehicle'
+        self.tag = 'ElectricVehicle1'
+
         self.ene_target = params['ene_target']
         self.ch_max_rated = params['ch_max_rated']
         self.ch_min_rated = params['ch_min_rated']
@@ -306,19 +310,19 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
 
         """
         pro_forma = DER.proforma_report(self, opt_years, results)
-        pro_forma[self.fixed_column_name] = 0
+        pro_forma[self.fixed_column_name()] = 0
 
         for year in opt_years:
             # add fixed o&m costs
-            pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
+            pro_forma.loc[year, self.fixed_column_name()] = -self.fixed_om
 
         return pro_forma
 
     def sizing_summary(self):
         """ Creates the template for sizing df that each DER must fill to report their size.
-    
+
         Returns: A dictionary describe this DER's size and captial costs.
-    
+
         """
         # template = pd.DataFrame(columns=)
         sizing_dict = {
@@ -339,7 +343,7 @@ class ElectricVehicle1(DER, Sizing, DERExtension):
         return sizing_dict
 
 
-class ElectricVehicle2(DER, Sizing, DERExtension):
+class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
     """ A general template for storage object
 
     We define "storage" as anything that can affect the quantity of load/power being delivered or used. Specific
@@ -356,9 +360,13 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
         """
         TellUser.debug(f"Initializing ElectricVehicle2")
         # create generic technology object
-        DER.__init__(self, 'ElectricVehicle2', 'Electric Vehicle', params)
-        Sizing.__init__(self)
+        DER.__init__(self, params)
+        ContinuousSizing.__init__(self, params)
         DERExtension.__init__(self, params)
+
+        self.technology_type = 'Electric Vehicle'
+        self.tag = 'ElectricVehicle2'
+
         # input params
         # note: these should never be changed in simulation (i.e from degradation)
 
@@ -436,8 +444,8 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
                     in the subs data set
 
         Returns: CVXPY parameter/variable
-        
-        
+
+
 
         """
         return self.variables_dict['ch'] - (1 - self.max_load_ctrl) * self.EV_load_TS[mask]
@@ -536,19 +544,19 @@ class ElectricVehicle2(DER, Sizing, DERExtension):
 
         """
         pro_forma = DER.proforma_report(self, opt_years, results)
-        pro_forma[self.fixed_column_name] = 0
+        pro_forma[self.fixed_column_name()] = 0
 
         for year in opt_years:
             # add fixed o&m costs
-            pro_forma.loc[year, self.fixed_column_name] = -self.fixed_om
+            pro_forma.loc[year, self.fixed_column_name()] = -self.fixed_om
 
         return pro_forma
 
     def sizing_summary(self):
         """ Creates the template for sizing df that each DER must fill to report their size.
-    
+
         Returns: A dictionary describe this DER's size and captial costs.
-    
+
         """
         # template = pd.DataFrame(columns=)
         sizing_dict = {

@@ -16,7 +16,6 @@ __version__ = '0.1.1'
 from storagevet.SystemRequirement import Requirement
 import storagevet.Library as Lib
 from storagevet.ValueStreams.ValueStream import ValueStream
-from MicrogridDER.Sizing import Sizing
 import numpy as np
 import cvxpy as cvx
 import pandas as pd

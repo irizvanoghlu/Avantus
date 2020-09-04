@@ -224,7 +224,7 @@ class MicrogridScenario(Scenario):
             # calculate and check that system requirement set by value streams can be met
             system_requirements = self.check_system_requirements()
 
-        if self.poi.need_opt_prob_loop ==False:
+        if not self.poi.need_opt_prob_loop:
 
 
             return True

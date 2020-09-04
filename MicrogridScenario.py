@@ -196,8 +196,8 @@ class MicrogridScenario(Scenario):
 
         der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
         self.poi.der_list = der_list
-        #Resetting sizing flag. It doesn't size for other services.
-        self.poi.is_sizing_optimization=False
+        # Resetting sizing flag. It doesn't size for other services.
+        self.poi.is_sizing_optimization = False
         if self.service_agg.is_Reliability_only_value_stream():
             self.poi.need_opt_prob_loop = False
 
@@ -213,7 +213,9 @@ class MicrogridScenario(Scenario):
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
-        if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
+        if self.service_agg.is_deferral_only():
+            TellUser.warning("Only active Value Stream is Deferral, so not optimizations will run...")
+        elif self.service_agg.post_facto_reliability_only():
             TellUser.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
             self.service_agg.value_streams['Reliability'].use_soc_init = True
             TellUser.warning("SOC_init will be used for Post-Facto Calculation")

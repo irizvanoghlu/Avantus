@@ -115,14 +115,14 @@ class Reliability(ValueStream):
         # stop looping when find first uncovered == -1 (got through entire opt
         while First_failure_ind >= 0:
             der_list = self.size_for_outages(opt_index, analysis_indices, der_list)
-            for der_instance in der_list:
-
-                if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
-                    print(der_instance.dis_max_rated.value, der_instance.ch_max_rated.value, der_instance.ene_max_rated.value)
-                if der_instance.technology_type == 'Generator' and der_instance.being_sized():
-                    print(der_instance.n.value)
-                if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
-                    print(der_instance.rated_capacity.value)
+            # for der_instance in der_list:
+            #
+            #     if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
+            #         print(der_instance.ene_max_rated.value)
+            #     if der_instance.technology_type == 'Generator' and der_instance.being_sized():
+            #         print(der_instance.n.value)
+            #     if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
+            #         print(der_instance.rated_capacity.value)
             generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
 
             no_of_ES = len(ess_properties['rte list'])

@@ -33,43 +33,28 @@ class ParamsDER(Params):
     schema_location = Path(__file__).absolute().with_name('Schema.json')
     cba_input_error_raised = False
     cba_input_template = None
-    # TODO add to this as needed --AE
-    dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV']
+    dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV'] # TODO add to this as needed --AE
 
     @staticmethod
-    def csv_to_json(csv_filename, ignore_cba_valuation=False):
-        """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
-        corresponds the values used to evaluate the CBA.
+    def pandas_to_dict(model_parameter_pd):
+        """converts csv to a json--which DERVET can then read directly
 
         Args:
-            csv_filename (string): name of csv file
-            ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
-                testing purposes)
+            model_parameter_pd:
 
-
-        Returns:
-            opt_xml_filename (string): name of xml file with parameter values for optimization evaluation
-
+        Returns: dictionary that can be jumped as json in the data structure that DER-VET reads
 
         """
-        json_filename = Params.csv_to_json(csv_filename)
-
-        # open csv to read into dataframe and blank xml file to write to
-        csv_data = pd.read_csv(csv_filename)
+        json_tree = Params.pandas_to_dict(model_parameter_pd)
         # check if there was an ID column, if not then add one filled with '.'
-        if 'ID' not in csv_data.columns:
-            csv_data['ID'] = np.repeat('', len(csv_data))
+        if 'ID' not in model_parameter_pd.columns:
+            model_parameter_pd['ID'] = np.repeat('', len(model_parameter_pd))
         # check to see if Evaluation rows are included
-        if not ignore_cba_valuation and 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
-            # then add values to XML
-
-            # open and read json file
-            json_tree = json.load(open(json_filename))
-
+        if 'Evaluation Value' in model_parameter_pd.columns and 'Evaluation Active' in model_parameter_pd.columns:
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
-            for obj in csv_data.Tag.unique():
+            for obj in model_parameter_pd.Tag.unique():
                 # select all TAG rows
-                tag_sub = csv_data.loc[csv_data.Tag == obj]
+                tag_sub = model_parameter_pd.loc[model_parameter_pd.Tag == obj]
                 # loop through each unique value in ID
                 for id_str in tag_sub.ID.unique():
                     # select rows with given ID_STR
@@ -85,11 +70,7 @@ class ParamsDER(Params):
                                 "active": str(row['Evaluation Active']),
                                 "value": str(row['Evaluation Value'])
                             }
-            # dump json at original file location
-            with open(json_filename, 'w') as json_file:
-                json.dump(json_tree, json_file, sort_keys=True, indent=4)
-
-        return json_filename
+        return json_tree
 
     @classmethod
     def initialize(cls, filename, verbose):

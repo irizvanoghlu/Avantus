@@ -68,7 +68,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().constraints(mask, kwargs)
+        constraints = super().constraints(mask, **kwargs)
         constraints += self.size_constraints
         return constraints
 

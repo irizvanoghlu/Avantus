@@ -201,7 +201,6 @@ class MicrogridScenario(Scenario):
         if self.service_agg.is_Reliability_only_value_stream():
             self.poi.need_opt_prob_loop = False
 
-
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
 
@@ -219,14 +218,13 @@ class MicrogridScenario(Scenario):
             self.service_agg.value_streams['Reliability'].use_soc_init = True
             TellUser.warning("SOC_init will be used for Post-Facto Calculation")
         elif self.service_agg.post_facto_reliability_only_and_User_constraint():
-            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run. Energy min profile from User_constraint will be used")
+            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run." +
+                             " Energy min profile from User_constraint will be used")
             self.service_agg.value_streams['Reliability'].use_user_const = True
             # calculate and check that system requirement set by value streams can be met
             system_requirements = self.check_system_requirements()
 
         if not self.poi.need_opt_prob_loop:
-
-
             return True
 
         # calculate and check that system requirement set by value streams can be met

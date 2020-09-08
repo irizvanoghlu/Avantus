@@ -140,20 +140,6 @@
                         "type": "bool",
                         "unit": "yes/no"
                     },
-                    "nu": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
-                    "gamma": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "max_outage_duration": {
                         "cba": "n",
                         "min": "1",
@@ -465,6 +451,20 @@
             "PV": {
                 "type": "intermittentresource",
                 "keys":{
+                    "nu": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "gamma": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
                     "startup_time": {
                         "cba": "n",
                         "min": "0",

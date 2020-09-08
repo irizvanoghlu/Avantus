@@ -45,8 +45,6 @@ class Reliability(ValueStream):
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
         self.soc_init = params['post_facto_initial_soc'] / 100
-        self.nu = params['nu'] / 100
-        self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
         self.n_2 = params['n-2']
         self.critical_load = params['critical load']
@@ -388,11 +386,14 @@ class Reliability(ValueStream):
         }
 
         total_pv_max = np.zeros(len(self.critical_load))
+        total_pv_vari = np.zeros(len(self.critical_load))  # PV generation w/ variability taken into account
         total_dg_max = 0
         solution = not sizing
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not sizing):
-                total_pv_max += der_inst.maximum_generation() #label_selection='Reliability')
+                pv_inst_gen = der_inst.maximum_generation()
+                total_pv_max += pv_inst_gen
+                total_pv_vari += pv_inst_gen * der_inst.nu
                 ess_properties['pv present'] = True
             if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not sizing):
                 total_dg_max += der_inst.max_power_out()
@@ -408,7 +409,7 @@ class Reliability(ValueStream):
             total_dg_max -= self.ice_rating
         generation = np.repeat(total_dg_max, len(self.critical_load))
         demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
-        reliability_check = np.around(self.critical_load.values - generation - (self.nu * total_pv_max),decimals=5)  #np.around(), decimals=5)
+        reliability_check = np.around(self.critical_load.values - generation - total_pv_vari, decimals=5)
 
         return generation, total_pv_max, ess_properties, demand_left, reliability_check
 
@@ -455,7 +456,7 @@ class Reliability(ValueStream):
                 if ess_properties['pv present']:
                     energy_check = np.around((current_reliability_check * self.gamma) - init_soe,decimals=5)
                 else:
-                    energy_check = np.around(current_reliability_check - init_soe,decimals=5)
+                    energy_check = np.around(current_reliability_check - init_soe, decimals=5)
                 if 0 >= energy_check:
                     # so discharge to meet the load offset by all generation
                     discharge_possible = (init_soe - ess_properties['operation SOE min']) / self.dt
@@ -570,7 +571,7 @@ class Reliability(ValueStream):
             mask.iloc[:] = False
             mask.iloc[outage_ind: (outage_ind + self.outage_duration)] = True
             # set up variables
-            var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')  # at POI
+            # var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')  # at POI
             gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
             tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
 
@@ -583,14 +584,16 @@ class Reliability(ValueStream):
                 if der_instance.technology_type == 'Generator':
                     gen_sum += der_instance.get_discharge(mask)
                 if der_instance.technology_type == 'Intermittent Resource':
-                    var_gen_sum += der_instance.get_discharge(mask)
+                    # var_gen_sum += der_instance.get_discharge(mask) * der_instance.nu
+                    gen_sum += der_instance.get_discharge(mask) * der_instance.nu
 
             critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=self.outage_duration)
-            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * (self.nu * var_gen_sum) + critical_load_arr)]
+            # consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
+            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)]
 
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
-        prob.solve(solver=cvx.GLPK_MI) #,gp=True)
+        prob.solve(solver=cvx.GLPK_MI)
 
         return der_list
 

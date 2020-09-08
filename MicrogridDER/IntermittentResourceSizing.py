@@ -36,6 +36,8 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         DERExtension.__init__(self, params)
         ContinuousSizing.__init__(self, params)
 
+        self.nu = params['nu'] / 100
+        self.gamma = params['gamma'] / 100
         self.curtail = params['curtail']
         self.max_rated_capacity = params['max_rated_capacity']
         self.min_rated_capacity = params['min_rated_capacity']

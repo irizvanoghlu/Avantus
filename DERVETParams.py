@@ -556,12 +556,12 @@ class ParamsDER(Params):
 
                 # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
                 if self.Scenario['incl_thermal_load']:
-                    try:
+                    try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                         chp_inputs.update({'site_heating_load': time_series.loc[:, 'Site Heating Load (BTU/hr)']})
                     except KeyError:
                         self.record_input_error("CHP is missing 'Site Heating Load (BTU/hr)' from timeseries data input")
 
-                try:
+                try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                     chp_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
                                                                                        self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
                 except KeyError:
@@ -571,7 +571,7 @@ class ParamsDER(Params):
             for id_str, ct_inputs in self.CT.items():
                 ct_inputs.update({'dt': dt})
 
-                try:
+                try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                     ct_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
                                                                                        self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
                 except KeyError:

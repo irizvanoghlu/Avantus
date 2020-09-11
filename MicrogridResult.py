@@ -30,7 +30,7 @@ class MicrogridResult(Result):
         """
         super().__init__(scenario)
         self.sizing_df = pd.DataFrame()
-        self.pf_flag=self.service_agg.post_facto_reliability_only() or self.service_agg.post_facto_reliability_only_and_User_constraint() or self.service_agg.is_Reliability_only_value_stream()
+        self.pf_flag= self.service_agg.post_facto_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined() or self.service_agg.is_reliability_only()
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down

@@ -548,6 +548,12 @@
                         "cba": "n",
                         "type": "string"
                     },
+                    "fixed_om_cost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/year"
+                    },
                     "construction_year": {
                         "cba": "n",
                         "type": "Period",
@@ -1915,7 +1921,12 @@
                     },
                     "ter": {
                         "cba": "n",
-                        "max": "100.0",
+                        "max": "100.0","fixed_om_cost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/year"
+                    },
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"

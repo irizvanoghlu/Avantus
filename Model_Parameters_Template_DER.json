@@ -2507,6 +2507,19 @@
                         },
                         "type": "int"
                     },
+                    "fixed_om_cost": {
+                        "evaluation": {
+                            "active": "n",
+                            "value": "12"
+                        },
+                        "opt_value": "12",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "grid_charge": {
                         "opt_value": "0",
                         "sensitivity": {

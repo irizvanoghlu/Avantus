@@ -262,12 +262,13 @@ class DERExtension:
         return ecc_df
 
     def put_capital_cost_on_construction_year(self, indx):
-        """
+        """ If the construction year of the DER is the start year of the project or after,
+        the apply the capital cost on the year of construction.
 
         Args:
             indx:
 
-        Returns:
+        Returns: dataframe with the capex cost on the correct project year
 
         """
         start_year = indx[1]
@@ -278,5 +279,5 @@ class DERExtension:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        capex_df.loc[self.construction_year, self.zero_column_name()] = capex
+        capex_df.loc[self.construction_year, self.zero_column_name()] = -capex
         return capex_df

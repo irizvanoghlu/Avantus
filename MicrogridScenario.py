@@ -241,6 +241,12 @@ class MicrogridScenario(Scenario):
                                                               ignore_der_costs=self.service_agg.post_facto_reliability_only())
             objective_values = self.run_optimization(functions, constraints, opt_period)
 
+            for der in self.poi.active_ders:
+                der.save_variable_results(sub_index)
+            for vs in self.service_agg.value_streams.values():
+                vs.save_variable_results(sub_index)
+
+
             # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.active_ders:
                 if der.technology_type == "Energy Storage System":
@@ -250,10 +256,7 @@ class MicrogridScenario(Scenario):
             self.objective_values = pd.concat([self.objective_values, objective_values])
 
             # record the solution of the variables and run again
-            for der in self.poi.active_ders:
-                der.save_variable_results(sub_index)
-            for vs in self.service_agg.value_streams.values():
-                vs.save_variable_results(sub_index)
+
         return True
 
     def check_for_infeasible_regulation_constraints_with_system_size(self):

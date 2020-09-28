@@ -1301,7 +1301,7 @@
                         "allowed_values": "1|0",
                         "cba": "y",
                         "type": "bool",
-                        "unit": "yea/no"
+                        "unit": "yes/no"
                     },
                     "ccost": {
                         "cba": "y",
@@ -1675,10 +1675,10 @@
                         "type": "float",
                         "unit": "%"
                     },
-                    "rte": {
-                        "min": "0.0",
+                    "energy_ratio": {
+                        "min": "1.0",
                         "type": "float",
-                        "unit": "%"
+                        "unit": "ratio"
                     },
                     "sdr": {
                         "max": "99.9",

@@ -169,7 +169,7 @@ CAES,1,dis_min_rated,0,kW,float,"[0, dis_min_rated)",N/A,None,Energy Storage Dis
 CAES,1,ene_max_rated,10000,kWh,float,"[0, ene_max_rated)",N/A,None,Energy Storage Energy Capacity,.,no,,,
 CAES,1,ulsoc,100,%,float,"[0, 100] (must be more than llsoc)",N/A,None,Energy Storage SOC Upper Bound,.,no,,,
 CAES,1,llsoc,20,%,float,"[0, 100] (must be less than ulsoc)",N/A,None,Energy Storage SOC Lower Bound,.,no,,,
-CAES,1,rte,85,%,float,"[0, 100] ",N/A,None,Energy Storage Round Trip Efficiency,.,no,,,
+CAES,1,energy_ratio,1.18,ratio,float,"[1, energy_ratio) ",N/A,None,Energy Ratio,.,no,,,
 CAES,1,sdr,0,%/hr,float,"[0, 99]",N/A,None,Energy Storage Self-Discharge Rate,.,no,,,
 CAES,1,soc_target,50,%,float,"[0, 100] ",N/A,None,The SOC the storage system will return to after every optimization window,.,no,,,
 CAES,1,p_start_ch,0,$,float,"[0, p_start_ch)",N/A,None,Startup cost to start charging,.,no,,,

@@ -247,11 +247,13 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         costs.update(self.sizing_objective())
         return costs
 
-
     def set_size(self):
-        self.dis_max_rated=self.discharge_capacity(solution=True)
-        self.ch_max_rated=self.charge_capacity(solution=True)
-        self.ene_max_rated=self.energy_capacity(solution=True)
+        """ Save value of size variables of DERs
+
+        """
+        self.dis_max_rated = self.discharge_capacity(solution=True)
+        self.ch_max_rated = self.charge_capacity(solution=True)
+        self.ene_max_rated = self.energy_capacity(solution=True)
         return
 
     def sizing_summary(self):

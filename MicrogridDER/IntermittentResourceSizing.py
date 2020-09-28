@@ -102,6 +102,16 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
         return results
 
+    def set_size(self):
+        """ Save value of size variables of DERs
+
+        """
+        try:
+            rated_capacity = self.rated_capacity.value
+        except AttributeError:
+            rated_capacity = self.rated_capacity
+        self.rated_capacity = rated_capacity
+
     def sizing_summary(self):
         """
 

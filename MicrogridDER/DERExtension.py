@@ -43,6 +43,7 @@ class DERExtension:
         self.replaceable = params['replaceable']
         self.acr = params['acr'] / 100
         self.escalation_rate = params['ter'] / 100
+        self.ecc_perc = params['ecc%'] / 100
 
         self.replacement_cost_function = []
         rcost = params.get('rcost')
@@ -209,6 +210,31 @@ class DERExtension:
                                   index=replacement_yrs)
         return report
 
+    def get_ecc_perc(self, d):
+        """ if the user has given an ECC perc, then
+
+        Args:
+            d (float): discount rate
+
+        Returns:
+
+        """
+        try:
+            capex = self.get_capex().value
+        except AttributeError:
+            capex = self.get_capex()
+
+        acr = self.acr * capex
+
+        k_factor = [acr / ((1 + d)**k) for k in range(1, self.expected_lifetime + 1)]
+        k_factor = sum(k_factor)
+
+        time_factor = (1+self.escalation_rate)/(1+d)
+        repalcement_factor = 1 / (1 - (time_factor**self.expected_lifetime))
+
+        ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
+        return ecc_perc
+
     def economic_carrying_cost(self, d, indx):
         """ assumes length of project is the lifetime expectancy of this DER
 
@@ -223,15 +249,12 @@ class DERExtension:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        acr = self.acr * capex
+        time_factor = (1 + self.escalation_rate) / (1 + d)
+        if self.ecc_perc:
+            ecc_perc = self.ecc_perc
+        else:
+            ecc_perc = self.get_ecc_perc(d)
 
-        k_factor = [acr / ((1 + d)**k) for k in range(1, self.expected_lifetime + 1)]
-        k_factor = sum(k_factor)
-
-        time_factor = (1+self.escalation_rate)/(1+d)
-        repalcement_factor = 1 / (1 - (time_factor**self.expected_lifetime))
-
-        ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         ecc = capex * ecc_perc
         per_yr = [-ecc*(time_factor**(k-1)) if not isinstance(year, str) and self.construction_year.year <= year.year <= self.last_operation_year.year
                   else 0 for k, year in enumerate(indx.values)]

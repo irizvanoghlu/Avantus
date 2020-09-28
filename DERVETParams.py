@@ -508,12 +508,19 @@ class ParamsDER(Params):
         time_series = self.Scenario['time_series']
         dt = self.Scenario['dt']
         binary = self.Scenario['binary']
+        if len(self.PV):
+            for id_str, pv_inputs in self.PV.items():
+                if not pv_inputs['rated_capacity']:
+                    if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:
+                        self.record_input_error('Error: maximum rated power is less than the minimum rated power.' +
+                                                f"PV {id_str}")
         if len(self.Battery):
             for id_str, battery_inputs in self.Battery.items():
                 if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
                     if not battery_inputs['ch_max_rated']:
                         if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
-                            self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.')
+                            self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.' +
+                                                    f"BATTERY {id_str}")
                     if not battery_inputs['dis_max_rated']:
                         if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
                             self.record_input_error('User battery min discharge power requirement is greater than max discharge power requirement.')

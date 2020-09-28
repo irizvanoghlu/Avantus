@@ -95,6 +95,7 @@ PV,1,growth,5,%/yr,float,"[0, 100]",N/A,None,"Annual pv generation growth rate. 
 PV,1,ccost_kW,200,$/kW,float,"[0, cost_per_kW)",N/A,None,Captical cost per kW rated,.,no,200,n,
 PV,1,nsr_response_time,10,minutes,int,"[10, nsr_response_time)",N/A,None,NSR Response Time for generation to come online,.,no,.,.,
 PV,1,sr_response_time,10,minutes,int,"[10, sr_response_time)",N/A,None,SR Response Time for generation to come online,.,no,.,.,
+PV,1,fixed_om_cost,12,$/yr,float,"[0, fixed_om_cost)",N/A,None,PV system's yearly fixed operation and management cost (subject to yearly inflation),.,no,12,n,
 PV,1,macrs_term,3,N/A,float,,N/A,None,TBA,.,no,0,n,
 PV,1,rated_capacity,100,kW,float,"[0, rated_capacity)",N/A,None,Rated capacity of PV system,.,no,.,.,
 PV,1,max_rated_capacity ,0,kW,float,"[0, rated_capacity)",N/A,None,"max rated capacity of PV system (if sizing), set to 0 if you want DER-VET to ignore",.,no,.,.,

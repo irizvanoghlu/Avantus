@@ -205,7 +205,7 @@ class DERExtension:
         """
         report = pd.DataFrame()
         if self.replaceable:
-            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_years if year < end_year.year])
+            replacement_yrs = pd.Index([pd.Period(year, freq='y') for year in self.failure_years if year < end_year.year])
             report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
                                   index=replacement_yrs)
         return report

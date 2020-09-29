@@ -109,7 +109,7 @@
                         "type": "string"
                     },
                     "daily_cycle_limit": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -207,7 +207,7 @@
                         "type": "float"
                     },
                     "incl_cycle_degrade": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -656,6 +656,19 @@
                         },
                         "type": "float"
                     },
+                    "energy_ratio": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "1.18",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "fixedOM": {
                         "evaluation": {
                             "active": "nan",
@@ -753,19 +766,6 @@
                             "value": "nan"
                         },
                         "opt_value": "0",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "rte": {
-                        "evaluation": {
-                            "active": "nan",
-                            "value": "nan"
-                        },
-                        "opt_value": "85",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

@@ -186,8 +186,11 @@ class MicrogridScenario(Scenario):
         indicates to run it.
 
         """
-        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
+        if 'Reliability' not in self.service_agg.value_streams.keys():
             return
+        else:
+            if self.service_agg.value_streams['Reliability'].post_facto_only:
+                return
 
         # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
         num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
@@ -229,7 +232,7 @@ class MicrogridScenario(Scenario):
             if not len(self.poi.active_ders):
                 continue
 
-            # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+            # apply past degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.active_ders:
                 if der.technology_type == "Energy Storage System":
                     der.apply_past_degredation(opt_period)
@@ -252,13 +255,11 @@ class MicrogridScenario(Scenario):
                 # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
                 der.set_size()
                 if der.technology_type == "Energy Storage System":
-                    # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+                    # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])
-
-            # record the solution of the variables and run again
 
         return True
 

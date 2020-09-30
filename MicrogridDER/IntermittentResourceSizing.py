@@ -98,8 +98,8 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         if self.being_sized() and not self.curtail:
             # convert expressions into values
             tech_id = self.unique_tech_id()
-            results[tech_id + ' Electric Generation (kW)'] = self.maximum_generation().value
-            results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
+            results[tech_id + ' Electric Generation (kW)'] = self.maximum_generation()
+            results[tech_id + ' Maximum (kW)'] = self.maximum_generation()
         return results
 
     def set_size(self):

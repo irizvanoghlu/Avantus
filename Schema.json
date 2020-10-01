@@ -576,14 +576,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -733,14 +731,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -900,14 +896,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -1056,14 +1050,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -1218,14 +1210,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -1495,14 +1485,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -1725,14 +1713,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -1887,14 +1873,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {
@@ -2007,14 +1991,12 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
                     "salvage_value": {
                         "cba": "n",
                         "allowed_values": "sunk cost|linear salvage value|BOUND",
-                        "min": "0",
                         "type": "string/int"
                     },
                     "expected_lifetime": {

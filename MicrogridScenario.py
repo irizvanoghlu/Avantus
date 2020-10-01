@@ -217,9 +217,6 @@ class MicrogridScenario(Scenario):
             TellUser.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
             return True
 
-        # calculate and check that system requirement set by value streams can be met
-        system_requirements = self.check_system_requirements()
-
         TellUser.info("Starting optimization loop")
         for opt_period in self.optimization_levels.predictive.unique():
 
@@ -233,14 +230,11 @@ class MicrogridScenario(Scenario):
                 continue
 
             # apply past degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
-            for der in self.poi.active_ders:
-                if der.technology_type == "Energy Storage System":
-                    der.apply_past_degredation(opt_period)
 
-            TellUser.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {self.optimization_levels.loc[mask].index[0]} hb")
+            TellUser.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {sub_index[0]} hb")
 
             # setup + run optimization then return optimal objective costs
-            functions, constraints = self.set_up_optimization(mask, system_requirements,
+            functions, constraints = self.set_up_optimization(mask, self.system_requirements,
                                                               annuity_scalar=alpha,
                                                               ignore_der_costs=self.service_agg.post_facto_reliability_only())
             objective_values = self.run_optimization(functions, constraints, opt_period)
@@ -257,6 +251,7 @@ class MicrogridScenario(Scenario):
                 if der.technology_type == "Energy Storage System":
                     # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
+                    der.apply_past_degredation(opt_period)
 
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])

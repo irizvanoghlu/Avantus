@@ -16,6 +16,7 @@ import cvxpy as cvx
 from storagevet.Technology import BatteryTech
 from MicrogridDER.ESSSizing import ESSSizing
 from ErrorHandelling import *
+import pandas as pd
 
 DEBUG = False
 
@@ -35,11 +36,50 @@ class Battery(BatteryTech.Battery, ESSSizing):
         TellUser.debug(f"Initializing {__name__}")
         super().__init__(params)  # BatteryTech.Battery->ESSizing->EnergyStorage->DER->Sizing
         self.user_duration = params['duration_max']
+        # self.replacement_capacity = params['replacement_capacity']  TODO: implement this
+        self.years_system_degraded = []
 
         if self.user_duration:
-            # if self.is_discharge_sizing() and self.is_energy_sizing():
-            #     TellUser.error("Cannot set a")
             self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
+
+    def initialize_degredation(self, opt_agg):
+        """
+
+        Notes: Should be called once, after optimization levels are assigned, but before
+        optimization loop gets called
+
+        Args:
+            opt_agg (DataFrame):
+
+        Returns: None
+
+        """
+        super(Battery, self).initialize_degredation(opt_agg)
+        if self.incl_cycle_degrade:
+            # calculate current degrade_perc since installation
+            step_before_optimziation_problems = opt_agg.sort_index().index[0] - pd.Timedelta(self.dt, unit='h')
+            self.calc_degradation('Optimization Start', self.construction_year.to_timestamp(), step_before_optimziation_problems)
+
+    def calc_degradation(self, opt_period, start_dttm, end_dttm):
+        """ calculate degradation percent based on yearly degradation and cycle degradation
+
+        Args:
+            opt_period: the index of the optimization that occurred before calling this function, None if
+                no optimization problem has been solved yet
+            start_dttm (DateTime): Start timestamp to calculate degradation. ie. the first datetime in the optimization
+                problem
+            end_dttm (DateTime): End timestamp to calculate degradation. ie. the last datetime in the optimization
+                problem
+
+        A percent that represented the energy capacity degradation
+        """
+        super(Battery, self).calc_degradation(opt_period, start_dttm, end_dttm)
+        if self.incl_cycle_degrade:
+            if self.degraded_energy_capacity() == 0:
+                # TODO record the year that the energy capacity reaches the point of replacement
+                pass
+                # TODO reset the energy capacity to its original nameplate if replaceable
+            pass
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

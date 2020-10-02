@@ -58,10 +58,15 @@ class MicrogridResult(Result):
         TellUser.debug("Finished post optimization analysis")
 
     def calculate_cba(self):
-        """ Calls all finacial methods that will result in a series of dataframes to describe the cost benefit analysis for the
+        """ Calls all financial methods that will result in a series of dataframes to describe the cost benefit analysis for the
         case in question.
 
         """
+        for der in self.poi.active_ders:
+            if der.technology_type == "Energy Storage System":
+                # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
+                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
+
         if not (self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only()):
             super().calculate_cba()
 

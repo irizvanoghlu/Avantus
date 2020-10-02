@@ -1424,6 +1424,13 @@
                         "type": "float",
                         "unit": "%"
                     },
+                    "state_of_health": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
                     "incl_cycle_degrade": {
                         "allowed_values": "1|0",
                         "cba": "n",

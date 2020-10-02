@@ -251,11 +251,9 @@ class MicrogridScenario(Scenario):
                 if der.technology_type == "Energy Storage System":
                     # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
-                    der.apply_past_degredation(opt_period)
 
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])
-
         return True
 
     def check_for_infeasible_regulation_constraints_with_system_size(self):

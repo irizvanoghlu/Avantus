@@ -85,6 +85,7 @@ Battery,1,incl_ts_charge_limits,0,N/A,bool,"{0,1}",N/A,None,T of F to indicate w
 Battery,1,incl_ts_energy_limits,0,N/A,bool,"{0,1}",N/A,None,T of F to indicate whether or not to look for and apply timeseries constraints on the instance's SOE,.,no,.,.,
 Battery,1,acr,10,%,float,"[0, 100] ",,,"annual charge rate (ACR), the % of capital cost that is incurred each year",.,no,.,.,
 Battery,1,ter,7,%,float,"[0, 100] ",,,technology escalation rate: how quickly the technology increases/decreases in cost,.,no,.,.,
+Battery,1,state_of_health,73,%,float,,,,State of heath at end of life (percentage of original energy capacity that will tigger a replacement of the equipement),.,no,.,.,
 Battery,1,ecc%,0,%,float,"[0, 100] ",,,the economic carrying cost percent,.,no,.,.,
 PV,1,name,solar1,N/A,string,,,,User defined name specific to this tag,no,no,.,.,
 PV,1,curtail,0,N/A,bool,"{1,0}",N/A,None,Use generation profile as the max generation and treat PV generation as an optimization variables,.,no,.,.,

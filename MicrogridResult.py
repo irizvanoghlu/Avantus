@@ -30,6 +30,10 @@ class MicrogridResult(Result):
         """
         super().__init__(scenario)
         self.sizing_df = pd.DataFrame()
+        for der in self.poi.der_list:
+            if der.technology_type == "Energy Storage System":
+                # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
+                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down
@@ -62,11 +66,6 @@ class MicrogridResult(Result):
         case in question.
 
         """
-        for der in self.poi.active_ders:
-            if der.technology_type == "Energy Storage System":
-                # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
-                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
-
         if not (self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only()):
             super().calculate_cba()
 

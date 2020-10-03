@@ -43,7 +43,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
         if self.user_duration:
             self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
 
-    def initialize_degredation(self, opt_agg):
+    def initialize_degradation_module(self, opt_agg):
         """
 
         Notes: Should be called once, after optimization levels are assigned, but before
@@ -55,7 +55,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
         Returns: None
 
         """
-        super(Battery, self).initialize_degredation(opt_agg)
+        super(Battery, self).initialize_degradation_module(opt_agg)
         if self.incl_cycle_degrade:
             # calculate current degrade_perc since installation
             step_before_optimziation_problems = opt_agg.sort_index().index[0] - pd.Timedelta(self.dt, unit='h')
@@ -101,11 +101,14 @@ class Battery(BatteryTech.Battery, ESSSizing):
 
         """
         if self.incl_cycle_degrade:
+            # ESTIMATE EXPECTED LIFETIME
             num_full_lifetimes = len(self.years_system_degraded)
             if num_full_lifetimes:
                 # get number of years it took to be replaced (get average if replaced more than once)
-                foo = max(self.years_system_degraded) - self.operation_year.year
+                foo = max(self.years_system_degraded) + 1 - self.operation_year.year
                 avg_lifetime = foo / num_full_lifetimes
+                # set FAILURE_YEARS to be the years that the system degraded
+                self.failure_years = self.years_system_degraded
             else:
                 # create a data frame with a row for every year in the project lifetime
                 yr_index = pd.period_range(start=start_year, end=end_year, freq='y')
@@ -127,16 +130,14 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 avg_lifetime = 1/avg_yearly_degradation
 
             # report actual EOL to user
-            TellUser.info(f"{self.unique_tech_id()} degradation is ON, and so we have calculate that EXPECTED_LIFETIME" +
-                          f" should be {avg_lifetime}  (inputted value: {self.expected_lifetime})")
+            TellUser.info(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
+                          f" to be {int(avg_lifetime)}  (inputted value: {self.expected_lifetime})")
             # set EXPECTED_LIFETIME to be the actual EOL
-            self.expected_lifetime = avg_lifetime
+            self.expected_lifetime = int(avg_lifetime)
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0
-            if num_full_lifetimes:
-                self.failure_years = self.years_system_degraded
-            else:
-                self.set_failure_years(end_year)
+            failed_on = max(self.years_system_degraded) if num_full_lifetimes else None
+            self.set_failure_years(end_year, fail_on=failed_on)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

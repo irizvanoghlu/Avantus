@@ -480,6 +480,8 @@ class CostBenefitAnalysis(Financial):
             der_lst:
 
         """
-        data = {der_inst.unique_tech_id(): [der_inst.construction_year, der_inst.operation_year, der_inst.last_operation_year]
-                for der_inst in der_lst}
-        self.equipment_lifetime_report = pd.DataFrame(data, index=['Beginning of Life', 'Operation Begins', 'End of Life'])
+        data = {
+            der_inst.unique_tech_id(): [der_inst.construction_year, der_inst.operation_year, der_inst.last_operation_year, der_inst.expected_lifetime]
+            for der_inst in der_lst
+        }
+        self.equipment_lifetime_report = pd.DataFrame(data, index=['Beginning of Life', 'Operation Begins', 'End of Life', 'Expected Lifetime'])

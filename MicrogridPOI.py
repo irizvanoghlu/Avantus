@@ -28,6 +28,7 @@ class MicrogridPOI(POI):
     def __init__(self, params, technology_inputs_map, technology_class_map):
         super().__init__(params, technology_inputs_map, technology_class_map)
         self.is_sizing_optimization = self.check_if_sizing_ders()
+        self.need_opt_prob_loop = True
         if self.is_sizing_optimization:
             self.error_checks_on_sizing()
 

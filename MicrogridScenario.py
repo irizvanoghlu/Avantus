@@ -66,7 +66,9 @@ class MicrogridScenario(Scenario):
             'CHP': input_tree.CHP,
         })
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
-        self.deferral_sizing = False
+        self.deferral_sizing = False  # indicates that dervet should go to the deferral sizing module
+        self.reliability_sizing = False  # indicates that dervet should go to the reliability sizing module
+        self.opt_engine = True  # indicates that dervet should go to the optimization module and size there
         TellUser.debug("ScenarioSizing initialized ...")
 
     def set_up_poi_and_service_aggregator(self):
@@ -107,17 +109,25 @@ class MicrogridScenario(Scenario):
         self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
 
         if self.poi.is_sizing_optimization:
-            # if Deferral is active -- require that only DER active is ESS and there is only 1 DER total
             if 'Deferral' in self.service_agg.value_streams.keys():
+                # deferral sizing will set the size of the ESS, so no need to check other sizing conditions.
+                self.deferral_sizing = True
+                # require that only 1 ESS is included
                 if len(self.poi.der_list) != 1 or self.poi.der_list[0].technology_type != "Energy Storage System":
                     TellUser.error('Sizing for deferring an asset upgrade is only implemented for a one ESS case.')
                     raise ParameterError("No optimization was built or solved. Please check log files for more information. ")
-                # deferral sizing will set the size of the ESS, so no need to check other sizing conditions.
-                self.deferral_sizing = True
-            else:
-                self.check_sizing_conditions()
 
-    def check_sizing_conditions(self):
+            if 'Reliability' in self.service_agg.value_streams.keys() and not self.service_agg.value_streams['Reliability'].post_facto_only:
+                self.reliability_sizing = True
+                # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
+                num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
+                if num_ess > 1:
+                    TellUser.error("Multiple ESS sizing with this reliability module is not implemented yet.")
+                    raise ParameterError('See dervet.log for more information.')
+            else:
+                self.check_opt_sizing_conditions()
+
+    def check_opt_sizing_conditions(self):
         """ Throws an error if any DER is being sized under assumptions that will not
         result in a solution within a reasonable amount of time.
         Called IFF we are preforming an optimization based sizing analysis.
@@ -125,7 +135,7 @@ class MicrogridScenario(Scenario):
         """
         error = False
         # make sure the optimization horizon is the whole year
-        if self.n != 'year' and 'Reliability' not in self.service_agg.value_streams.keys():
+        if self.n != 'year':
             TellUser.error('Trying to size without setting the optimization window to \'year\'')
             error = True
         # any wholesale markets active?
@@ -142,28 +152,42 @@ class MicrogridScenario(Scenario):
             error = error or not_all_markets_have_max or not_all_power_max_defined or participation_constraints_are_infeasible
         # check if only have Reliability and post_facto_only==1
         if self.service_agg.post_facto_reliability_only():
-            TellUser.error('trying to size and preform post facto calculations only')
+            TellUser.error('trying to size for reliability, but only preform post facto calculations. Please turn off post_facto_only or stop sizing')
             error = True
         # check if binary will create a DCP error based on formulation
         if self.poi.is_dcp_error(self.incl_binary):
             TellUser.error('trying to size power and use binary formulation results in nonlinear models')
             error = True
-
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is solved, but "
                                  + "no optimization was built or solved. Please check log files for more information. ")
-        
-    def fill_and_drop_extra_data(self):
-        """ Go through value streams and technologies and keep data for analysis years, and add more
-        data if necessary.  ALSO creates/assigns optimization levels.
 
-        Returns: None
-
-        """
-        super(MicrogridScenario, self).fill_and_drop_extra_data()
-        if self.deferral_sizing:
-            # set size of ESS
-            self.poi.der_list = self.service_agg.set_size(self.poi.der_list, self.start_year)
+    def check_for_infeasible_regulation_constraints_with_system_size(self):
+        """ perform error checks on DERs that are being sized with ts_user_constraints
+        collect errors and raise if any were found"""
+        # down
+        has_errors = False
+        max_p_sch_down = sum([der_inst.max_p_schedule_down() for der_inst in self.poi.der_list])
+        min_p_res_down = sum([service.min_regulation_down() for service in self.service_agg.value_streams.values()])
+        diff = max_p_sch_down - min_p_res_down
+        negative_vals = (diff.values < 0)
+        if negative_vals.any():
+            first_time = diff.index[negative_vals][0]
+            TellUser.error('The sum of minimum power regulation down exceeds the maximum possible power capacities that ' +
+                           f'can provide regulation down, first occurring at time {first_time}.')
+            has_errors = True
+        # up
+        if {'FR', 'LF'} & self.service_agg.value_streams.keys():
+            max_p_sch_up = sum([der_inst.max_p_schedule_up() for der_inst in self.poi.der_list])
+            min_p_res_up = sum([service.min_regulation_up() for service in self.service_agg.value_streams.values()])
+            diff = max_p_sch_up - min_p_res_up
+            negative_vals = (diff.values < 0)
+            if negative_vals.any():
+                first_time = diff.index[negative_vals][0]
+                TellUser.error('The sum of minimum power regulation up exceeds the maximum possible power capacities that ' +
+                               f'can provide regulation down, first occurring at time {first_time}.')
+                has_errors = True
+        return has_errors
 
     def initialize_cba(self):
         self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs)
@@ -181,25 +205,23 @@ class MicrogridScenario(Scenario):
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)
 
-    def reliability_based_sizing_module(self):
+    def sizing_module(self):
         """ runs the reliability based sizing module if the correct combination of inputs allows/
         indicates to run it.
 
         """
-        if 'Reliability' not in self.service_agg.value_streams.keys():
-            return
-        else:
-            if self.service_agg.value_streams['Reliability'].post_facto_only:
-                return
+        if self.reliability_sizing:
+            der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
+            self.poi.der_list = der_list
+            # Resetting sizing flag. It doesn't size for other services.
+            self.poi.is_sizing_optimization = False
+            if self.service_agg.is_reliability_only():
+                self.opt_engine = False
+                self.poi.need_opt_prob_loop = False
 
-        # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
-        num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
-        if num_ess > 1:
-            TellUser.error("Multiple ESS sizing with this reliability module is not implemented yet.")
-            raise ArithmeticError('See dervet.log for more information.')
-
-        der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
-        self.poi.der_list = der_list
+        if self.deferral_sizing:
+            # set size of ESS
+            self.poi.der_list = self.service_agg.set_size(self.poi.der_list, self.start_year)
 
     def optimize_problem_loop(self, **kwargs):
         """ This function selects on opt_agg of data in time_series and calls optimization_problem on it.
@@ -213,9 +235,21 @@ class MicrogridScenario(Scenario):
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = self.cost_benefit_analysis.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
-        if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
-            TellUser.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
-            return True
+        #TODO
+        if self.service_agg.is_deferral_only():
+            TellUser.warning("Only active Value Stream is Deferral, so not optimizations will run...")
+            self.opt_engine = False
+        elif self.service_agg.post_facto_reliability_only():
+            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run...")
+            self.service_agg.value_streams['Reliability'].use_soc_init = True
+            TellUser.warning("SOC_init will be used for Post-Facto Calculation")
+        elif self.service_agg.post_facto_reliability_only_and_user_defined():
+            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run." +
+                             " Energy min profile from User_constraint will be used")
+            self.service_agg.value_streams['Reliability'].use_user_const = True
+
+        if not self.opt_engine:
+            return
 
         # calculate and check that system requirement set by value streams can be met
         system_requirements = self.check_system_requirements()
@@ -261,31 +295,3 @@ class MicrogridScenario(Scenario):
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])
 
-        return True
-
-    def check_for_infeasible_regulation_constraints_with_system_size(self):
-        """ perform error checks on DERs that are being sized with ts_user_constraints
-        collect errors and raise if any were found"""
-        # down
-        has_errors = False
-        max_p_sch_down = sum([der_inst.max_p_schedule_down() for der_inst in self.poi.der_list])
-        min_p_res_down = sum([service.min_regulation_down() for service in self.service_agg.value_streams.values()])
-        diff = max_p_sch_down - min_p_res_down
-        negative_vals = (diff.values < 0)
-        if negative_vals.any():
-            first_time = diff.index[negative_vals][0]
-            TellUser.error('The sum of minimum power regulation down exceeds the maximum possible power capacities that ' +
-                           f'can provide regulation down, first occurring at time {first_time}.')
-            has_errors = True
-        # up
-        if {'FR', 'LF'} & self.service_agg.value_streams.keys():
-            max_p_sch_up = sum([der_inst.max_p_schedule_up() for der_inst in self.poi.der_list])
-            min_p_res_up = sum([service.min_regulation_up() for service in self.service_agg.value_streams.values()])
-            diff = max_p_sch_up - min_p_res_up
-            negative_vals = (diff.values < 0)
-            if negative_vals.any():
-                first_time = diff.index[negative_vals][0]
-                TellUser.error('The sum of minimum power regulation up exceeds the maximum possible power capacities that ' +
-                               f'can provide regulation down, first occurring at time {first_time}.')
-                has_errors = True
-        return has_errors

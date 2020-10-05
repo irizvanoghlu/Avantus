@@ -33,43 +33,28 @@ class ParamsDER(Params):
     schema_location = Path(__file__).absolute().with_name('Schema.json')
     cba_input_error_raised = False
     cba_input_template = None
-    # TODO add to this as needed --AE
-    dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV']
+    dervet_only_der_list = ['CT', 'CHP', 'DieselGenset', 'ControllableLoad', 'EV'] # TODO add to this as needed --AE
 
     @staticmethod
-    def csv_to_json(csv_filename, ignore_cba_valuation=False):
-        """ converts csv to 2 xml files. One that contains values that correspond to optimization values and the other
-        corresponds the values used to evaluate the CBA.
+    def pandas_to_dict(model_parameter_pd):
+        """converts csv to a json--which DERVET can then read directly
 
         Args:
-            csv_filename (string): name of csv file
-            ignore_cba_valuation (bool): flag to tell whether to look at the evaluation columns provided (meant for
-                testing purposes)
+            model_parameter_pd:
 
-
-        Returns:
-            opt_xml_filename (string): name of xml file with parameter values for optimization evaluation
-
+        Returns: dictionary that can be jumped as json in the data structure that DER-VET reads
 
         """
-        json_filename = Params.csv_to_json(csv_filename)
-
-        # open csv to read into dataframe and blank xml file to write to
-        csv_data = pd.read_csv(csv_filename)
+        json_tree = Params.pandas_to_dict(model_parameter_pd)
         # check if there was an ID column, if not then add one filled with '.'
-        if 'ID' not in csv_data.columns:
-            csv_data['ID'] = np.repeat('', len(csv_data))
+        if 'ID' not in model_parameter_pd.columns:
+            model_parameter_pd['ID'] = np.repeat('', len(model_parameter_pd))
         # check to see if Evaluation rows are included
-        if not ignore_cba_valuation and 'Evaluation Value' in csv_data.columns and 'Evaluation Active' in csv_data.columns:
-            # then add values to XML
-
-            # open and read json file
-            json_tree = json.load(open(json_filename))
-
+        if 'Evaluation Value' in model_parameter_pd.columns and 'Evaluation Active' in model_parameter_pd.columns:
             # outer loop for each tag/object and active status, i.e. Scenario, Battery, DA, etc.
-            for obj in csv_data.Tag.unique():
+            for obj in model_parameter_pd.Tag.unique():
                 # select all TAG rows
-                tag_sub = csv_data.loc[csv_data.Tag == obj]
+                tag_sub = model_parameter_pd.loc[model_parameter_pd.Tag == obj]
                 # loop through each unique value in ID
                 for id_str in tag_sub.ID.unique():
                     # select rows with given ID_STR
@@ -85,11 +70,7 @@ class ParamsDER(Params):
                                 "active": str(row['Evaluation Active']),
                                 "value": str(row['Evaluation Value'])
                             }
-            # dump json at original file location
-            with open(json_filename, 'w') as json_file:
-                json.dump(json_tree, json_file, sort_keys=True, indent=4)
-
-        return json_filename
+        return json_tree
 
     @classmethod
     def initialize(cls, filename, verbose):
@@ -508,43 +489,39 @@ class ParamsDER(Params):
         time_series = self.Scenario['time_series']
         dt = self.Scenario['dt']
         binary = self.Scenario['binary']
-        if len(self.PV):
-            for id_str, pv_inputs in self.PV.items():
-                if not pv_inputs['rated_capacity']:
-                    if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:
-                        self.record_input_error('Error: maximum rated power is less than the minimum rated power.' +
-                                                f"PV {id_str}")
-        if len(self.Battery):
-            for id_str, battery_inputs in self.Battery.items():
-                if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
-                    if not battery_inputs['ch_max_rated']:
-                        if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
-                            self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.' +
-                                                    f"BATTERY {id_str}")
-                    if not battery_inputs['dis_max_rated']:
-                        if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
-                            self.record_input_error('User battery min discharge power requirement is greater than max discharge power requirement.')
-                if not battery_inputs['ene_max_rated']:
-                    if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
-                        self.record_input_error('Error: User battery min energy requirement is greater than max energy requirement.')
+        for id_str, pv_inputs in self.PV.items():
+            if not pv_inputs['rated_capacity']:
+                if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:
+                    self.record_input_error('Error: maximum rated power is less than the minimum rated power.' +
+                                            f"PV {id_str}")
+        for id_str, battery_inputs in self.Battery.items():
+            if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
+                if not battery_inputs['ch_max_rated']:
+                    if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
+                        self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.' +
+                                                f"BATTERY {id_str}")
+                if not battery_inputs['dis_max_rated']:
+                    if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
+                        self.record_input_error('User battery min discharge power requirement is greater than max discharge power requirement.')
+            if not battery_inputs['ene_max_rated']:
+                if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
+                    self.record_input_error('Error: User battery min energy requirement is greater than max energy requirement.')
+            # check if user wants to include timeseries constraints -> grab data
+            if battery_inputs['incl_ts_energy_limits']:
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Energy', 'kWh', time_series)
+            if battery_inputs['incl_ts_charge_limits']:
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Charge', 'kW', time_series)
+            if battery_inputs['incl_ts_discharge_limits']:
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Discharge', 'kW', time_series)
 
-                # check if user wants to include timeseries constraints -> grab data
-                if battery_inputs['incl_ts_energy_limits']:
-                    self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Energy', 'kWh', time_series)
-                if battery_inputs['incl_ts_charge_limits']:
-                    self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Charge', 'kW', time_series)
-                if battery_inputs['incl_ts_discharge_limits']:
-                    self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Discharge', 'kW', time_series)
-
-        if len(self.CAES):
-            for id_str, caes_inputs in self.CAES.items():
-                # check if user wants to include timeseries constraints -> grab data
-                if caes_inputs['incl_ts_energy_limits']:
-                    self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Energy', 'kWh', time_series)
-                if caes_inputs['incl_ts_charge_limits']:
-                    self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Charge', 'kW', time_series)
-                if caes_inputs['incl_ts_discharge_limits']:
-                    self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Discharge', 'kW', time_series)
+        for id_str, caes_inputs in self.CAES.items():
+            # check if user wants to include timeseries constraints -> grab data
+            if caes_inputs['incl_ts_energy_limits']:
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Energy', 'kWh', time_series)
+            if caes_inputs['incl_ts_charge_limits']:
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Charge', 'kW', time_series)
+            if caes_inputs['incl_ts_discharge_limits']:
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Discharge', 'kW', time_series)
 
         if len(self.Load):
             if self.Scenario['incl_site_load'] != 1:
@@ -555,9 +532,28 @@ class ParamsDER(Params):
                     load_inputs['site_load'] = time_series.loc[:, f'Site Load (kW)/{id_str}']
                 except KeyError:
                     self.record_input_error(f"Missing 'Site Load (kW)/{id_str}' from timeseries input. Please include a site load.")
-
                 load_inputs.update({'dt': dt,
                                     'growth': self.Scenario['def_growth']})
+
+        for id_str, ev1_input in self.ElectricVehicle1.items():
+            # max ratings should not be greater than the min rating for power and energy
+            if ev1_input['ch_min_rated'] > ev1_input['ch_max_rated']:
+                self.record_input_error(f"EV1 #{id_str} ch_max_rated < ch_min_rated. ch_max_rated should be greater than ch_min_rated")
+            ev1_input.update({'binary': binary,
+                              'dt': dt})
+            names_list.append(ev1_input['name'])
+
+        for id_str, ev_input in self.ElectricVehicle2.items():
+            # should we have a check for time series data?
+            ev_input.update({'binary': binary,
+                             'dt': dt})
+            names_list.append(ev_input['name'])
+            try:
+                ev_input.update({'EV_baseline': time_series.loc[:, f'EV fleet/{id_str}'],
+                                 'dt': dt})
+            except KeyError:
+                self.record_input_error(f"Missing 'EV fleet/{id_str}' from timeseries input. Please include EV load.")
+
         if len(self.CHP):
             if not self.Scenario['incl_thermal_load']:
                 TellUser.warning('with incl_thermal_load = 0, CHP will ignore any site thermal loads.')
@@ -566,12 +562,12 @@ class ParamsDER(Params):
 
                 # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
                 if self.Scenario['incl_thermal_load']:
-                    try:
+                    try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                         chp_inputs.update({'site_heating_load': time_series.loc[:, 'Site Heating Load (BTU/hr)']})
                     except KeyError:
                         self.record_input_error("CHP is missing 'Site Heating Load (BTU/hr)' from timeseries data input")
 
-                try:
+                try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                     chp_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
                                                                                        self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
                 except KeyError:
@@ -581,7 +577,7 @@ class ParamsDER(Params):
             for id_str, ct_inputs in self.CT.items():
                 ct_inputs.update({'dt': dt})
 
-                try:
+                try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                     ct_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],
                                                                                        self.Scenario['monthly_data'].loc[:, ['Natural Gas Price ($/MillionBTU)']])})
                 except KeyError:
@@ -590,32 +586,6 @@ class ParamsDER(Params):
         if len(self.DieselGenset):
             for id_str, inputs in self.DieselGenset.items():
                 inputs.update({'dt': dt})
-
-        if self.ElectricVehicle1 is not None:
-            for id_str, ev1_input in self.ElectricVehicle1.items():
-                # max ratings should not be greater than the min rating for power and energy
-                if ev1_input['ch_min_rated'] > ev1_input['ch_max_rated']:
-                    self.record_input_error(f"EV1 #{id_str} ch_max_rated < ch_min_rated. ch_max_rated should be greater than ch_min_rated")
-                # add scenario case parameters to battery parameter dictionary
-
-                # check this code with Halley
-                ev1_input.update({'binary': binary,
-                                  'dt': dt})
-                names_list.append(ev1_input['name'])
-
-        if self.ElectricVehicle2 is not None:
-            for id_str, ev_input in self.ElectricVehicle2.items():
-                # should we have a check for time series data?
-
-                ev_input.update({'binary': binary,
-                                 'dt': dt})
-                names_list.append(ev_input['name'])
-
-                try:
-                    ev_input.update({'EV_baseline': time_series.loc[:, f'EV fleet/{id_str}'],
-                                     'dt': dt})
-                except KeyError:
-                    self.record_input_error(f"Missing 'EV fleet/{id_str}' from timeseries input. Please include EV load.")
 
         super().load_technology(names_list)
 

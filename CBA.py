@@ -113,6 +113,16 @@ class CostBenefitAnalysis(Financial):
             else:
                 # require that e < d
                 only_tech = der_list[0]
+                if not only_tech.ecc_perc:
+                    # require that an escaltion rate and ACR is indicated --
+                    if not only_tech.acr:
+                        TellUser.error(f"To calculate the economic carrying capacity please indicate non-zero values for ECC% or the ACR " +
+                                       "of your DER")
+                        return pd.Period(year=0, freq='y')
+                    else:
+                        TellUser.warning("Using the ACR to estimate the economic carrying cost")
+                else:
+                    TellUser.warning("Using the user given ecc% to calculate the economic carrying cost")
                 if only_tech.escalation_rate >= self.npv_discount_rate:
                     TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
                                    f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
@@ -401,7 +411,7 @@ class CostBenefitAnalysis(Financial):
                 tax_schedule = tax_schedule + list(np.zeros(proj_years - len(tax_schedule)))
             else:
                 tax_schedule = tax_schedule[:proj_years]
-            capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name()])
+            capital_costs += np.multiply(tax_schedule, proforma.loc[:, der_inst.zero_column_name()].sum()/100)
         yearly_net += capital_costs
 
         # 2) Calculate State tax based on the net cash flows in each year
@@ -415,6 +425,8 @@ class CostBenefitAnalysis(Financial):
         overall_tax_burden = state_tax + federal_tax
         # drop yearly net value column
         proforma_taxes = proforma.iloc[:, :-1]
+        proforma_taxes['State Tax Burden'] = np.insert(state_tax, 0, 0)
+        proforma_taxes['Federal Tax Burden'] = np.insert(federal_tax, 0, 0)
         proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
         return proforma_taxes
 

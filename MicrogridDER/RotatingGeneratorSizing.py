@@ -121,6 +121,12 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
         costs.update(self.sizing_objective())
         return costs
 
+    def set_size(self):
+        """ Save value of size variables of DERs
+
+        """
+        self.rated_power = self.name_plate_capacity(True)
+
     def sizing_summary(self):
         """
 

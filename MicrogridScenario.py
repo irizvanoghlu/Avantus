@@ -120,6 +120,7 @@ class MicrogridScenario(Scenario):
     def check_sizing_conditions(self):
         """ Throws an error if any DER is being sized under assumptions that will not
         result in a solution within a reasonable amount of time.
+        Called IFF we are preforming an optimization based sizing analysis.
 
         """
         error = False
@@ -165,16 +166,16 @@ class MicrogridScenario(Scenario):
             self.poi.der_list = self.service_agg.set_size(self.poi.der_list, self.start_year)
 
     def initialize_cba(self):
-        self.financials = CostBenefitAnalysis(self.finance_inputs)
+        self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs)
         # set the project end year
-        self.end_year = self.financials.find_end_year(self.start_year, self.end_year, self.poi.der_list)
+        self.end_year = self.cost_benefit_analysis.find_end_year(self.start_year, self.end_year, self.poi.der_list)
         if self.end_year.year == 0:
             # some type error was recorded. throw error and exit
             raise Exception("Error occurred while trying to determine the end of the analysis." +
                             " Please check the error_log.log in your results folder for more information.")
 
         # update opt_years based on this new end_year
-        add_analysis_years = self.financials.get_years_after_failures(self.start_year, self.end_year, self.poi.der_list)
+        add_analysis_years = self.cost_benefit_analysis.get_years_after_failures(self.start_year, self.end_year, self.poi.der_list)
         TellUser.debug(add_analysis_years)
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
@@ -185,8 +186,11 @@ class MicrogridScenario(Scenario):
         indicates to run it.
 
         """
-        if 'Reliability' not in self.service_agg.value_streams.keys() or not self.poi.is_sizing_optimization:
+        if 'Reliability' not in self.service_agg.value_streams.keys():
             return
+        else:
+            if self.service_agg.value_streams['Reliability'].post_facto_only:
+                return
 
         # require only 1 ESS is present. we have to work on extending this module to multiple ESSs
         num_ess = sum([1 if der_inst.technology_type == 'Energy Storage System' else 0 for der_inst in self.poi.der_list])
@@ -207,7 +211,7 @@ class MicrogridScenario(Scenario):
         alpha = 1
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value
-            alpha = self.financials.annuity_scalar(self.start_year, self.end_year, self.opt_years)
+            alpha = self.cost_benefit_analysis.annuity_scalar(self.start_year, self.end_year, self.opt_years)
 
         if self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only():
             TellUser.warning("Only active Value Stream is Deferral or post facto only, so not optimizations will run...")
@@ -228,7 +232,7 @@ class MicrogridScenario(Scenario):
             if not len(self.poi.active_ders):
                 continue
 
-            # apply past degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+            # apply past degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
             for der in self.poi.active_ders:
                 if der.technology_type == "Energy Storage System":
                     der.apply_past_degredation(opt_period)
@@ -241,19 +245,22 @@ class MicrogridScenario(Scenario):
                                                               ignore_der_costs=self.service_agg.post_facto_reliability_only())
             objective_values = self.run_optimization(functions, constraints, opt_period)
 
-            # calculate degradation in ESS objects (NOTE: if no degredation module applies to specific ESS tech, then nothing happens)
+            for vs in self.service_agg.value_streams.values():
+                # record the solution of the variables used in the optimization run
+                vs.save_variable_results(sub_index)
+
             for der in self.poi.active_ders:
+                # record the solution of the variables used in the optimization run
+                der.save_variable_results(sub_index)
+                # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
+                der.set_size()
                 if der.technology_type == "Energy Storage System":
+                    # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])
 
-            # record the solution of the variables and run again
-            for der in self.poi.active_ders:
-                der.save_variable_results(sub_index)
-            for vs in self.service_agg.value_streams.values():
-                vs.save_variable_results(sub_index)
         return True
 
     def check_for_infeasible_regulation_constraints_with_system_size(self):

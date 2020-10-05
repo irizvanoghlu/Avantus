@@ -2,7 +2,7 @@
     "name": "None",
     "tags": {
         "Backup": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {}
             }
@@ -109,7 +109,7 @@
                         "type": "string"
                     },
                     "daily_cycle_limit": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -149,6 +149,15 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -198,7 +207,7 @@
                         "type": "float"
                     },
                     "incl_cycle_degrade": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -625,12 +634,34 @@
                         },
                         "type": "float"
                     },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "ene_max_rated": {
                         "evaluation": {
                             "active": "nan",
                             "value": "nan"
                         },
                         "opt_value": "10000",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "energy_ratio": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "1.18",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -735,19 +766,6 @@
                             "value": "nan"
                         },
                         "opt_value": "0",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "rte": {
-                        "evaluation": {
-                            "active": "nan",
-                            "value": "nan"
-                        },
-                        "opt_value": "85",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -889,6 +907,15 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -1158,6 +1185,15 @@
                         },
                         "type": "float"
                     },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "expected_lifetime": {
                         "opt_value": "13",
                         "sensitivity": {
@@ -1252,7 +1288,7 @@
             }
         },
         "DA": {
-            ".": {
+            "1": {
                 "active": "yes",
                 "keys": {
                     "growth": {
@@ -1268,7 +1304,7 @@
             }
         },
         "DCM": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "growth": {
@@ -1284,7 +1320,7 @@
             }
         },
         "DR": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "day_ahead": {
@@ -1382,7 +1418,7 @@
             }
         },
         "Deferral": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "growth": {
@@ -1393,6 +1429,19 @@
                             "value": "nan"
                         },
                         "type": "float"
+                    },
+                    "min_year_objective": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "5",
+                        "sensitivity": {
+                            "active": "nan",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "int"
                     },
                     "planned_load_limit": {
                         "opt_value": "11000",
@@ -1482,6 +1531,15 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -1668,6 +1726,15 @@
                         },
                         "type": "float"
                     },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "expected_lifetime": {
                         "opt_value": "13",
                         "sensitivity": {
@@ -1802,7 +1869,7 @@
             }
         },
         "FR": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "CombinedMarket": {
@@ -2045,6 +2112,15 @@
                         },
                         "type": "float"
                     },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "efficiency": {
                         "opt_value": "0.15",
                         "sensitivity": {
@@ -2266,7 +2342,7 @@
             }
         },
         "LF": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "CombinedMarket": {
@@ -2327,7 +2403,7 @@
             }
         },
         "NSR": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "duration": {
@@ -2413,6 +2489,15 @@
                         },
                         "type": "float"
                     },
+                    "ecc%": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "expected_lifetime": {
                         "opt_value": "13",
                         "sensitivity": {
@@ -2421,6 +2506,19 @@
                             "value": "nan"
                         },
                         "type": "int"
+                    },
+                    "fixed_om_cost": {
+                        "evaluation": {
+                            "active": "n",
+                            "value": "12"
+                        },
+                        "opt_value": "12",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
                     },
                     "grid_charge": {
                         "opt_value": "0",
@@ -2596,7 +2694,7 @@
             }
         },
         "RA": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "days": {
@@ -2668,7 +2766,7 @@
             }
         },
         "Reliability": {
-            ".": {
+            "1": {
                 "active": "yes",
                 "keys": {
                     "gamma": {
@@ -2772,7 +2870,7 @@
             }
         },
         "SR": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "duration": {
@@ -3058,7 +3156,7 @@
             }
         },
         "User": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "price": {
@@ -3078,7 +3176,7 @@
             }
         },
         "retailTimeShift": {
-            ".": {
+            "1": {
                 "active": "no",
                 "keys": {
                     "growth": {

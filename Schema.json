@@ -459,6 +459,13 @@
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"
+                    },
+                    "ecc%": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
                     }
                 }
             },
@@ -541,6 +548,12 @@
                         "cba": "n",
                         "type": "string"
                     },
+                    "fixed_om_cost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/year"
+                    },
                     "construction_year": {
                         "cba": "n",
                         "type": "Period",
@@ -597,6 +610,13 @@
                         "unit": "%"
                     },
                     "ter": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
                         "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",
@@ -752,6 +772,13 @@
                         "unit": "%"
                     },
                     "ter": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
                         "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",
@@ -917,6 +944,13 @@
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"
+                    },
+                    "ecc%": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
                     }
                 }
             },
@@ -1061,6 +1095,13 @@
                         "unit": "%"
                     },
                     "ter": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
                         "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",
@@ -1221,6 +1262,13 @@
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"
+                    },
+                    "ecc%": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
                     }
                 }
             },
@@ -1253,7 +1301,7 @@
                         "allowed_values": "1|0",
                         "cba": "y",
                         "type": "bool",
-                        "unit": "yea/no"
+                        "unit": "yes/no"
                     },
                     "ccost": {
                         "cba": "y",
@@ -1499,6 +1547,13 @@
                         "type": "float",
                         "unit": "%"
                     },
+                    "ecc%": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
                     "incl_ts_energy_limits": {
                         "allowed_values": "1|0",
                         "cba": "n",
@@ -1620,10 +1675,10 @@
                         "type": "float",
                         "unit": "%"
                     },
-                    "rte": {
-                        "min": "0.0",
+                    "energy_ratio": {
+                        "min": "1.0",
                         "type": "float",
-                        "unit": "%"
+                        "unit": "ratio"
                     },
                     "sdr": {
                         "max": "99.9",
@@ -1716,6 +1771,13 @@
                         "unit": "%"
                     },
                     "ter": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
                         "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",
@@ -1859,6 +1921,18 @@
                     },
                     "ter": {
                         "cba": "n",
+                        "max": "100.0","fixed_om_cost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/year"
+                    },
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
+                        "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",
                         "type": "float",
@@ -1966,6 +2040,13 @@
                         "unit": "%"
                     },
                     "ter": {
+                        "cba": "n",
+                        "max": "100.0",
+                        "min": "-100.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
+                    "ecc%": {
                         "cba": "n",
                         "max": "100.0",
                         "min": "-100.0",

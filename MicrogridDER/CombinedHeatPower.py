@@ -39,48 +39,64 @@ class CHP(CT):
 
         self.electric_ramp_rate = params['electric_ramp_rate']      # MW/min # TODO this is not being used? --AE
         self.electric_heat_ratio = params['electric_heat_ratio']    # elec/heat (generation)
+        self.max_steam_ratio = params['max_steam_ratio']           # steam/hotwater relative ratio
         # time series inputs
-        try:
-            self.site_heating_load = params['site_heating_load']    # BTU/hr
-        except KeyError:
-            self.site_heating_load = None
+        self.site_steam_load = params.get('site_steam_load')    # BTU/hr
+        self.site_hotwater_load = params.get('site_hotwater_load')    # BTU/hr
 
     def grow_drop_data(self, years, frequency, load_growth):
-        if self.site_heating_load is not None:
-            self.site_heating_load = Lib.fill_extra_data(self.site_heating_load, years, 0, frequency)
-            # TODO use a non-zero growth rate of heating load? --AE
-            self.site_heating_load = Lib.drop_extra_data(self.site_heating_load, years)
+        if self.site_steam_load is not None:
+            self.site_steam_load = Lib.fill_extra_data(self.site_steam_load, years, 0, frequency)
+            # TODO use a non-zero growth rate of steam load? --AE
+            self.site_steam_load = Lib.drop_extra_data(self.site_steam_load, years)
+        if self.site_hotwater_load is not None:
+            self.site_hotwater_load = Lib.fill_extra_data(self.site_hotwater_load, years, 0, frequency)
+            # TODO use a non-zero growth rate of hotwater load? --AE
+            self.site_hotwater_load = Lib.drop_extra_data(self.site_hotwater_load, years)
 
     def initialize_variables(self, size):
         # rotating generation
         super().initialize_variables(size)
-        # plus heat
+        # plus heat (steam and hotwater)
         self.variables_dict.update({
-            'heat': cvx.Variable(shape=size, name=f'{self.name}-heatP', nonneg=True),
+            'steam': cvx.Variable(shape=size, name=f'{self.name}-steamP', nonneg=True),
+            'hotwater': cvx.Variable(shape=size, name=f'{self.name}-hotwaterP', nonneg=True),
         })
 
     def constraints(self, mask):
         constraint_list = super().constraints(mask)
         elec = self.variables_dict['elec']
-        heat = self.variables_dict['heat']
+        steam = self.variables_dict['steam']
+        hotwater = self.variables_dict['hotwater']
 
-        constraint_list += [cvx.Zero(heat * self.electric_heat_ratio - elec)]
+        # to ensure that CHP never produces more steam than it can
+        constraint_list += [cvx.NonPos(steam - self.max_steam_ratio * hotwater)]
+
+        constraint_list += [cvx.Zero((steam + hotwater) * self.electric_heat_ratio - elec)]
 
         return constraint_list
 
-    def get_heat_recovered(self, mask):
+    def get_steam_recovered(self, mask):
         # thermal power is recovered in a CHP plant whenever electric power is being generated
         # it is proportional to the electric power generated at a given time
-        return self.variables_dict['heat']
+        return self.variables_dict['steam']
+
+    def get_hotwater_recovered(self, mask):
+        # thermal power is recovered in a CHP plant whenever electric power is being generated
+        # it is proportional to the electric power generated at a given time
+        return self.variables_dict['hotwater']
 
     def timeseries_report(self):
 
         tech_id = self.unique_tech_id()
         results = super().timeseries_report()
 
-        results[tech_id + ' Heat Generation (kW)'] = self.variables_df['heat']
-        if self.site_heating_load is not None:
-            results[tech_id + ' Site Heating Load (BTU/hr)'] = self.site_heating_load
+        results[tech_id + ' Steam Generation (kW)'] = self.variables_df['steam']
+        results[tech_id + ' Hot Water Generation (kW)'] = self.variables_df['hotwater']
+        if self.site_steam_load is not None:
+            results[tech_id + ' Site Steam Thermal Load (BTU/hr)'] = self.site_steam_load
+        if self.site_hotwater_load is not None:
+            results[tech_id + ' Site Hot Water Thermal Load (BTU/hr)'] = self.site_hotwater_load
 
         return results
 

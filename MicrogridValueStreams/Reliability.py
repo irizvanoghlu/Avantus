@@ -206,7 +206,7 @@ class Reliability(ValueStream):
         report.loc[:, 'Critical Load (kW)'] = self.critical_load
         if self.min_soe_df is not None:
             report.loc[:, 'Reliability min State of Energy (kWh)'] = self.min_soe_df['soe']
-            #These two lines have to commented out if using optimized soe routine
+            # TODO These two lines have to commented out if using optimized soe routine
             report.loc[:, 'Reliability min SOE profile 0'] = self.soe_profile_all_0.values()
             report.loc[:, 'Reliability min SOE profile 1'] = self.soe_profile_all_1.values()
             # report.loc[:, 'Reliability min SOC (%)'] = self.min_soc_df['soc']
@@ -222,7 +222,7 @@ class Reliability(ValueStream):
         """
         df_dict = {}
         TellUser.info('Starting load coverage calculation. This may take a while.')
-        df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list,time_series_data, technology_summary)
+        df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list, time_series_data, technology_summary)
         TellUser.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
         if not self.post_facto_only:

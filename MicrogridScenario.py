@@ -217,7 +217,6 @@ class MicrogridScenario(Scenario):
             self.poi.is_sizing_optimization = False
             if self.service_agg.is_reliability_only():
                 self.opt_engine = False
-                self.poi.need_opt_prob_loop = False
 
         if self.deferral_sizing:
             # set size of ESS

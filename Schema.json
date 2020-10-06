@@ -1426,7 +1426,7 @@
                     },
                     "state_of_health": {
                         "cba": "n",
-                        "max": "100.0",
+                        "max": "99.9",
                         "min": "0.0",
                         "type": "float",
                         "unit": "%"

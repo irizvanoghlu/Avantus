@@ -116,10 +116,12 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 # determine yearly degradation for the years that we counted cycles for
                 no_years_solved = len(analysis_years)
                 no_optimizations_per_year = (len(self.degrade_data.index) - 1) / no_years_solved
+                # post optimization data
+                post_opt_degrade = self.degrade_data.iloc[1:]
                 for indx in range(no_years_solved):
                     first_degrad_inx = 1 + indx * no_optimizations_per_year
                     last_degrad_idx = first_degrad_inx + no_optimizations_per_year
-                    sub_data = self.degrade_data[(first_degrad_inx <= self.degrade_data.index) and (self.degrade_data.index <= last_degrad_idx)]
+                    sub_data = post_opt_degrade[(first_degrad_inx <= post_opt_degrade.index) & (post_opt_degrade.index <= last_degrad_idx)]
                     tot_yr_degradation = sub_data['degradation'].sum()
                     self.yearly_degradation_report[pd.Period(analysis_years[indx], freq='y')] = tot_yr_degradation
                 # fill in the remaining years (assume constant degradation)

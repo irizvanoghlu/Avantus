@@ -225,10 +225,10 @@ class Reliability(ValueStream):
         df_dict['load_coverage_prob'] = self.load_coverage_probability(der_list,time_series_data, technology_summary)
         TellUser.info('Finished load coverage calculation.')
         # calculate RELIABILITY SUMMARY
-        # if not self.post_facto_only:
-        #     self.contribution_summary(technology_summary, time_series_data)
-        #     df_dict['outage_energy_contributions'] = self.outage_contribution_df
-        #     df_dict['reliability_summary'] = self.contribution_perc_df
+        if not self.post_facto_only:
+            self.contribution_summary(technology_summary, time_series_data)
+            df_dict['outage_energy_contributions'] = self.outage_contribution_df  # TODO remove bc output is not needed anymore
+            df_dict['reliability_summary'] = self.contribution_perc_df
         return df_dict
 
     def contribution_summary(self, technology_summary_df, results):
@@ -372,7 +372,7 @@ class Reliability(ValueStream):
         lcpc_df.set_index('Outage Length (hrs)')
         return lcpc_df
 
-    def get_der_limits(self, der_list, sizing=False,Load_shed=False):
+    def get_der_limits(self, der_list, sizing=False, Load_shed=False):
         # collect information required to call simulate_outage
         # TODO change handling of multiple ESS
         ess_properties = {

@@ -168,14 +168,12 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         """
         if not solution:
-            return self.effective_soe_max
+            return super(ESSSizing, self).operational_max_energy()
         else:
             try:
-                # effective_soe_max = self.effective_soe_max.value  TODO
-                effective_soe_max = self.ulsoc * self.ene_max_rated.value
+                effective_soe_max = self.effective_soe_max.value
             except AttributeError:
                 effective_soe_max = self.effective_soe_max
-                # effective_soe_max = self.effective_soe_max  TODO
             return effective_soe_max
 
     def operational_min_energy(self, solution=False):
@@ -184,14 +182,12 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         Returns: the minimum energy that should stored in this DER based on user inputs
         """
         if not solution:
-            return self.effective_soe_min
+            return super(ESSSizing, self).operational_min_energy()
         else:
             try:
-                effective_soe_min = self.llsoc * self.ene_max_rated.value
-                # effective_soe_min = self.effective_soe_min.value TODO
+                effective_soe_min = self.effective_soe_min.value
             except AttributeError:
                 effective_soe_min = self.effective_soe_min
-                # effective_soe_min = self.effective_soe_min TODO
             return effective_soe_min
 
     def constraints(self, mask, **kwargs):
@@ -258,8 +254,8 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         self.dis_max_rated = self.discharge_capacity(solution=True)
         self.ch_max_rated = self.charge_capacity(solution=True)
         self.ene_max_rated = self.energy_capacity(solution=True)
-        self.effective_soe_min = self.operational_min_energy(solution=True) #TODO
-        self.effective_soe_max = self.operational_max_energy(solution=True)  #TODO
+        self.effective_soe_min = self.operational_min_energy(solution=True)
+        self.effective_soe_max = self.operational_max_energy(solution=True)
         return
 
     def sizing_summary(self):

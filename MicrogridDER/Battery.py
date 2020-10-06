@@ -37,7 +37,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
         super().__init__(params)  # BatteryTech.Battery->ESSizing->EnergyStorage->DER->Sizing
         self.user_duration = params['duration_max']
         self.state_of_health = params['state_of_health'] / 100
-        self.years_system_degraded = []
+        self.years_system_degraded = set()
         self.yearly_degradation_report = pd.DataFrame()
 
         if self.user_duration:
@@ -78,7 +78,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
         if self.incl_cycle_degrade:
             if self.degraded_energy_capacity() <= self.ene_max_rated * self.state_of_health:
                 # record the year that the energy capacity reaches the point of replacement
-                self.years_system_degraded.append(start_dttm.year)
+                self.years_system_degraded.add(start_dttm.year)
 
                 # reset the energy capacity to its original nameplate if replaceable
                 if self.replaceable:
@@ -108,7 +108,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 foo = max(self.years_system_degraded) + 1 - self.operation_year.year
                 avg_lifetime = foo / num_full_lifetimes
                 # set FAILURE_YEARS to be the years that the system degraded
-                self.failure_years = self.years_system_degraded
+                self.failure_years = list(self.years_system_degraded)
             else:
                 # create a data frame with a row for every year in the project lifetime
                 yr_index = pd.period_range(start=start_year, end=end_year, freq='y')

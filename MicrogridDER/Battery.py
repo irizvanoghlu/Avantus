@@ -17,6 +17,7 @@ from storagevet.Technology import BatteryTech
 from MicrogridDER.ESSSizing import ESSSizing
 from ErrorHandelling import *
 import pandas as pd
+import numpy as np
 
 DEBUG = False
 
@@ -113,29 +114,30 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 # create a data frame with a row for every year in the project lifetime
                 yr_index = pd.period_range(start=start_year, end=end_year, freq='y')
                 self.yearly_degradation_report = pd.Series(index=pd.Index(yr_index))
-                # determine yearly degradation for the years that we counted cycles for
-                no_years_solved = len(analysis_years)
-                no_optimizations_per_year = (len(self.degrade_data.index) - 1) / no_years_solved
                 # post optimization data
                 post_opt_degrade = self.degrade_data.iloc[1:]
-                for indx in range(no_years_solved):
+                # determine yearly degradation for the years that we counted cycles for
+                no_years_solved = len(analysis_years)
+                analysis_years = np.sort(analysis_years)  # sort the list of years, smallest to largest
+                no_optimizations_per_year = len(post_opt_degrade.index) / no_years_solved
+                for indx, year in enumerate(analysis_years):
                     first_degrad_inx = 1 + indx * no_optimizations_per_year
                     last_degrad_idx = first_degrad_inx + no_optimizations_per_year
-                    sub_data = post_opt_degrade[(first_degrad_inx <= post_opt_degrade.index) & (post_opt_degrade.index <= last_degrad_idx)]
+                    sub_data = post_opt_degrade[(first_degrad_inx <= post_opt_degrade.index) & (post_opt_degrade.index < last_degrad_idx)]
                     tot_yr_degradation = sub_data['degradation'].sum()
-                    self.yearly_degradation_report[pd.Period(analysis_years[indx], freq='y')] = tot_yr_degradation
+                    self.yearly_degradation_report[pd.Period(year, freq='y')] = tot_yr_degradation
                 # fill in the remaining years (assume constant degradation)
                 self.yearly_degradation_report.fillna(method='ffill', inplace=True)
-                # estimate average yearly degradation
+                # estimate average yearly degradation %
                 avg_yearly_degradation = self.yearly_degradation_report.mean()
-                # estimate lifetime with average yearly degradation
-                avg_lifetime = 1/avg_yearly_degradation
+                # estimate lifetime with average yearly degradation %
+                avg_lifetime = 100/avg_yearly_degradation
 
             # report actual EOL to user
-            TellUser.info(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
-                          f" to be {int(avg_lifetime)}  (inputted value: {self.expected_lifetime})")
-            # set EXPECTED_LIFETIME to be the actual EOL
-            self.expected_lifetime = int(avg_lifetime)
+            TellUser.warning(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
+                             f" to be {int(avg_lifetime)}  (inputted value: {self.expected_lifetime})")
+            # set EXPECTED_LIFETIME to be the actual EOL -- it should never be 0 years
+            self.expected_lifetime = max(int(avg_lifetime), 1)
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0
             failed_on = max(self.years_system_degraded) if num_full_lifetimes else None

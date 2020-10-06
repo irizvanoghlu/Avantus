@@ -31,7 +31,7 @@ class MicrogridResult(Result):
         super().__init__(scenario)
         self.sizing_df = pd.DataFrame()
         for der in self.poi.der_list:
-            if der.technology_type == "Energy Storage System":
+            if der.tag == "Battery":
                 # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
                 der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
 

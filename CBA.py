@@ -145,8 +145,14 @@ class CostBenefitAnalysis(Financial):
         """
         rerun_opt_on = []
         for der_instance in der_list:
-            yrs_failed = der_instance.set_failure_years(end_year)
+            fail_on = None
+            if der_instance.tag == 'Battery' and der_instance.incl_cycle_degrade:
+                # ignore battery's failure years as defined by user if user wants to include degradation in their analysis
+                # instead set it to be the project's last year+1
+                fail_on = end_year.year + 1
+            yrs_failed = der_instance.set_failure_years(end_year, fail_on)
             if not der_instance.replaceable:
+                # if the DER is not replaceable then add the following year to the set of analysis years
                 rerun_opt_on += yrs_failed
         # increase the year by 1 (this will be the years that the operational DER mix will change)
         diff_der_mix_yrs = [year+1 for year in rerun_opt_on if year < end_year.year]

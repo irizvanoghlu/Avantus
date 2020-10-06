@@ -248,7 +248,7 @@ class MicrogridScenario(Scenario):
                 der.save_variable_results(sub_index)
                 # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
                 der.set_size()
-                if der.technology_type == "Energy Storage System":
+                if der.tag == "Battery":
                     # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 

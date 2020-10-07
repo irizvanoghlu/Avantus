@@ -476,6 +476,8 @@ class CostBenefitAnalysis(Financial):
         """
         lifetime_discounted_cost = cost_benefit.loc['Lifetime Present Value', 'Cost ($)']
         lifetime_discounted_benefit = cost_benefit.loc['Lifetime Present Value', 'Benefit ($)']
+        if np.isclose(lifetime_discounted_cost, 0):
+            return np.nan
         return lifetime_discounted_benefit/lifetime_discounted_cost
 
     def create_equipment_lifetime_report(self, der_lst):

@@ -30,7 +30,7 @@ class MicrogridResult(Result):
         """
         super().__init__(scenario)
         self.sizing_df = pd.DataFrame()
-        self.pf_flag=self.service_agg.post_facto_reliability_only() or self.service_agg.post_facto_reliability_only_and_User_constraint() or self.service_agg.is_Reliability_only_value_stream()
+        self.pf_flag = self.service_agg.post_facto_reliability()
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down
@@ -39,7 +39,6 @@ class MicrogridResult(Result):
 
         Three attributes are edited in this method: TIME_SERIES_DATA, MONTHLY_DATA, TECHNOLOGY_SUMMARY
         """
-
         super().collect_results(post_facto_flag=self.pf_flag)
         self.sizing_df = self.poi.sizing_summary()
 
@@ -51,7 +50,6 @@ class MicrogridResult(Result):
             keys are the file name that the df will be saved with
 
         """
-
         if not (self.service_agg.is_deferral_only() or self.pf_flag):
             self.drill_down_dict.update(self.poi.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
                                                                 technology_summary=self.technology_summary, sizing_df=self.sizing_df))
@@ -65,7 +63,6 @@ class MicrogridResult(Result):
         case in question.
 
         """
-
         if not (self.service_agg.is_deferral_only() or self.pf_flag):
             super().calculate_cba()
 
@@ -85,6 +82,6 @@ class MicrogridResult(Result):
             savepath = self.dir_abs_path / str(instance_key)
         else:
             savepath = self.dir_abs_path
-        self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
-        self.financials.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
+        self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'), index=False)
+        self.cost_benefit_analysis.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
         TellUser.info(f'DER results have been saved to: {savepath}')

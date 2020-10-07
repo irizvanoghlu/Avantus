@@ -12,7 +12,7 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-from MicrogridDER.Sizing import Sizing
+from MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology.EnergyStorage import EnergyStorage
 from MicrogridDER.DERExtension import DERExtension
 import cvxpy as cvx
@@ -20,22 +20,21 @@ from ErrorHandelling import *
 import numpy as np
 
 
-class ESSSizing(EnergyStorage, DERExtension, Sizing):
+class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
     """ Extended ESS class that can also be sized
 
     """
 
-    def __init__(self, tag, params):
+    def __init__(self, params):
         """ Initialize all technology with the following attributes.
 
         Args:
-            tag (str): A unique string name for the technology being added
             params (dict): Dict of parameters
         """
         TellUser.debug(f"Initializing {__name__}")
-        EnergyStorage.__init__(self, tag, params)
+        EnergyStorage.__init__(self, params)
         DERExtension.__init__(self, params)
-        Sizing.__init__(self)
+        ContinuousSizing.__init__(self, params)
         self.incl_energy_limits = params.get('incl_ts_energy_limits', False)  # this is an input included in the dervet schema only --HN
         if self.incl_energy_limits:
             self.limit_energy_max = params['ts_energy_max'].fillna(self.ene_max_rated)
@@ -168,30 +167,28 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
         Returns: the maximum energy that should stored in this DER based on user inputs
 
         """
-        if sizing: 
-            try:
-                effective_soe_max = self.ulsoc * self.ene_max_rated.value
-            except AttributeError:
-                effective_soe_max = self.ulsoc * self.ene_max_rated
-            return effective_soe_max
+        if not sizing:
+            return super(ESSSizing, self).operational_max_energy()
         else:
-            return self.effective_soe_max
-        
+            try:
+                effective_soe_max = self.effective_soe_max.value
+            except AttributeError:
+                effective_soe_max = self.effective_soe_max
+            return effective_soe_max
 
     def operational_min_energy(self, sizing=False):
         """
 
         Returns: the minimum energy that should stored in this DER based on user inputs
         """
-        if sizing:
-            try:
-                effective_soe_min = self.llsoc * self.ene_max_rated.value
-            except AttributeError:
-                effective_soe_min = self.llsoc * self.ene_max_rated
-            return effective_soe_min
-            
+        if not sizing:
+            return super(ESSSizing, self).operational_min_energy()
         else:
-            return self.effective_soe_min
+            try:
+                effective_soe_min = self.effective_soe_min.value
+            except AttributeError:
+                effective_soe_min = self.effective_soe_min
+            return effective_soe_min
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -247,15 +244,16 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             self.costs (Dict): Dict of objective costs
         """
         costs = super().objective_function(mask, annuity_scalar)
-        if self.being_sized():
-            costs.update({self.name + 'capex': self.get_capex()})
+        costs.update(self.sizing_objective())
         return costs
 
-
     def set_size(self):
-        self.dis_max_rated=self.discharge_capacity(sizing=True)
-        self.ch_max_rated=self.charge_capacity(sizing=True)
-        self.ene_max_rated=self.energy_capacity(sizing=True)
+        """ Save value of size variables of DERs
+
+        """
+        self.dis_max_rated = self.discharge_capacity(sizing=True)
+        self.ch_max_rated = self.charge_capacity(sizing=True)
+        self.ene_max_rated = self.energy_capacity(sizing=True)
         self.effective_soe_min = self.operational_min_energy(sizing=True)
         self.effective_soe_max = self.operational_max_energy(sizing=True)
         return
@@ -371,7 +369,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             if not self.user_ch_rated_max:
                 max_charging_range = self.user_ch_rated_max - self.ch_min_rated
             else:
-                max_charging_range = np.infty
+                max_charging_range = np.inf
         else:
             max_charging_range = self.ch_max_rated - self.ch_min_rated
         # ability to provide regulation down through discharging less
@@ -379,7 +377,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
             if not self.user_ch_rated_max:
                 max_discharging_range = self.user_dis_rated_max - self.dis_min_rated
             else:
-                max_discharging_range = np.infty
+                max_discharging_range = np.inf
         else:
             max_discharging_range = self.dis_max_rated - self.dis_min_rated
         return max_charging_range + max_discharging_range

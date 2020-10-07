@@ -1,10 +1,10 @@
 """
-PV.py
+Intermittent Resource sizing class
 
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Andrew Etringer'
+__author__ = 'Andrew Etringer and Halley Nathwani'
 __copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
 __license__ = 'EPRI'
@@ -13,37 +13,36 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
-from MicrogridDER.IntermittentResourceSizing import IntermittentResourceSizing
+from MicrogridDER.DERExtension import DERExtension
+from MicrogridDER.ContinuousSizing import ContinuousSizing
+from storagevet.Technology import PVSystem
 from ErrorHandelling import *
 import numpy as np
 
 
-class PV(IntermittentResourceSizing):
-    """ Assumes perfect foresight. Ability to curtail generation
+class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
+    """ An intermittent resource, with sizing optimization
 
     """
 
     def __init__(self, params):
-        """ Initializes an intermittent resource class where perfect foresight of generation is assumed.
-        It inherits from the technology class. Additionally, it sets the type and physical constraints of the
-        technology.
+        """ Initialize all technology with the following attributes.
 
         Args:
-            params (dict): Dict of parameters
+            params (dict): Dict of parameters for initialization
         """
-        # create generic technology object
+        TellUser.debug(f"Initializing {__name__}")
         PVSystem.PV.__init__(self, params)
-        Sizing.__init__(self)
         DERExtension.__init__(self, params)
+        ContinuousSizing.__init__(self, params)
 
+        self.nu = params['nu'] / 100
+        self.gamma = params['gamma'] / 100
         self.curtail = params['curtail']
         self.max_rated_capacity = params['max_rated_capacity']
         self.min_rated_capacity = params['min_rated_capacity']
-        if not self.curtail:
-            # if we are not curatiling, then we do not need any variables
-            self.variable_names = {}
         if not self.rated_capacity:
-            self.rated_capacity = cvx.Variable(name='PV rating', integer=True)
+            self.rated_capacity = cvx.Variable(name=f'{self.name}rating', integer=True)
             self.inv_max = self.rated_capacity
             self.size_constraints += [cvx.NonPos(-self.rated_capacity)]
             if self.min_rated_capacity:
@@ -61,9 +60,9 @@ class PV(IntermittentResourceSizing):
 
         """
         if self.being_sized():
-            return cvx.Parameter(shape=sum(mask), name='pv/rated gen', value=self.gen_per_rated.loc[mask].values) * self.rated_capacity
+            return cvx.Parameter(shape=sum(mask), name=f'{self.name}/rated gen', value=self.gen_per_rated.loc[mask].values) * self.rated_capacity
         else:
-            return super(PV, self).get_discharge(mask)
+            return super().get_discharge(mask)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -71,7 +70,7 @@ class PV(IntermittentResourceSizing):
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().constraints(mask)
+        constraints = super().constraints(mask, **kwargs)
         constraints += self.size_constraints
         return constraints
 
@@ -86,11 +85,8 @@ class PV(IntermittentResourceSizing):
         Returns:
             self.costs (Dict): Dict of objective costs
         """
-        costs = dict()
-
-        if self.being_sized():
-            costs.update({self.name + 'capex': self.get_capex()})
-
+        costs = super().objective_function(mask, annuity_scalar)
+        costs.update(self.sizing_objective())
         return costs
 
     def timeseries_report(self):
@@ -100,69 +96,27 @@ class PV(IntermittentResourceSizing):
             pertaining to this instance
 
         """
-        results = super(PV, self).timeseries_report()
+        results = super().timeseries_report()
         if self.being_sized() and not self.curtail:
             # convert expressions into values
             tech_id = self.unique_tech_id()
-            results[tech_id + ' Generation (kW)'] = self.maximum_generation().value
-            results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
+            results[tech_id + ' Electric Generation (kW)'] = self.maximum_generation()
+            results[tech_id + ' Maximum (kW)'] = self.maximum_generation()
         return results
 
-    def maximum_generation(self,  label_selection=None,sizing=False):
-        """ The most that the PV system could discharge.
-
-        Args:
-            label_selection: A single label, e.g. 5 or 'a',
-                a list or array of labels, e.g. ['a', 'b', 'c'],
-                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
-                a callable function with one argument (the calling Series or DataFrame)
-
-        Returns: valid array output for indexing (one of the above) of the max generation profile
-
-        """
-        if sizing:
-            try:
-                PV_gen = self.gen_per_rated.values * self.rated_capacity.value
-            except AttributeError:
-                PV_gen = self.gen_per_rated.values * self.rated_capacity
-
-        elif label_selection is not None:
-            PV_gen = self.gen_per_rated.loc[label_selection].values * self.rated_capacity
-
-        else:
-            PV_gen = self.gen_per_rated.values * self.rated_capacity
-
-
-        return PV_gen
-
     def set_size(self):
-        self.rated_capacity=self.rated_PV_capacity(sizing=True)
-        self._inv_max = self.inv_rated_PV_capacity(sizing=True)
-
-        return
-
-    def inv_rated_PV_capacity(self, sizing=False):
-        """
-
-        Returns: the maximum energy times two for PV inverter rating
+        """ Save value of size variables of DERs
 
         """
-        if not sizing:
-            return 2*self.rated_capacity
-        else:
-            try:
-                max_rated = 2*self.rated_capacity.value
-            except AttributeError:
-                max_rated = 2* self.rated_capacity
-            return max_rated
+        self.rated_capacity = self.get_rated_capacity(solution=True)
 
-    def rated_PV_capacity(self, sizing=False):
+    def get_rated_capacity(self, solution=False):
         """
 
         Returns: the maximum energy that can be attained
 
         """
-        if not sizing:
+        if not solution:
             return self.rated_capacity
         else:
             try:
@@ -192,7 +146,7 @@ class PV(IntermittentResourceSizing):
             sizing_margin1 = (abs(self.rated_capacity.value - self.max_rated_capacity) - 0.05 * self.max_rated_capacity)
             sizing_margin2 = (abs(self.rated_capacity.value - self.min_rated_capacity) - 0.05 * self.min_rated_capacity)
             if (sizing_margin1 < 0).any() or (sizing_margin2 < 0).any():
-                TellUser.warning("Difference between the optimal PV rated capacity and user upper/lower "
+                TellUser.warning(f"Difference between the optimal {self.name} rated capacity and user upper/lower "
                                  "bound constraints is less than 5% of the value of user upper/lower bound constraints")
 
         return sizing_results
@@ -204,7 +158,7 @@ class PV(IntermittentResourceSizing):
             input_dict: hold input data, keys are the same as when initialized
 
         """
-        super(PV, self).update_for_evaluation(input_dict)
+        super().update_for_evaluation(input_dict)
         cost_per_kw = input_dict.get('ccost_kW')
         if cost_per_kw is not None:
             self.capital_cost_function = cost_per_kw

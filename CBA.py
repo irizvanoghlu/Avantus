@@ -89,7 +89,7 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 shortest_lifetime = min(der_instance.expected_lifetime, shortest_lifetime)
                 if der_instance.being_sized():
-                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
+                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==2
             return project_start_year + shortest_lifetime-1
@@ -99,7 +99,7 @@ class CostBenefitAnalysis(Financial):
             for der_instance in der_list:
                 longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
-                    e_logger.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
+                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     return pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==3
             return project_start_year + longest_lifetime-1
@@ -107,14 +107,24 @@ class CostBenefitAnalysis(Financial):
         if self.horizon_mode == 4:
             self.report_annualized_values = True
             if len(der_list) > 1:
-                e_logger.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
+                TellUser.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(year=0, freq='y')
             else:
                 # require that e < d
                 only_tech = der_list[0]
+                if not only_tech.ecc_perc:
+                    # require that an escaltion rate and ACR is indicated --
+                    if not only_tech.acr:
+                        TellUser.error(f"To calculate the economic carrying capacity please indicate non-zero values for ECC% or the ACR " +
+                                       "of your DER")
+                        return pd.Period(year=0, freq='y')
+                    else:
+                        TellUser.warning("Using the ACR to estimate the economic carrying cost")
+                else:
+                    TellUser.warning("Using the user given ecc% to calculate the economic carrying cost")
                 if only_tech.escalation_rate >= self.npv_discount_rate:
-                    e_logger.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
+                    TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
                                    f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
                     return pd.Period(year=0, freq='y')
                 return project_start_year + only_tech.expected_lifetime-1
@@ -213,15 +223,8 @@ class CostBenefitAnalysis(Financial):
         that is active and has different values specified to evaluate the CBA with.
 
         """
-        try:
-            monthly_data = self.Scenario['monthly_data']
-        except KeyError:
-            monthly_data = None
-
-        try:
-            time_series = self.Scenario['time_series']
-        except KeyError:
-            time_series = None
+        monthly_data = self.Scenario.get('monthly_data')
+        time_series = self.Scenario.get('time_series')
 
         if time_series is not None or monthly_data is not None:
             for value_stream in self.value_streams.values():
@@ -292,7 +295,7 @@ class CostBenefitAnalysis(Financial):
             # replace capital cost columns with economic_carrying cost
             ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, proforma.index)
             # drop original Capital Cost
-            proforma = proforma.drop(columns=[tech.zero_column_name])
+            proforma = proforma.drop(columns=[tech.zero_column_name()])
             # add the ECC to the proforma
             proforma = proforma.join(ecc_df)
         # sort alphabetically
@@ -408,7 +411,7 @@ class CostBenefitAnalysis(Financial):
                 tax_schedule = tax_schedule + list(np.zeros(proj_years - len(tax_schedule)))
             else:
                 tax_schedule = tax_schedule[:proj_years]
-            capital_costs += np.multiply(tax_schedule, proforma.loc['CAPEX Year', der_inst.zero_column_name])
+            capital_costs += np.multiply(tax_schedule, proforma.loc[:, der_inst.zero_column_name()].sum()/100)
         yearly_net += capital_costs
 
         # 2) Calculate State tax based on the net cash flows in each year
@@ -422,6 +425,8 @@ class CostBenefitAnalysis(Financial):
         overall_tax_burden = state_tax + federal_tax
         # drop yearly net value column
         proforma_taxes = proforma.iloc[:, :-1]
+        proforma_taxes['State Tax Burden'] = np.insert(state_tax, 0, 0)
+        proforma_taxes['Federal Tax Burden'] = np.insert(federal_tax, 0, 0)
         proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
         return proforma_taxes
 

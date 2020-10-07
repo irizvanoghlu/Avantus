@@ -75,7 +75,7 @@ class DERVET:
             run.initialize_cba()
             run.fill_and_drop_extra_data()
             # add a optimization for reliability
-            run.reliability_based_sizing_module()
+            run.sizing_module()
             run.optimize_problem_loop()
 
             MicrogridResult.add_instance(key, run)

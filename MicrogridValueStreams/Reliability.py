@@ -96,7 +96,7 @@ class Reliability(ValueStream):
         First_failure_ind = 0
 
         # Get DER limits
-        _, _, _, demand_left, _ = self.get_der_limits(der_list, True)
+        _, _, _, demand_left, _ = self.get_der_limits(der_list)
 
         #demand_left_df = pd.DataFrame(demand_left)  # TODO
         # The maximum load demand that is unserved
@@ -124,7 +124,7 @@ class Reliability(ValueStream):
                     print(der_instance.n.value)
                 if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
                     print(der_instance.rated_capacity.value)
-            generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
+            generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list, sizing=True)
 
             no_of_ES = len(ess_properties['rte list'])
             if no_of_ES == 0:
@@ -376,6 +376,8 @@ class Reliability(ValueStream):
         return lcpc_df
 
     def get_der_limits(self, der_list, sizing=False,Load_shed=False):
+
+        #sizing=True means, to consider the PV and ICE generations in the reliability check and demand left calculation even though thery are being sized.
         # collect information required to call simulate_outage
         # TODO change handling of multiple ESS
         ess_properties = {
@@ -390,20 +392,20 @@ class Reliability(ValueStream):
 
         total_pv_max = np.zeros(len(self.critical_load))
         total_dg_max = 0
-        solution = not sizing
+
         for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not sizing):
-                total_pv_max += der_inst.maximum_generation() #label_selection='Reliability')
+            if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or sizing ):
+                total_pv_max += der_inst.maximum_generation(sizing=sizing) #label_selection='Reliability')
                 ess_properties['pv present'] = True
-            if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not sizing):
+            if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or sizing):
                 total_dg_max += der_inst.max_power_out()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
-                ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=solution)
-                ess_properties['operation SOE max'] += der_inst.operational_max_energy(solution=solution)
-                ess_properties['discharge max'] += der_inst.discharge_capacity(solution=solution)
-                ess_properties['charge max'] += der_inst.charge_capacity(solution=solution)
-                ess_properties['energy rating'] += der_inst.energy_capacity(solution=solution)
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy(sizing=sizing)
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy(sizing=sizing)
+                ess_properties['discharge max'] += der_inst.discharge_capacity(sizing=sizing)
+                ess_properties['charge max'] += der_inst.charge_capacity(sizing=sizing)
+                ess_properties['energy rating'] += der_inst.energy_capacity(sizing=sizing)
         # takes care of N-2 case
         if self.n_2:
             total_dg_max -= self.ice_rating

@@ -117,13 +117,13 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
                 TellUser.error(f'Ignoring discharge max time series because {self.tag}-{self.name} sizing for power capacity')
                 self.limit_discharge_max = None
 
-    def discharge_capacity(self, solution=False):
+    def discharge_capacity(self, sizing=False):
         """
 
         Returns: the maximum discharge that can be attained
 
         """
-        if not solution:
+        if not sizing:
             return self.dis_max_rated
         else:
             try:
@@ -132,13 +132,13 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
                 dis_max_rated = self.dis_max_rated
             return dis_max_rated
 
-    def charge_capacity(self, solution=False):
+    def charge_capacity(self, sizing=False):
         """
 
         Returns: the maximum charge that can be attained
 
         """
-        if not solution:
+        if not sizing:
             return self.dis_max_rated
         else:
             try:
@@ -147,13 +147,13 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
                 ch_max_rated = self.ch_max_rated
             return ch_max_rated
 
-    def energy_capacity(self, solution=False):
+    def energy_capacity(self, sizing=False):
         """
 
         Returns: the maximum energy that can be attained
 
         """
-        if not solution:
+        if not sizing:
             return self.ene_max_rated
         else:
             try:
@@ -162,34 +162,36 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
                 max_rated = self.ene_max_rated
             return max_rated
 
-    def operational_max_energy(self, solution=False):
+    def operational_max_energy(self, sizing=False):
         """
 
         Returns: the maximum energy that should stored in this DER based on user inputs
 
         """
-        if not solution:
-            return self.effective_soe_max
-        else:
+        if sizing: 
             try:
                 effective_soe_max = self.ulsoc * self.ene_max_rated.value
             except AttributeError:
                 effective_soe_max = self.ulsoc * self.ene_max_rated
             return effective_soe_max
+        else:
+            return self.effective_soe_max
+        
 
-    def operational_min_energy(self, solution=False):
+    def operational_min_energy(self, sizing=False):
         """
 
         Returns: the minimum energy that should stored in this DER based on user inputs
         """
-        if not solution:
-            return self.effective_soe_min
-        else:
+        if sizing:
             try:
                 effective_soe_min = self.llsoc * self.ene_max_rated.value
             except AttributeError:
                 effective_soe_min = self.llsoc * self.ene_max_rated
             return effective_soe_min
+            
+        else:
+            return self.effective_soe_min
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -251,11 +253,11 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
 
 
     def set_size(self):
-        self.dis_max_rated=self.discharge_capacity(solution=True)
-        self.ch_max_rated=self.charge_capacity(solution=True)
-        self.ene_max_rated=self.energy_capacity(solution=True)
-        self.effective_soe_min = self.operational_min_energy(solution=True)
-        self.effective_soe_max = self.operational_max_energy(solution=True)
+        self.dis_max_rated=self.discharge_capacity(sizing=True)
+        self.ch_max_rated=self.charge_capacity(sizing=True)
+        self.ene_max_rated=self.energy_capacity(sizing=True)
+        self.effective_soe_min = self.operational_min_energy(sizing=True)
+        self.effective_soe_max = self.operational_max_energy(sizing=True)
         return
 
     def sizing_summary(self):
@@ -266,9 +268,9 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
         """
         sizing_results = {
             'DER': self.name,
-            'Energy Rating (kWh)': self.energy_capacity(solution=True),
-            'Charge Rating (kW)': self.charge_capacity(solution=True),
-            'Discharge Rating (kW)': self.discharge_capacity(solution=True),
+            'Energy Rating (kWh)': self.energy_capacity(sizing=True),
+            'Charge Rating (kW)': self.charge_capacity(sizing=True),
+            'Discharge Rating (kW)': self.discharge_capacity(sizing=True),
             'Round Trip Efficiency (%)': self.rte,
             'Lower Limit on SOC (%)': self.llsoc,
             'Upper Limit on SOC (%)': self.ulsoc,
@@ -315,7 +317,7 @@ class ESSSizing(EnergyStorage, DERExtension, Sizing):
         except AttributeError:
             energy_rated = self.ene_max_rated
 
-        return energy_rated / self.discharge_capacity(solution=True)
+        return energy_rated / self.discharge_capacity(sizing=True)
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

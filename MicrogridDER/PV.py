@@ -110,18 +110,61 @@ class PV(PVSystem.PV, Sizing, DERExtension):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation().value
         return results
 
+    def maximum_generation(self,  label_selection=None,sizing=False):
+        """ The most that the PV system could discharge.
+
+        Args:
+            label_selection: A single label, e.g. 5 or 'a',
+                a list or array of labels, e.g. ['a', 'b', 'c'],
+                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
+                a callable function with one argument (the calling Series or DataFrame)
+
+        Returns: valid array output for indexing (one of the above) of the max generation profile
+
+        """
+        if sizing:
+            try:
+                PV_gen = self.gen_per_rated.values * self.rated_capacity.value
+            except AttributeError:
+                PV_gen = self.gen_per_rated.values * self.rated_capacity
+
+        elif label_selection is not None:
+            PV_gen = self.gen_per_rated.loc[label_selection].values * self.rated_capacity
+
+        else:
+            PV_gen = self.gen_per_rated.values * self.rated_capacity
+
+
+        return PV_gen
+
     def set_size(self):
-        self.rated_capacity=self.rated_PV_capacity(solution=True)
+        self.rated_capacity=self.rated_PV_capacity(sizing=True)
+        self._inv_max = self.inv_rated_PV_capacity(sizing=True)
 
         return
 
-    def rated_PV_capacity(self, solution=False):
+    def inv_rated_PV_capacity(self, sizing=False):
+        """
+
+        Returns: the maximum energy times two for PV inverter rating
+
+        """
+        if not sizing:
+            return 2*self.rated_capacity
+        else:
+            try:
+                max_rated = 2*self.rated_capacity.value
+            except AttributeError:
+                max_rated = 2* self.rated_capacity
+            return max_rated
+
+    def rated_PV_capacity(self, sizing=False):
         """
 
         Returns: the maximum energy that can be attained
 
         """
-        if not solution:
+        if not sizing:
             return self.rated_capacity
         else:
             try:

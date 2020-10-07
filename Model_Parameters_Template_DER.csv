@@ -232,6 +232,7 @@ CHP,1,n,1,generators,int,"(0,n)",N/A,None,Number of generators whose combined wh
 CHP,1,electric_heat_ratio,2,unitless,float,"[0, inf)",N/A,None,Ratio of electricity produced to heat energy generated,.,no,.,.,
 CHP,1,heat_rate,1,BTU/kWh,float,"[0, inf)",N/A,None,HHV heat rate in BTU/kWh of electric energy generated,.,no,.,.,
 CHP,1,electric_ramp_rate,5,MW/min,float,"[0, inf)",N/A,None,Maximum electric ramp rate,.,no,.,.,
+CHP,1,max_steam_ratio,1,ratio,float,"[0, inf) ",,,What is the maximum amount of steam the CHP can produce relative expressed as a ratio of the hot water thermal energy produced by the CHP (BTU/hr of steam /  BTU/hr of hot water)?,.,no,.,.,
 CHP,1,nsr_response_time,10,minutes,int,"[10, nsr_response_time)",N/A,None,NSR Response Time for generation to come online,.,no,.,.,
 CHP,1,sr_response_time,10,minutes,int,"[10, sr_response_time)",N/A,None,SR Response Time for generation to come online,.,no,.,.,
 CHP,1,startup_time,0,min,int,"[0, startup_time)",N/A,None,Time (in minutes) it takes to start generating,.,no,.,.,

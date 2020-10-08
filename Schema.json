@@ -503,7 +503,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },

@@ -85,6 +85,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 if self.replaceable:
                     self.degrade_perc = 0
                     self.effective_soe_max = self.ulsoc * self.ene_max_rated
+                    self.effective_soe_min = self.llsoc * self.ene_max_rated
 
     def set_end_of_life_based_on_degradation_cycle(self, analysis_years, start_year, end_year):
         """If degradation occurred AND it it the end of the optimization loop call this method -->

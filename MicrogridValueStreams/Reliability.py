@@ -45,8 +45,6 @@ class Reliability(ValueStream):
         self.dt = params['dt']
         self.post_facto_only = params['post_facto_only']
         self.soc_init = params['post_facto_initial_soc'] / 100
-        self.nu = params['nu'] / 100
-        self.gamma = params['gamma'] / 100
         self.max_outage_duration = params['max_outage_duration']
         self.n_2 = params['n-2']
         self.critical_load = params['critical load']
@@ -95,7 +93,7 @@ class Reliability(ValueStream):
         First_failure_ind = 0
 
         # Get DER limits
-        _, _, _, demand_left, _ = self.get_der_limits(der_list)
+        _, _, _, demand_left, _ = self.get_der_limits(der_list, True)
 
         #demand_left_df = pd.DataFrame(demand_left)  # TODO
         # The maximum load demand that is unserved
@@ -123,7 +121,7 @@ class Reliability(ValueStream):
             #         print(der_instance.n.value)
             #     if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
             #         print(der_instance.rated_capacity.value)
-            generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list,sizing=True)
+            generation, total_pv_max, ess_properties, demand_left, reliability_check = self.get_der_limits(der_list)
 
             no_of_ES = len(ess_properties['rte list'])
             if no_of_ES == 0:
@@ -375,8 +373,6 @@ class Reliability(ValueStream):
         return lcpc_df
 
     def get_der_limits(self, der_list, sizing=False, Load_shed=False):
-
-        #sizing=True means, to consider the PV and ICE generations in the reliability check and demand left calculation even though thery are being sized.
         # collect information required to call simulate_outage
         # TODO change handling of multiple ESS
         ess_properties = {
@@ -392,22 +388,22 @@ class Reliability(ValueStream):
         total_pv_max = np.zeros(len(self.critical_load))
         total_pv_vari = np.zeros(len(self.critical_load))  # PV generation w/ variability taken into account
         total_dg_max = 0
-
+        solution = not sizing
         for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or  sizing):
-                pv_inst_gen = der_inst.maximum_generation(sizing=sizing)
+            if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not sizing):
+                pv_inst_gen = der_inst.maximum_generation()
                 total_pv_max += pv_inst_gen
                 total_pv_vari += pv_inst_gen * der_inst.nu
                 ess_properties['pv present'] = True
-            if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or sizing):
+            if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not sizing):
                 total_dg_max += der_inst.max_power_out()
             if der_inst.technology_type == 'Energy Storage System':
                 ess_properties['rte list'].append(der_inst.rte)
-                ess_properties['operation SOE min'] += der_inst.operational_min_energy(sizing=sizing)
-                ess_properties['operation SOE max'] += der_inst.operational_max_energy(sizing=sizing)
-                ess_properties['discharge max'] += der_inst.discharge_capacity(sizing=sizing)
-                ess_properties['charge max'] += der_inst.charge_capacity(sizing=sizing)
-                ess_properties['energy rating'] += der_inst.energy_capacity(sizing=sizing)
+                ess_properties['operation SOE min'] += der_inst.operational_min_energy(solution=solution)
+                ess_properties['operation SOE max'] += der_inst.operational_max_energy(solution=solution)
+                ess_properties['discharge max'] += der_inst.discharge_capacity(solution=solution)
+                ess_properties['charge max'] += der_inst.charge_capacity(solution=solution)
+                ess_properties['energy rating'] += der_inst.energy_capacity(solution=solution)
         # takes care of N-2 case
         if self.n_2:
             total_dg_max -= self.ice_rating
@@ -575,7 +571,7 @@ class Reliability(ValueStream):
             mask.iloc[:] = False
             mask.iloc[outage_ind: (outage_ind + self.outage_duration)] = True
             # set up variables
-            var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')  # at POI
+            # var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')  # at POI
             gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
             tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
 
@@ -588,10 +584,12 @@ class Reliability(ValueStream):
                 if der_instance.technology_type == 'Generator':
                     gen_sum += der_instance.get_discharge(mask)
                 if der_instance.technology_type == 'Intermittent Resource':
-                    var_gen_sum += der_instance.get_discharge(mask)
+                    # var_gen_sum += der_instance.get_discharge(mask) * der_instance.nu
+                    gen_sum += der_instance.get_discharge(mask) * der_instance.nu
 
             critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=self.outage_duration)
-            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * (der_inst.nu * var_gen_sum) + critical_load_arr)]
+            # consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
+            consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)]
 
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)

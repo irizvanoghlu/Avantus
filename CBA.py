@@ -130,13 +130,12 @@ class CostBenefitAnalysis(Financial):
                 return project_start_year + only_tech.expected_lifetime-1
 
     @staticmethod
-    def get_years_after_failures(start_year, end_year, der_list):
+    def get_years_after_failures(end_year, der_list):
         """ The optimization should be re-run for every year an 'unreplacable' piece of equipment fails before the
         lifetime of the longest-lived equipment. No need to re-run the optimization if equipment fails in some
         year and is replaced.
 
         Args:
-            start_year (pd.Period): the first year the project is operational
             end_year (pd.Period): the last year the project is operational
             der_list (list): list of DERs initialized with user values
 
@@ -145,8 +144,14 @@ class CostBenefitAnalysis(Financial):
         """
         rerun_opt_on = []
         for der_instance in der_list:
-            yrs_failed = der_instance.set_failure_years(end_year)
+            fail_on = None
+            if der_instance.tag == 'Battery' and der_instance.incl_cycle_degrade:
+                # ignore battery's failure years as defined by user if user wants to include degradation in their analysis
+                # instead set it to be the project's last year+1
+                fail_on = end_year.year + 1
+            yrs_failed = der_instance.set_failure_years(end_year, fail_on)
             if not der_instance.replaceable:
+                # if the DER is not replaceable then add the following year to the set of analysis years
                 rerun_opt_on += yrs_failed
         # increase the year by 1 (this will be the years that the operational DER mix will change)
         diff_der_mix_yrs = [year+1 for year in rerun_opt_on if year < end_year.year]
@@ -442,7 +447,7 @@ class CostBenefitAnalysis(Financial):
         npv_df = pd.DataFrame({'Lifetime Net Present Value':  self.npv['Lifetime Present Value'].values},
                               index=pd.Index(['$'], name="Unit"))
         other_metrics = pd.DataFrame({'Internal Rate of Return': self.internal_rate_of_return(proforma),
-                                     'Cost-Benefit Ratio': self.cost_benefit_ratio(self.cost_benefit)},
+                                     'Benefit-Cost Ratio': self.benefit_cost_ratio(self.cost_benefit)},
                                      index=pd.Index(['-'], name='Unit'))
         self.payback = pd.merge(self.payback, npv_df, how='outer', on='Unit')
         self.payback = pd.merge(self.payback, other_metrics, how='outer', on='Unit')
@@ -460,7 +465,7 @@ class CostBenefitAnalysis(Financial):
         return np.irr(proforma['Yearly Net Value'].values)
 
     @staticmethod
-    def cost_benefit_ratio(cost_benefit):
+    def benefit_cost_ratio(cost_benefit):
         """ calculate the cost-benefit ratio
 
         Args:
@@ -471,7 +476,9 @@ class CostBenefitAnalysis(Financial):
         """
         lifetime_discounted_cost = cost_benefit.loc['Lifetime Present Value', 'Cost ($)']
         lifetime_discounted_benefit = cost_benefit.loc['Lifetime Present Value', 'Benefit ($)']
-        return lifetime_discounted_cost/lifetime_discounted_benefit
+        if np.isclose(lifetime_discounted_cost, 0):
+            return np.nan
+        return lifetime_discounted_benefit/lifetime_discounted_cost
 
     def create_equipment_lifetime_report(self, der_lst):
         """
@@ -480,6 +487,8 @@ class CostBenefitAnalysis(Financial):
             der_lst:
 
         """
-        data = {der_inst.unique_tech_id(): [der_inst.construction_year, der_inst.operation_year, der_inst.last_operation_year]
-                for der_inst in der_lst}
-        self.equipment_lifetime_report = pd.DataFrame(data, index=['Beginning of Life', 'Operation Begins', 'End of Life'])
+        data = {
+            der_inst.unique_tech_id(): [der_inst.construction_year, der_inst.operation_year, der_inst.last_operation_year, der_inst.expected_lifetime]
+            for der_inst in der_lst
+        }
+        self.equipment_lifetime_report = pd.DataFrame(data, index=['Beginning of Life', 'Operation Begins', 'End of Life', 'Expected Lifetime'])

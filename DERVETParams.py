@@ -133,7 +133,8 @@ class ParamsDER(Params):
 
         """
         slf = cls.template
-        other_ders = not len(slf.CHP) and not len(slf.CT) and not len(slf.DieselGenset)
+        # TODO: add EVs and other technologies here? -AE
+        other_ders = any([len(slf.CHP), len(slf.CT), len(slf.DieselGenset)])
         super().bad_active_combo(dervet=True, other_ders=other_ders)
 
     @classmethod
@@ -563,9 +564,28 @@ class ParamsDER(Params):
                 # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
                 if self.Scenario['incl_thermal_load']:
                     try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
-                        chp_inputs.update({'site_heating_load': time_series.loc[:, 'Site Heating Load (BTU/hr)']})
-                    except KeyError:
-                        self.record_input_error("CHP is missing 'Site Heating Load (BTU/hr)' from timeseries data input")
+                        chp_inputs.update({'site_steam_load': time_series.loc[:, 'Site Steam Thermal Load (BTU/hr)']})
+                    except:
+                        pass
+                    try:
+                        chp_inputs.update({'site_hotwater_load': time_series.loc[:, 'Site Hot Water Thermal Load (BTU/hr)']})
+                    except:
+                        pass
+                    if chp_inputs.get('site_steam_load') is None and chp_inputs.get('site_hotwater_load') is None:
+                        # report error when thermal load has neither steam nor hotwater components
+                        self.record_input_error("CHP is missing a site heating load ('Site Steam Thermal Load (BTU/hr)' and/or 'Site Hot Water Thermal Load (BTU/hr)') from timeseries data input")
+                    elif chp_inputs.get('site_steam_load') is None or chp_inputs.get('site_hotwater_load') is None:
+                        # when only one thermal load exists (steam or hotwater), make the other one with zeroes and warn
+                        if chp_inputs.get('site_steam_load') is None:
+                            all_zeroes = chp_inputs['site_hotwater_load'].copy()
+                            all_zeroes.values[:] = 0
+                            chp_inputs.update({'site_steam_load': all_zeroes})
+                            TellUser.warning('since "site steam thermal load" data were not input, we create a time series with all zeroes for it')
+                        if chp_inputs.get('site_hotwater_load') is None:
+                            all_zeroes = chp_inputs['site_steam_load'].copy()
+                            all_zeroes.values[:] = 0
+                            chp_inputs.update({'site_hotwater_load': all_zeroes})
+                            TellUser.warning('since "site hotwater thermal load" data were not input, we create a time series with all zeroes for it')
 
                 try:  # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data. Is this correct? --HN
                     chp_inputs.update({'natural_gas_price': self.monthly_to_timeseries(self.Scenario['frequency'],

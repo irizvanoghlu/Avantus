@@ -199,7 +199,7 @@ class MicrogridScenario(Scenario):
                             " Please check the error_log.log in your results folder for more information.")
 
         # update opt_years based on this new end_year
-        add_analysis_years = self.cost_benefit_analysis.get_years_after_failures(self.start_year, self.end_year, self.poi.der_list)
+        add_analysis_years = self.cost_benefit_analysis.get_years_after_failures(self.end_year, self.poi.der_list)
         TellUser.debug(add_analysis_years)
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
@@ -250,9 +250,6 @@ class MicrogridScenario(Scenario):
         if not self.opt_engine:
             return
 
-        # calculate and check that system requirement set by value streams can be met
-        system_requirements = self.check_system_requirements()
-
         TellUser.info("Starting optimization loop")
         for opt_period in self.optimization_levels.predictive.unique():
 
@@ -266,14 +263,11 @@ class MicrogridScenario(Scenario):
                 continue
 
             # apply past degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
-            for der in self.poi.active_ders:
-                if der.technology_type == "Energy Storage System":
-                    der.apply_past_degredation(opt_period)
 
-            TellUser.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {self.optimization_levels.loc[mask].index[0]} hb")
+            TellUser.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {sub_index[0]} hb")
 
             # setup + run optimization then return optimal objective costs
-            functions, constraints = self.set_up_optimization(mask, system_requirements,
+            functions, constraints = self.set_up_optimization(mask, self.system_requirements,
                                                               annuity_scalar=alpha,
                                                               ignore_der_costs=self.service_agg.post_facto_reliability_only())
             objective_values = self.run_optimization(functions, constraints, opt_period)
@@ -287,10 +281,9 @@ class MicrogridScenario(Scenario):
                 der.save_variable_results(sub_index)
                 # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
                 der.set_size()
-                if der.technology_type == "Energy Storage System":
+                if der.tag == "Battery":
                     # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
                     der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
 
             # then add objective expressions to financial obj_val
             self.objective_values = pd.concat([self.objective_values, objective_values])
-

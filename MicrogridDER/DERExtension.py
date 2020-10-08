@@ -59,18 +59,20 @@ class DERExtension:
         self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
         self.failure_years = []
 
-    def set_failure_years(self, end_year):
+    def set_failure_years(self, end_year, fail_on=None):
         """ Gets the year(s) that this instance will fail and saves the information
          as an attribute of itself
 
         Args:
             end_year (pd.Period): the last year the project is operational
+            fail_on (int): if a failed year was determined, then indicated here
 
         Returns: list of year(s) that this equipement fails. if replaceable, then there might
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        fail_on = self.operation_year.year + self.expected_lifetime-1
+        if fail_on is None:
+            fail_on = self.operation_year.year + self.expected_lifetime-1
         if self.replaceable:
             while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
@@ -79,6 +81,7 @@ class DERExtension:
             if fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
         self.last_operation_year = pd.Period(fail_on)
+        self.failure_years = list(set(self.failure_years))
         return self.failure_years
 
     def operational(self, year):

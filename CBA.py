@@ -130,13 +130,12 @@ class CostBenefitAnalysis(Financial):
                 return project_start_year + only_tech.expected_lifetime-1
 
     @staticmethod
-    def get_years_after_failures(start_year, end_year, der_list):
+    def get_years_after_failures(end_year, der_list):
         """ The optimization should be re-run for every year an 'unreplacable' piece of equipment fails before the
         lifetime of the longest-lived equipment. No need to re-run the optimization if equipment fails in some
         year and is replaced.
 
         Args:
-            start_year (pd.Period): the first year the project is operational
             end_year (pd.Period): the last year the project is operational
             der_list (list): list of DERs initialized with user values
 
@@ -448,7 +447,7 @@ class CostBenefitAnalysis(Financial):
         npv_df = pd.DataFrame({'Lifetime Net Present Value':  self.npv['Lifetime Present Value'].values},
                               index=pd.Index(['$'], name="Unit"))
         other_metrics = pd.DataFrame({'Internal Rate of Return': self.internal_rate_of_return(proforma),
-                                     'Cost-Benefit Ratio': self.cost_benefit_ratio(self.cost_benefit)},
+                                     'Benefit-Cost Ratio': self.benefit_cost_ratio(self.cost_benefit)},
                                      index=pd.Index(['-'], name='Unit'))
         self.payback = pd.merge(self.payback, npv_df, how='outer', on='Unit')
         self.payback = pd.merge(self.payback, other_metrics, how='outer', on='Unit')
@@ -466,7 +465,7 @@ class CostBenefitAnalysis(Financial):
         return np.irr(proforma['Yearly Net Value'].values)
 
     @staticmethod
-    def cost_benefit_ratio(cost_benefit):
+    def benefit_cost_ratio(cost_benefit):
         """ calculate the cost-benefit ratio
 
         Args:
@@ -477,7 +476,9 @@ class CostBenefitAnalysis(Financial):
         """
         lifetime_discounted_cost = cost_benefit.loc['Lifetime Present Value', 'Cost ($)']
         lifetime_discounted_benefit = cost_benefit.loc['Lifetime Present Value', 'Benefit ($)']
-        return lifetime_discounted_cost/lifetime_discounted_benefit
+        if np.isclose(lifetime_discounted_cost, 0):
+            return np.nan
+        return lifetime_discounted_benefit/lifetime_discounted_cost
 
     def create_equipment_lifetime_report(self, der_lst):
         """

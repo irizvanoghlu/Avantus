@@ -391,7 +391,7 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 ess_properties['init_soe'] = soc[outage_init]
-            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check[outage_init:], self.max_outage_duration, **ess_properties)
+            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check[outage_init:], self.max_outage_duration/self.dt, **ess_properties)
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
             frequency_simulate_outage[int(longest_outage)] += 1

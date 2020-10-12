@@ -243,7 +243,7 @@
                         "type": "bool"
                     },
                     "llsoc": {
-                        "opt_value": "5",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -385,7 +385,7 @@
                         "type": "float"
                     },
                     "soc_target": {
-                        "opt_value": "50",
+                        "opt_value": "100",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2935,7 +2935,7 @@
                         "type": "bool"
                     },
                     "binary": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

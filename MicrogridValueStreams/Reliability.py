@@ -460,7 +460,7 @@ class Reliability(ValueStream):
             # check that there is enough SOC in the ESS to satisfy worst case
             energy_min = kwargs.get('operation SOE min')
             if energy_min is not None:
-                if 0 >= np.around(current_energy_check - init_soe, decimals=2):
+                if 0 >= np.around(current_energy_check*self.dt - init_soe, decimals=2):
                     # so discharge to meet the load offset by all generation
                     discharge_possible = (init_soe - energy_min) / self.dt
                     discharge = min(discharge_possible, current_demand_left, kwargs['discharge max'])

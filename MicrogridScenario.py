@@ -206,7 +206,7 @@ class MicrogridScenario(Scenario):
     def sizing_module(self):
         """ runs the reliability based sizing module if the correct combination of inputs allows/
         indicates to run it.
-
+        TODO put opt sizing checks here
         """
         if self.reliability_sizing:
             der_list = self.service_agg.value_streams['Reliability'].sizing_module(self.poi.der_list, self.optimization_levels.index)
@@ -233,11 +233,11 @@ class MicrogridScenario(Scenario):
             alpha = self.cost_benefit_analysis.annuity_scalar(self.start_year, self.end_year, self.opt_years)
         # TODO
         if self.service_agg.post_facto_reliability_only():
-            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run...")
+            TellUser.info("Only active Value Stream is post facto only, so not optimizations will run...")
             self.service_agg.value_streams['Reliability'].use_soc_init = True
-            TellUser.warning("SOC_init will be used for Post-Facto Calculation")
+            TellUser.info("SOC_init will be used for Post-Facto Calculation")
         elif self.service_agg.post_facto_reliability_only_and_user_defined():
-            TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run." +
+            TellUser.info("Only active Value Stream is post facto only, so not optimizations will run." +
                              " Energy min profile from User_constraint will be used")
             self.service_agg.value_streams['Reliability'].use_user_const = True
 
@@ -270,6 +270,7 @@ class MicrogridScenario(Scenario):
         Returns:
             functions (dict): functions or objectives of the optimization
             constraints (list): constraints that define behaviors, constrain variables, etc. that the optimization must meet
+            sub_index:
 
         """
         # used to select rows from time_series relevant to this optimization window
@@ -278,7 +279,7 @@ class MicrogridScenario(Scenario):
         # drop any ders that are not operational
         self.poi.grab_active_ders(sub_index)
         if not len(self.poi.active_ders):
-            return {}, []
+            return {}, [], sub_index
         return super(MicrogridScenario, self).set_up_optimization(opt_window_num, annuity_scalar, ignore_der_costs)
 
     def save_optimization_results(self, opt_window_num, sub_index, prob, obj_expression, cvx_error_msg):

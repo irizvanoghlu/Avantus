@@ -117,6 +117,9 @@ class MicrogridScenario(Scenario):
                 if num_ess > 1:
                     TellUser.error("Multiple ESS sizing with this reliability module is not implemented yet.")
                     raise ParameterError('See dervet.log for more information.')
+                if self.service_agg.value_streams['Reliability'].outage_duration==1 and self.dt==1:
+                    TellUser.error("Reliability target must be more than 1 hour in this implementation")
+                    raise ParameterError('See dervet.log for more information.')
             else:
                 self.check_opt_sizing_conditions()
 
@@ -154,6 +157,7 @@ class MicrogridScenario(Scenario):
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is solved, but "
                                  + "no optimization was built or solved. Please check log files for more information. ")
+
 
     def check_for_infeasible_regulation_constraints_with_system_size(self):
         """ perform error checks on DERs that are being sized with ts_user_constraints

@@ -39,8 +39,6 @@ from storagevet.Scenario import Scenario
 from CBA import CostBenefitAnalysis
 from MicrogridPOI import MicrogridPOI
 from MicrogridServiceAggregator import MicrogridServiceAggregator
-import time
-import pandas as pd
 from ErrorHandelling import *
 
 
@@ -48,6 +46,34 @@ class MicrogridScenario(Scenario):
     """ A scenario is one simulation run in the model_parameters file.
 
     """
+    technology_class_map = {
+        'CAES': CAES,
+        'Battery': Battery,
+        'PV': PV,
+        'ICE': ICE,
+        'DieselGenset': DieselGenset,
+        'CT': CT,
+        'CHP': CHP,
+        'Load': ControllableLoad,
+        'ElectricVehicle1': ElectricVehicle1,
+        'ElectricVehicle2': ElectricVehicle2,
+    }
+    value_stream_class_map = {
+        'Deferral': Deferral,
+        'DR': DemandResponse,
+        'RA': ResourceAdequacy,
+        'Backup': Backup,
+        'Volt': VoltVar,
+        'User': UserConstraints,
+        'DA': DAEnergyTimeShift,
+        'FR': FrequencyRegulation,
+        'LF': LoadFollowing,
+        'SR': SpinningReserve,
+        'NSR': NonspinningReserve,
+        'DCM': DemandChargeReduction,
+        'retailTimeShift': EnergyTimeShift,
+        'Reliability': Reliability
+    }
 
     def __init__(self, input_tree):
         """ Initialize a scenario with sizing technology and paramsDER
@@ -68,46 +94,13 @@ class MicrogridScenario(Scenario):
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
         self.deferral_sizing = False  # indicates that dervet should go to the deferral sizing module
         self.reliability_sizing = False  # indicates that dervet should go to the reliability sizing module
-        self.opt_engine = True  # indicates that dervet should go to the optimization module and size there
         TellUser.debug("ScenarioSizing initialized ...")
 
-    def set_up_poi_and_service_aggregator(self):
+    def set_up_poi_and_service_aggregator(self, point_of_interconnection_class=MicrogridPOI, service_aggregator_class=MicrogridServiceAggregator):
         """ Initialize the POI and service aggregator with DERs and valuestreams to be evaluated.
 
         """
-        technology_class_map = {
-            'CAES': CAES,
-            'Battery': Battery,
-            'PV': PV,
-            'ICE': ICE,
-            'DieselGenset': DieselGenset,
-            'CT': CT,
-            'CHP': CHP,
-            'Load': ControllableLoad,
-            'ElectricVehicle1': ElectricVehicle1,
-            'ElectricVehicle2': ElectricVehicle2,
-        }
-
-        value_stream_class_map = {
-            'Deferral': Deferral,
-            'DR': DemandResponse,
-            'RA': ResourceAdequacy,
-            'Backup': Backup,
-            'Volt': VoltVar,
-            'User': UserConstraints,
-            'DA': DAEnergyTimeShift,
-            'FR': FrequencyRegulation,
-            'LF': LoadFollowing,
-            'SR': SpinningReserve,
-            'NSR': NonspinningReserve,
-            'DCM': DemandChargeReduction,
-            'retailTimeShift': EnergyTimeShift,
-            'Reliability': Reliability
-        }
-        # these need to be initialized after opt_agg is created
-        self.poi = MicrogridPOI(self.poi_inputs, self.technology_inputs_map, technology_class_map)
-        self.service_agg = MicrogridServiceAggregator(self.value_stream_input_map, value_stream_class_map)
-
+        super().set_up_poi_and_service_aggregator(point_of_interconnection_class, service_aggregator_class)
         if self.poi.is_sizing_optimization:
             if 'Deferral' in self.service_agg.value_streams.keys():
                 # deferral sizing will set the size of the ESS, so no need to check other sizing conditions.
@@ -190,6 +183,11 @@ class MicrogridScenario(Scenario):
         return has_errors
 
     def initialize_cba(self):
+        """ Initializes DER-VET's cost benefit analysis module with user given inputs
+        Determines the end year for analysis
+        Adds years to the set of years economic dispatch will be optimized and solved for
+
+        """
         self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs)
         # set the project end year
         self.end_year = self.cost_benefit_analysis.find_end_year(self.start_year, self.end_year, self.poi.der_list)
@@ -233,12 +231,8 @@ class MicrogridScenario(Scenario):
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value
             alpha = self.cost_benefit_analysis.annuity_scalar(self.start_year, self.end_year, self.opt_years)
-
-        #TODO
-        if self.service_agg.is_deferral_only():
-            TellUser.warning("Only active Value Stream is Deferral, so not optimizations will run...")
-            self.opt_engine = False
-        elif self.service_agg.post_facto_reliability_only():
+        # TODO
+        if self.service_agg.post_facto_reliability_only():
             TellUser.warning("Only active Value Stream is post facto only, so not optimizations will run...")
             self.service_agg.value_streams['Reliability'].use_soc_init = True
             TellUser.warning("SOC_init will be used for Post-Facto Calculation")
@@ -253,37 +247,53 @@ class MicrogridScenario(Scenario):
         TellUser.info("Starting optimization loop")
         for opt_period in self.optimization_levels.predictive.unique():
 
-            # used to select rows from time_series relevant to this optimization window
-            mask = self.optimization_levels.predictive == opt_period
-            sub_index = self.optimization_levels.loc[mask].index
-
-            # drop any ders that are not operational
-            self.poi.grab_active_ders(sub_index)
-            if not len(self.poi.active_ders):
-                continue
-
-            # apply past degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
-
-            TellUser.info(f"{time.strftime('%H:%M:%S')} Running Optimization Problem starting at {sub_index[0]} hb")
-
             # setup + run optimization then return optimal objective costs
-            functions, constraints = self.set_up_optimization(mask, self.system_requirements,
-                                                              annuity_scalar=alpha,
-                                                              ignore_der_costs=self.service_agg.post_facto_reliability_only())
-            objective_values = self.run_optimization(functions, constraints, opt_period)
+            functions, constraints, sub_index = self.set_up_optimization(opt_period,
+                                                                         annuity_scalar=alpha,
+                                                                         ignore_der_costs=self.service_agg.post_facto_reliability_only())
+            if not len(constraints) and not len(functions.values()):
+                TellUser.info(f"Optimization window #{opt_period} does not have any constraints or objectives to minimize -- SKIPPING...")
+                continue
+            cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints)
+            self.save_optimization_results(opt_period, sub_index, cvx_problem, obj_expressions, cvx_error_msg)
 
-            for vs in self.service_agg.value_streams.values():
-                # record the solution of the variables used in the optimization run
-                vs.save_variable_results(sub_index)
+    def set_up_optimization(self, opt_window_num, annuity_scalar=1, ignore_der_costs=False):
+        """ Sets up and runs optimization on a subset of time in a year. Called within a loop.
 
-            for der in self.poi.active_ders:
-                # record the solution of the variables used in the optimization run
-                der.save_variable_results(sub_index)
-                # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
-                der.set_size()
-                if der.tag == "Battery":
-                    # calculate degradation in ESS objects (NOTE: if no degradation module applies to specific ESS tech, then nothing happens)
-                    der.calc_degradation(opt_period, sub_index[0], sub_index[-1])
+        Args:
+            opt_window_num (int): the optimization window number that is being solved
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture the cost/benefit over
+                        the entire project lifetime (only to be set iff sizing OR optimizing carrying costs)
+            ignore_der_costs (bool): flag to indicate if we do not want to consider to economics of operating the DERs in our optimization
+                (this flag will never be TRUE if the user indicated the desire to size the DER mix)
 
-            # then add objective expressions to financial obj_val
-            self.objective_values = pd.concat([self.objective_values, objective_values])
+        Returns:
+            functions (dict): functions or objectives of the optimization
+            constraints (list): constraints that define behaviors, constrain variables, etc. that the optimization must meet
+
+        """
+        # used to select rows from time_series relevant to this optimization window
+        mask = self.optimization_levels.predictive == opt_window_num
+        sub_index = self.optimization_levels.loc[mask].index
+        # drop any ders that are not operational
+        self.poi.grab_active_ders(sub_index)
+        if not len(self.poi.active_ders):
+            return {}, []
+        return super(MicrogridScenario, self).set_up_optimization(opt_window_num, annuity_scalar, ignore_der_costs)
+
+    def save_optimization_results(self, opt_window_num, sub_index, prob, obj_expression, cvx_error_msg):
+        """ Checks if there was a solution to the optimization. If not, report the problem
+         to the user. If there was a solution, then saves results within each instance.
+
+        Args:
+            opt_window_num:
+            sub_index:
+            prob:
+            obj_expression:
+            cvx_error_msg: any error message that might have occurred during problem solve
+
+        """
+        super(MicrogridScenario, self).save_optimization_results(opt_window_num, sub_index, prob, obj_expression, cvx_error_msg)
+        for der in self.poi.active_ders:
+            # save sizes of DERs that were found in the first optimization run (the method will have no effect after the first time it is called)
+            der.set_size()

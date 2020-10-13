@@ -70,7 +70,7 @@ class MicrogridResult(Result):
         case in question.
 
         """
-        if not (self.service_agg.is_deferral_only()):
+        if self.opt_engine:
             super().calculate_cba()
 
     def save_as_csv(self, instance_key, sensitivity=False):

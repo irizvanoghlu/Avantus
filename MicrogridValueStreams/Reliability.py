@@ -148,7 +148,7 @@ class Reliability(ValueStream):
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
                 # This is a slower method to find optimal min SOE
-                # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+                # der_list = self.min_soe_opt(opt_index, der_list)
                 end = time.time()
                 print(end - start)
         return der_list

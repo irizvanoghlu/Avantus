@@ -126,7 +126,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.dis_max_rated
         else:
             try:
-                dis_max_rated = self.dis_max_rated.value
+                dis_max_rated = int(self.dis_max_rated.value)
             except AttributeError:
                 dis_max_rated = self.dis_max_rated
             return dis_max_rated
@@ -141,7 +141,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.dis_max_rated
         else:
             try:
-                ch_max_rated = self.ch_max_rated.value
+                ch_max_rated = int(self.ch_max_rated.value)
             except AttributeError:
                 ch_max_rated = self.ch_max_rated
             return ch_max_rated
@@ -156,7 +156,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.ene_max_rated
         else:
             try:
-                max_rated = self.ene_max_rated.value
+                max_rated = int(self.ene_max_rated.value)
             except AttributeError:
                 max_rated = self.ene_max_rated
             return max_rated

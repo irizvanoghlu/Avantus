@@ -359,7 +359,7 @@ class Reliability(ValueStream):
         end = time.time()
         TellUser.info(f'Critical Load Coverage Curve calculation time: {end - start}')
         lcpc_df = pd.DataFrame(outage_coverage)
-        lcpc_df.set_index('Outage Length (hrs)')
+        lcpc_df.set_index('Outage Length (hrs)', inplace=True)
         return lcpc_df
 
     def get_der_limits(self, der_list, sizing=False):

@@ -396,7 +396,7 @@ class CostBenefitAnalysis(Financial):
             salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
             temp = temp.join(salvage_pd)
             # apply technology escalation rate from operation year
-            temp = CostBenefitAnalysis.apply_inflation_rate(temp, der_inst.escalation_rate, der_inst.operation_year.year)
+            temp = Financial.apply_inflation_rate(temp, der_inst.escalation_rate, der_inst.operation_year.year)
             end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)
 

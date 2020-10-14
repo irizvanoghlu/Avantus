@@ -327,6 +327,8 @@ class CostBenefitAnalysis(Financial):
         """
         for der_inst in technologies:
             replacement_df = der_inst.replacement_report(end_year)
+            replacement_df = replacement_df.fillna(value=0)
+            replacement_df = CostBenefitAnalysis.apply_inflation_rate(replacement_df, der_inst.escalation_rate, der_inst.operation_year.year)
             proforma = proforma.join(replacement_df)
             proforma = proforma.fillna(value=0)
         return proforma
@@ -383,14 +385,19 @@ class CostBenefitAnalysis(Financial):
         """
         end_of_life_costs = pd.DataFrame(index=proforma.index)
         for der_inst in technologies:
+            temp = pd.DataFrame()
             # collect the decommissioning costs at the technology's end of life
             decommission_pd = der_inst.decommissioning_report(end_year)
-            end_of_life_costs = end_of_life_costs.join(decommission_pd)
+            if decommission_pd is not None:
+                temp = temp.join(decommission_pd)
             # collect salvage value
             salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
             # add tp EOL dataframe
             salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
-            end_of_life_costs = end_of_life_costs.join(salvage_pd)
+            temp = temp.join(salvage_pd)
+            # apply technology escalation rate from operation year
+            temp = CostBenefitAnalysis.apply_inflation_rate(temp, der_inst.escalation_rate, der_inst.operation_year.year)
+            end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)
 
         return end_of_life_costs

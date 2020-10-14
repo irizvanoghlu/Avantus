@@ -270,3 +270,13 @@ class ControllableLoad(Load, DERExtension, ContinuousSizing):
         if not self.duration:
             return super().max_p_schedule_down()
         return self.rated_power
+    
+    def decommissioning_report(self, last_year):
+        """ Returns the cost of decommissioning a DER and the year the cost will be incurred
+
+        Returns: dataframe index by year that the cost applies to. if the year
+
+        """
+        if not self.duration:
+            return 
+        return super(ControllableLoad, self).decommissioning_report(last_year)

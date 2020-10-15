@@ -238,30 +238,32 @@ class DERExtension:
         ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         return ecc_perc
 
-    def economic_carrying_cost(self, d, indx):
+    def economic_carrying_cost(self, d, i, start_year, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
             d (float): discount rate
-            indx
+            i (float): inflation rate
+            indx: index of proforma -- recall that one entry is a string ("CAPEX Year") the rest are pd.Periods
+            start_year
+            end_year
 
         Returns: dataframe report of yearly economic carrying cost
-
+        NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
         """
         try:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        time_factor = (1 + self.escalation_rate) / (1 + d)
         if self.ecc_perc:
             ecc_perc = self.ecc_perc
         else:
             ecc_perc = self.get_ecc_perc(d)
-
-        ecc = capex * ecc_perc
-        per_yr = [-ecc*(time_factor**(k-1)) if not isinstance(year, str) and self.construction_year.year <= year.year <= self.last_operation_year.year
-                  else 0 for k, year in enumerate(indx.values)]
-        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': per_yr}, index=indx)
+        t_0 = self.construction_year.year
+        project_years = pd.period_range(start_year.year, end_year.year+1, freq='y')
+        inflation_factor = [(1+i)**(t.year-t_0) for t in project_years]
+        ecc = np.multiply(inflation_factor, capex * ecc_perc)
+        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': ecc}, index=project_years)
         return ecc_df
 
     def put_capital_cost_on_construction_year(self, indx):

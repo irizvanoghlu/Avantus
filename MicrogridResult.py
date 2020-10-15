@@ -33,7 +33,12 @@ class MicrogridResult(Result):
         for der in self.poi.der_list:
             if der.tag == "Battery":
                 # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
-                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
+                potential_end_year = der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
+
+                # if CBA is in ECC mode, reset the end year to be the value of POTENTIAL_END_YEAR
+                if self.cost_benefit_analysis.report_annualized_values:
+                    TellUser.warning(f"ECC mode has been indicated, resetting the end of cost benefit analysis to match with equipment's lifetime")
+                    self.end_year = potential_end_year
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down

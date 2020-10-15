@@ -36,6 +36,8 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         DERExtension.__init__(self, params)
         ContinuousSizing.__init__(self, params)
 
+        self.nu = params['nu'] / 100
+        self.gamma = params['gamma'] / 100
         self.curtail = params['curtail']
         self.max_rated_capacity = params['max_rated_capacity']
         self.min_rated_capacity = params['min_rated_capacity']
@@ -62,13 +64,13 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         else:
             return super().get_discharge(mask)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().constraints(mask)
+        constraints = super().constraints(mask, **kwargs)
         constraints += self.size_constraints
         return constraints
 
@@ -106,11 +108,22 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         """ Save value of size variables of DERs
 
         """
-        try:
-            rated_capacity = self.rated_capacity.value
-        except AttributeError:
-            rated_capacity = self.rated_capacity
-        self.rated_capacity = rated_capacity
+        self.rated_capacity = self.get_rated_capacity(solution=True)
+
+    def get_rated_capacity(self, solution=False):
+        """
+
+        Returns: the maximum energy that can be attained
+
+        """
+        if not solution:
+            return self.rated_capacity
+        else:
+            try:
+                max_rated = self.rated_capacity.value
+            except AttributeError:
+                max_rated = self.rated_capacity
+            return max_rated
 
     def sizing_summary(self):
         """

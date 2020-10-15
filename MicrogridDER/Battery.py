@@ -115,24 +115,22 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 # create a data frame with a row for every year in the project lifetime
                 yr_index = pd.period_range(start=start_year, end=end_year, freq='y')
                 self.yearly_degradation_report = pd.Series(index=pd.Index(yr_index))
-                # post optimization data
-                post_opt_degrade = self.degrade_data.iloc[1:]
+
                 # determine yearly degradation for the years that we counted cycles for
                 no_years_solved = len(analysis_years)
                 analysis_years = np.sort(analysis_years)  # sort the list of years, smallest to largest
-                no_optimizations_per_year = len(post_opt_degrade.index) / no_years_solved
+                no_optimizations_per_year = len(self.degrade_data.iloc[1:].index) / no_years_solved
                 for indx, year in enumerate(analysis_years):
-                    first_degrad_inx = 1 + indx * no_optimizations_per_year
+                    first_degrad_inx = indx * no_optimizations_per_year
+                    initial_degradation = self.degrade_data.iloc[int(first_degrad_inx)]['degradation']
                     last_degrad_idx = first_degrad_inx + no_optimizations_per_year
-                    sub_data = post_opt_degrade[(first_degrad_inx <= post_opt_degrade.index) & (post_opt_degrade.index < last_degrad_idx)]
-                    tot_yr_degradation = sub_data['degradation'].sum()
+                    final_degradation = self.degrade_data.iloc[int(last_degrad_idx)]['degradation']
+                    tot_yr_degradation = final_degradation - initial_degradation
                     self.yearly_degradation_report[pd.Period(year, freq='y')] = tot_yr_degradation
                 # fill in the remaining years (assume constant degradation)
                 self.yearly_degradation_report.fillna(method='ffill', inplace=True)
-                # estimate average yearly degradation %
-                avg_yearly_degradation = self.yearly_degradation_report.mean()
-                # estimate lifetime with average yearly degradation %
-                avg_lifetime = 100/avg_yearly_degradation
+                # estimate lifetime with average yearly degradation
+                avg_lifetime = (1-self.state_of_health)/self.yearly_degradation_report.mean()
 
             # report actual EOL to user
             TellUser.warning(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
@@ -157,3 +155,23 @@ class Battery(BatteryTech.Battery, ESSSizing):
 
         constraint_list = super().constraints(mask, **kwargs)  # BatteryTech.Battery->ESSSizing->EnergyStorage
         return constraint_list
+
+    def drill_down_reports(self, monthly_data=None, time_series_data=None, technology_summary=None, sizing_df=None):
+        """Calculates any service related dataframe that is reported to the user.
+
+        Args:
+            monthly_data:
+            time_series_data:
+            technology_summary:
+            sizing_df:
+
+
+
+        Returns: dictionary of DataFrames of any reports that are value stream specific
+            keys are the file name that the df will be saved with
+        """
+
+        dct = super().drill_down_reports(monthly_data, time_series_data, technology_summary, sizing_df)
+        self.yearly_degradation_report.name = "Yearly Degradation"
+        dct[f"{self.name.replace(' ', '_')}_yearly_degradation"] = self.yearly_degradation_report
+        return dct

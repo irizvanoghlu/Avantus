@@ -106,28 +106,29 @@ class CostBenefitAnalysis(Financial):
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
             self.report_annualized_values = True
-            if len(der_list) > 1:
+            # check to see if one is the Load
+            is_one_load = bool(sum([1 if der_inst.tag == 'Load' else 0 for der_inst in der_list]))
+            if (len(der_list) == 2 and not is_one_load) or (len(der_list) > 2):
                 TellUser.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(year=0, freq='y')
-            else:
-                # require that e < d
-                only_tech = der_list[0]
-                if not only_tech.ecc_perc:
-                    # require that an escaltion rate and ACR is indicated --
-                    if not only_tech.acr:
-                        TellUser.error(f"To calculate the economic carrying capacity please indicate non-zero values for ECC% or the ACR " +
-                                       "of your DER")
-                        return pd.Period(year=0, freq='y')
-                    else:
-                        TellUser.warning("Using the ACR to estimate the economic carrying cost")
-                else:
-                    TellUser.warning("Using the user given ecc% to calculate the economic carrying cost")
-                if only_tech.escalation_rate >= self.npv_discount_rate:
-                    TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
-                                   f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
+            # require that e < d
+            only_tech = der_list[0]
+            if not only_tech.ecc_perc:
+                # require that an escaltion rate and ACR is indicated --
+                if not only_tech.acr:
+                    TellUser.error(f"To calculate the economic carrying capacity please indicate non-zero values for ECC% or the ACR " +
+                                   "of your DER")
                     return pd.Period(year=0, freq='y')
-                return project_start_year + only_tech.expected_lifetime-1
+                else:
+                    TellUser.warning("Using the ACR to estimate the economic carrying cost")
+            else:
+                TellUser.warning("Using the user given ecc% to calculate the economic carrying cost")
+            if only_tech.escalation_rate >= self.npv_discount_rate:
+                TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
+                               f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
+                return pd.Period(year=0, freq='y')
+            return project_start_year + only_tech.expected_lifetime-1
 
     @staticmethod
     def get_years_after_failures(end_year, der_list):
@@ -295,8 +296,12 @@ class CostBenefitAnalysis(Financial):
         proforma = self.calculate_taxes(proforma, technologies)
 
         if self.report_annualized_values:
-            # already checked to make sure there is only 1 DER
-            tech = technologies[0]
+            # already checked to make sure there is only 1 DER, but need to make sure it is not the Load
+            tech = None
+            for der_inst in technologies:
+                if der_inst.tag == "Load":
+                    continue
+                tech = der_inst
             # replace capital cost columns with economic_carrying cost
             ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, proforma.index)
             # drop original Capital Cost
@@ -322,6 +327,8 @@ class CostBenefitAnalysis(Financial):
         """
         for der_inst in technologies:
             replacement_df = der_inst.replacement_report(end_year)
+            replacement_df = replacement_df.fillna(value=0)
+            replacement_df = CostBenefitAnalysis.apply_inflation_rate(replacement_df, der_inst.escalation_rate, der_inst.operation_year.year)
             proforma = proforma.join(replacement_df)
             proforma = proforma.fillna(value=0)
         return proforma
@@ -378,14 +385,19 @@ class CostBenefitAnalysis(Financial):
         """
         end_of_life_costs = pd.DataFrame(index=proforma.index)
         for der_inst in technologies:
+            temp = pd.DataFrame()
             # collect the decommissioning costs at the technology's end of life
             decommission_pd = der_inst.decommissioning_report(end_year)
-            end_of_life_costs = end_of_life_costs.join(decommission_pd)
+            if decommission_pd is not None:
+                temp = temp.join(decommission_pd)
             # collect salvage value
             salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
             # add tp EOL dataframe
             salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
-            end_of_life_costs = end_of_life_costs.join(salvage_pd)
+            temp = temp.join(salvage_pd)
+            # apply technology escalation rate from operation year
+            temp = Financial.apply_inflation_rate(temp, der_inst.escalation_rate, der_inst.operation_year.year)
+            end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)
 
         return end_of_life_costs

@@ -112,18 +112,8 @@ class CostBenefitAnalysis(Financial):
                 TellUser.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
                                f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
                 return pd.Period(year=0, freq='y')
-            # require that e < d
+            # require that e < d  TODO preform this check on all ders
             only_tech = der_list[0]
-            if not only_tech.ecc_perc:
-                # require that an escaltion rate and ACR is indicated --
-                if not only_tech.acr:
-                    TellUser.error(f"To calculate the economic carrying capacity please indicate non-zero values for ECC% or the ACR " +
-                                   "of your DER")
-                    return pd.Period(year=0, freq='y')
-                else:
-                    TellUser.warning("Using the ACR to estimate the economic carrying cost")
-            else:
-                TellUser.warning("Using the user given ecc% to calculate the economic carrying cost")
             if only_tech.escalation_rate >= self.npv_discount_rate:
                 TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
                                f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")

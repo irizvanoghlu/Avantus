@@ -446,13 +446,6 @@
                         "allowed_values": "1|0",
                         "unit": "yes/no"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -599,13 +592,6 @@
                         "min": "0.0",
                         "type": "float",
                         "unit": "$/kW"
-                    },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
                     },
                     "ter": {
                         "cba": "n",
@@ -759,13 +745,6 @@
                         "min": "0.0",
                         "type": "float",
                         "unit": "$/kW"
-                    },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
                     },
                     "ter": {
                         "cba": "n",
@@ -925,13 +904,6 @@
                         "type": "float",
                         "unit": "$/kW"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -1085,13 +1057,6 @@
                         "type": "float",
                         "unit": "$/kW"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -1244,13 +1209,6 @@
                         "min": "0.0",
                         "type": "float",
                         "unit": "$/kW"
-                    },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
                     },
                     "ter": {
                         "cba": "n",
@@ -1534,13 +1492,6 @@
                         "type": "float",
                         "unit": "$/kWh"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -1762,13 +1713,6 @@
                         "type": "float",
                         "unit": "$/kWh"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -1909,13 +1853,6 @@
                         "type": "float",
                         "unit": "$"
                     },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
-                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0","fixed_om_cost": {
@@ -2026,13 +1963,6 @@
                         "min": "0.0",
                         "type": "float",
                         "unit": "$"
-                    },
-                    "acr": {
-                        "cba": "n",
-                        "max": "100.0",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "%"
                     },
                     "ter": {
                         "cba": "n",

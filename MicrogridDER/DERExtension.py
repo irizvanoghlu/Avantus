@@ -41,7 +41,6 @@ class DERExtension:
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
         self.replaceable = params['replaceable']
-        self.acr = params['acr'] / 100
         self.escalation_rate = params['ter'] / 100
         self.ecc_perc = params['ecc%'] / 100
 
@@ -213,31 +212,6 @@ class DERExtension:
                                   index=replacement_yrs)
         return report
 
-    def get_ecc_perc(self, d):
-        """ if the user has given an ECC perc, then
-
-        Args:
-            d (float): discount rate
-
-        Returns:
-
-        """
-        try:
-            capex = self.get_capex().value
-        except AttributeError:
-            capex = self.get_capex()
-
-        acr = self.acr * capex
-
-        k_factor = [acr / ((1 + d)**k) for k in range(1, self.expected_lifetime + 1)]
-        k_factor = sum(k_factor)
-
-        time_factor = (1+self.escalation_rate)/(1+d)
-        repalcement_factor = 1 / (1 - (time_factor**self.expected_lifetime))
-
-        ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
-        return ecc_perc
-
     def economic_carrying_cost(self, d, i, start_year, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
@@ -255,14 +229,10 @@ class DERExtension:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        if self.ecc_perc:
-            ecc_perc = self.ecc_perc
-        else:
-            ecc_perc = self.get_ecc_perc(d)
         t_0 = self.construction_year.year
         project_years = pd.period_range(start_year.year, end_year.year+1, freq='y')
         inflation_factor = [(1+i)**(t.year-t_0) for t in project_years]
-        ecc = np.multiply(inflation_factor, capex * ecc_perc)
+        ecc = np.multiply(inflation_factor, capex * self.ecc_perc)
         ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': ecc}, index=project_years)
         return ecc_df
 

@@ -391,7 +391,7 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 ess_properties['init_soe'] = soc[outage_init]
-            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check, self.max_outage_duration, **ess_properties)
+            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check[outage_init:], self.max_outage_duration, **ess_properties)
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
             frequency_simulate_outage[int(longest_outage)] += 1
@@ -460,18 +460,18 @@ class Reliability(ValueStream):
             # check that there is enough SOC in the ESS to satisfy worst case
             energy_min = kwargs.get('operation SOE min')
             if energy_min is not None:
-                if 0 >= current_energy_check - init_soe:
+                if 0 >= np.around(current_energy_check - init_soe, decimals=2):
                     # so discharge to meet the load offset by all generation
                     discharge_possible = (init_soe - energy_min) / self.dt
                     discharge = min(discharge_possible, current_demand_left, kwargs['discharge max'])
-                    if 0 < np.around(current_demand_left-discharge, decimals=5):
+                    if 0 < np.around(current_demand_left-discharge, decimals=2):
                         # can't discharge enough to meet demand
                         return []
                     # update the state of charge of the ESS
                     next_soe = init_soe - (discharge * self.dt)
                     # we can reliably meet the outage in that timestep: jump to SIMULATE OUTAGE IN NEXT TIMESTEP
                 else:
-                    # there is not enough energy in the ESS to cover the load reliabily
+                    # there is not enough energy in the ESS to cover the load reliability
                     return []
             else:
                 # there is no more that can be discharged to meet the load requirement

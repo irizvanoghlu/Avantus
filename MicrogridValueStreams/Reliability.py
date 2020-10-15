@@ -177,14 +177,14 @@ class Reliability(ValueStream):
 
         total_pv_max = np.zeros(len(self.critical_load))
         total_pv_vari = np.zeros(len(self.critical_load))  # PV generation w/ variability taken into account
-        pv_vari_energy_check = np.zeros(len(self.critical_load))  # PV generation w/ variability taken into account
+        largest_gamma = 0
         total_dg_max = 0
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not need_solution):
                 pv_inst_gen = der_inst.maximum_generation()
                 total_pv_max += pv_inst_gen
                 total_pv_vari += pv_inst_gen * der_inst.nu
-                pv_vari_energy_check += pv_inst_gen * der_inst.nu * der_inst.gamma
+                largest_gamma = max(largest_gamma, der_inst.gamma)
                 ess_properties['pv present'] = True
             if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not need_solution):
                 total_dg_max += der_inst.max_power_out()
@@ -201,7 +201,7 @@ class Reliability(ValueStream):
         generation = np.repeat(total_dg_max, len(self.critical_load))
         demand_left = np.around(self.critical_load.values - generation - total_pv_max, decimals=5)
         reliability_check = np.around(self.critical_load.values - generation - total_pv_vari, decimals=5)
-        energy_requirement_check = np.around(self.critical_load.values - generation - pv_vari_energy_check, decimals=5)
+        energy_requirement_check = reliability_check * largest_gamma
 
         return generation, total_pv_max, ess_properties, demand_left, reliability_check, energy_requirement_check
 

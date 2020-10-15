@@ -346,12 +346,19 @@ class CostBenefitAnalysis(Financial):
         Returns: updated proforma
 
         """
+        no_more_der_yr = 0
         for der_isnt in technologies:
             if not der_isnt.replaceable:
                 last_operating_year = der_isnt.last_operation_year
+                if der_isnt.tag != 'Load':
+                    no_more_der_yr = max(no_more_der_yr, last_operating_year.year)
                 if end_year > last_operating_year:
                     column_mask = proforma.columns.str.contains(der_isnt.unique_tech_id(), regex=False)
                     proforma.loc[last_operating_year + 1:, column_mask] = 0
+
+        # zero out all costs and benefits after the last equipement piece fails
+        if no_more_der_yr:
+            proforma.loc[pd.Period(no_more_der_yr + 1, freq='y'):, ] = 0
         return proforma
 
     @staticmethod

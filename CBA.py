@@ -128,7 +128,7 @@ class CostBenefitAnalysis(Financial):
                 TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
                                f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
                 return pd.Period(year=0, freq='y')
-            return project_start_year + only_tech.expected_lifetime-1
+            return only_tech.operation_year + only_tech.expected_lifetime-1
 
     @staticmethod
     def get_years_after_failures(end_year, der_list):
@@ -290,7 +290,7 @@ class CostBenefitAnalysis(Financial):
         proforma = self.replacement_costs(proforma_wo_yr_net, technologies, end_year)
         proforma = self.zero_out_dead_der_costs(proforma, technologies, end_year)
         proforma = self.update_capital_cost_construction_year(proforma, technologies)
-        der_eol = self.calculate_end_of_life_value(proforma, technologies, start_year, end_year)
+        der_eol = self.calculate_end_of_life_value(proforma, technologies, start_year, end_year, self.inflation_rate)
         # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
         proforma = self.calculate_taxes(proforma, technologies)
@@ -303,7 +303,7 @@ class CostBenefitAnalysis(Financial):
                     continue
                 tech = der_inst
             # replace capital cost columns with economic_carrying cost
-            ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, proforma.index)
+            ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, self.inflation_rate, start_year, end_year)
             # drop original Capital Cost
             proforma = proforma.drop(columns=[tech.zero_column_name()])
             # add the ECC to the proforma
@@ -372,7 +372,7 @@ class CostBenefitAnalysis(Financial):
         return proforma
 
     @staticmethod
-    def calculate_end_of_life_value(proforma, technologies, start_year, end_year):
+    def calculate_end_of_life_value(proforma, technologies, start_year, end_year, inflation_rate):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
         as a result
 
@@ -385,18 +385,20 @@ class CostBenefitAnalysis(Financial):
         """
         end_of_life_costs = pd.DataFrame(index=proforma.index)
         for der_inst in technologies:
-            temp = pd.DataFrame()
+            temp = pd.DataFrame(index=proforma.index)
             # collect the decommissioning costs at the technology's end of life
             decommission_pd = der_inst.decommissioning_report(end_year)
             if decommission_pd is not None:
+                # apply inflation rate from operation year
+                decommission_pd = Financial.apply_inflation_rate(decommission_pd, inflation_rate, start_year.year)
                 temp = temp.join(decommission_pd)
             # collect salvage value
             salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
             # add tp EOL dataframe
             salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
-            temp = temp.join(salvage_pd)
             # apply technology escalation rate from operation year
-            temp = Financial.apply_inflation_rate(temp, der_inst.escalation_rate, der_inst.operation_year.year)
+            salvage_pd = Financial.apply_inflation_rate(salvage_pd, der_inst.escalation_rate, der_inst.operation_year.year)
+            temp = temp.join(salvage_pd)
             end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)
 

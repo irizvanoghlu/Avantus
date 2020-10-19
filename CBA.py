@@ -40,7 +40,7 @@ class CostBenefitAnalysis(Financial):
         self.state_tax_rate = financial_params['state_tax_rate']/100
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
-        self.report_annualized_values = False
+        self.report_annualized_der_cost = False
         self.ecc_df = None
         self.equipment_lifetime_report = pd.DataFrame()
 
@@ -106,7 +106,7 @@ class CostBenefitAnalysis(Financial):
             return project_start_year + longest_lifetime-1
         # (4) Carrying Cost (single technology only)
         if self.horizon_mode == 4:
-            self.report_annualized_values = True
+            self.report_annualized_der_cost = True
             # check to see if one is the Load
             is_one_load = bool(sum([1 if der_inst.tag == 'Load' else 0 for der_inst in der_list]))
             if (len(der_list) == 2 and not is_one_load) or (len(der_list) > 2):
@@ -284,9 +284,8 @@ class CostBenefitAnalysis(Financial):
         der_eol = self.calculate_end_of_life_value(proforma, technologies, start_year, end_year, self.inflation_rate)
         # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
-        proforma = self.calculate_taxes(proforma, technologies)
 
-        if self.report_annualized_values:
+        if self.report_annualized_der_cost:
             # already checked to make sure there is only 1 DER, but need to make sure it is not the Load
             tech = None
             for der_inst in technologies:
@@ -294,7 +293,7 @@ class CostBenefitAnalysis(Financial):
                     continue
                 tech = der_inst
             # replace capital cost columns with economic_carrying cost
-            self.ecc_df, total_ecc = tech.economic_carrying_cost(self.inflation_rate, end_year)
+            self.ecc_df, total_ecc = tech.economic_carrying_cost(self.inflation_rate)
             # drop original Capital Cost
             proforma.drop(columns=[tech.zero_column_name()], inplace=True)
             # drop any replacement costs
@@ -302,6 +301,8 @@ class CostBenefitAnalysis(Financial):
                 proforma.drop(columns=[f"{tech.unique_tech_id()} Replacement Costs"], inplace=True)
             # add the ECC to the proforma
             proforma = proforma.join(total_ecc)
+        else:
+            proforma = self.calculate_taxes(proforma, technologies)
         # check if there are are costs on CAPEX YEAR -- if there arent, then remove it from proforma
         if not proforma.loc['CAPEX Year', :].any():
             proforma.drop('CAPEX Year', inplace=True)

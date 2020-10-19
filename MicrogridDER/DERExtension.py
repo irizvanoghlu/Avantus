@@ -43,6 +43,7 @@ class DERExtension:
         self.replaceable = params['replaceable']
         self.escalation_rate = params['ter'] / 100
         self.ecc_perc = params['ecc%'] / 100
+        self.replacement_construction_time = 1  # years
 
         self.replacement_cost_function = []
         rcost = params.get('rcost')
@@ -58,28 +59,33 @@ class DERExtension:
         self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
         self.failure_preparation_years = []
 
-    def set_failure_years(self, end_year, equipe_last_year_operation=None):
+    def set_failure_years(self, end_year, equipment_last_year_operation=None, time_btw_replacement=None):
         """ Gets the year(s) that this instance will fail and saves the information
          as an attribute of itself
 
         Args:
             end_year (pd.Period): the last year the project is operational
-            equipe_last_year_operation (int): if a failed year was determined, then indicated here
+            equipment_last_year_operation (int): if a failed year was determined, then indicated here
+            time_btw_replacement (int): number of years in between replacement installments (default is expected lifetime)
 
         Returns: list of year(s) that this equipement fails. if replaceable, then there might
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        if equipe_last_year_operation is None:
-            equipe_last_year_operation = self.operation_year.year + self.expected_lifetime - 1
+        if time_btw_replacement is None:
+            time_btw_replacement = self.expected_lifetime
+        if equipment_last_year_operation is None:
+            equipment_last_year_operation = self.operation_year.year + time_btw_replacement - 1
+
+        if equipment_last_year_operation <= end_year.year:
+            self.failure_preparation_years.append(equipment_last_year_operation)
         if self.replaceable:
-            while equipe_last_year_operation <= end_year.year:
-                self.failure_preparation_years.append(equipe_last_year_operation)
-                equipe_last_year_operation += self.expected_lifetime
-        else:
-            if equipe_last_year_operation <= end_year.year:
-                self.failure_preparation_years.append(equipe_last_year_operation)
-        self.last_operation_year = pd.Period(equipe_last_year_operation)
+            equipment_last_year_operation += time_btw_replacement
+            while equipment_last_year_operation < end_year.year:
+                self.failure_preparation_years.append(equipment_last_year_operation)
+                equipment_last_year_operation += time_btw_replacement
+
+        self.last_operation_year = pd.Period(equipment_last_year_operation)
         self.failure_preparation_years = list(set(self.failure_preparation_years))
         return self.failure_preparation_years
 
@@ -201,12 +207,11 @@ class DERExtension:
                                   index=replacement_yrs)
         return report
 
-    def economic_carrying_cost(self, i, end_year):
+    def economic_carrying_cost(self, i):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
             i (float): inflation rate
-            end_year: project's end year
 
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
@@ -216,14 +221,17 @@ class DERExtension:
         except AttributeError:
             capex = self.get_capex()
         t_0 = self.construction_year.year
-        year_ranges = pd.period_range(t_0+1, self.operation_year.year+self.expected_lifetime+1, freq='y')
+        if self.construction_year == self.operation_year:
+            year_ranges = pd.period_range(t_0, self.operation_year.year + self.expected_lifetime - 1, freq='y')
+        else:
+            year_ranges = pd.period_range(t_0 + 1, self.operation_year.year+self.expected_lifetime-1, freq='y')
         inflation_factor = [(1+i)**(t.year-t_0) for t in year_ranges]
         ecc_capex = np.multiply(inflation_factor, -capex * self.ecc_perc)
         ecc = pd.DataFrame({"Capex": ecc_capex}, index=year_ranges)
         # annual-ize replacement costs
         for year in self.failure_preparation_years:
             temp_year_range = pd.period_range(year+1, year+self.expected_lifetime, freq='y')
-            inflation_factor = [(1+i)**(t.year-year) for t in temp_year_range]
+            inflation_factor = [(1+i)**(t.year-t_0) for t in temp_year_range]
             ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
             temp_df = pd.DataFrame({f"{year} replacement": ecc_replacement}, index=temp_year_range)
             ecc = pd.concat([ecc, temp_df], axis=1)

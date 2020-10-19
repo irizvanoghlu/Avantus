@@ -197,7 +197,7 @@ class MicrogridPOI(POI):
 
         return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, agg_thermal_cooling_power
 
-    def optimization_problem(self, mask, power_in, power_out, steam_in, hotwater_in, cold_in, ignore_der_costs, annuity_scalar=1):
+    def optimization_problem(self, mask, power_in, power_out, steam_in, hotwater_in, cold_in, annuity_scalar=1):
         """ Builds the master POI constraint list for the subset of time series data being optimized.
             Due to VS power reservations, control constraints, import/export constraints, and energy throughput requirements
             Builds onto storagevet method to add thermal balance constraints for dervet
@@ -212,15 +212,13 @@ class MicrogridPOI(POI):
             cold_in (cvx.Expression):
             annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture
                 the cost/benefit over the entire project lifetime (only to be set iff sizing)
-            ignore_der_costs (bool): flag to indicate if we do not want to consider to economics of operating the DERs in our optimization
-                (this flag will never be TRUE if the user indicated the desire to size the DER mix)
 
         Returns:
             A dictionary with the portion of the objective function that it affects, labeled by the expression's key.
             A list of constraints being set by the POI: power reservations, control constraints requirements,
                 max import, max export, etc.
         """
-        obj_expression, constraint_list = super().optimization_problem(mask, power_in, power_out, steam_in, hotwater_in, cold_in, ignore_der_costs, annuity_scalar=1)
+        obj_expression, constraint_list = super().optimization_problem(mask, power_in, power_out, steam_in, hotwater_in, cold_in, annuity_scalar)
 
         # thermal power balance constraints
         if self.site_steam_load is not None:

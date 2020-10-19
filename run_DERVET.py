@@ -11,7 +11,7 @@ __credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani',
 __license__ = 'EPRI'
 __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = 'beta'  # beta version
+__version__ = '0.1.1'
 
 import logging
 import time
@@ -74,8 +74,7 @@ class DERVET:
             run.set_up_poi_and_service_aggregator()
             run.initialize_cba()
             run.fill_and_drop_extra_data()
-            # add a optimization for reliability
-            run.reliability_based_sizing_module()
+            run.sizing_module()
             run.optimize_problem_loop()
 
             MicrogridResult.add_instance(key, run)

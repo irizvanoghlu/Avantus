@@ -26,9 +26,12 @@ class MicrogridResult(Result):
         """ Initialize all Result objects, given a Scenario object with the following attributes.
 
             Args:
-                scenario (Scenario.Scenario): scenario object after optimization has run to completion
+                scenario (MicrogridScenario.MicrogridScenario): scenario object after optimization has run to completion
         """
         super().__init__(scenario)
+        self.deferral_sizing = scenario.deferral_sizing
+        self.reliability_sizing = scenario.reliability_sizing
+        self.opt_engine = scenario.opt_engine
         self.sizing_df = pd.DataFrame()
         for der in self.poi.der_list:
             if der.tag == "Battery":
@@ -42,7 +45,7 @@ class MicrogridResult(Result):
 
         Three attributes are edited in this method: TIME_SERIES_DATA, MONTHLY_DATA, TECHNOLOGY_SUMMARY
         """
-        super().collect_results(post_facto_flag=self.service_agg.post_facto_reliability_only())
+        super().collect_results()
         self.sizing_df = self.poi.sizing_summary()
 
     def create_drill_down_dfs(self):
@@ -53,7 +56,7 @@ class MicrogridResult(Result):
             keys are the file name that the df will be saved with
 
         """
-        if not (self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only()):
+        if self.opt_engine:
             self.drill_down_dict.update(self.poi.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
                                                                 technology_summary=self.technology_summary, sizing_df=self.sizing_df))
         self.drill_down_dict.update(self.service_agg.drill_down_dfs(monthly_data=self.monthly_data, time_series_data=self.time_series_data,
@@ -66,7 +69,7 @@ class MicrogridResult(Result):
         case in question.
 
         """
-        if not (self.service_agg.is_deferral_only() or self.service_agg.post_facto_reliability_only()):
+        if self.opt_engine:
             super().calculate_cba()
 
     def save_as_csv(self, instance_key, sensitivity=False):
@@ -85,7 +88,7 @@ class MicrogridResult(Result):
             savepath = self.dir_abs_path / str(instance_key)
         else:
             savepath = self.dir_abs_path
-        self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
+        self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'), index=False)
         self.cost_benefit_analysis.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
         if self.cost_benefit_analysis.ecc_df is not None:
             self.cost_benefit_analysis.ecc_df.to_csv(path_or_buf=Path(savepath, 'ecc_breakdown' + self.csv_label + '.csv'))

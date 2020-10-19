@@ -140,7 +140,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0
             failed_on = max(self.years_system_degraded) if num_full_lifetimes else None
-            self.set_failure_years(end_year, fail_on=failed_on)
+            self.set_failure_years(end_year, equipe_last_year_operation=failed_on)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

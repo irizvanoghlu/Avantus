@@ -41,6 +41,7 @@ class CostBenefitAnalysis(Financial):
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
         self.report_annualized_values = False
+        self.ecc_df = None
         self.equipment_lifetime_report = pd.DataFrame()
 
         self.Scenario = financial_params['CBA']['Scenario']
@@ -135,12 +136,12 @@ class CostBenefitAnalysis(Financial):
         """
         rerun_opt_on = []
         for der_instance in der_list:
-            fail_on = None
+            last_operation_year = None
             if der_instance.tag == 'Battery' and der_instance.incl_cycle_degrade:
                 # ignore battery's failure years as defined by user if user wants to include degradation in their analysis
                 # instead set it to be the project's last year+1
-                fail_on = end_year.year + 1
-            yrs_failed = der_instance.set_failure_years(end_year, fail_on)
+                last_operation_year = end_year.year
+            yrs_failed = der_instance.set_failure_years(end_year, last_operation_year)
             if not der_instance.replaceable:
                 # if the DER is not replaceable then add the following year to the set of analysis years
                 rerun_opt_on += yrs_failed
@@ -293,13 +294,20 @@ class CostBenefitAnalysis(Financial):
                     continue
                 tech = der_inst
             # replace capital cost columns with economic_carrying cost
-            ecc_df = tech.economic_carrying_cost(self.npv_discount_rate, self.inflation_rate, start_year, end_year)
+            self.ecc_df, total_ecc = tech.economic_carrying_cost(self.inflation_rate, end_year)
             # drop original Capital Cost
-            proforma = proforma.drop(columns=[tech.zero_column_name()])
+            proforma.drop(columns=[tech.zero_column_name()], inplace=True)
+            # drop any replacement costs
+            if f"{tech.unique_tech_id()} Replacement Costs" in proforma.columns:
+                proforma.drop(columns=[f"{tech.unique_tech_id()} Replacement Costs"], inplace=True)
             # add the ECC to the proforma
-            proforma = proforma.join(ecc_df)
+            proforma = proforma.join(total_ecc)
+        # check if there are are costs on CAPEX YEAR -- if there arent, then remove it from proforma
+        if not proforma.loc['CAPEX Year', :].any():
+            proforma.drop('CAPEX Year', inplace=True)
         # sort alphabetically
         proforma.sort_index(axis=1, inplace=True)
+        proforma.fillna(value=0, inplace=True)
         # recalculate the net (sum of the row's columns)
         proforma['Yearly Net Value'] = proforma.sum(axis=1)
         return proforma
@@ -390,7 +398,7 @@ class CostBenefitAnalysis(Financial):
                 decommission_pd = Financial.apply_inflation_rate(decommission_pd, inflation_rate, start_year.year)
                 temp = temp.join(decommission_pd)
             # collect salvage value
-            salvage_value = der_inst.calculate_salvage_value(start_year, end_year)
+            salvage_value = der_inst.calculate_salvage_value(end_year)
             # add tp EOL dataframe
             salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
             # apply technology escalation rate from operation year
@@ -446,15 +454,16 @@ class CostBenefitAnalysis(Financial):
         proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
         return proforma_taxes
 
-    def payback_report(self, proforma, opt_years):
+    def payback_report(self, techologies, proforma, opt_years):
         """ calculates and saves the payback period and discounted payback period in a dataframe
 
         Args:
+            techologies (list)
             proforma (DataFrame): Pro-forma DataFrame that was created from each ValueStream or DER active
             opt_years (list)
 
         """
-        super().payback_report(proforma, opt_years)
+        super().payback_report(techologies, proforma, opt_years)
         npv_df = pd.DataFrame({'Lifetime Net Present Value':  self.npv['Lifetime Present Value'].values},
                               index=pd.Index(['$'], name="Unit"))
         other_metrics = pd.DataFrame({'Internal Rate of Return': self.internal_rate_of_return(proforma),

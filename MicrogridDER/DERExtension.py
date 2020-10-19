@@ -56,32 +56,32 @@ class DERExtension:
             self.replacement_cost_function.append(rcost_kWh)
 
         self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
-        self.failure_years = []
+        self.failure_preparation_years = []
 
-    def set_failure_years(self, end_year, fail_on=None):
+    def set_failure_years(self, end_year, equipe_last_year_operation=None):
         """ Gets the year(s) that this instance will fail and saves the information
          as an attribute of itself
 
         Args:
             end_year (pd.Period): the last year the project is operational
-            fail_on (int): if a failed year was determined, then indicated here
+            equipe_last_year_operation (int): if a failed year was determined, then indicated here
 
         Returns: list of year(s) that this equipement fails. if replaceable, then there might
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        if fail_on is None:
-            fail_on = self.operation_year.year + self.expected_lifetime-1
+        if equipe_last_year_operation is None:
+            equipe_last_year_operation = self.operation_year.year + self.expected_lifetime - 1
         if self.replaceable:
-            while fail_on <= end_year.year:
-                self.failure_years.append(fail_on)
-                fail_on += self.expected_lifetime
+            while equipe_last_year_operation <= end_year.year:
+                self.failure_preparation_years.append(equipe_last_year_operation)
+                equipe_last_year_operation += self.expected_lifetime
         else:
-            if fail_on <= end_year.year:
-                self.failure_years.append(fail_on)
-        self.last_operation_year = pd.Period(fail_on)
-        self.failure_years = list(set(self.failure_years))
-        return self.failure_years
+            if equipe_last_year_operation <= end_year.year:
+                self.failure_preparation_years.append(equipe_last_year_operation)
+        self.last_operation_year = pd.Period(equipe_last_year_operation)
+        self.failure_preparation_years = list(set(self.failure_preparation_years))
+        return self.failure_preparation_years
 
     def operational(self, year):
         """
@@ -136,16 +136,10 @@ class DERExtension:
 
         """
         cost = self.decommission_cost
-        if self.replaceable:
-            year = last_year
-        else:
-            year = pd.Period(self.operation_year.year + self.expected_lifetime-1)
-        if year > last_year:
-            year = last_year
-
+        year = min(last_year, self.last_operation_year+1)
         return pd.DataFrame({f"{self.unique_tech_id()} Decommissioning Cost": -cost}, index=[year])
 
-    def calculate_salvage_value(self, start_year, last_year):
+    def calculate_salvage_value(self, last_year):
         """ Decode the user's input and return the salvage value
         (1) "Sunk Cost" this option means that there is no end of analysis value
             (salvage value = 0)
@@ -155,7 +149,6 @@ class DERExtension:
             (User-specified Salvage Value)
 
         Args:
-            start_year:
             last_year:
 
         Returns: the salvage value of the technology
@@ -163,18 +156,14 @@ class DERExtension:
         """
         if self.salvage_value == 'sunk cost':
             return 0
-        last_decommission_year = start_year.year + self.expected_lifetime - 1
 
-        # If the a technology has a life shorter than the analysis window with no replacement, then no salvage value applies.
-        if last_decommission_year < last_year.year and not self.replaceable:
+        # If the a technology has a life shorter (or equal to) than the analysis window with no replacement, then no salvage value applies.
+        if self.last_operation_year+1 <= last_year:
             return 0
-        # else keep replacing, and update the DECOMMISSION_YEAR (assume installation occurs the year after)
-        while self.replaceable and last_decommission_year < last_year.year:
-            last_decommission_year += self.expected_lifetime
 
         # If it has a life shorter than the analysis window but is replaced, a salvage value will be applied.
         # If it has a life longer than the analysis window, then a salvage value will apply.
-        years_beyond_project = last_decommission_year - last_year.year
+        years_beyond_project = self.last_operation_year.year - last_year.year
 
         if years_beyond_project < 0:
             return 0
@@ -197,7 +186,7 @@ class DERExtension:
         return 0
 
     def replacement_report(self, end_year):
-        """
+        """ Replacement costs occur YEr F
 
         Args:
             end_year (pd.Period): the last year of analysis
@@ -207,20 +196,17 @@ class DERExtension:
         """
         report = pd.DataFrame()
         if self.replaceable:
-            replacement_yrs = pd.Index([pd.Period(year, freq='y') for year in self.failure_years if year < end_year.year])
+            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_preparation_years if year < end_year.year])
             report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
                                   index=replacement_yrs)
         return report
 
-    def economic_carrying_cost(self, d, i, start_year, end_year):
+    def economic_carrying_cost(self, i, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
-            d (float): discount rate
             i (float): inflation rate
-            indx: index of proforma -- recall that one entry is a string ("CAPEX Year") the rest are pd.Periods
-            start_year
-            end_year
+            end_year: project's end year
 
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
@@ -230,11 +216,20 @@ class DERExtension:
         except AttributeError:
             capex = self.get_capex()
         t_0 = self.construction_year.year
-        project_years = pd.period_range(start_year.year, end_year.year+1, freq='y')
-        inflation_factor = [(1+i)**(t.year-t_0) for t in project_years]
-        ecc = np.multiply(inflation_factor, capex * self.ecc_perc)
-        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': ecc}, index=project_years)
-        return ecc_df
+        year_ranges = pd.period_range(t_0+1, self.operation_year.year+self.expected_lifetime+1, freq='y')
+        inflation_factor = [(1+i)**(t.year-t_0) for t in year_ranges]
+        ecc_capex = np.multiply(inflation_factor, -capex * self.ecc_perc)
+        ecc = pd.DataFrame({"Capex": ecc_capex}, index=year_ranges)
+        # annual-ize replacement costs
+        for year in self.failure_preparation_years:
+            temp_year_range = pd.period_range(year+1, year+self.expected_lifetime, freq='y')
+            inflation_factor = [(1+i)**(t.year-year) for t in temp_year_range]
+            ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
+            temp_df = pd.DataFrame({f"{year} replacement": ecc_replacement}, index=temp_year_range)
+            ecc = pd.concat([ecc, temp_df], axis=1)
+        ecc.fillna(value=0, inplace=True)
+        ecc[f'{self.unique_tech_id()} Carrying Cost'] = ecc.sum(axis=1)
+        return ecc, ecc.loc[:, f'{self.unique_tech_id()} Carrying Cost']
 
     def put_capital_cost_on_construction_year(self, indx):
         """ If the construction year of the DER is the start year of the project or after,

@@ -87,4 +87,6 @@ class MicrogridResult(Result):
             savepath = self.dir_abs_path
         self.sizing_df.to_csv(path_or_buf=Path(savepath, 'size' + self.csv_label + '.csv'))
         self.cost_benefit_analysis.equipment_lifetime_report.to_csv(path_or_buf=Path(savepath, 'equipment_lifetimes' + self.csv_label + '.csv'))
+        if self.cost_benefit_analysis.ecc_df is not None:
+            self.cost_benefit_analysis.ecc_df.to_csv(path_or_buf=Path(savepath, 'ecc_breakdown' + self.csv_label + '.csv'))
         TellUser.info(f'DER results have been saved to: {savepath}')

@@ -91,7 +91,7 @@
                         "type": "float"
                     },
                     "construction_year": {
-                        "opt_value": "2017",
+                        "opt_value": "2020",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -283,7 +283,7 @@
                         "type": "int"
                     },
                     "operation_year": {
-                        "opt_value": "2017",
+                        "opt_value": "2020",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2842,7 +2842,7 @@
                         "type": "bool"
                     },
                     "target": {
-                        "opt_value": "1",
+                        "opt_value": "4",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2953,7 +2953,7 @@
                         "type": "float"
                     },
                     "dt": {
-                        "opt_value": "1",
+                        "opt_value": "0.25",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2966,7 +2966,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2018",
+                        "opt_value": "2021",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3096,7 +3096,7 @@
                         "type": "string/int"
                     },
                     "opt_years": {
-                        "opt_value": "2017",
+                        "opt_value": "2020",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3131,7 +3131,7 @@
                             "active": "n",
                             "value": "2017"
                         },
-                        "opt_value": "2017",
+                        "opt_value": "2020",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3144,7 +3144,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\min15_timeseries_PoSD.xlsx",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

@@ -218,7 +218,7 @@ class MicrogridScenario(Scenario):
             # Resetting sizing flag. It doesn't size for other services.
             self.poi.is_sizing_optimization = False
 
-        if self.service_agg.is_reliability_only():
+        if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined():
             self.opt_engine = False
 
         if self.deferral_sizing:

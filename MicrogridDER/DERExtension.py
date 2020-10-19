@@ -135,6 +135,47 @@ class DERExtension:
         """
         pass
 
+    def replacement_cost(self):
+        """
+
+        Returns: the cost of replacing this DER
+
+        """
+        return 0
+
+    def replacement_report(self, end_year):
+        """ Replacement costs occur YEr F
+
+        Args:
+            end_year (pd.Period): the last year of analysis
+
+        Returns:
+
+        """
+        report = pd.DataFrame()
+        if self.replaceable:
+            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_preparation_years if year < end_year.year])
+            report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
+                                  index=replacement_yrs)
+        return report
+
+    def put_capital_cost_on_construction_year(self, indx):
+        """ If the construction year of the DER is the start year of the project or after,
+        the apply the capital cost on the year of construction.
+
+        Args:
+            indx:
+
+        Returns: dataframe with the capex cost on the correct project year
+
+        """
+        start_year = indx[1]
+        if self.construction_year.year < start_year.year:
+            return pd.DataFrame(index=indx)
+        capex_df = pd.DataFrame({self.zero_column_name(): np.zeros(len(indx))}, index=indx)
+        capex_df.loc[self.construction_year, self.zero_column_name()] = -self.get_capex()
+        return capex_df
+
     def decommissioning_report(self, last_year):
         """ Returns the cost of decommissioning a DER and the year the cost will be incurred
 
@@ -175,37 +216,9 @@ class DERExtension:
             return 0
 
         if self.salvage_value == "linear salvage value":
-            try:
-                capex = self.get_capex().value
-            except AttributeError:
-                capex = self.get_capex()
-            return capex * (years_beyond_project/self.expected_lifetime)
+            return self.get_capex() * (years_beyond_project/self.expected_lifetime)
         else:
             return self.salvage_value
-
-    def replacement_cost(self):
-        """
-
-        Returns: the cost of replacing this DER
-
-        """
-        return 0
-
-    def replacement_report(self, end_year):
-        """ Replacement costs occur YEr F
-
-        Args:
-            end_year (pd.Period): the last year of analysis
-
-        Returns:
-
-        """
-        report = pd.DataFrame()
-        if self.replaceable:
-            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_preparation_years if year < end_year.year])
-            report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
-                                  index=replacement_yrs)
-        return report
 
     def economic_carrying_cost(self, i):
         """ assumes length of project is the lifetime expectancy of this DER
@@ -216,17 +229,13 @@ class DERExtension:
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
         """
-        try:
-            capex = self.get_capex().value
-        except AttributeError:
-            capex = self.get_capex()
         t_0 = self.construction_year.year
         if self.construction_year == self.operation_year:
             year_ranges = pd.period_range(t_0, self.operation_year.year + self.expected_lifetime - 1, freq='y')
         else:
             year_ranges = pd.period_range(t_0 + 1, self.operation_year.year+self.expected_lifetime-1, freq='y')
         inflation_factor = [(1+i)**(t.year-t_0) for t in year_ranges]
-        ecc_capex = np.multiply(inflation_factor, -capex * self.ecc_perc)
+        ecc_capex = np.multiply(inflation_factor, -self.get_capex() * self.ecc_perc)
         ecc = pd.DataFrame({"Capex": ecc_capex}, index=year_ranges)
         # annual-ize replacement costs
         for year in self.failure_preparation_years:
@@ -239,23 +248,14 @@ class DERExtension:
         ecc[f'{self.unique_tech_id()} Carrying Cost'] = ecc.sum(axis=1)
         return ecc, ecc.loc[:, f'{self.unique_tech_id()} Carrying Cost']
 
-    def put_capital_cost_on_construction_year(self, indx):
-        """ If the construction year of the DER is the start year of the project or after,
-        the apply the capital cost on the year of construction.
-
-        Args:
-            indx:
-
-        Returns: dataframe with the capex cost on the correct project year
-
-        """
-        start_year = indx[1]
-        if self.construction_year.year < start_year.year:
-            return pd.DataFrame(index=indx)
-        capex_df = pd.DataFrame({self.zero_column_name(): np.zeros(len(indx))}, index=indx)
-        try:
-            capex = self.get_capex().value
-        except AttributeError:
-            capex = self.get_capex()
-        capex_df.loc[self.construction_year, self.zero_column_name()] = -capex
-        return capex_df
+    def tax_contribution(self, depreciation_schedules, project_length):
+        macrs_yr = self.macrs
+        if macrs_yr is None:
+            return
+        tax_schedule = depreciation_schedules[macrs_yr]
+        # extend/cut tax schedule to match length of project
+        if len(tax_schedule) < project_length:
+            tax_schedule = tax_schedule + list(np.zeros(project_length - len(tax_schedule)))
+        else:
+            tax_schedule = tax_schedule[:project_length]
+        return np.multiply(tax_schedule, self.get_capex() / 100)

@@ -427,16 +427,9 @@ class CostBenefitAnalysis(Financial):
         # 1) Redistribute capital cost columns according to the DER's MACRS value
         capital_costs = np.zeros(proj_years)
         for der_inst in technologies:
-            macrs_yr = der_inst.macrs
-            if macrs_yr is None:
-                continue
-            tax_schedule = self.macrs_depreciation[macrs_yr]
-            # extend/cut tax schedule to match length of project
-            if len(tax_schedule) < proj_years:
-                tax_schedule = tax_schedule + list(np.zeros(proj_years - len(tax_schedule)))
-            else:
-                tax_schedule = tax_schedule[:proj_years]
-            capital_costs += np.multiply(tax_schedule, proforma.loc[:, der_inst.zero_column_name()].sum()/100)
+            tax_contribution = der_inst.tax_contribution(self.macrs_depreciation, proj_years)
+            if tax_contribution is not None:
+                capital_costs += tax_contribution
         yearly_net += capital_costs
 
         # 2) Calculate State tax based on the net cash flows in each year

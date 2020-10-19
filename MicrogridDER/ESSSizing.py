@@ -190,6 +190,13 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
                 effective_soe_min = self.effective_soe_min
             return effective_soe_min
 
+    def get_capex(self):
+        try:
+            capex = super().get_capex().value
+        except AttributeError:
+            capex = super().get_capex()
+        return capex
+
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 

@@ -24,15 +24,6 @@
                         },
                         "type": "float"
                     },
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -867,15 +858,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -1167,15 +1149,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "construction_year": {
                         "opt_value": "2017",
                         "sensitivity": {
@@ -1499,15 +1472,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -1708,15 +1672,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -2077,15 +2032,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -2456,10 +2402,19 @@
         },
         "PV": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
+                    "PPA": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "PPA_cost": {
+                        "opt_value": "0.0275",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2803,7 +2758,7 @@
         },
         "Reliability": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "max_outage_duration": {
                         "opt_value": "80",

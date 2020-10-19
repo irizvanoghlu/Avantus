@@ -18,6 +18,7 @@ from MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology import PVSystem
 from ErrorHandelling import *
 import numpy as np
+import pandas as pd
 
 
 class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
@@ -41,6 +42,9 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         self.curtail = params['curtail']
         self.max_rated_capacity = params['max_rated_capacity']
         self.min_rated_capacity = params['min_rated_capacity']
+        self.ppa = params['PPA']
+        self.ppa_cost = params['PPA_cost']
+
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name=f'{self.name}rating', integer=True)
             self.inv_max = self.rated_capacity
@@ -63,6 +67,13 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             return cvx.Parameter(shape=sum(mask), name=f'{self.name}/rated gen', value=self.gen_per_rated.loc[mask].values) * self.rated_capacity
         else:
             return super().get_discharge(mask)
+
+    def get_capex(self):
+        try:
+            capex = super().get_capex().value
+        except AttributeError:
+            capex = super().get_capex()
+        return capex
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
@@ -124,6 +135,25 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             except AttributeError:
                 max_rated = self.rated_capacity
             return max_rated
+
+    def maximum_generation(self, label_selection=None):
+        """ The most that the PV system could discharge.
+
+        Args:
+            label_selection: A single label, e.g. 5 or 'a',
+                a list or array of labels, e.g. ['a', 'b', 'c'],
+                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
+                a callable function with one argument (the calling Series or DataFrame)
+
+        Returns: valid array output for indexing (one of the above) of the max generation profile
+
+        """
+        max_generation = super(IntermittentResourceSizing, self).maximum_generation(label_selection)
+        try:
+            max_generation = max_generation.value
+        except AttributeError:
+            pass
+        return max_generation
 
     def sizing_summary(self):
         """
@@ -187,3 +217,39 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         except AttributeError:
             rated_capacity = self.rated_capacity
         return np.dot(self.replacement_cost_function, [rated_capacity])
+
+    def proforma_report(self, opt_years, results):
+        """ Calculates the proforma that corresponds to participation in this value stream
+
+        Args:
+            opt_years (list): list of years the optimization problem ran for
+            results (DataFrame): DataFrame with all the optimization variable solutions
+
+        Returns: A DateFrame of with each year in opt_year as the index and
+            the corresponding value this stream provided.
+
+            Creates a dataframe with only the years that we have data for. Since we do not label the column,
+            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
+            DataFrame has only one column, labeled by the int 0
+
+        """
+        if self.ppa:
+            opt_years = [pd.Period(year=item, freq='y') for item in opt_years]
+            pro_forma = pd.DataFrame(data=np.zeros(len(opt_years)), index=opt_years)
+
+            ppa_label = f"{self.unique_tech_id()} PPA"
+            pro_forma.columns = [ppa_label]
+            # for each year of analysis
+            for year in opt_years:
+                subset_max_production = self.maximum_generation(results.index.year == year.year)
+                # sum up total annual solar production (kWh)
+                total_annual_production = subset_max_production.sum() * self.dt
+                # multiply with Solar PPA Cost ($/kWh), and set at YEAR's value
+                pro_forma.loc[year, ppa_label] = total_annual_production * -self.ppa_cost
+        else:
+            pro_forma = super().proforma_report(opt_years, results)
+        return pro_forma
+
+    def tax_contribution(self, depreciation_schedules, project_length):
+        if not self.ppa:
+            return super().tax_contribution(depreciation_schedules, project_length)

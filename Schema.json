@@ -606,6 +606,18 @@
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"
+                    },
+                    "PPA": {
+                        "allowed_values": "1|0",
+                        "cba": "n",
+                        "type": "bool",
+                        "unit": "yes/no"
+                    },
+                    "PPA_cost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/kWh"
                     }
                 }
             },

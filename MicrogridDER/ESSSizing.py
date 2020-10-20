@@ -314,8 +314,10 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             energy_rated = self.ene_max_rated.value
         except AttributeError:
             energy_rated = self.ene_max_rated
-
-        return energy_rated / self.discharge_capacity(solution=True)
+        discharge = self.discharge_capacity(solution=True)
+        if discharge == 0 or energy_rated == 0:
+            return 0
+        return energy_rated / discharge
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

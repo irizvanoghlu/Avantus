@@ -134,7 +134,7 @@ class Reliability(ValueStream):
                 first_failure_ind = self.find_first_uncovered(reliability_check, demand_left, energy_requirement_check, ess_properties, soe, start, check_at_a_time)
                 start += check_at_a_time
             analysis_indices = np.append(analysis_indices, first_failure_ind)
-            print(analysis_indices)
+            #print(analysis_indices)
 
         for der_inst in der_list:
             if der_inst.being_sized():
@@ -143,14 +143,13 @@ class Reliability(ValueStream):
         # check if there is ES in the der_list before determing the min SOE profile
         for der_inst in der_list:
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated > 0:
-                start = time.time()
+
                 # This is a faster method to find approximate min SOE
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
                 # This is a slower method to find optimal min SOE
-                # der_list = self.min_soe_opt(opt_index, der_list)
-                end = time.time()
-                print(end - start)
+                # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+
         return der_list
 
     def get_der_limits(self, der_list, need_solution=False, Load_shed=False):
@@ -391,7 +390,7 @@ class Reliability(ValueStream):
         while outage_init < (len(self.critical_load)):
             if soc is not None:
                 ess_properties['init_soe'] = soc[outage_init]
-            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check[outage_init:], self.max_outage_duration, **ess_properties)
+            outage_soc_profile = self.simulate_outage(reliability_check[outage_init:], demand_left[outage_init:], energy_requirement_check[outage_init:], self.max_outage_duration/self.dt, **ess_properties)
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
             frequency_simulate_outage[int(longest_outage)] += 1
@@ -460,7 +459,7 @@ class Reliability(ValueStream):
             # check that there is enough SOC in the ESS to satisfy worst case
             energy_min = kwargs.get('operation SOE min')
             if energy_min is not None:
-                if 0 >= np.around(current_energy_check - init_soe, decimals=2):
+                if 0 >= np.around(current_energy_check*self.dt - init_soe, decimals=2):
                     # so discharge to meet the load offset by all generation
                     discharge_possible = (init_soe - energy_min) / self.dt
                     discharge = min(discharge_possible, current_demand_left, kwargs['discharge max'])
@@ -493,19 +492,20 @@ class Reliability(ValueStream):
 
         consts = []
         cost_funcs = sum([der_instance.get_capex() for der_instance in der_list])
+        outage_length=int(self.outage_duration/self.dt)
 
         mask = pd.Series(index=opt_index)
         for outage_ind in outage_start_indices:
             mask.iloc[:] = False
-            mask.iloc[outage_ind: (outage_ind + self.outage_duration)] = True
+            mask.iloc[outage_ind: (outage_ind + outage_length)] = True
             # set up variables
-            # var_gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')  # at POI
-            gen_sum = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
-            tot_net_ess = cvx.Parameter(value=np.zeros(self.outage_duration), shape=self.outage_duration, name='POI-Zero')
+            #var_gen_sum = cvx.Parameter(value=np.zeros(outage_length), shape=outage_length, name='POI-Zero')  # at POI
+            gen_sum = cvx.Parameter(value=np.zeros(outage_length), shape=outage_length, name='POI-Zero')
+            tot_net_ess = cvx.Parameter(value=np.zeros(outage_length), shape=outage_length, name='POI-Zero')
 
             for der_instance in der_list:
                 # initialize variables
-                der_instance.initialize_variables(self.outage_duration)
+                der_instance.initialize_variables(outage_length)
                 consts += der_instance.constraints(mask, sizing_for_rel=True, find_min_soe=False)
                 if der_instance.technology_type == 'Energy Storage System':
                     tot_net_ess += der_instance.get_net_power(mask)
@@ -515,7 +515,7 @@ class Reliability(ValueStream):
                     # var_gen_sum += der_instance.get_discharge(mask) * der_instance.nu
                     gen_sum += der_instance.get_discharge(mask) * der_instance.nu
 
-            critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=self.outage_duration)
+            critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=outage_length)
             # consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
             consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)]
 
@@ -544,10 +544,10 @@ class Reliability(ValueStream):
         if start_indx >= (len(self.critical_load)):
             return -1
         # find longest possible outage
-        soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], variable_e_check, self.outage_duration, soe[start_indx], **ess_properties)
+        soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], variable_e_check, self.outage_duration/self.dt, soe[start_indx], **ess_properties)
         longest_outage = len(soe_profile)
         # base case 2: longest outage is less than the outage duration target
-        if longest_outage < self.outage_duration:
+        if longest_outage < self.outage_duration/self.dt:
             if longest_outage < (len(self.critical_load) - start_indx):
                 return start_indx
         # base case 3: break recursion when you get to this (like a limit to the resursion)
@@ -679,7 +679,7 @@ class Reliability(ValueStream):
                         soe_outage_profile = (self.simulate_outage(reliability_check[outage_init:],
                                                                    demand_left[outage_init:],
                                                                    energy_requirement_check,
-                                                                   self.outage_duration,
+                                                                   self.outage_duration/self.dt,
                                                                    soe[outage_init],
                                                                    **ess_properties,
                                                                    ))

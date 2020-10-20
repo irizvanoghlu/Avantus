@@ -23,7 +23,31 @@ class MicrogridServiceAggregator(ServiceAggregator):
         Returns: A boolean that is true if Reliability is doing post facto calculations only
 
         """
-        return len(self.value_streams.keys()) == 1 and 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only
+        return self.is_reliability_only() and self.post_facto_reliability()
+
+    def post_facto_reliability(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto calculations only when sizing
+
+        """
+        return 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only
+
+    def post_facto_reliability_only_and_user_defined(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto and user-defined service is active
+
+        """
+        return len(self.value_streams.keys()) == 2 and 'User' in self.value_streams.keys() and self.post_facto_reliability()
+
+    def is_reliability_only(self):
+        """
+
+        Returns: A boolean that is true if Reliability is doing post facto and user-defined constraint is true
+
+        """
+        return len(self.value_streams.keys()) == 1 and 'Reliability' in self.value_streams.keys()
 
     def is_whole_sale_market(self):
         """
@@ -34,11 +58,13 @@ class MicrogridServiceAggregator(ServiceAggregator):
         return {'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
 
     def set_size(self, der_lst, start_year):
-        """ iterates over a list of DER+DERExtension objects and sets their minimum size
+        """ part of Deferral's sizing module:
+        iterates over a list of DER+DERExtension objects and sets their minimum size
         based on the P and E requirements set by MIN_YEAR objective.
 
         Args:
             der_lst:
+            start_year:
 
         Returns: der_list with size minimums
 
@@ -59,20 +85,10 @@ class MicrogridServiceAggregator(ServiceAggregator):
             der_lst[0].ene_max_rated = min_energy
         return der_lst
 
-    def does_wholesale_markets_have_max_defined(self):
-        """
-
-        Returns:
-
-        """
-        error = False
-        for vs_name in {'LF', 'SR', 'NSR', 'FR'}:
-            vs = self.value_streams.get(vs_name, False)
-            if vs and not vs.u_ts_constraints and not vs.d_ts_constraints:
-                TellUser.error('Trying to size the power of the system to maximize profits ' +
-                               f'in wholesale markets, but {vs_name} time-series constraints is not applied.')
-                error = True
-        return error
-
     def any_max_participation_constraints_not_included(self):
+        """
+
+        Returns: true if a max constraint for an active market participation service is not defined
+
+        """
         return bool(sum([1 if not vs.max_participation_is_defined() and name in {'LF', 'SR', 'NSR', 'FR'} else 0 for name, vs in self.value_streams.items()]))

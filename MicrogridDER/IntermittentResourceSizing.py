@@ -36,6 +36,8 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         DERExtension.__init__(self, params)
         ContinuousSizing.__init__(self, params)
 
+        self.nu = params['nu'] / 100
+        self.gamma = params['gamma'] / 100
         self.curtail = params['curtail']
         self.max_rated_capacity = params['max_rated_capacity']
         self.min_rated_capacity = params['min_rated_capacity']
@@ -62,13 +64,13 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         else:
             return super().get_discharge(mask)
 
-    def constraints(self, mask):
+    def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 
         Returns:
             A list of constraints that corresponds the battery's physical constraints and its service constraints
         """
-        constraints = super().constraints(mask)
+        constraints = super().constraints(mask, **kwargs)
         constraints += self.size_constraints
         return constraints
 
@@ -102,15 +104,62 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation()
         return results
 
+    def maximum_generation(self,  label_selection=None,sizing=False):
+        """ The most that the PV system could discharge.
+
+        Args:
+            label_selection: A single label, e.g. 5 or 'a',
+                a list or array of labels, e.g. ['a', 'b', 'c'],
+                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
+                a callable function with one argument (the calling Series or DataFrame)
+
+        Returns: valid array output for indexing (one of the above) of the max generation profile
+
+        """
+        PV_gen = super().maximum_generation(label_selection,sizing)
+        if sizing:
+            try:
+                PV_gen = PV_gen.value
+            except AttributeError:
+                pass
+        return PV_gen
+
     def set_size(self):
         """ Save value of size variables of DERs
 
         """
-        try:
-            rated_capacity = self.rated_capacity.value
-        except AttributeError:
-            rated_capacity = self.rated_capacity
-        self.rated_capacity = rated_capacity
+        self.rated_capacity = self.get_rated_capacity(solution=True)
+        self.inv_max = self.inv_rated_capacity(sizing=True)
+
+    def inv_rated_capacity(self, sizing=False):
+        """
+
+        Returns: the maximum energy times two for PV inverter rating
+
+        """
+        if not sizing:
+            return self.rated_capacity
+        else:
+            try:
+                max_rated = self.rated_capacity.value
+            except AttributeError:
+                max_rated = self.rated_capacity
+            return max_rated
+
+    def get_rated_capacity(self, solution=False):
+        """
+
+        Returns: the maximum energy that can be attained
+
+        """
+        if not solution:
+            return self.rated_capacity
+        else:
+            try:
+                max_rated = self.rated_capacity.value
+            except AttributeError:
+                max_rated = self.rated_capacity
+            return max_rated
 
     def sizing_summary(self):
         """

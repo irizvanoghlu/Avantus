@@ -126,7 +126,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.dis_max_rated
         else:
             try:
-                dis_max_rated = self.dis_max_rated.value
+                dis_max_rated = int(self.dis_max_rated.value)
             except AttributeError:
                 dis_max_rated = self.dis_max_rated
             return dis_max_rated
@@ -141,7 +141,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.dis_max_rated
         else:
             try:
-                ch_max_rated = self.ch_max_rated.value
+                ch_max_rated = int(self.ch_max_rated.value)
             except AttributeError:
                 ch_max_rated = self.ch_max_rated
             return ch_max_rated
@@ -156,7 +156,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             return self.ene_max_rated
         else:
             try:
-                max_rated = self.ene_max_rated.value
+                max_rated = int(self.ene_max_rated.value)
             except AttributeError:
                 max_rated = self.ene_max_rated
             return max_rated
@@ -168,7 +168,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         """
         if not solution:
-            return self.effective_soe_max
+            return super(ESSSizing, self).operational_max_energy()
         else:
             try:
                 effective_soe_max = self.effective_soe_max.value
@@ -182,7 +182,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         Returns: the minimum energy that should stored in this DER based on user inputs
         """
         if not solution:
-            return self.effective_soe_min
+            return super(ESSSizing, self).operational_min_energy()
         else:
             try:
                 effective_soe_min = self.effective_soe_min.value
@@ -254,6 +254,8 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         self.dis_max_rated = self.discharge_capacity(solution=True)
         self.ch_max_rated = self.charge_capacity(solution=True)
         self.ene_max_rated = self.energy_capacity(solution=True)
+        self.effective_soe_min = self.operational_min_energy(solution=True)
+        self.effective_soe_max = self.operational_max_energy(solution=True)
         return
 
     def sizing_summary(self):
@@ -312,8 +314,10 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             energy_rated = self.ene_max_rated.value
         except AttributeError:
             energy_rated = self.ene_max_rated
-
-        return energy_rated / self.discharge_capacity(solution=True)
+        discharge = self.discharge_capacity(solution=True)
+        if discharge == 0 or energy_rated == 0:
+            return 0
+        return energy_rated / discharge
 
     def update_for_evaluation(self, input_dict):
         """ Updates price related attributes with those specified in the input_dictionary

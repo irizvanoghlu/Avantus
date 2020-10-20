@@ -31,6 +31,21 @@ class MicrogridPOI(POI):
         if self.is_sizing_optimization:
             self.error_checks_on_sizing()
 
+        # add thermal site load time series
+        for der in self.active_ders:
+            try:
+                self.site_steam_load = der.site_steam_load
+            except AttributeError:
+                self.site_steam_load = None
+            try:
+                self.site_hotwater_load = der.site_hotwater_load
+            except AttributeError:
+                self.site_hotwater_load = None
+            try:
+                self.site_cooling_load = der.site_cooling_load
+            except AttributeError:
+                self.site_cooling_load = None
+
     def check_if_sizing_ders(self):
         """ This method will iterate through the initialized DER instances and return a logical OR of all of their
         'being_sized' methods.
@@ -87,71 +102,6 @@ class MicrogridPOI(POI):
         sizing_df.set_index('DER')
         return sizing_df
 
-    def get_state_of_system(self, mask):
-        """ POI method to measure the state of POI depending on available types of DERs. used in SET_UP_OPTIMIZATION
-        Builds extends StorageVET's method to take into account types of technologies added by DERVET
-
-        Args:
-            mask (DataFrame): DataFrame of booleans used, the same length as time_series. The value is true if the
-                        corresponding column in time_series is included in the data to be optimized.
-
-        Returns:
-            aggregation of loads
-            aggregation of generation from variable resources
-            aggregation of generation from other sources
-            total net power from ESSs
-            total state of energy stored in the system
-            aggregation of all the power flows into the POI
-            aggregation of all the power flows out if the POI
-            aggregation of thermal heating power (heat recovered)
-            aggregation of thermal cooling power (cold recovered)
-        """
-        opt_var_size = sum(mask)
-        load_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-        var_gen_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-        gen_sum = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
-        tot_net_ess = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
-        total_soe = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')
-        agg_power_flows_in = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-        agg_power_flows_out = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-        agg_thermal_heating_power = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-        agg_thermal_cooling_power = cvx.Parameter(value=np.zeros(opt_var_size), shape=opt_var_size, name='POI-Zero')  # at POI
-
-        for der_instance in self.active_ders:
-            # add the state of the der's power over time & stored energy over time to system's
-            agg_power_flows_in += der_instance.get_charge(mask)
-            agg_power_flows_out += der_instance.get_discharge(mask)
-
-            if der_instance.technology_type == 'Load':
-                load_sum += der_instance.get_charge(mask)
-            if der_instance.technology_type == 'Electric Vehicle':
-                load_sum += der_instance.get_charge(mask)
-                # total_soe += der_instance.get_state_of_energy(mask)
-
-            if der_instance.technology_type == 'Energy Storage System':
-                total_soe += der_instance.get_state_of_energy(mask)
-                tot_net_ess += der_instance.get_net_power(mask)
-            if der_instance.technology_type == 'Generator':
-                gen_sum += der_instance.get_discharge(mask)
-            if der_instance.technology_type == 'Intermittent Resource':
-                var_gen_sum += der_instance.get_discharge(mask)
-
-            # thermal (hot and cold) power recovered
-            if der_instance.is_hot:
-                if self.site_heating_load is None:
-                    TellUser.warning(f'A heat source technology is active: {der_instance.tag}, but you have set the scenario parameter incl_thermal_load to False. The thermal load will be ignored.')
-                else:
-                    TellUser.debug(f'adding heat recovered from this DER: {der_instance.tag}')
-                    agg_thermal_heating_power += der_instance.get_heat_recovered(mask)
-            if der_instance.is_cold:
-                if self.site_cooling_load is None:
-                    TellUser.warning(f'A cold source technology is active: {der_instance.tag}, but you have set the scenario parameter incl_thermal_load to False. The thermal load will be ignored.')
-                else:
-                    TellUser.debug(f'adding cold recovered from this DER: {der_instance.tag}')
-                    agg_thermal_cooling_power += der_instance.get_cold_recovered(mask)
-
-        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out, agg_thermal_heating_power, agg_thermal_cooling_power
-
     def merge_reports(self, index):
         """ Collects and merges the optimization results for all DERs into
         Builds extends StorageVET's method to take into account types of technologies added by DERVET
@@ -195,3 +145,93 @@ class MicrogridPOI(POI):
             # net load is the load see at the POI
             results.loc[:, 'Net Load (kW)'] = results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - results.loc[:, 'Total Storage Power (kW)']
         return results, monthly_data
+
+    def get_state_of_system(self, mask):
+        """ POI method to measure the state of POI depending on available types of DERs. used in SET_UP_OPTIMIZATION
+        Extends StorageVET's method to take into account types of technologies added by DERVET, and thermal recovery
+
+        Args:
+            mask (DataFrame): DataFrame of booleans used, the same length as time_series. The value is true if the
+                        corresponding column in time_series is included in the data to be optimized.
+
+        Returns:
+            aggregation of loads
+            aggregation of generation from variable resources
+            aggregation of generation from other sources
+            total net power from ESSs
+            total state of energy stored in the system
+            aggregation of all the power flows into the POI
+            aggregation of all the power flows out if the POI
+
+            aggregation of steam thermal heating power (heat recovered)
+            aggregation of hotwater thermal heating power (heat recovered)
+            aggregation of thermal cooling power (cold recovered)
+        """
+        # get values from storagevet/poi method
+        load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, agg_thermal_cooling_power = super().get_state_of_system(mask)
+
+        # dervet-specific
+        for der_instance in self.active_ders:
+            # add to aggregate values for dervet-specific technology-types
+            if der_instance.technology_type == 'Electric Vehicle':
+                load_sum += der_instance.get_charge(mask)
+                # total_soe += der_instance.get_state_of_energy(mask)
+
+            # thermal power recovered: hot (steam/hotwater) and cold
+            if der_instance.is_hot:
+                if self.site_steam_load is None and self.site_hotwater_load is None:
+                    TellUser.warning(f'A heat source technology is active ({der_instance.unique_tech_id()}), but you have set the scenario parameter incl_thermal_load to False. Any thermal load will be ignored.')
+                else:
+                    if self.site_steam_load is not None:
+                      TellUser.debug(f'adding heat (steam) recovered from this DER: {der_instance.unique_tech_id()}')
+                      agg_steam_heating_power += der_instance.get_steam_recovered(mask)
+                    if self.site_hotwater_load is not None:
+                      TellUser.debug(f'adding heat (hotwater) recovered from this DER: {der_instance.unique_tech_id()}')
+                      agg_hotwater_heating_power += der_instance.get_hotwater_recovered(mask)
+            if der_instance.is_cold:
+                if self.site_cooling_load is None:
+                    TellUser.warning(f'A cold source technology is active ({der_instance.unique_tech_id()}), but you have set the scenario parameter incl_thermal_load to False. Any thermal load will be ignored.')
+                else:
+                    TellUser.debug(f'adding cold recovered from this DER: {der_instance.unique_tech_id()}')
+                    agg_thermal_cooling_power += der_instance.get_cold_recovered(mask)
+
+        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, agg_thermal_cooling_power
+
+    def optimization_problem(self, mask, power_in, power_out, steam_in, hotwater_in, cold_in, annuity_scalar=1):
+        """ Builds the master POI constraint list for the subset of time series data being optimized.
+            Due to VS power reservations, control constraints, import/export constraints, and energy throughput requirements
+            Builds onto storagevet method to add thermal balance constraints for dervet
+
+        Args:
+            mask (DataFrame): A boolean array that is true for indices corresponding to time_series data included
+                in the subs data set
+            power_in (cvx.Expression):
+            power_out (cvx.Expression):
+            steam_in (cvx.Expression):
+            hotwater_in (cvx.Expression):
+            cold_in (cvx.Expression):
+            annuity_scalar (float): a scalar value to be multiplied by any yearly cost or benefit that helps capture
+                the cost/benefit over the entire project lifetime (only to be set iff sizing)
+
+        Returns:
+            A dictionary with the portion of the objective function that it affects, labeled by the expression's key.
+            A list of constraints being set by the POI: power reservations, control constraints requirements,
+                max import, max export, etc.
+        """
+        obj_expression, constraint_list = super().optimization_problem(mask, power_in, power_out, steam_in, hotwater_in, cold_in, annuity_scalar)
+
+        # thermal power balance constraints
+        if self.site_steam_load is not None:
+            if steam_in.variables():
+                TellUser.debug('adding steam thermal power balance constraint')
+                constraint_list += [cvx.NonPos(-steam_in + self.site_steam_load)]
+        if self.site_hotwater_load is not None:
+            if hotwater_in.variables():
+                TellUser.debug('adding hot water thermal power balance constraint')
+                constraint_list += [cvx.NonPos(-hotwater_in + self.site_hotwater_load)]
+        if self.site_cooling_load is not None:
+            if cold_in.variables():
+                TellUser.debug('adding thermal cooling power balance constraint')
+                constraint_list += [cvx.NonPos(-cold_in + self.site_cooling_load)]
+
+        return obj_expression, constraint_list

@@ -59,18 +59,20 @@ class DERExtension:
         self.last_operation_year = pd.Period(year=0, freq='y')  # set this value w/ set_failure_years
         self.failure_years = []
 
-    def set_failure_years(self, end_year):
+    def set_failure_years(self, end_year, fail_on=None):
         """ Gets the year(s) that this instance will fail and saves the information
          as an attribute of itself
 
         Args:
             end_year (pd.Period): the last year the project is operational
+            fail_on (int): if a failed year was determined, then indicated here
 
         Returns: list of year(s) that this equipement fails. if replaceable, then there might
         be more than one year (depending on when the end_year is and the lifetime of the DER)
 
         """
-        fail_on = self.operation_year.year + self.expected_lifetime-1
+        if fail_on is None:
+            fail_on = self.operation_year.year + self.expected_lifetime-1
         if self.replaceable:
             while fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
@@ -79,6 +81,7 @@ class DERExtension:
             if fail_on <= end_year.year:
                 self.failure_years.append(fail_on)
         self.last_operation_year = pd.Period(fail_on)
+        self.failure_years = list(set(self.failure_years))
         return self.failure_years
 
     def operational(self, year):
@@ -235,30 +238,32 @@ class DERExtension:
         ecc_perc = k_factor * repalcement_factor * (d - self.escalation_rate)
         return ecc_perc
 
-    def economic_carrying_cost(self, d, indx):
+    def economic_carrying_cost(self, d, i, start_year, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
             d (float): discount rate
-            indx
+            i (float): inflation rate
+            indx: index of proforma -- recall that one entry is a string ("CAPEX Year") the rest are pd.Periods
+            start_year
+            end_year
 
         Returns: dataframe report of yearly economic carrying cost
-
+        NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
         """
         try:
             capex = self.get_capex().value
         except AttributeError:
             capex = self.get_capex()
-        time_factor = (1 + self.escalation_rate) / (1 + d)
         if self.ecc_perc:
             ecc_perc = self.ecc_perc
         else:
             ecc_perc = self.get_ecc_perc(d)
-
-        ecc = capex * ecc_perc
-        per_yr = [-ecc*(time_factor**(k-1)) if not isinstance(year, str) and self.construction_year.year <= year.year <= self.last_operation_year.year
-                  else 0 for k, year in enumerate(indx.values)]
-        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': per_yr}, index=indx)
+        t_0 = self.construction_year.year
+        project_years = pd.period_range(start_year.year, end_year.year+1, freq='y')
+        inflation_factor = [(1+i)**(t.year-t_0) for t in project_years]
+        ecc = np.multiply(inflation_factor, capex * ecc_perc)
+        ecc_df = pd.DataFrame({f'{self.unique_tech_id()} Carrying Cost': ecc}, index=project_years)
         return ecc_df
 
     def put_capital_cost_on_construction_year(self, indx):

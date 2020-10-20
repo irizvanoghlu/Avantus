@@ -131,7 +131,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         self.rated_capacity = self.get_rated_capacity(solution=True)
         self.inv_max = self.inv_rated_PV_capacity(sizing=True)
 
-    def inv_rated_PV_capacity(self, sizing=False):
+    def inv_rated_capacity(self, sizing=False):
         """
 
         Returns: the maximum energy times two for PV inverter rating

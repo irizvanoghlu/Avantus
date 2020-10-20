@@ -593,6 +593,12 @@
                         "type": "float",
                         "unit": "$/kW"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -745,6 +751,12 @@
                     "replaceable": {
                         "type": "bool",
                         "allowed_values": "1|0"
+                    },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
                     },
                     "rcost": {
                         "cba": "n",
@@ -904,6 +916,12 @@
                         "type": "bool",
                         "allowed_values": "1|0"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "rcost": {
                         "cba": "n",
                         "min": "0.0",
@@ -1057,6 +1075,12 @@
                         "type": "bool",
                         "allowed_values": "1|0"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "rcost": {
                         "cba": "n",
                         "min": "0.0",
@@ -1209,6 +1233,12 @@
                     "replaceable": {
                         "type": "bool",
                         "allowed_values": "1|0"
+                    },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
                     },
                     "rcost": {
                         "cba": "n",
@@ -1486,6 +1516,12 @@
                         "allowed_values": "1|0",
                         "unit": "yes/no"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "rcost": {
                         "cba": "n",
                         "min": "0.0",
@@ -1707,6 +1743,12 @@
                         "allowed_values": "1|0",
                         "unit": "yes/no"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "rcost": {
                         "cba": "n",
                         "min": "0.0",
@@ -1859,6 +1901,12 @@
                         "type": "bool",
                         "allowed_values": "1|0"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "rcost": {
                         "cba": "n",
                         "min": "0.0",
@@ -1969,6 +2017,12 @@
                     "replaceable": {
                         "type": "bool",
                         "allowed_values": "1|0"
+                    },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
                     },
                     "rcost": {
                         "cba": "n",

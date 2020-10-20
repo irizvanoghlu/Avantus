@@ -43,7 +43,7 @@ class DERExtension:
         self.replaceable = params['replaceable']
         self.escalation_rate = params['ter'] / 100
         self.ecc_perc = params['ecc%'] / 100
-        self.replacement_construction_time = 1  # years
+        self.replacement_construction_time = params.get('replacement_construction_time', 1)  # years
 
         self.replacement_cost_function = []
         rcost = params.get('rcost')
@@ -154,7 +154,7 @@ class DERExtension:
         """
         report = pd.DataFrame()
         if self.replaceable:
-            replacement_yrs = pd.Index([pd.Period(year+1, freq='y') for year in self.failure_preparation_years if year < end_year.year])
+            replacement_yrs = pd.Index([pd.Period(year+1-self.replacement_construction_time, freq='y') for year in self.failure_preparation_years if year < end_year.year])
             report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
                                   index=replacement_yrs)
         return report
@@ -239,7 +239,7 @@ class DERExtension:
         ecc = pd.DataFrame({"Capex": ecc_capex}, index=year_ranges)
         # annual-ize replacement costs
         for year in self.failure_preparation_years:
-            temp_year_range = pd.period_range(year+1, year+self.expected_lifetime, freq='y')
+            temp_year_range = pd.period_range(year+1-self.replacement_construction_time, year+self.expected_lifetime, freq='y')
             inflation_factor = [(1+i)**(t.year-t_0) for t in temp_year_range]
             ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
             temp_df = pd.DataFrame({f"{year} replacement": ecc_replacement}, index=temp_year_range)

@@ -195,7 +195,9 @@ class MicrogridScenario(Scenario):
             # some type error was recorded. throw error and exit
             raise Exception("Error occurred while trying to determine the end of the analysis." +
                             " Please check the error_log.log in your results folder for more information.")
-
+        # if economic carrying cost, check for value conflicts in CBA and scenario
+        if self.cost_benefit_analysis.ecc_mode:
+            self.cost_benefit_analysis.ecc_checks(self.poi.der_list, self.service_agg.value_streams)
         # update opt_years based on this new end_year
         add_analysis_years = self.cost_benefit_analysis.get_years_after_failures(self.end_year, self.poi.der_list)
         TellUser.debug(add_analysis_years)
@@ -230,7 +232,7 @@ class MicrogridScenario(Scenario):
         alpha = 1
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value
-            alpha = self.cost_benefit_analysis.annuity_scalar(self.start_year, self.end_year, self.opt_years)
+            alpha = self.cost_benefit_analysis.annuity_scalar(self.opt_years)
         # TODO
         if self.service_agg.post_facto_reliability_only():
             TellUser.info("Only active Value Stream is post facto only, so not optimizations will run...")

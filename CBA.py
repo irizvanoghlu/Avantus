@@ -40,7 +40,7 @@ class CostBenefitAnalysis(Financial):
         self.state_tax_rate = financial_params['state_tax_rate']/100
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
-        self.report_annualized_der_cost = False
+        self.ecc_mode = financial_params['ecc_mode']
         self.ecc_df = None
         self.equipment_lifetime_report = pd.DataFrame()
 
@@ -104,23 +104,38 @@ class CostBenefitAnalysis(Financial):
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
                     self.end_year = pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==3
             self.end_year = project_start_year + longest_lifetime-1
-        # (4) Carrying Cost (single technology only)
-        if self.horizon_mode == 4:
-            self.report_annualized_der_cost = True
-            # check to see if one is the Load
-            is_one_load = bool(sum([1 if der_inst.tag == 'Load' else 0 for der_inst in der_list]))
-            if (len(der_list) == 2 and not is_one_load) or (len(der_list) > 2):
-                TellUser.error("Analysis horizon mode == 'Carrying cost', DER-VET cannot convert all value streams into annualized values " +
-                               f"when more than one DER has been selected. There are {len(der_list)} active. Please resolve and rerun.")
-                self.end_year = pd.Period(year=0, freq='y')
-            # require that e < d  TODO preform this check on all ders
-            only_tech = der_list[0]
-            if only_tech.escalation_rate >= self.npv_discount_rate:
-                TellUser.error(f"The technology escalation rate ({only_tech.escalation_rate}) cannot be greater " +
-                               f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {only_tech.name}.")
-                self.end_year = pd.Period(year=0, freq='y')
-            self.end_year = only_tech.operation_year + only_tech.expected_lifetime-1
         return self.end_year
+
+    def ecc_checks(self, der_list, service_dict):
+        """
+
+        Args:
+            der_list: list of ders
+            service_dict: dictionary of services
+
+        Returns:
+
+        """
+        # require that ownership model is Utility TODO
+
+        # check to see if one is the Load
+        is_one_load = bool(sum([1 if der_inst.tag == 'Load' else 0 for der_inst in der_list]))
+        if (len(der_list) == 2 and not is_one_load) or (len(der_list) > 2):
+            # check that a service in this set: {Reliability, Deferral}     is active  TODO: if more than 1 DER? clarify when ECC should be used
+            if 'Reliability' not in service_dict.keys() or 'Deferral' not in service_dict.keys():
+                TellUser.error(f"An ecc analysis does not make sense for the case you selected. A reliability or asset deferral case" +
+                               "would be better suited for economic carrying cost analysis")
+                raise ModelParameterError("The combination of services does not work with the rest of your case settings. " +
+                                          "Please see log file for more information.")
+        # require that e < d
+        for der_inst in der_list:
+            conflict_occured = False
+            if der_inst.escalation_rate >= self.npv_discount_rate:
+                conflict_occured = True
+                TellUser.error(f"The technology escalation rate ({der_inst.escalation_rate}) cannot be greater " +
+                               f"than the project discount rate ({self.npv_discount_rate}). Please edit the 'ter' value for {der_inst.name}.")
+            if conflict_occured:
+                raise ModelParameterError("TER and discount rates conflict. Please see log file for more information.")
 
     @staticmethod
     def get_years_after_failures(end_year, der_list):
@@ -280,7 +295,7 @@ class CostBenefitAnalysis(Financial):
         # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
 
-        if self.report_annualized_der_cost:
+        if self.ecc_mode:
             # already checked to make sure there is only 1 DER, but need to make sure it is not the Load
             tech = None
             for der_inst in technologies:

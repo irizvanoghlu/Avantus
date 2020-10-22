@@ -220,11 +220,12 @@ class DERExtension:
         else:
             return self.salvage_value
 
-    def economic_carrying_cost(self, i):
+    def economic_carrying_cost(self, i, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
             i (float): inflation rate
+            end_year (pd.Period): end year of the project
 
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
@@ -245,6 +246,7 @@ class DERExtension:
             temp_df = pd.DataFrame({f"{year} replacement": ecc_replacement}, index=temp_year_range)
             ecc = pd.concat([ecc, temp_df], axis=1)
         ecc.fillna(value=0, inplace=True)
+        ecc = ecc.loc[:end_year, :]
         ecc[f'{self.unique_tech_id()} Carrying Cost'] = ecc.sum(axis=1)
         return ecc, ecc.loc[:, f'{self.unique_tech_id()} Carrying Cost']
 

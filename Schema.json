@@ -620,10 +620,15 @@
                         "unit": "yes/no"
                     },
                     "PPA_cost": {
-                        "cba": "y",
+                        "cba": "n",
                         "min": "0.0",
                         "type": "float",
                         "unit": "$/kWh"
+                    },
+                    "PPA_inflation_rate": {
+                        "cba": "n",
+                        "type": "float",
+                        "unit": "%"
                     }
                 }
             },

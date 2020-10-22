@@ -188,9 +188,9 @@ class MicrogridScenario(Scenario):
         Adds years to the set of years economic dispatch will be optimized and solved for
 
         """
-        self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs)
+        self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs, self.start_year, self.end_year)
         # set the project end year
-        self.end_year = self.cost_benefit_analysis.find_end_year(self.start_year, self.end_year, self.poi.der_list)
+        self.end_year = self.cost_benefit_analysis.find_end_year(self.poi.der_list)
         if self.end_year.year == 0:
             # some type error was recorded. throw error and exit
             raise Exception("Error occurred while trying to determine the end of the analysis." +

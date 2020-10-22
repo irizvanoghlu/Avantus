@@ -33,7 +33,6 @@ import storagevet
 from MicrogridScenario import MicrogridScenario
 from DERVETParams import ParamsDER
 from MicrogridResult import MicrogridResult
-from storagevet.Visualization import Visualization
 from ErrorHandelling import *
 
 
@@ -64,6 +63,7 @@ class DERVET:
         self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
 
         if self.verbose:
+            from storagevet.Visualization import Visualization
             Visualization(ParamsDER).class_summary()
 
     def solve(self):

@@ -349,7 +349,7 @@
                         "type": "bool"
                     },
                     "replacement_construction_time": {
-                        "opt_value": "2",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1991,6 +1991,15 @@
                         },
                         "type": "string"
                     },
+                    "ecc_mode": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
                     "external_incentives": {
                         "evaluation": {
                             "active": "n",
@@ -2456,7 +2465,7 @@
         },
         "PV": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "PPA": {
                         "opt_value": "0",
@@ -2472,6 +2481,19 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "PPA_inflation_rate": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "2",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -2953,7 +2975,7 @@
                         "type": "bool"
                     },
                     "binary": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2984,7 +3006,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2050",
+                        "opt_value": "2030",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2993,7 +3015,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

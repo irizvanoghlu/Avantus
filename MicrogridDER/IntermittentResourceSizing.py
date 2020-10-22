@@ -116,11 +116,47 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation()
         return results
 
+    def maximum_generation(self,  label_selection=None,sizing=False):
+        """ The most that the PV system could discharge.
+
+        Args:
+            label_selection: A single label, e.g. 5 or 'a',
+                a list or array of labels, e.g. ['a', 'b', 'c'],
+                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
+                a callable function with one argument (the calling Series or DataFrame)
+
+        Returns: valid array output for indexing (one of the above) of the max generation profile
+
+        """
+        PV_gen = super().maximum_generation(label_selection,sizing)
+        if sizing:
+            try:
+                PV_gen = PV_gen.value
+            except AttributeError:
+                pass
+        return PV_gen
+
     def set_size(self):
         """ Save value of size variables of DERs
 
         """
         self.rated_capacity = self.get_rated_capacity(solution=True)
+        self.inv_max = self.inv_rated_capacity(sizing=True)
+
+    def inv_rated_capacity(self, sizing=False):
+        """
+
+        Returns: the maximum energy times two for PV inverter rating
+
+        """
+        if not sizing:
+            return self.rated_capacity
+        else:
+            try:
+                max_rated = self.rated_capacity.value
+            except AttributeError:
+                max_rated = self.rated_capacity
+            return max_rated
 
     def get_rated_capacity(self, solution=False):
         """

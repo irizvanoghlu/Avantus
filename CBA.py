@@ -296,6 +296,7 @@ class CostBenefitAnalysis(Financial):
         proforma = proforma.join(der_eol)
 
         if self.ecc_mode:
+            # TODO: loop through each technology
             # already checked to make sure there is only 1 DER, but need to make sure it is not the Load
             tech = None
             for der_inst in technologies:

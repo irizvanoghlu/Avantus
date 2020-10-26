@@ -41,7 +41,7 @@ class CostBenefitAnalysis(Financial):
         self.federal_tax_rate = financial_params['federal_tax_rate']/100
         self.property_tax_rate = financial_params['property_tax_rate']/100
         self.ecc_mode = financial_params['ecc_mode']
-        self.ecc_df = None
+        self.ecc_df = pd.DataFrame()
         self.equipment_lifetime_report = pd.DataFrame()
 
         self.Scenario = financial_params['CBA']['Scenario']
@@ -118,15 +118,12 @@ class CostBenefitAnalysis(Financial):
         """
         # require that ownership model is Utility TODO
 
-        # check to see if one is the Load
-        is_one_load = bool(sum([1 if der_inst.tag == 'Load' else 0 for der_inst in der_list]))
-        if (len(der_list) == 2 and not is_one_load) or (len(der_list) > 2):
-            # check that a service in this set: {Reliability, Deferral}     is active  TODO: if more than 1 DER? clarify when ECC should be used
-            if 'Reliability' not in service_dict.keys() or 'Deferral' not in service_dict.keys():
-                TellUser.error(f"An ecc analysis does not make sense for the case you selected. A reliability or asset deferral case" +
-                               "would be better suited for economic carrying cost analysis")
-                raise ModelParameterError("The combination of services does not work with the rest of your case settings. " +
-                                          "Please see log file for more information.")
+        # check that a service in this set: {Reliability, Deferral}     is active  TODO: if more than 1 DER? clarify when ECC should be used
+        if 'Reliability' not in service_dict.keys() or 'Deferral' not in service_dict.keys():
+            TellUser.error(f"An ecc analysis does not make sense for the case you selected. A reliability or asset deferral case" +
+                           "would be better suited for economic carrying cost analysis")
+            raise ModelParameterError("The combination of services does not work with the rest of your case settings. " +
+                                      "Please see log file for more information.")
         # require that e < d
         for der_inst in der_list:
             conflict_occured = False
@@ -296,22 +293,20 @@ class CostBenefitAnalysis(Financial):
         proforma = proforma.join(der_eol)
 
         if self.ecc_mode:
-            # TODO: loop through each technology
-            # already checked to make sure there is only 1 DER, but need to make sure it is not the Load
-            tech = None
             for der_inst in technologies:
                 if der_inst.tag == "Load":
                     continue
-                tech = der_inst
-            # replace capital cost columns with economic_carrying cost
-            self.ecc_df, total_ecc = tech.economic_carrying_cost(self.inflation_rate, self.end_year)
-            # drop original Capital Cost
-            proforma.drop(columns=[tech.zero_column_name()], inplace=True)
-            # drop any replacement costs
-            if f"{tech.unique_tech_id()} Replacement Costs" in proforma.columns:
-                proforma.drop(columns=[f"{tech.unique_tech_id()} Replacement Costs"], inplace=True)
-            # add the ECC to the proforma
-            proforma = proforma.join(total_ecc)
+                # replace capital cost columns with economic_carrying cost
+                der_ecc_df, total_ecc = der_inst.economic_carrying_cost(self.inflation_rate, self.end_year)
+                # drop original Capital Cost
+                proforma.drop(columns=[der_inst.zero_column_name()], inplace=True)
+                # drop any replacement costs
+                if f"{der_inst.unique_tech_id()} Replacement Costs" in proforma.columns:
+                    proforma.drop(columns=[f"{der_inst.unique_tech_id()} Replacement Costs"], inplace=True)
+                # add the ECC to the proforma
+                proforma = proforma.join(total_ecc)
+                # add ECC costs broken out by when initial cost occurs to complete DF
+                self.ecc_df = pd.concat([self.ecc_df, der_ecc_df], axis=1)
         else:
             proforma = self.calculate_taxes(proforma, technologies)
         # check if there are are costs on CAPEX YEAR -- if there arent, then remove it from proforma

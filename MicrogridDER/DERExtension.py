@@ -230,21 +230,29 @@ class DERExtension:
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
         """
-        t_0 = self.construction_year.year
+        # annual-ize capital costs
+        yr_incurred_capital = self.construction_year.year
+        yr_last_operation = self.operation_year.year + self.expected_lifetime - 1
         if self.construction_year == self.operation_year:
-            year_ranges = pd.period_range(t_0, self.operation_year.year + self.expected_lifetime - 1, freq='y')
+            yr_start_payments = yr_incurred_capital
         else:
-            year_ranges = pd.period_range(t_0 + 1, self.operation_year.year+self.expected_lifetime-1, freq='y')
-        inflation_factor = [(1+i)**(t.year-t_0) for t in year_ranges]
+            yr_start_payments = yr_incurred_capital + 1
+        year_ranges = pd.period_range(yr_start_payments, yr_last_operation, freq='y')
+        inflation_factor = [(1+i) ** (t.year - self.construction_year.year) for t in year_ranges]
         ecc_capex = np.multiply(inflation_factor, -self.get_capex() * self.ecc_perc)
-        ecc = pd.DataFrame({"Capex": ecc_capex}, index=year_ranges)
+        ecc = pd.DataFrame({f"{self.unique_tech_id()} Capex (incurred {yr_incurred_capital})": ecc_capex}, index=year_ranges)
+
         # annual-ize replacement costs
         for year in self.failure_preparation_years:
-            temp_year_range = pd.period_range(year+1-self.replacement_construction_time, year+self.expected_lifetime, freq='y')
-            inflation_factor = [(1+i)**(t.year-t_0) for t in temp_year_range]
+            yr_start_operating_new_equipement = year + 1
+            yr_last_operation = yr_start_operating_new_equipement + self.expected_lifetime - 1
+            temp_year_range = pd.period_range(yr_start_operating_new_equipement, yr_last_operation, freq='y')
+            inflation_factor = [(1+i) ** (t.year - self.construction_year.year) for t in temp_year_range]
             ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
-            temp_df = pd.DataFrame({f"{year} replacement": ecc_replacement}, index=temp_year_range)
+            temp_df = pd.DataFrame({f"{self.unique_tech_id()} Replacement (incurred {year})": ecc_replacement}, index=temp_year_range)
             ecc = pd.concat([ecc, temp_df], axis=1)
+
+        # replace NaN values with 0 and cut off any payments beyond the project lifetime
         ecc.fillna(value=0, inplace=True)
         ecc = ecc.loc[:end_year, :]
         ecc[f'{self.unique_tech_id()} Carrying Cost'] = ecc.sum(axis=1)

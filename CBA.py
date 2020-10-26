@@ -119,7 +119,7 @@ class CostBenefitAnalysis(Financial):
         # require that ownership model is Utility TODO
 
         # check that a service in this set: {Reliability, Deferral}     is active  TODO: if more than 1 DER? clarify when ECC should be used
-        if 'Reliability' not in service_dict.keys() or 'Deferral' not in service_dict.keys():
+        if 'Reliability' not in service_dict.keys() and 'Deferral' not in service_dict.keys():
             TellUser.error(f"An ecc analysis does not make sense for the case you selected. A reliability or asset deferral case" +
                            "would be better suited for economic carrying cost analysis")
             raise ModelParameterError("The combination of services does not work with the rest of your case settings. " +

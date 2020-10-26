@@ -36,7 +36,7 @@ class MicrogridResult(Result):
         for der in self.poi.der_list:
             if der.tag == "Battery":
                 # if degradation module is turned on, then reset all CBA attributes to reflect yearly cycle counts
-                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year)
+                der.set_end_of_life_based_on_degradation_cycle(self.opt_years, self.start_year, self.end_year, self.cost_benefit_analysis.ecc_mode)
 
     def collect_results(self):
         """ Collects any optimization variable solutions or user inputs that will be used for drill down

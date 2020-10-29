@@ -297,7 +297,7 @@ class CostBenefitAnalysis(Financial):
                 if der_inst.tag == "Load":
                     continue
                 # replace capital cost columns with economic_carrying cost
-                der_ecc_df, total_ecc = der_inst.economic_carrying_cost(self.inflation_rate, self.end_year)
+                der_ecc_df, total_ecc = der_inst.economic_carrying_cost_report(self.inflation_rate, self.end_year)
                 # drop original Capital Cost
                 proforma.drop(columns=[der_inst.zero_column_name()], inplace=True)
                 # drop any replacement costs
@@ -396,13 +396,12 @@ class CostBenefitAnalysis(Financial):
                 # apply inflation rate from operation year
                 decommission_pd = Financial.apply_escalation(decommission_pd, inflation_rate, self.start_year.year)
                 temp = temp.join(decommission_pd)
-            # collect salvage value
-            salvage_value = der_inst.calculate_salvage_value(self.end_year)
-            # add tp EOL dataframe
-            salvage_pd = pd.DataFrame({f"{der_inst.unique_tech_id()} Salvage Value": salvage_value}, index=[self.end_year])
-            # apply technology escalation rate from operation year
-            salvage_pd = Financial.apply_escalation(salvage_pd, der_inst.escalation_rate, der_inst.operation_year.year)
-            temp = temp.join(salvage_pd)
+
+            salvage_pd = der_inst.salvage_value_report(self.end_year)
+            if salvage_pd is not None:
+                # apply technology escalation rate from operation year
+                salvage_pd = Financial.apply_escalation(salvage_pd, der_inst.escalation_rate, der_inst.operation_year.year)
+                temp = temp.join(salvage_pd)
             end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)
 

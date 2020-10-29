@@ -220,7 +220,22 @@ class DERExtension:
         else:
             return self.salvage_value
 
-    def economic_carrying_cost(self, i, end_year):
+    def salvage_value_report(self, end_year):
+        """ Returns the salvage value a DER and the year it will be incurred
+
+        Args:
+                end_year: last year of project
+
+        Returns: dataframe index by year that the value applies to.
+
+        """
+        # collect salvage value
+        salvage_value = self.calculate_salvage_value(end_year)
+        # dataframe
+        salvage_pd = pd.DataFrame({f"{self.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
+        return salvage_pd
+
+    def economic_carrying_cost_report(self, i, end_year):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
@@ -243,14 +258,15 @@ class DERExtension:
         ecc = pd.DataFrame({f"{self.unique_tech_id()} Capex (incurred {yr_incurred_capital})": ecc_capex}, index=year_ranges)
 
         # annual-ize replacement costs
-        for year in self.failure_preparation_years:
-            yr_start_operating_new_equipement = year + 1
-            yr_last_operation = yr_start_operating_new_equipement + self.expected_lifetime - 1
-            temp_year_range = pd.period_range(yr_start_operating_new_equipement, yr_last_operation, freq='y')
-            inflation_factor = [(1+i) ** (t.year - self.construction_year.year) for t in temp_year_range]
-            ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
-            temp_df = pd.DataFrame({f"{self.unique_tech_id()} Replacement (incurred {year})": ecc_replacement}, index=temp_year_range)
-            ecc = pd.concat([ecc, temp_df], axis=1)
+        if self.replaceable:
+            for year in self.failure_preparation_years:
+                yr_start_operating_new_equipement = year + 1
+                yr_last_operation = yr_start_operating_new_equipement + self.expected_lifetime - 1
+                temp_year_range = pd.period_range(yr_start_operating_new_equipement, yr_last_operation, freq='y')
+                inflation_factor = [(1+i) ** (t.year - self.construction_year.year) for t in temp_year_range]
+                ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
+                temp_df = pd.DataFrame({f"{self.unique_tech_id()} Replacement (incurred {year})": ecc_replacement}, index=temp_year_range)
+                ecc = pd.concat([ecc, temp_df], axis=1)
 
         # replace NaN values with 0 and cut off any payments beyond the project lifetime
         ecc.fillna(value=0, inplace=True)

@@ -143,18 +143,19 @@ class Battery(BatteryTech.Battery, ESSSizing):
             # report actual EOL to user
             TellUser.warning(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
                              f" to be {self.actual_time_to_replacement}  (inputted value: {self.expected_lifetime})")
-            if is_ecc:
+            if is_ecc and (self.actual_time_to_replacement != self.expected_lifetime):
                 general_msg = "CBA ECC: The USER-GIVEN expected lifetime is not the ACTUAL lifetime of the battery.\nThe ECC calculation costs " \
-                              "will still be annualized for the USER-GIVEN lifetime, but replacements (if any) will incur with the ACTUAL lifetime." \
-                              "Please update\nyour expected lifetime and ecc% to match the ACTUAL lifetime of this DER and rerun for a more " \
-                              "accurate Economic Carrying Cost analysis.\n" \
-                              f"-- Battery name: {self.name} -- USER-GIVEN (expected lifetime: {self.expected_lifetime},  ecc%: {self.ecc_perc}) -- " \
+                              "will still be annualized for the USER-GIVEN lifetime, but replacements (if any) will incur with the smallest\n" \
+                              "lifetime. Please update your expected lifetime and ecc% to match the ACTUAL lifetime of this DER and rerun for a " \
+                              "more accurate Economic Carrying Cost analysis.\n" \
+                              f"-- Battery name: {self.name} -- USER-GIVEN (expected lifetime: {self.expected_lifetime}, ecc%: {self.ecc_perc}) -- " \
                               f"ACTUAL (expected lifetime: {self.actual_time_to_replacement}, ecc%: ?) --"
                 TellUser.error(general_msg)
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0
             failed_on = max(self.years_system_degraded) if num_full_lifetimes else None
-            self.set_failure_years(end_year, equipment_last_year_operation=failed_on, time_btw_replacement=self.actual_time_to_replacement)
+            time_btw_replacement = min(self.actual_time_to_replacement, self.expected_lifetime)
+            self.set_failure_years(end_year, equipment_last_year_operation=failed_on, time_btw_replacement=time_btw_replacement)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

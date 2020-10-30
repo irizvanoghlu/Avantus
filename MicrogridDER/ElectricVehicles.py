@@ -123,7 +123,7 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
         """
         return self.variables_dict['ch']
 
-    def get_capex(self):
+    def get_capex(self, **kwargs):
         """ Returns the capex of a given technology
         """
         return self.capital_cost_function
@@ -440,7 +440,7 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
         """
         return self.variables_dict['ch']
 
-    def get_capex(self):
+    def get_capex(self, **kwargs):
         """ Returns the capex of a given technology
         """
         return self.capital_cost_function

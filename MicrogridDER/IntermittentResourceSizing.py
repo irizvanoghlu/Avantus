@@ -69,11 +69,13 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         else:
             return super().get_discharge(mask)
 
-    def get_capex(self):
-        try:
-            capex = super().get_capex().value
-        except AttributeError:
-            capex = super().get_capex()
+    def get_capex(self, solution=False):
+        capex = super().get_capex()
+        if solution:
+            try:
+                capex = capex.value
+            except AttributeError:
+                capex = capex
         return capex
 
     def constraints(self, mask, **kwargs):

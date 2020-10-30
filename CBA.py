@@ -284,7 +284,7 @@ class CostBenefitAnalysis(Financial):
         Returns: dataframe proforma
         """
         proforma = super().proforma_report(technologies, valuestreams, results, opt_years)
-        proforma_wo_yr_net = proforma.iloc[:, :-1]
+        proforma_wo_yr_net = proforma.drop('Yearly Net Value', axis=1)
         proforma = self.replacement_costs(proforma_wo_yr_net, technologies)
         proforma = self.zero_out_dead_der_costs(proforma, technologies)
         proforma = self.update_capital_cost_construction_year(proforma, technologies)
@@ -418,8 +418,8 @@ class CostBenefitAnalysis(Financial):
         Returns: proforma considering the 'Overall Tax Burden'
 
         """
-        proj_years = len(proforma) -1
-        yearly_net = proforma.iloc[1:, :].sum(axis=1).values
+        proj_years = len(proforma) - 1
+        yearly_net = proforma.drop('CAPEX Year').sum(axis=1).values
 
         # 1) Redistribute capital cost columns according to the DER's MACRS value
         capital_costs = np.zeros(proj_years)
@@ -438,12 +438,11 @@ class CostBenefitAnalysis(Financial):
 
         # 4) Add the overall tax burden (= state tax + federal tax) to proforma, make sure columns are ordered s.t. yrly net is last
         overall_tax_burden = state_tax + federal_tax
-        # drop yearly net value column
-        proforma_taxes = proforma.iloc[:, :-1]
-        proforma_taxes['State Tax Burden'] = np.insert(state_tax, 0, 0)
-        proforma_taxes['Federal Tax Burden'] = np.insert(federal_tax, 0, 0)
-        proforma_taxes['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
-        return proforma_taxes
+
+        proforma['State Tax Burden'] = np.insert(state_tax, 0, 0)
+        proforma['Federal Tax Burden'] = np.insert(federal_tax, 0, 0)
+        proforma['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
+        return proforma
 
     def payback_report(self, techologies, proforma, opt_years):
         """ calculates and saves the payback period and discounted payback period in a dataframe

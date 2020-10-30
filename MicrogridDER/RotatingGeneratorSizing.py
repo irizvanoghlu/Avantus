@@ -78,11 +78,13 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
                 rated_power = self.rated_power
             return rated_power
 
-    def get_capex(self):
-        try:
-            capex = super().get_capex().value
-        except AttributeError:
-            capex = super().get_capex()
+    def get_capex(self, solution=False):
+        capex = super().get_capex()
+        if solution:
+            try:
+                capex = capex.value
+            except AttributeError:
+                capex = capex
         return capex
 
     def constraints(self, mask):

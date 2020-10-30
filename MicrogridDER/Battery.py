@@ -148,8 +148,8 @@ class Battery(BatteryTech.Battery, ESSSizing):
                               "will still be annualized for the USER-GIVEN lifetime, but replacements (if any) will incur with the smallest\n" \
                               "lifetime. Please update your expected lifetime and ecc% to match the ACTUAL lifetime of this DER and rerun for a " \
                               "more accurate Economic Carrying Cost analysis.\n" \
-                              f"-- Battery name: {self.name} -- USER-GIVEN (expected lifetime: {self.expected_lifetime}, ecc%: {self.ecc_perc}) -- " \
-                              f"ACTUAL (expected lifetime: {self.actual_time_to_replacement}, ecc%: ?) --"
+                              f"-- Battery name: {self.name} -- USER-GIVEN (expected lifetime: {self.expected_lifetime}, ecc%: " \
+                              f"{self.ecc_perc * 100}) -- ACTUAL (expected lifetime: {self.actual_time_to_replacement}, ecc%: ?) --"
                 TellUser.error(general_msg)
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0

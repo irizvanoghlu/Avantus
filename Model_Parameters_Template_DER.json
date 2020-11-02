@@ -16,19 +16,10 @@
                             "active": "n",
                             "value": "1"
                         },
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -73,7 +64,7 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "200",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -91,7 +82,7 @@
                         "type": "float"
                     },
                     "construction_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -118,7 +109,7 @@
                         "type": "float"
                     },
                     "decommissioning_cost": {
-                        "opt_value": "0",
+                        "opt_value": "4329",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -127,7 +118,7 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "200",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -163,7 +154,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -172,7 +163,7 @@
                         "type": "float"
                     },
                     "expected_lifetime": {
-                        "opt_value": "99",
+                        "opt_value": "5",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -243,7 +234,7 @@
                         "type": "bool"
                     },
                     "llsoc": {
-                        "opt_value": "0",
+                        "opt_value": "5",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -283,7 +274,7 @@
                         "type": "int"
                     },
                     "operation_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -349,13 +340,22 @@
                         "type": "float"
                     },
                     "replaceable": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
                             "value": "nan"
                         },
                         "type": "bool"
+                    },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
                     },
                     "rte": {
                         "opt_value": "85",
@@ -367,7 +367,7 @@
                         "type": "float"
                     },
                     "salvage_value": {
-                        "opt_value": "0",
+                        "opt_value": "linear salvage value",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -385,7 +385,7 @@
                         "type": "float"
                     },
                     "soc_target": {
-                        "opt_value": "100",
+                        "opt_value": "50",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -782,6 +782,15 @@
                         },
                         "type": "float"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "sdr": {
                         "evaluation": {
                             "active": "nan",
@@ -867,15 +876,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -1111,6 +1111,15 @@
                         },
                         "type": "bool"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "salvage_value": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -1167,15 +1176,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "construction_year": {
                         "opt_value": "2017",
                         "sensitivity": {
@@ -1307,7 +1307,7 @@
         },
         "DA": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "growth": {
                         "opt_value": "0",
@@ -1499,15 +1499,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -1665,6 +1656,15 @@
                         },
                         "type": "bool"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "salvage_value": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -1708,15 +1708,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -1846,6 +1837,15 @@
                             "value": "nan"
                         },
                         "type": "bool"
+                    },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
                     },
                     "salvage_value": {
                         "opt_value": "0",
@@ -1991,6 +1991,15 @@
                         },
                         "type": "string"
                     },
+                    "ecc_mode": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
                     "external_incentives": {
                         "evaluation": {
                             "active": "n",
@@ -2077,15 +2086,6 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "nan"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -2307,6 +2307,15 @@
                         },
                         "type": "bool"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "salvage_value": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -2458,11 +2467,33 @@
             "1": {
                 "active": "no",
                 "keys": {
-                    "acr": {
-                        "opt_value": "10",
+                    "PPA": {
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "PPA_cost": {
+                        "opt_value": "0.0275",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "PPA_inflation_rate": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "2",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -2499,7 +2530,7 @@
                         "type": "bool"
                     },
                     "decommissioning_cost": {
-                        "opt_value": "0",
+                        "opt_value": "124",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2690,8 +2721,17 @@
                         },
                         "type": "bool"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "salvage_value": {
-                        "opt_value": "0",
+                        "opt_value": "linear salvage value",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2803,7 +2843,7 @@
         },
         "Reliability": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "max_outage_duration": {
                         "opt_value": "80",
@@ -2953,7 +2993,7 @@
                         "type": "float"
                     },
                     "dt": {
-                        "opt_value": "0.25",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2966,7 +3006,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2021",
+                        "opt_value": "2030",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3096,7 +3136,7 @@
                         "type": "string/int"
                     },
                     "opt_years": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3131,7 +3171,7 @@
                             "active": "n",
                             "value": "2017"
                         },
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3144,7 +3184,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\min15_timeseries_PoSD.xlsx",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

@@ -123,7 +123,7 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
         """
         return self.variables_dict['ch']
 
-    def get_capex(self):
+    def get_capex(self, **kwargs):
         """ Returns the capex of a given technology
         """
         return self.capital_cost_function
@@ -294,12 +294,14 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
 
         return results
 
-    def proforma_report(self, opt_years, results):
+    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            opt_years (list): list of years the optimization problem ran for
-            results (DataFrame): DataFrame with all the optimization variable solutions
+            inflation_rate (float):
+            apply_inflation_rate_func:
+            fill_forward_func:
+            results (pd.DataFrame):
 
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
@@ -309,13 +311,21 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
             DataFrame has only one column, labeled by the int 0
 
         """
-        pro_forma = DER.proforma_report(self, opt_years, results)
-        pro_forma[self.fixed_column_name()] = 0
-
-        for year in opt_years:
+        pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
+        if self.variables_df.empty:
+            return pro_forma
+        analysis_years = self.variables_df.index.year.unique()
+        om_costs = pd.DataFrame()
+        for year in analysis_years:
             # add fixed o&m costs
-            pro_forma.loc[year, self.fixed_column_name()] = -self.fixed_om
-
+            index_yr = pd.Period(year=year, freq='y')
+            om_costs.loc[index_yr, self.fixed_column_name()] = -self.fixed_om
+        # apply inflation rates
+        om_costs = apply_inflation_rate_func(om_costs, inflation_rate, min(analysis_years))
+        # fill forward
+        om_costs = fill_forward_func(om_costs, inflation_rate)
+        # append will super class's proforma
+        pro_forma = pd.concat([pro_forma, om_costs], axis=1)
         return pro_forma
 
     def sizing_summary(self):
@@ -430,7 +440,7 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
         """
         return self.variables_dict['ch']
 
-    def get_capex(self):
+    def get_capex(self, **kwargs):
         """ Returns the capex of a given technology
         """
         return self.capital_cost_function
@@ -528,12 +538,15 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
 
         return results
 
-    def proforma_report(self, opt_years, results):
+    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            opt_years (list): list of years the optimization problem ran for
-            results (DataFrame): DataFrame with all the optimization variable solutions
+            inflation_rate (float):
+            apply_inflation_rate_func:
+            fill_forward_func:
+            results (pd.DataFrame):
+
 
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
@@ -543,13 +556,21 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
             DataFrame has only one column, labeled by the int 0
 
         """
-        pro_forma = DER.proforma_report(self, opt_years, results)
-        pro_forma[self.fixed_column_name()] = 0
-
-        for year in opt_years:
+        pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
+        if self.variables_df.empty:
+            return pro_forma
+        analysis_years = self.variables_df.index.year.unique()
+        om_costs = pd.DataFrame()
+        for year in analysis_years:
             # add fixed o&m costs
-            pro_forma.loc[year, self.fixed_column_name()] = -self.fixed_om
-
+            index_yr = pd.Period(year=year, freq='y')
+            om_costs.loc[index_yr, self.fixed_column_name()] = -self.fixed_om
+        # apply inflation rates
+        om_costs = apply_inflation_rate_func(om_costs, inflation_rate, min(analysis_years))
+        # fill forward
+        om_costs = fill_forward_func(om_costs, inflation_rate)
+        # append will super class's proforma
+        pro_forma = pd.concat([pro_forma, om_costs], axis=1)
         return pro_forma
 
     def sizing_summary(self):

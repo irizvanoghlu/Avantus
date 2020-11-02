@@ -280,3 +280,16 @@ class ControllableLoad(Load, DERExtension, ContinuousSizing):
         if not self.duration:
             return 
         return super(ControllableLoad, self).decommissioning_report(last_year)
+
+    def salvage_value_report(self, end_year):
+        """ Returns the salvage value a DER and the year it will be incurred
+
+        Args:
+                end_year: last year of project
+
+        Returns: dataframe index by year that the value applies to.
+
+        """
+        if not self.duration:
+            return
+        return super(ControllableLoad, self).salvage_value_report(end_year)

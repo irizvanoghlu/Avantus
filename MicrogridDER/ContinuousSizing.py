@@ -100,20 +100,3 @@ class ContinuousSizing:
     def max_power_defined(self):
         return True
 
-    def solve_and_save(self, funcs, consts):
-        """
-
-        Args:
-            funcs (cvx.Expression): sum of each DER's cost function
-            consts: constraints that define that operation of each DER
-
-        Returns:
-
-        """
-        prob = cvx.Problem(cvx.Minimize(funcs), consts)
-        prob.solve(solver=cvx.GLPK_MI)
-
-        rows = list(map(lambda der: der.sizing_summary(), self.der_list))
-        sizing_df = pd.DataFrame(rows)
-        sizing_df.set_index('DER')
-        return sizing_df

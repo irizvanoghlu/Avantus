@@ -78,6 +78,15 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
                 rated_power = self.rated_power
             return rated_power
 
+    def get_capex(self, solution=False):
+        capex = super().get_capex()
+        if solution:
+            try:
+                capex = capex.value
+            except AttributeError:
+                capex = capex
+        return capex
+
     def constraints(self, mask):
         """ Builds the master constraint list for the subset of timeseries data being optimized.
 

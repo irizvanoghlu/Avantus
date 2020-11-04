@@ -91,7 +91,7 @@
                         "type": "float"
                     },
                     "construction_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -283,7 +283,7 @@
                         "type": "int"
                     },
                     "operation_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2805,6 +2805,28 @@
             "1": {
                 "active": "yes",
                 "keys": {
+                    "load_shed_perc_filename": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": ".\\dervet\\storagevet\\Data\\load_shed_percentage.csv",
+                        "sensitivity": {
+                            "active": "nan",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "string"
+                    },
+                    "load_shed_percentage": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
                     "max_outage_duration": {
                         "opt_value": "80",
                         "sensitivity": {
@@ -2953,7 +2975,7 @@
                         "type": "float"
                     },
                     "dt": {
-                        "opt_value": "0.25",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2966,7 +2988,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2021",
+                        "opt_value": "2018",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3096,7 +3118,7 @@
                         "type": "string/int"
                     },
                     "opt_years": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3131,7 +3153,7 @@
                             "active": "n",
                             "value": "2017"
                         },
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3144,7 +3166,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\min15_timeseries_PoSD.xlsx",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

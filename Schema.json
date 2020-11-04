@@ -151,6 +151,15 @@
                         "cba": "n",
                         "type": "bool",
                         "unit": "yes/no"
+                    },
+                    "load_shed_percentage": {
+                        "allowed_values": "1|0",
+                        "cba": "n",
+                        "type": "bool",
+                        "unit": "yes/no"
+                    },
+                    "load_shed_perc_filename": {
+                        "type": "string"
                     }
                 }
             },

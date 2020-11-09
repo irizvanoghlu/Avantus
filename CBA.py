@@ -288,8 +288,8 @@ class CostBenefitAnalysis(Financial):
         proforma = self.replacement_costs(proforma_wo_yr_net, technologies)
         proforma = self.zero_out_dead_der_costs(proforma, technologies)
         proforma = self.update_capital_cost_construction_year(proforma, technologies)
+        # add EOL costs to proforma
         der_eol = self.calculate_end_of_life_value(proforma, technologies, self.inflation_rate)
-        # add decommissioning costs to proforma
         proforma = proforma.join(der_eol)
 
         if self.ecc_mode:
@@ -297,7 +297,7 @@ class CostBenefitAnalysis(Financial):
                 if der_inst.tag == "Load":
                     continue
                 # replace capital cost columns with economic_carrying cost
-                der_ecc_df, total_ecc = der_inst.economic_carrying_cost_report(self.inflation_rate, self.end_year)
+                der_ecc_df, total_ecc = der_inst.economic_carrying_cost_report(self.inflation_rate, self.end_year, self.apply_escalation)
                 # drop original Capital Cost
                 proforma.drop(columns=[der_inst.zero_column_name()], inplace=True)
                 # drop any replacement costs
@@ -328,12 +328,13 @@ class CostBenefitAnalysis(Financial):
             technologies (list): Dict of technologies (needed to get capital and om costs)
 
         """
+        replacement_df = pd.DataFrame()
         for der_inst in technologies:
-            replacement_df = der_inst.replacement_report(self.end_year)
-            replacement_df = replacement_df.fillna(value=0)
-            replacement_df = self.apply_escalation(replacement_df, der_inst.escalation_rate, der_inst.operation_year.year)
-            proforma = proforma.join(replacement_df)
-            proforma = proforma.fillna(value=0)
+            temp = der_inst.replacement_report(self.end_year, self.apply_escalation)
+            if temp is not None and not temp.empty:
+                replacement_df = pd.concat([replacement_df, temp], axis=1)
+        proforma = proforma.join(replacement_df)
+        proforma = proforma.fillna(value=0)
         return proforma
 
     def zero_out_dead_der_costs(self, proforma, technologies):
@@ -392,13 +393,13 @@ class CostBenefitAnalysis(Financial):
             temp = pd.DataFrame(index=proforma.index)
             # collect the decommissioning costs at the technology's end of life
             decommission_pd = der_inst.decommissioning_report(self.end_year)
-            if decommission_pd is not None:
+            if decommission_pd is not None and not decommission_pd.empty:
                 # apply inflation rate from operation year
                 decommission_pd = Financial.apply_escalation(decommission_pd, inflation_rate, self.start_year.year)
                 temp = temp.join(decommission_pd)
 
             salvage_pd = der_inst.salvage_value_report(self.end_year)
-            if salvage_pd is not None:
+            if salvage_pd is not None and not salvage_pd.empty:
                 # apply technology escalation rate from operation year
                 salvage_pd = Financial.apply_escalation(salvage_pd, der_inst.escalation_rate, der_inst.operation_year.year)
                 temp = temp.join(salvage_pd)

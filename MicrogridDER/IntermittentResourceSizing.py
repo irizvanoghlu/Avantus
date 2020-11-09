@@ -44,7 +44,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         self.min_rated_capacity = params['min_rated_capacity']
         self.ppa = params['PPA']
         self.ppa_cost = params['PPA_cost']
-        self.ppa_inflation = params['PPA_inflation_rate']
+        self.ppa_inflation = params['PPA_inflation_rate'] / 100
 
         if not self.rated_capacity:
             self.rated_capacity = cvx.Variable(name=f'{self.name}rating', integer=True)
@@ -118,7 +118,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             results[tech_id + ' Maximum (kW)'] = self.maximum_generation()
         return results
 
-    def maximum_generation(self,  label_selection=None,sizing=False):
+    def maximum_generation(self,  label_selection=None, sizing=False):
         """ The most that the PV system could discharge.
 
         Args:
@@ -130,7 +130,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         Returns: valid array output for indexing (one of the above) of the max generation profile
 
         """
-        PV_gen = super().maximum_generation(label_selection,sizing)
+        PV_gen = super().maximum_generation(label_selection)
         if sizing:
             try:
                 PV_gen = PV_gen.value
@@ -174,25 +174,6 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             except AttributeError:
                 max_rated = self.rated_capacity
             return max_rated
-
-    def maximum_generation(self, label_selection=None):
-        """ The most that the PV system could discharge.
-
-        Args:
-            label_selection: A single label, e.g. 5 or 'a',
-                a list or array of labels, e.g. ['a', 'b', 'c'],
-                a boolean array of the same length as the axis being sliced, e.g. [True, False, True]
-                a callable function with one argument (the calling Series or DataFrame)
-
-        Returns: valid array output for indexing (one of the above) of the max generation profile
-
-        """
-        max_generation = super(IntermittentResourceSizing, self).maximum_generation(label_selection)
-        try:
-            max_generation = max_generation.value
-        except AttributeError:
-            pass
-        return max_generation
 
     def sizing_summary(self):
         """
@@ -297,3 +278,21 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
     def tax_contribution(self, depreciation_schedules, project_length):
         if not self.ppa:
             return super().tax_contribution(depreciation_schedules, project_length)
+
+    def replacement_report(self, end_year, escalation_func):
+        if not self.ppa:
+            return super().replacement_report(end_year, escalation_func)
+        else:
+            return pd.Series()
+
+    def decommissioning_report(self, end_year):
+        if not self.ppa:
+            return super().decommissioning_report(end_year)
+        else:
+            return pd.Series()
+
+    def salvage_value_report(self, end_year):
+        if not self.ppa:
+            return super().decommissioning_report(end_year)
+        else:
+            return pd.Series()

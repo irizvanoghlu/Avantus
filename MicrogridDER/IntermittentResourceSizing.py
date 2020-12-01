@@ -116,7 +116,7 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         Returns: valid array output for indexing (one of the above) of the max generation profile
 
         """
-        PV_gen = super().maximum_generation(label_selection,sizing)
+        PV_gen = super().maximum_generation(label_selection)
         if sizing:
             try:
                 PV_gen = PV_gen.value

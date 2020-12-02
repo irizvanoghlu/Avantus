@@ -104,15 +104,15 @@ class Reliability(ValueStream):
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_failure_ind >= 0:
             der_list = self.size_for_outages(opt_index, analysis_indices, der_list)
-            # for der_instance in der_list:
-            #
-            #     if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
-            #         print(der_instance.ene_max_rated.value)
+            for der_instance in der_list:
+
+                if der_instance.technology_type == 'Energy Storage System' and der_instance.being_sized():
+                    print(der_instance.ene_max_rated.value,der_instance.ch_max_rated.value)
             #     if der_instance.technology_type == 'Generator' and der_instance.being_sized():
             #         print(der_instance.n.value)
             #     if der_instance.technology_type == 'Intermittent Resource' and der_instance.being_sized():
             #         print(der_instance.rated_capacity.value)
-            generation, total_pv_max, ess_properties, demand_left, reliability_check, energy_requirement_check = self.get_der_limits(der_list, True)
+            generation, total_pv_max, ess_properties,total_pv_vari,largest_gamma = self.get_der_limits(der_list, True)
 
             no_of_es = len(ess_properties['rte list'])
             if no_of_es == 0:
@@ -124,10 +124,10 @@ class Reliability(ValueStream):
             check_at_a_time = 500  # note: if this is too large, then you will get a RecursionError
             first_failure_ind = 0
             while start == first_failure_ind:
-                first_failure_ind = self.find_first_uncovered( generation, total_pv_max,reliability_check, demand_left, energy_requirement_check, ess_properties, soe, start, check_at_a_time)
+                first_failure_ind = self.find_first_uncovered(generation, total_pv_max, total_pv_vari,largest_gamma, ess_properties, soe, start, check_at_a_time)
                 start += check_at_a_time
             analysis_indices = np.append(analysis_indices, first_failure_ind)
-            #print(analysis_indices)
+
 
         for der_inst in der_list:
             if der_inst.being_sized():
@@ -506,7 +506,8 @@ class Reliability(ValueStream):
         return [next_soe] + self.simulate_outage(reliability_check[1:], demand_left[1:], energy_check[1:], outage_left - 1, **kwargs)
 
 
-    def find_first_uncovered(self,  generation, total_pv_max,reliability_check, demand_left, variable_e_check, ess_properties=None, soe=None, start_indx=0, stop_at=600):
+
+    def find_first_uncovered(self, generation, total_pv_max, total_pv_vari,largest_gamma,  ess_properties=None, soe=None, start_indx=0, stop_at=600):
         """ THis function will return the first outage that is not covered with the given DERs
 
         Args:
@@ -526,10 +527,10 @@ class Reliability(ValueStream):
             return -1
         # find longest possible outage
 
-        if self.load_shed:
-            soe_profile = self.simulate_outage_load_shed(generation, total_pv_max, self.max_outage_duration/self.dt, **ess_properties)
-        else:
-            soe_profile = self.simulate_outage(reliability_check[start_indx:], demand_left[start_indx:], variable_e_check, self.outage_duration/self.dt, soe[start_indx], **ess_properties)
+        demand_left, reliability_check, energy_requirement_check=self.reliability_data_process(start_indx, generation, total_pv_max, ess_properties,total_pv_vari,largest_gamma)
+        ess_properties['init_soe'] = soe[start_indx]
+        soe_profile = self.simulate_outage(reliability_check, demand_left, energy_requirement_check, self.max_outage_duration/self.dt,  **ess_properties)
+
         longest_outage = len(soe_profile)
         # base case 2: longest outage is less than the outage duration target
         if longest_outage < self.outage_duration/self.dt:
@@ -539,7 +540,7 @@ class Reliability(ValueStream):
         if (start_indx + 1) % stop_at == 0:
             return start_indx + 1
         # else, go on to test the next outage_init (increase index returned
-        return self.find_first_uncovered(reliability_check, demand_left, variable_e_check, ess_properties=ess_properties, soe=soe, start_indx=start_indx+1, stop_at=stop_at)
+        return self.find_first_uncovered(generation, total_pv_max, total_pv_vari,largest_gamma, ess_properties=ess_properties, soe=soe, start_indx=start_indx+1, stop_at=stop_at)
 
 
 
@@ -706,15 +707,15 @@ class Reliability(ValueStream):
                 # Check if ES is sized for Reliability:
                 if energy_rating>0:
 
-                    generation, total_pv_max, ess_properties, demand_left, reliability_check, energy_requirement_check = self.get_der_limits(der_list)
+                    generation, total_pv_max, ess_properties,total_pv_vari,largest_gamma = self.get_der_limits(der_list)
 
                     soe = np.repeat(self.soc_init, len(self.critical_load)) * ess_properties['energy rating']
                     for outage_init in range(len(opt_index)):
-                        if self.load_shed:
-                            soe_outage_profile = self.simulate_outage_load_shed(generation[outage_init:], total_pv_max[outage_init:], self.max_outage_duration/self.dt, **ess_properties)
 
-                        else:
-                            soe_outage_profile = (self.simulate_outage(reliability_check[outage_init:],demand_left[outage_init:],energy_requirement_check,self.outage_duration/self.dt,soe[outage_init],**ess_properties))
+                        demand_left, reliability_check, energy_requirement_check=self.reliability_data_process(outage_init, generation, total_pv_max, ess_properties,total_pv_vari,largest_gamma)
+                        ess_properties['init_soe']=soe[outage_init]
+                        soe_outage_profile = (self.simulate_outage(reliability_check,demand_left,energy_requirement_check,self.outage_duration/self.dt,**ess_properties))
+
                         soe_outage_profile.insert(0,soe[outage_init])
                         min_soe_array.append(self.soe_used(soe_outage_profile))
                     self.min_soe_df = pd.DataFrame(min_soe_array, index=opt_index, columns=['soe'])  # eventually going to give this to ESS to apply on itself

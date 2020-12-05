@@ -581,7 +581,11 @@ class Reliability(ValueStream):
                     # var_gen_sum += der_instance.get_discharge(mask) * der_instance.nu
                     gen_sum += der_instance.get_discharge(mask) * der_instance.nu
 
-            critical_load_arr = cvx.Parameter(value=self.critical_load.loc[mask].values, shape=outage_length)
+            if self.load_shed:
+                critical_load=self.critical_load.loc[mask].values*(self.load_shed_data[0:outage_length]/100)
+            else:
+                critical_load=self.critical_load.loc[mask].values
+            critical_load_arr = cvx.Parameter(value=critical_load.values, shape=outage_length)
             # consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + (-1) * var_gen_sum + critical_load_arr)]
             consts += [cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)]
 
@@ -663,7 +667,7 @@ class Reliability(ValueStream):
             start = time.time()
             prob.solve(solver=cvx.GLPK_MI)  # ,'gp=Ture')
             end = time.time()
-            print(end - start)
+            #print(end - start)
 
             month_min_soc[month] = min_soc
 

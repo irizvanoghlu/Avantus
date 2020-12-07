@@ -293,6 +293,6 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
 
     def salvage_value_report(self, end_year):
         if not self.ppa:
-            return super().decommissioning_report(end_year)
+            return super().salvage_value_report(end_year)
         else:
             return pd.Series()

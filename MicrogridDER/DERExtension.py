@@ -177,7 +177,8 @@ class DERExtension:
         if self.construction_year.year < start_year.year:
             return pd.DataFrame(index=indx)
         capex_df = pd.DataFrame({self.zero_column_name(): np.zeros(len(indx))}, index=indx)
-        capex_df.loc[self.construction_year, self.zero_column_name()] = -self.get_capex()
+        capex = -self.get_capex()
+        capex_df.loc[self.construction_year, self.zero_column_name()] = capex
         return capex_df
 
     def decommissioning_report(self, last_year):

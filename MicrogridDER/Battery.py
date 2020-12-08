@@ -40,6 +40,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
         self.state_of_health = params['state_of_health'] / 100
         self.years_system_degraded = set()
         self.yearly_degradation_report = pd.DataFrame()
+        self.actual_time_to_replacement = None  # set by degredation module
 
         if self.user_duration:
             self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
@@ -87,7 +88,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
                     self.effective_soe_max = self.ulsoc * self.ene_max_rated
                     self.effective_soe_min = self.llsoc * self.ene_max_rated
 
-    def set_end_of_life_based_on_degradation_cycle(self, analysis_years, start_year, end_year):
+    def set_end_of_life_based_on_degradation_cycle(self, analysis_years, start_year, end_year, is_ecc):
         """If degradation occurred AND it it the end of the optimization loop call this method -->
                 if state of health reaches 0 during optimization loop --> calculate expected lifetime
                 ELSE
@@ -98,6 +99,8 @@ class Battery(BatteryTech.Battery, ESSSizing):
             analysis_years (list):
             start_year (pd.Period):
             end_year (pd.Period):
+            is_ecc (bool): if CBA calculations will show the ECC (if the booklife changes, then we need to
+                warn the user...see message below)
 
         Returns: the new last year of operation for the BAT after 1 lifetime
 
@@ -110,7 +113,7 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 foo = max(self.years_system_degraded) + 1 - self.operation_year.year
                 avg_lifetime = foo / num_full_lifetimes
                 # set FAILURE_YEARS to be the years that the system degraded
-                self.failure_years = list(self.years_system_degraded)
+                self.failure_preparation_years = list(self.years_system_degraded)
             else:
                 # create a data frame with a row for every year in the project lifetime
                 yr_index = pd.period_range(start=start_year, end=end_year, freq='y')
@@ -132,16 +135,27 @@ class Battery(BatteryTech.Battery, ESSSizing):
                 # estimate lifetime with average yearly degradation
                 avg_lifetime = (1-self.state_of_health)/self.yearly_degradation_report.mean()
 
+                # reset failure years
+                self.failure_preparation_years = []
+
+            # set EXPECTED_LIFETIME to be the actual EOL -- it should never be 0 years
+            self.actual_time_to_replacement = max(int(avg_lifetime), 1)
             # report actual EOL to user
             TellUser.warning(f"{self.unique_tech_id()} degradation is ON, and so we have estimated the EXPECTED_LIFETIME" +
-                             f" to be {int(avg_lifetime)}  (inputted value: {self.expected_lifetime})")
-            # set EXPECTED_LIFETIME to be the actual EOL -- it should never be 0 years
-            self.expected_lifetime = max(int(avg_lifetime), 1)
+                             f" to be {self.actual_time_to_replacement}  (inputted value: {self.expected_lifetime})")
+            if is_ecc and (self.actual_time_to_replacement != self.expected_lifetime):
+                general_msg = "CBA ECC: The USER-GIVEN expected lifetime is not the ACTUAL lifetime of the battery.\nThe ECC calculation costs " \
+                              "will still be annualized for the USER-GIVEN lifetime, but replacements (if any) will incur with the smallest\n" \
+                              "lifetime. Please update your expected lifetime and ecc% to match the ACTUAL lifetime of this DER and rerun for a " \
+                              "more accurate Economic Carrying Cost analysis.\n" \
+                              f"-- Battery name: {self.name} -- USER-GIVEN (expected lifetime: {self.expected_lifetime}, ecc%: " \
+                              f"{self.ecc_perc * 100}) -- ACTUAL (expected lifetime: {self.actual_time_to_replacement}, ecc%: ?) --"
+                TellUser.error(general_msg)
 
             # set FAILURE_YEARS to be the years that the system degraded to SOH=0
             failed_on = max(self.years_system_degraded) if num_full_lifetimes else None
-            self.set_failure_years(end_year, fail_on=failed_on)
-            return self.operation_year + self.expected_lifetime-1
+            time_btw_replacement = min(self.actual_time_to_replacement, self.expected_lifetime)
+            self.set_failure_years(end_year, equipment_last_year_operation=failed_on, time_btw_replacement=time_btw_replacement)
 
     def constraints(self, mask, **kwargs):
         """ Builds the master constraint list for the subset of timeseries data being optimized.

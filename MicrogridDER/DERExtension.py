@@ -143,20 +143,24 @@ class DERExtension:
         """
         return 0
 
-    def replacement_report(self, end_year):
+    def replacement_report(self, end_year, escalation_func):
         """ Replacement costs occur YEr F
 
         Args:
             end_year (pd.Period): the last year of analysis
+            escalation_func
 
         Returns:
 
         """
-        report = pd.DataFrame()
+        report = pd.Series()
         if self.replaceable:
             replacement_yrs = pd.Index([pd.Period(year+1-self.replacement_construction_time, freq='y') for year in self.failure_preparation_years if year < end_year.year])
             report = pd.DataFrame({f"{self.unique_tech_id()} Replacement Costs": np.repeat(-self.replacement_cost(), len(replacement_yrs))},
                                   index=replacement_yrs)
+            report = report.fillna(value=0)
+            report = escalation_func(report, self.escalation_rate, self.operation_year.year)
+
         return report
 
     def put_capital_cost_on_construction_year(self, indx):
@@ -173,7 +177,8 @@ class DERExtension:
         if self.construction_year.year < start_year.year:
             return pd.DataFrame(index=indx)
         capex_df = pd.DataFrame({self.zero_column_name(): np.zeros(len(indx))}, index=indx)
-        capex_df.loc[self.construction_year, self.zero_column_name()] = -self.get_capex()
+        capex = -self.get_capex()
+        capex_df.loc[self.construction_year, self.zero_column_name()] = capex
         return capex_df
 
     def decommissioning_report(self, last_year):
@@ -235,12 +240,13 @@ class DERExtension:
         salvage_pd = pd.DataFrame({f"{self.unique_tech_id()} Salvage Value": salvage_value}, index=[end_year])
         return salvage_pd
 
-    def economic_carrying_cost_report(self, i, end_year):
+    def economic_carrying_cost_report(self, i, end_year, escalation_func):
         """ assumes length of project is the lifetime expectancy of this DER
 
         Args:
             i (float): inflation rate
             end_year (pd.Period): end year of the project
+            escalation_func
 
         Returns: dataframe report of yearly economic carrying cost
         NOTES: in ECC mode we have assumed 1 DER and the end of analysis is the last year of operation
@@ -259,13 +265,14 @@ class DERExtension:
 
         # annual-ize replacement costs
         if self.replaceable:
-            for year in self.failure_preparation_years:
-                yr_start_operating_new_equipement = year + 1
-                yr_last_operation = yr_start_operating_new_equipement + self.expected_lifetime - 1
-                temp_year_range = pd.period_range(yr_start_operating_new_equipement, yr_last_operation, freq='y')
+            replacement_costs_df = self.replacement_report(end_year, escalation_func)
+            for year in replacement_costs_df.index:
+                yr_start_operating_new_equipment = year.year + self.replacement_construction_time
+                yr_last_operation = yr_start_operating_new_equipment + self.expected_lifetime - 1
+                temp_year_range = pd.period_range(yr_start_operating_new_equipment, yr_last_operation, freq='y')
                 inflation_factor = [(1+i) ** (t.year - self.construction_year.year) for t in temp_year_range]
-                ecc_replacement = np.multiply(inflation_factor, -self.replacement_cost() * self.ecc_perc)
-                temp_df = pd.DataFrame({f"{self.unique_tech_id()} Replacement (incurred {year})": ecc_replacement}, index=temp_year_range)
+                ecc_replacement = np.multiply(inflation_factor, replacement_costs_df.loc[year].values[0] * self.ecc_perc)
+                temp_df = pd.DataFrame({f"{self.unique_tech_id()} Replacement (incurred {year.year})": ecc_replacement}, index=temp_year_range)
                 ecc = pd.concat([ecc, temp_df], axis=1)
 
         # replace NaN values with 0 and cut off any payments beyond the project lifetime

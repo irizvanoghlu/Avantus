@@ -109,7 +109,6 @@ class ParamsDER(Params):
         # load up datasets that correspond with referenced data in respective cba_input_instance (as defined by CASE_DEFINITIONS)
         # distribute CBA dictionary of inputs to the corresponding Param instance (so its value can be passed on to Scenario)
         cls.cba_input_builder()
-
         return cls.instances
 
     def __init__(self):
@@ -637,6 +636,23 @@ class ParamsDER(Params):
         inputs_dct.update({f'ts_{measurement.lower()}_max': ts_max,
                            f'ts_{measurement.lower()}_min': ts_min})
 
+    @classmethod
+    def read_referenced_data(cls):
+        """ This function makes a unique set of filename(s) based on grab_value_lst.
+        It applies for time series filename(s), monthly data filename(s), customer tariff filename(s), and cycle
+        life filename(s). For each set, the corresponding class dataset variable (ts, md, ct, cl) is loaded with the data.
+
+        Preprocess monthly data files
+
+        """
+        super().read_referenced_data()
+        cls.referenced_data['load_shed_percentage'] = dict()
+        rel_files=cls.grab_value_set('Reliability', 'load_shed_perc_filename')
+        for rel_file in rel_files:
+            cls.referenced_data['load_shed_percentage'][rel_file] = cls.read_from_file('load_shed_percentage', rel_file,'Outage Length (hrs)')
+
+        return True
+
     def load_services(self):
         """ Interprets user given data and prepares it for each ValueStream (dispatch and pre-dispatch).
 
@@ -649,7 +665,11 @@ class ParamsDER(Params):
                 self.Reliability.update({'critical load': self.Scenario['time_series'].loc[:, 'Critical Load (kW)']})
             except KeyError:
                 self.record_input_error("Missing 'Critial Load (kW)' from timeseries input. Please include a critical load.")
-
+            if self.Reliability['load_shed_percentage']:
+                try:
+                    self.Reliability['load_shed_data'] = self.referenced_data["load_shed_percentage"][self.Reliability['load_shed_perc_filename']]
+                except KeyError:
+                    self.record_input_error("Missing 'Load shed percentage' file . Please include a load_shed_perc_filename") #--TODO length of the data
         # TODO add try statements around each lookup to time_series
         if self.FR is not None:
             if self.FR['u_ts_constraints']:

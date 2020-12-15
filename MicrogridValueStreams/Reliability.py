@@ -717,7 +717,7 @@ class Reliability(ValueStream):
                             self.load_shed_data[0:outage_length] / 100)
             else:
                 critical_load = self.critical_load.loc[mask].values
-            critical_load_arr = cvx.Parameter(value=critical_load.values,
+            critical_load_arr = cvx.Parameter(value=critical_load,
                                               shape=outage_length)
             consts += [
                 cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)

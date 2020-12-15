@@ -16,7 +16,7 @@
                             "active": "n",
                             "value": "1"
                         },
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -73,7 +73,7 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "250",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -127,7 +127,7 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "250",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -163,7 +163,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -356,6 +356,15 @@
                             "value": "nan"
                         },
                         "type": "bool"
+                    },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
                     },
                     "rte": {
                         "opt_value": "85",
@@ -1307,7 +1316,7 @@
         },
         "DA": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "growth": {
                         "opt_value": "0",
@@ -1888,10 +1897,10 @@
         },
         "FR": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1900,7 +1909,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1954,7 +1963,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1990,6 +1999,15 @@
                             "value": "nan"
                         },
                         "type": "string"
+                    },
+                    "ecc_mode": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
                     },
                     "external_incentives": {
                         "evaluation": {
@@ -2361,10 +2379,10 @@
         },
         "LF": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2373,7 +2391,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2409,7 +2427,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2803,14 +2821,14 @@
         },
         "Reliability": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "load_shed_perc_filename": {
                         "evaluation": {
                             "active": "nan",
                             "value": "nan"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\load_shed_percentage.csv",
+                        "opt_value": ".\\dervet\\Data\\load_shed_percentage.csv",
                         "sensitivity": {
                             "active": "nan",
                             "coupled": "None",
@@ -2819,7 +2837,7 @@
                         "type": "string"
                     },
                     "load_shed_percentage": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2997,7 +3015,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

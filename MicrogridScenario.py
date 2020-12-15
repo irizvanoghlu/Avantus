@@ -40,6 +40,7 @@ from CBA import CostBenefitAnalysis
 from MicrogridPOI import MicrogridPOI
 from MicrogridServiceAggregator import MicrogridServiceAggregator
 from ErrorHandelling import *
+import numpy as np
 
 
 class MicrogridScenario(Scenario):
@@ -158,17 +159,18 @@ class MicrogridScenario(Scenario):
             raise ParameterError("Further calculations requires that economic dispatch is solved, but "
                                  + "no optimization was built or solved. Please check log files for more information. ")
 
-
     def check_for_infeasible_regulation_constraints_with_system_size(self):
-        """ perform error checks on DERs that are being sized with ts_user_constraints
-        collect errors and raise if any were found"""
+        """ perform error checks on DERs that are being sized with
+        ts_user_constraints collect errors and raise if any were found"""
         # down
         has_errors = False
-        max_p_sch_down = sum([der_inst.max_p_schedule_down() for der_inst in self.poi.der_list])
-        min_p_res_down = sum([service.min_regulation_down() for service in self.service_agg.value_streams.values()])
+        max_p_sch_down = sum([der_inst.max_p_schedule_down() for der_inst
+                              in self.poi.der_list])
+        min_p_res_down = sum([service.min_regulation_down() for service in
+                              self.service_agg.value_streams.values()])
         diff = max_p_sch_down - min_p_res_down
-        negative_vals = (diff.values < 0)
-        if negative_vals.any():
+        negative_vals = np.less(diff, 0)
+        if np.any(negative_vals):
             first_time = diff.index[negative_vals][0]
             TellUser.error('The sum of minimum power regulation down exceeds the maximum possible power capacities that ' +
                            f'can provide regulation down, first occurring at time {first_time}.')
@@ -178,8 +180,8 @@ class MicrogridScenario(Scenario):
             max_p_sch_up = sum([der_inst.max_p_schedule_up() for der_inst in self.poi.der_list])
             min_p_res_up = sum([service.min_regulation_up() for service in self.service_agg.value_streams.values()])
             diff = max_p_sch_up - min_p_res_up
-            negative_vals = (diff.values < 0)
-            if negative_vals.any():
+            negative_vals = np.less(diff, 0)
+            if np.any(negative_vals):
                 first_time = diff.index[negative_vals][0]
                 TellUser.error('The sum of minimum power regulation up exceeds the maximum possible power capacities that ' +
                                f'can provide regulation down, first occurring at time {first_time}.')

@@ -249,7 +249,10 @@ class ControllableLoad(Load, DERExtension, ContinuousSizing):
         results = super().timeseries_report()
         if self.duration:
             results[f"{self.unique_tech_id()} Load (kW)"] = self.effective_load()
-            results[f"{self.unique_tech_id()} Load Offset (kW)"] = self.variables_df.loc[:, 'power']
+            solve_dispatch_opt = self.variables_df.get('power')
+            if solve_dispatch_opt is not None:
+                results[f"{self.unique_tech_id()} Load Offset (kW)"] = \
+                    self.variables_df.loc[:, 'power']
         return results
 
     def sizing_summary(self):

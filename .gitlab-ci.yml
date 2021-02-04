@@ -27,8 +27,8 @@ pytest:
   script:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - file ./storagevet/Scenario.py
-#    - pip install -e ./storagevet
+    - file ./storagevet/storagevet/Scenario.py
+    - pip install -e ./storagevet
     - python -m pytest test/test_1battery.py --import-mode=importlib
   tags:
     - 'docker'

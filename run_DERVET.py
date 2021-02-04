@@ -20,9 +20,6 @@ from dervet.DERVET import DERVET
 
 
 if __name__ == '__main__':
-    """
-        This section is run when the file is called from the command line.
-    """
 
     parser = argparse.ArgumentParser(prog='run_DERVET.py',
                                      description='The Electric Power Research Institute\'s energy storage system ' +

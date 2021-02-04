@@ -71,9 +71,9 @@ class CAES(CAESTech.CAES, ESSSizing):
         if monthly_data is not None:
             freq = self.fuel_price.freq
             try:
-                self.fuel_price = ParamsDER.monthly_to_timeseries(freq, monthly_data.loc[:, [f"Natural Gas Price ($/MillionBTU)/{id_str}"]]),
+                self.fuel_price = ParamsDER.monthly_to_timeseries(freq, monthly_data.loc[:, [f"Natural Gas Price ($/MillionBTU)/{id_str}"]])
             except KeyError:
                 try:
-                    self.fuel_price = ParamsDER.monthly_to_timeseries(freq, monthly_data.loc[:, [f"Natural Gas Price ($/MillionBTU)"]]),
+                    self.fuel_price = ParamsDER.monthly_to_timeseries(freq, monthly_data.loc[:, [f"Natural Gas Price ($/MillionBTU)"]])
                 except KeyError:
                     pass

@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./test/DummyCases/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/test_random_cases/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -506,7 +506,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./test/DummyCases/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/test_random_cases/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -578,7 +578,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\test\\DummyCases\\Datasets\\000-001-yearly.csv",
+                        "opt_value": ".\\test\\test_random_cases\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -738,7 +738,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\test\\DummyCases\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\test_random_cases\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -792,7 +792,7 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\test\\DummyCases\\Datasets\\000-001-timeseries.csv",
+                        "opt_value": ".\\test\\test_random_cases\\datasets\\000-001-timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

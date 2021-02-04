@@ -14,8 +14,8 @@ cache:
 
 before_script:
   - echo "... pulling submodule ..."
-  - git submodule sync --recursive
-  - git submodule update --init --recursive
+#  - git submodule sync --recursive
+#  - git submodule update --init --recursive
   - echo "... Checking runner specifications ..."
   - apt-get update -q -y
   - pip install virtualenv

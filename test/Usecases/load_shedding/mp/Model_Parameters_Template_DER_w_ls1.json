@@ -16,7 +16,7 @@
                             "active": "n",
                             "value": "1"
                         },
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -73,7 +73,7 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "250",
+                        "opt_value": "4375",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -100,7 +100,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": ".\\Data\\Battery_Cycle_Life.csv",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\Battery_Cycle_Life.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -127,7 +127,7 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "250",
+                        "opt_value": "4375",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -163,7 +163,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "1000",
+                        "opt_value": "17500",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -172,7 +172,7 @@
                         "type": "float"
                     },
                     "expected_lifetime": {
-                        "opt_value": "5",
+                        "opt_value": "99",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -207,7 +207,7 @@
                         "type": "float"
                     },
                     "incl_cycle_degrade": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1316,7 +1316,7 @@
         },
         "DA": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "growth": {
                         "opt_value": "0",
@@ -1897,10 +1897,10 @@
         },
         "FR": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1909,7 +1909,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1963,7 +1963,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1992,7 +1992,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\tariff.csv"
                         },
-                        "opt_value": ".\\Data\\tariff.csv",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2080,7 +2080,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\yearly_data.csv"
                         },
-                        "opt_value": ".\\Data\\yearly_data.csv",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\yearly_data.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2282,7 +2282,7 @@
                         "type": "Period"
                     },
                     "rated_capacity": {
-                        "opt_value": "4000",
+                        "opt_value": "750",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2382,7 +2382,7 @@
                 "active": "no",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2391,7 +2391,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2427,7 +2427,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2678,7 +2678,7 @@
                         "type": "Period"
                     },
                     "rated_capacity": {
-                        "opt_value": "100",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2821,14 +2821,14 @@
         },
         "Reliability": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "load_shed_perc_filename": {
                         "evaluation": {
                             "active": "nan",
                             "value": "nan"
                         },
-                        "opt_value": ".\\Data\\load_shed_percentage.csv",
+                        "opt_value": ".\\Testing\\load_shedding\\load_shed_percentage.csv",
                         "sensitivity": {
                             "active": "nan",
                             "coupled": "None",
@@ -2837,7 +2837,7 @@
                         "type": "string"
                     },
                     "load_shed_percentage": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2873,7 +2873,7 @@
                         "type": "float"
                     },
                     "post_facto_only": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2898,7 +2898,7 @@
                 "active": "no",
                 "keys": {
                     "dir_absolute_path": {
-                        "opt_value": "enter absolute path here",
+                        "opt_value": ".\\dervet\\storagevet\\Testing\\Results\\reliability_load_shed1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2907,7 +2907,7 @@
                         "type": "string"
                     },
                     "errors_log_path": {
-                        "opt_value": "Enter absolute path here  (include the folder name you want the file to be contained inside)",
+                        "opt_value": ".\\dervet\\storagevet\\Testing\\Results\\reliability_load_shed1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2929,7 +2929,7 @@
         },
         "SR": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "duration": {
                         "opt_value": "0",
@@ -3006,7 +3006,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2030",
+                        "opt_value": "2018",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3015,7 +3015,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3118,7 +3118,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv"
                         },
-                        "opt_value": ".\\Data\\Monthly_Data.csv",
+                        "opt_value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3184,7 +3184,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv"
                         },
-                        "opt_value": ".\\Data\\hourly_timeseries.csv",
+                        "opt_value": ".\\Testing\\load_shedding\\hourly_timeseries_reference_case_1.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

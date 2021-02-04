@@ -15,77 +15,9 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
-import time
 import argparse
-import os
-import sys
 
-# ADD DERVET & STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES
-
-# dervet's directory path is the first in sys.path
-# determine storagevet path (absolute path)
-storagevet_path = os.path.join(sys.path[0], 'storagevet')
-dervet_path = os.path.join(sys.path[0], 'dervet')
-
-# add storagevet (source root) to PYTHONPATH
-sys.path.insert(0, storagevet_path)
-# add dervet (source root) to PYTHONPATH
-sys.path.insert(0, dervet_path)
-
-from MicrogridScenario import MicrogridScenario
-from DERVETParams import ParamsDER
-from MicrogridResult import MicrogridResult
-from ErrorHandelling import *
-
-
-class DERVET:
-    """ DERVET API. This will eventually allow StorageVET to be imported and
-    used like any other python library.
-
-    """
-
-    def __init__(self, model_parameters_path, verbose=False, **kwargs):
-        """
-            Constructor to initialize the parameters and data needed to run
-
-            Args:
-                model_parameters_path (str): Filename of the model parameters
-                    CSV or XML that describes the optimization case to be
-                    analysed
-
-            Notes: kwargs is in place for testing purposes
-        """
-        self.verbose = verbose
-
-        # Initialize Params Object from Model Parameters and Simulation Cases
-        self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
-        self.results = MicrogridResult.initialize(ParamsDER.results_inputs,
-                                                  ParamsDER.case_definitions)
-
-        if self.verbose:
-            from storagevet.Visualization import Visualization
-            Visualization(ParamsDER).class_summary()
-
-    def solve(self):
-        starts = time.time()
-
-        for key, value in self.cases.items():
-            run = MicrogridScenario(value)
-            run.set_up_poi_and_service_aggregator()
-            run.initialize_cba()
-            run.fill_and_drop_extra_data()
-            run.sizing_module()
-            run.optimize_problem_loop()
-
-            MicrogridResult.add_instance(key, run)
-
-        MicrogridResult.sensitivity_summary()
-
-        ends = time.time()
-        TellUser.info(f"DERVET runtime: {ends - starts}")
-
-        return MicrogridResult
-
+from dervet.DERVET import DERVET
 
 if __name__ == '__main__':
     """

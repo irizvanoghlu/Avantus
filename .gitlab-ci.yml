@@ -24,6 +24,7 @@ pytest:
   script:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
+    - file ./storagevet/ValueStreams/ValueStream.py
     - python -m pytest test/test_1battery.py --import-mode=importlib
   tags:
     - 'docker'

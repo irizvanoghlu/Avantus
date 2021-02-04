@@ -13,18 +13,21 @@ cache:
     - venv/
 
 before_script:
-    - echo "... Checking runner specifications ..."
-    - apt-get update -q -y
-    - pip install virtualenv
-    - virtualenv dervet-venv
-    - source dervet-venv/bin/activate
+  - echo "... pulling submodule ..."
+  - git submodule sync --recursive
+  - git submodule update --init --recursive
+  - echo "... Checking runner specifications ..."
+  - apt-get update -q -y
+  - pip install virtualenv
+  - virtualenv dervet-venv
+  - source dervet-venv/bin/activate
 
 pytest:
   stage: test
   script:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - file ./storagevet/ValueStreams/ValueStream.py
+    - file ./storagevet/Scenario.py
     - python -m pytest test/test_1battery.py --import-mode=importlib
   tags:
     - 'docker'

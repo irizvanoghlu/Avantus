@@ -14,12 +14,11 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
-setup(name='storagevet',
+setup(name='dervet',
       version='0.1',
-      description='Testing installation of Package',
+      description='Testing installation of DERVET Package',
       url='#',
       long_description=README,
-      # scripts=['run_Storagevet.py'],
       author='auth',
       author_email='author@email.com',
       license='EPRI',
@@ -27,5 +26,6 @@ setup(name='storagevet',
               "License :: EPRI License",
               "Programming Language :: Python"
       ],
+      # python_requires="==3.6",
       packages=find_packages(),
       zip_safe=False)

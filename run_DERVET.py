@@ -16,15 +16,6 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
 import argparse
-import sys
-import os
-# # determine storagevet path (absolute path)
-# storagevet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'storagevet')
-# # storagevet_path = os.path.join(storagevet_path, 'storagevet')
-# print(storagevet_path)
-# # add dervet (source root) to PYTHONPATH
-# sys.path.insert(0, storagevet_path)
-# print(sys.path)
 from dervet.DERVET import DERVET
 
 

@@ -15,7 +15,7 @@ from pathlib import Path
 from test.TestingLib import assert_ran, compare_proforma_results, run_case
 
 
-DIR = Path('./test/DummyCases/Model_params/')
+DIR = Path('./test/test_random_cases/model_params/')
 JSON = '.json'
 
 

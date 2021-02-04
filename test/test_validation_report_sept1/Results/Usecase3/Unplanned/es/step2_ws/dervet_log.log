@@ -1,0 +1,5 @@
+2020-08-31 14:58:22,102 - INFO - Started logging...
+2020-08-31 14:58:22,104 - ERROR - INPUT: FR-eou is not found in model parameter. Please include and rerun.
+2020-08-31 14:58:22,104 - ERROR - INPUT: FR-eod is not found in model parameter. Please include and rerun.
+2020-08-31 14:58:22,104 - ERROR - INPUT: FR-u_ts_constraints is not found in model parameter. Please include and rerun.
+2020-08-31 14:58:22,104 - ERROR - INPUT: FR-d_ts_constraints is not found in model parameter. Please include and rerun.

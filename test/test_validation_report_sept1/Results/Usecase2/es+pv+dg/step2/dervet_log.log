@@ -1,0 +1,120 @@
+2020-09-10 15:47:03,790 - INFO - Started logging...
+2020-09-10 15:47:03,879 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/uc2/es+pv+dg/hourly_timeseries_ref_es+pv+dg_step2.csv
+2020-09-10 15:47:03,886 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-09-10 15:47:03,894 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-09-10 15:47:03,901 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-09-10 15:47:03,906 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-09-10 15:47:03,906 - INFO - Updating data for Sensitivity Analysis...
+2020-09-10 15:47:03,917 - INFO - Data sets are loaded successfully.
+2020-09-10 15:47:03,919 - INFO - Successfully prepared the Scenario
+2020-09-10 15:47:03,919 - INFO - Successfully prepared the Finance
+2020-09-10 15:47:03,919 - INFO - Successfully prepared the Technologies
+2020-09-10 15:47:04,029 - INFO - Successfully prepared the value-stream (services)
+2020-09-10 15:47:04,029 - DEBUG - Successfully prepared the value-streams
+2020-09-10 15:47:04,031 - DEBUG - ScenarioSizing initialized ...
+2020-09-10 15:47:04,031 - INFO - Initializing: Battery-
+2020-09-10 15:47:04,031 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-09-10 15:47:04,031 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-09-10 15:47:04,031 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-09-10 15:47:04,031 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-09-10 15:47:04,031 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-09-10 15:47:04,032 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 15:47:04,032 - INFO - Initializing: PV-
+2020-09-10 15:47:04,032 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-09-10 15:47:04,032 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 15:47:04,032 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-09-10 15:47:04,033 - INFO - Initializing: Load-0
+2020-09-10 15:47:04,033 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-09-10 15:47:04,033 - DEBUG - Initializing storagevet.Technology.Load
+2020-09-10 15:47:04,033 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-09-10 15:47:04,033 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 15:47:04,033 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-09-10 15:47:04,033 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 15:47:04,033 - INFO - Initializing: User
+2020-09-10 15:47:04,034 - INFO - Initializing: DCM
+2020-09-10 15:47:04,035 - INFO - Initializing: retailTimeShift
+2020-09-10 15:47:04,035 - INFO - Initializing: Reliability
+2020-09-10 15:47:04,038 - DEBUG - Finished adding value streams
+2020-09-10 15:47:04,042 - DEBUG - []
+2020-09-10 15:47:04,142 - INFO - Starting optimization loop
+2020-09-10 15:47:04,144 - INFO - 15:47:04 Running Optimization Problem starting at 2017-01-01 00:00:00 hb
+2020-09-10 15:47:04,186 - DEBUG - time took to make demand charge term: 0.015040159225463867
+2020-09-10 15:47:04,427 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:04,592 - DEBUG - ecos solver
+2020-09-10 15:47:04,593 - INFO - Time it takes for solver to finish: 0.16495084762573242
+2020-09-10 15:47:04,593 - INFO - Optimization problem was optimal
+2020-09-10 15:47:04,613 - INFO - 15:47:04 Running Optimization Problem starting at 2017-02-01 00:00:00 hb
+2020-09-10 15:47:04,668 - DEBUG - time took to make demand charge term: 0.030079126358032227
+2020-09-10 15:47:04,970 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:05,181 - DEBUG - ecos solver
+2020-09-10 15:47:05,188 - INFO - Time it takes for solver to finish: 0.21007084846496582
+2020-09-10 15:47:05,189 - INFO - Optimization problem was optimal
+2020-09-10 15:47:05,217 - INFO - 15:47:05 Running Optimization Problem starting at 2017-03-01 00:00:00 hb
+2020-09-10 15:47:05,294 - DEBUG - time took to make demand charge term: 0.04211258888244629
+2020-09-10 15:47:05,480 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:05,696 - DEBUG - ecos solver
+2020-09-10 15:47:05,696 - INFO - Time it takes for solver to finish: 0.2160935401916504
+2020-09-10 15:47:05,696 - INFO - Optimization problem was optimal
+2020-09-10 15:47:05,723 - INFO - 15:47:05 Running Optimization Problem starting at 2017-04-01 00:00:00 hb
+2020-09-10 15:47:05,762 - DEBUG - time took to make demand charge term: 0.01854872703552246
+2020-09-10 15:47:05,949 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:06,105 - DEBUG - ecos solver
+2020-09-10 15:47:06,105 - INFO - Time it takes for solver to finish: 0.15642380714416504
+2020-09-10 15:47:06,105 - INFO - Optimization problem was optimal
+2020-09-10 15:47:06,126 - INFO - 15:47:06 Running Optimization Problem starting at 2017-05-01 00:00:00 hb
+2020-09-10 15:47:06,169 - DEBUG - time took to make demand charge term: 0.019046545028686523
+2020-09-10 15:47:06,423 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:06,591 - DEBUG - ecos solver
+2020-09-10 15:47:06,591 - INFO - Time it takes for solver to finish: 0.16795825958251953
+2020-09-10 15:47:06,591 - INFO - Optimization problem was optimal
+2020-09-10 15:47:06,605 - INFO - 15:47:06 Running Optimization Problem starting at 2017-06-01 00:00:00 hb
+2020-09-10 15:47:06,634 - DEBUG - time took to make demand charge term: 0.012032508850097656
+2020-09-10 15:47:06,828 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:06,941 - DEBUG - ecos solver
+2020-09-10 15:47:06,941 - INFO - Time it takes for solver to finish: 0.11230325698852539
+2020-09-10 15:47:06,941 - INFO - Optimization problem was optimal
+2020-09-10 15:47:06,955 - INFO - 15:47:06 Running Optimization Problem starting at 2017-07-01 00:00:00 hb
+2020-09-10 15:47:06,982 - DEBUG - time took to make demand charge term: 0.01203155517578125
+2020-09-10 15:47:07,141 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:07,336 - DEBUG - ecos solver
+2020-09-10 15:47:07,337 - INFO - Time it takes for solver to finish: 0.1945333480834961
+2020-09-10 15:47:07,337 - INFO - Optimization problem was optimal
+2020-09-10 15:47:07,353 - INFO - 15:47:07 Running Optimization Problem starting at 2017-08-01 00:00:00 hb
+2020-09-10 15:47:07,385 - DEBUG - time took to make demand charge term: 0.01504063606262207
+2020-09-10 15:47:07,566 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:07,743 - DEBUG - ecos solver
+2020-09-10 15:47:07,743 - INFO - Time it takes for solver to finish: 0.17548441886901855
+2020-09-10 15:47:07,743 - INFO - Optimization problem was optimal
+2020-09-10 15:47:07,767 - INFO - 15:47:07 Running Optimization Problem starting at 2017-09-01 00:00:00 hb
+2020-09-10 15:47:07,803 - DEBUG - time took to make demand charge term: 0.016042232513427734
+2020-09-10 15:47:07,930 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:08,053 - DEBUG - ecos solver
+2020-09-10 15:47:08,053 - INFO - Time it takes for solver to finish: 0.12334394454956055
+2020-09-10 15:47:08,053 - INFO - Optimization problem was optimal
+2020-09-10 15:47:08,081 - INFO - 15:47:08 Running Optimization Problem starting at 2017-10-01 00:00:00 hb
+2020-09-10 15:47:08,135 - DEBUG - time took to make demand charge term: 0.027078866958618164
+2020-09-10 15:47:08,438 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:08,615 - DEBUG - ecos solver
+2020-09-10 15:47:08,615 - INFO - Time it takes for solver to finish: 0.17747211456298828
+2020-09-10 15:47:08,615 - INFO - Optimization problem was optimal
+2020-09-10 15:47:08,636 - INFO - 15:47:08 Running Optimization Problem starting at 2017-11-01 00:00:00 hb
+2020-09-10 15:47:08,676 - DEBUG - time took to make demand charge term: 0.018047332763671875
+2020-09-10 15:47:08,886 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:09,008 - DEBUG - ecos solver
+2020-09-10 15:47:09,008 - INFO - Time it takes for solver to finish: 0.12132573127746582
+2020-09-10 15:47:09,008 - INFO - Optimization problem was optimal
+2020-09-10 15:47:09,028 - INFO - 15:47:09 Running Optimization Problem starting at 2017-12-01 00:00:00 hb
+2020-09-10 15:47:09,068 - DEBUG - time took to make demand charge term: 0.022065401077270508
+2020-09-10 15:47:09,292 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 15:47:09,446 - DEBUG - ecos solver
+2020-09-10 15:47:09,446 - INFO - Time it takes for solver to finish: 0.15442609786987305
+2020-09-10 15:47:09,447 - INFO - Optimization problem was optimal
+2020-09-10 15:47:09,464 - DEBUG - Performing Post Optimization Analysis...
+2020-09-10 15:47:09,713 - INFO - Starting load coverage calculation. This may take a while.
+2020-09-10 15:47:09,715 - INFO - Critical Load Coverage Curve overhead time: 0.002006053924560547
+2020-09-10 15:47:10,153 - INFO - Critical Load Coverage Curve calculation time: 0.43819165229797363
+2020-09-10 15:47:10,156 - INFO - Finished load coverage calculation.
+2020-09-10 15:47:10,156 - DEBUG - Finished post optimization analysis
+2020-09-10 15:47:11,284 - INFO - Results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase2\es+pv+dg\step2
+2020-09-10 15:47:11,307 - INFO - DER results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase2\es+pv+dg\step2
+2020-09-10 15:47:11,307 - INFO - DERVET runtime: 7.276402711868286

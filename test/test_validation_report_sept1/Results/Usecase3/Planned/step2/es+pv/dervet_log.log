@@ -1,0 +1,1496 @@
+2020-09-10 17:12:17,928 - INFO - Started logging...
+2020-09-10 17:12:18,193 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/uc3/es+pv/hourly_timeseries_ref_wholesale_es+pv.csv
+2020-09-10 17:12:18,207 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-09-10 17:12:18,225 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-09-10 17:12:18,237 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-09-10 17:12:18,249 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-09-10 17:12:18,254 - INFO - Updating data for Sensitivity Analysis...
+2020-09-10 17:12:18,274 - INFO - Data sets are loaded successfully.
+2020-09-10 17:12:18,276 - INFO - Successfully prepared the Scenario
+2020-09-10 17:12:18,276 - INFO - Successfully prepared the Finance
+2020-09-10 17:12:18,277 - INFO - Successfully prepared the Technologies
+2020-09-10 17:12:18,281 - INFO - Successfully prepared the value-stream (services)
+2020-09-10 17:12:18,282 - DEBUG - Successfully prepared the value-streams
+2020-09-10 17:12:18,293 - DEBUG - ScenarioSizing initialized ...
+2020-09-10 17:12:18,293 - INFO - Initializing: Battery-1
+2020-09-10 17:12:18,293 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-09-10 17:12:18,293 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-09-10 17:12:18,293 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-09-10 17:12:18,294 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-09-10 17:12:18,295 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-09-10 17:12:18,295 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 17:12:18,295 - INFO - Initializing: PV-1
+2020-09-10 17:12:18,295 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-09-10 17:12:18,296 - DEBUG - Initializing MicrogridDER.Sizing
+2020-09-10 17:12:18,296 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-09-10 17:12:18,297 - INFO - Initializing: User
+2020-09-10 17:12:18,297 - INFO - Initializing: DA
+2020-09-10 17:12:18,298 - INFO - Initializing: FR
+2020-09-10 17:12:18,305 - DEBUG - Finished adding value streams
+2020-09-10 17:12:18,313 - DEBUG - []
+2020-09-10 17:12:18,567 - INFO - Starting optimization loop
+2020-09-10 17:12:18,592 - INFO - 17:12:18 Running Optimization Problem starting at 2017-01-01 00:00:00 hb
+2020-09-10 17:12:18,986 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:19,596 - INFO - Time it takes for solver to finish: 0.6091201305389404
+2020-09-10 17:12:19,596 - INFO - Optimization problem was optimal
+2020-09-10 17:12:19,629 - INFO - 17:12:19 Running Optimization Problem starting at 2017-01-02 00:00:00 hb
+2020-09-10 17:12:19,826 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:20,379 - INFO - Time it takes for solver to finish: 0.5529747009277344
+2020-09-10 17:12:20,379 - INFO - Optimization problem was optimal
+2020-09-10 17:12:20,395 - INFO - 17:12:20 Running Optimization Problem starting at 2017-01-03 00:00:00 hb
+2020-09-10 17:12:20,572 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:20,763 - INFO - Time it takes for solver to finish: 0.1905064582824707
+2020-09-10 17:12:20,763 - INFO - Optimization problem was optimal
+2020-09-10 17:12:20,778 - INFO - 17:12:20 Running Optimization Problem starting at 2017-01-04 00:00:00 hb
+2020-09-10 17:12:20,879 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:21,184 - INFO - Time it takes for solver to finish: 0.3053121566772461
+2020-09-10 17:12:21,184 - INFO - Optimization problem was optimal
+2020-09-10 17:12:21,203 - INFO - 17:12:21 Running Optimization Problem starting at 2017-01-05 00:00:00 hb
+2020-09-10 17:12:21,392 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:21,683 - INFO - Time it takes for solver to finish: 0.2907741069793701
+2020-09-10 17:12:21,683 - INFO - Optimization problem was optimal
+2020-09-10 17:12:21,704 - INFO - 17:12:21 Running Optimization Problem starting at 2017-01-06 00:00:00 hb
+2020-09-10 17:12:21,839 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:21,956 - INFO - Time it takes for solver to finish: 0.11731195449829102
+2020-09-10 17:12:21,956 - INFO - Optimization problem was optimal
+2020-09-10 17:12:21,973 - INFO - 17:12:21 Running Optimization Problem starting at 2017-01-07 00:00:00 hb
+2020-09-10 17:12:22,315 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:22,739 - INFO - Time it takes for solver to finish: 0.42412900924682617
+2020-09-10 17:12:22,739 - INFO - Optimization problem was optimal
+2020-09-10 17:12:22,784 - INFO - 17:12:22 Running Optimization Problem starting at 2017-01-08 00:00:00 hb
+2020-09-10 17:12:22,975 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:23,392 - INFO - Time it takes for solver to finish: 0.4161076545715332
+2020-09-10 17:12:23,392 - INFO - Optimization problem was optimal
+2020-09-10 17:12:23,421 - INFO - 17:12:23 Running Optimization Problem starting at 2017-01-09 00:00:00 hb
+2020-09-10 17:12:23,556 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:23,735 - INFO - Time it takes for solver to finish: 0.17947697639465332
+2020-09-10 17:12:23,735 - INFO - Optimization problem was optimal
+2020-09-10 17:12:23,758 - INFO - 17:12:23 Running Optimization Problem starting at 2017-01-10 00:00:00 hb
+2020-09-10 17:12:23,863 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:23,983 - INFO - Time it takes for solver to finish: 0.11981892585754395
+2020-09-10 17:12:23,983 - INFO - Optimization problem was optimal
+2020-09-10 17:12:23,994 - INFO - 17:12:23 Running Optimization Problem starting at 2017-01-11 00:00:00 hb
+2020-09-10 17:12:24,270 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:24,483 - INFO - Time it takes for solver to finish: 0.21306729316711426
+2020-09-10 17:12:24,483 - INFO - Optimization problem was optimal
+2020-09-10 17:12:24,507 - INFO - 17:12:24 Running Optimization Problem starting at 2017-01-12 00:00:00 hb
+2020-09-10 17:12:24,665 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:24,816 - INFO - Time it takes for solver to finish: 0.15090298652648926
+2020-09-10 17:12:24,816 - INFO - Optimization problem was optimal
+2020-09-10 17:12:24,842 - INFO - 17:12:24 Running Optimization Problem starting at 2017-01-13 00:00:00 hb
+2020-09-10 17:12:24,948 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:25,077 - INFO - Time it takes for solver to finish: 0.1288464069366455
+2020-09-10 17:12:25,078 - INFO - Optimization problem was optimal
+2020-09-10 17:12:25,106 - INFO - 17:12:25 Running Optimization Problem starting at 2017-01-14 00:00:00 hb
+2020-09-10 17:12:25,276 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:25,548 - INFO - Time it takes for solver to finish: 0.27222347259521484
+2020-09-10 17:12:25,548 - INFO - Optimization problem was optimal
+2020-09-10 17:12:25,565 - INFO - 17:12:25 Running Optimization Problem starting at 2017-01-15 00:00:00 hb
+2020-09-10 17:12:25,775 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:26,287 - INFO - Time it takes for solver to finish: 0.5118615627288818
+2020-09-10 17:12:26,287 - INFO - Optimization problem was optimal
+2020-09-10 17:12:26,311 - INFO - 17:12:26 Running Optimization Problem starting at 2017-01-16 00:00:00 hb
+2020-09-10 17:12:26,507 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:26,782 - INFO - Time it takes for solver to finish: 0.2747304439544678
+2020-09-10 17:12:26,782 - INFO - Optimization problem was optimal
+2020-09-10 17:12:26,795 - INFO - 17:12:26 Running Optimization Problem starting at 2017-01-17 00:00:00 hb
+2020-09-10 17:12:26,939 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:27,083 - INFO - Time it takes for solver to finish: 0.14288091659545898
+2020-09-10 17:12:27,083 - INFO - Optimization problem was optimal
+2020-09-10 17:12:27,105 - INFO - 17:12:27 Running Optimization Problem starting at 2017-01-18 00:00:00 hb
+2020-09-10 17:12:27,265 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:27,868 - INFO - Time it takes for solver to finish: 0.6026020050048828
+2020-09-10 17:12:27,869 - INFO - Optimization problem was optimal
+2020-09-10 17:12:27,884 - INFO - 17:12:27 Running Optimization Problem starting at 2017-01-19 00:00:00 hb
+2020-09-10 17:12:28,045 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:28,525 - INFO - Time it takes for solver to finish: 0.4797804355621338
+2020-09-10 17:12:28,525 - INFO - Optimization problem was optimal
+2020-09-10 17:12:28,556 - INFO - 17:12:28 Running Optimization Problem starting at 2017-01-20 00:00:00 hb
+2020-09-10 17:12:28,759 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:29,574 - INFO - Time it takes for solver to finish: 0.8156704902648926
+2020-09-10 17:12:29,574 - INFO - Optimization problem was optimal
+2020-09-10 17:12:29,597 - INFO - 17:12:29 Running Optimization Problem starting at 2017-01-21 00:00:00 hb
+2020-09-10 17:12:29,760 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:29,999 - INFO - Time it takes for solver to finish: 0.2391364574432373
+2020-09-10 17:12:29,999 - INFO - Optimization problem was optimal
+2020-09-10 17:12:30,067 - INFO - 17:12:30 Running Optimization Problem starting at 2017-01-22 00:00:00 hb
+2020-09-10 17:12:30,360 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:44,056 - INFO - Time it takes for solver to finish: 13.696021556854248
+2020-09-10 17:12:44,056 - INFO - Optimization problem was optimal
+2020-09-10 17:12:44,127 - INFO - 17:12:44 Running Optimization Problem starting at 2017-01-23 00:00:00 hb
+2020-09-10 17:12:44,572 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:44,989 - INFO - Time it takes for solver to finish: 0.4166080951690674
+2020-09-10 17:12:44,989 - INFO - Optimization problem was optimal
+2020-09-10 17:12:45,038 - INFO - 17:12:45 Running Optimization Problem starting at 2017-01-24 00:00:00 hb
+2020-09-10 17:12:45,647 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:46,759 - INFO - Time it takes for solver to finish: 1.1114578247070312
+2020-09-10 17:12:46,759 - INFO - Optimization problem was optimal
+2020-09-10 17:12:46,832 - INFO - 17:12:46 Running Optimization Problem starting at 2017-01-25 00:00:00 hb
+2020-09-10 17:12:47,262 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:47,837 - INFO - Time it takes for solver to finish: 0.5745279788970947
+2020-09-10 17:12:47,837 - INFO - Optimization problem was optimal
+2020-09-10 17:12:47,861 - INFO - 17:12:47 Running Optimization Problem starting at 2017-01-26 00:00:00 hb
+2020-09-10 17:12:48,109 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:48,505 - INFO - Time it takes for solver to finish: 0.3955507278442383
+2020-09-10 17:12:48,505 - INFO - Optimization problem was optimal
+2020-09-10 17:12:48,605 - INFO - 17:12:48 Running Optimization Problem starting at 2017-01-27 00:00:00 hb
+2020-09-10 17:12:48,849 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:48,968 - INFO - Time it takes for solver to finish: 0.11881637573242188
+2020-09-10 17:12:48,968 - INFO - Optimization problem was optimal
+2020-09-10 17:12:48,982 - INFO - 17:12:48 Running Optimization Problem starting at 2017-01-28 00:00:00 hb
+2020-09-10 17:12:49,182 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:49,436 - INFO - Time it takes for solver to finish: 0.2536764144897461
+2020-09-10 17:12:49,436 - INFO - Optimization problem was optimal
+2020-09-10 17:12:49,475 - INFO - 17:12:49 Running Optimization Problem starting at 2017-01-29 00:00:00 hb
+2020-09-10 17:12:49,778 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:49,939 - INFO - Time it takes for solver to finish: 0.16142964363098145
+2020-09-10 17:12:49,939 - INFO - Optimization problem was optimal
+2020-09-10 17:12:49,952 - INFO - 17:12:49 Running Optimization Problem starting at 2017-01-30 00:00:00 hb
+2020-09-10 17:12:50,165 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:50,469 - INFO - Time it takes for solver to finish: 0.3038144111633301
+2020-09-10 17:12:50,469 - INFO - Optimization problem was optimal
+2020-09-10 17:12:50,497 - INFO - 17:12:50 Running Optimization Problem starting at 2017-01-31 00:00:00 hb
+2020-09-10 17:12:50,747 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:50,864 - INFO - Time it takes for solver to finish: 0.11681222915649414
+2020-09-10 17:12:50,864 - INFO - Optimization problem was optimal
+2020-09-10 17:12:50,876 - INFO - 17:12:50 Running Optimization Problem starting at 2017-02-01 00:00:00 hb
+2020-09-10 17:12:50,991 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:51,115 - INFO - Time it takes for solver to finish: 0.12282943725585938
+2020-09-10 17:12:51,115 - INFO - Optimization problem was optimal
+2020-09-10 17:12:51,138 - INFO - 17:12:51 Running Optimization Problem starting at 2017-02-02 00:00:00 hb
+2020-09-10 17:12:51,382 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:51,554 - INFO - Time it takes for solver to finish: 0.17145657539367676
+2020-09-10 17:12:51,554 - INFO - Optimization problem was optimal
+2020-09-10 17:12:51,599 - INFO - 17:12:51 Running Optimization Problem starting at 2017-02-03 00:00:00 hb
+2020-09-10 17:12:51,784 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:51,893 - INFO - Time it takes for solver to finish: 0.10828924179077148
+2020-09-10 17:12:51,893 - INFO - Optimization problem was optimal
+2020-09-10 17:12:51,905 - INFO - 17:12:51 Running Optimization Problem starting at 2017-02-04 00:00:00 hb
+2020-09-10 17:12:52,013 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:52,177 - INFO - Time it takes for solver to finish: 0.16443705558776855
+2020-09-10 17:12:52,178 - INFO - Optimization problem was optimal
+2020-09-10 17:12:52,202 - INFO - 17:12:52 Running Optimization Problem starting at 2017-02-05 00:00:00 hb
+2020-09-10 17:12:52,376 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:52,555 - INFO - Time it takes for solver to finish: 0.17897605895996094
+2020-09-10 17:12:52,555 - INFO - Optimization problem was optimal
+2020-09-10 17:12:52,586 - INFO - 17:12:52 Running Optimization Problem starting at 2017-02-06 00:00:00 hb
+2020-09-10 17:12:52,775 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:53,331 - INFO - Time it takes for solver to finish: 0.5554776191711426
+2020-09-10 17:12:53,331 - INFO - Optimization problem was optimal
+2020-09-10 17:12:53,370 - INFO - 17:12:53 Running Optimization Problem starting at 2017-02-07 00:00:00 hb
+2020-09-10 17:12:53,572 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:53,802 - INFO - Time it takes for solver to finish: 0.23011136054992676
+2020-09-10 17:12:53,802 - INFO - Optimization problem was optimal
+2020-09-10 17:12:53,821 - INFO - 17:12:53 Running Optimization Problem starting at 2017-02-08 00:00:00 hb
+2020-09-10 17:12:54,073 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:54,696 - INFO - Time it takes for solver to finish: 0.6221745014190674
+2020-09-10 17:12:54,696 - INFO - Optimization problem was optimal
+2020-09-10 17:12:54,738 - INFO - 17:12:54 Running Optimization Problem starting at 2017-02-09 00:00:00 hb
+2020-09-10 17:12:55,134 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:56,187 - INFO - Time it takes for solver to finish: 1.0507960319519043
+2020-09-10 17:12:56,188 - INFO - Optimization problem was optimal
+2020-09-10 17:12:56,226 - INFO - 17:12:56 Running Optimization Problem starting at 2017-02-10 00:00:00 hb
+2020-09-10 17:12:56,631 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:56,968 - INFO - Time it takes for solver to finish: 0.3368964195251465
+2020-09-10 17:12:56,969 - INFO - Optimization problem was optimal
+2020-09-10 17:12:56,993 - INFO - 17:12:56 Running Optimization Problem starting at 2017-02-11 00:00:00 hb
+2020-09-10 17:12:57,269 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:57,655 - INFO - Time it takes for solver to finish: 0.3850247859954834
+2020-09-10 17:12:57,655 - INFO - Optimization problem was optimal
+2020-09-10 17:12:57,679 - INFO - 17:12:57 Running Optimization Problem starting at 2017-02-12 00:00:00 hb
+2020-09-10 17:12:57,849 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:57,986 - INFO - Time it takes for solver to finish: 0.13736557960510254
+2020-09-10 17:12:57,986 - INFO - Optimization problem was optimal
+2020-09-10 17:12:58,007 - INFO - 17:12:58 Running Optimization Problem starting at 2017-02-13 00:00:00 hb
+2020-09-10 17:12:58,315 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:58,776 - INFO - Time it takes for solver to finish: 0.4612264633178711
+2020-09-10 17:12:58,776 - INFO - Optimization problem was optimal
+2020-09-10 17:12:58,799 - INFO - 17:12:58 Running Optimization Problem starting at 2017-02-14 00:00:00 hb
+2020-09-10 17:12:58,917 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:59,017 - INFO - Time it takes for solver to finish: 0.09876418113708496
+2020-09-10 17:12:59,017 - INFO - Optimization problem was optimal
+2020-09-10 17:12:59,029 - INFO - 17:12:59 Running Optimization Problem starting at 2017-02-15 00:00:00 hb
+2020-09-10 17:12:59,268 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:59,406 - INFO - Time it takes for solver to finish: 0.13786840438842773
+2020-09-10 17:12:59,406 - INFO - Optimization problem was optimal
+2020-09-10 17:12:59,424 - INFO - 17:12:59 Running Optimization Problem starting at 2017-02-16 00:00:00 hb
+2020-09-10 17:12:59,576 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:12:59,770 - INFO - Time it takes for solver to finish: 0.19301271438598633
+2020-09-10 17:12:59,770 - INFO - Optimization problem was optimal
+2020-09-10 17:12:59,789 - INFO - 17:12:59 Running Optimization Problem starting at 2017-02-17 00:00:00 hb
+2020-09-10 17:12:59,876 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:00,129 - INFO - Time it takes for solver to finish: 0.2526721954345703
+2020-09-10 17:13:00,129 - INFO - Optimization problem was optimal
+2020-09-10 17:13:00,170 - INFO - 17:13:00 Running Optimization Problem starting at 2017-02-18 00:00:00 hb
+2020-09-10 17:13:00,387 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:00,742 - INFO - Time it takes for solver to finish: 0.354445219039917
+2020-09-10 17:13:00,743 - INFO - Optimization problem was optimal
+2020-09-10 17:13:00,787 - INFO - 17:13:00 Running Optimization Problem starting at 2017-02-19 00:00:00 hb
+2020-09-10 17:13:00,890 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:01,080 - INFO - Time it takes for solver to finish: 0.19000530242919922
+2020-09-10 17:13:01,081 - INFO - Optimization problem was optimal
+2020-09-10 17:13:01,106 - INFO - 17:13:01 Running Optimization Problem starting at 2017-02-20 00:00:00 hb
+2020-09-10 17:13:01,336 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:01,610 - INFO - Time it takes for solver to finish: 0.2742292881011963
+2020-09-10 17:13:01,610 - INFO - Optimization problem was optimal
+2020-09-10 17:13:01,630 - INFO - 17:13:01 Running Optimization Problem starting at 2017-02-21 00:00:00 hb
+2020-09-10 17:13:01,817 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:02,086 - INFO - Time it takes for solver to finish: 0.26921558380126953
+2020-09-10 17:13:02,086 - INFO - Optimization problem was optimal
+2020-09-10 17:13:02,107 - INFO - 17:13:02 Running Optimization Problem starting at 2017-02-22 00:00:00 hb
+2020-09-10 17:13:02,465 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:02,756 - INFO - Time it takes for solver to finish: 0.2902712821960449
+2020-09-10 17:13:02,757 - INFO - Optimization problem was optimal
+2020-09-10 17:13:02,810 - INFO - 17:13:02 Running Optimization Problem starting at 2017-02-23 00:00:00 hb
+2020-09-10 17:13:03,031 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:03,374 - INFO - Time it takes for solver to finish: 0.3429121971130371
+2020-09-10 17:13:03,374 - INFO - Optimization problem was optimal
+2020-09-10 17:13:03,417 - INFO - 17:13:03 Running Optimization Problem starting at 2017-02-24 00:00:00 hb
+2020-09-10 17:13:03,681 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:03,906 - INFO - Time it takes for solver to finish: 0.22409844398498535
+2020-09-10 17:13:03,906 - INFO - Optimization problem was optimal
+2020-09-10 17:13:03,920 - INFO - 17:13:03 Running Optimization Problem starting at 2017-02-25 00:00:00 hb
+2020-09-10 17:13:04,019 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:04,200 - INFO - Time it takes for solver to finish: 0.1804792881011963
+2020-09-10 17:13:04,200 - INFO - Optimization problem was optimal
+2020-09-10 17:13:04,229 - INFO - 17:13:04 Running Optimization Problem starting at 2017-02-26 00:00:00 hb
+2020-09-10 17:13:04,467 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:04,798 - INFO - Time it takes for solver to finish: 0.330380916595459
+2020-09-10 17:13:04,798 - INFO - Optimization problem was optimal
+2020-09-10 17:13:04,817 - INFO - 17:13:04 Running Optimization Problem starting at 2017-02-27 00:00:00 hb
+2020-09-10 17:13:04,954 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:05,198 - INFO - Time it takes for solver to finish: 0.24364900588989258
+2020-09-10 17:13:05,198 - INFO - Optimization problem was optimal
+2020-09-10 17:13:05,233 - INFO - 17:13:05 Running Optimization Problem starting at 2017-02-28 00:00:00 hb
+2020-09-10 17:13:05,550 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:05,884 - INFO - Time it takes for solver to finish: 0.33438968658447266
+2020-09-10 17:13:05,884 - INFO - Optimization problem was optimal
+2020-09-10 17:13:05,912 - INFO - 17:13:05 Running Optimization Problem starting at 2017-03-01 00:00:00 hb
+2020-09-10 17:13:06,352 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:06,707 - INFO - Time it takes for solver to finish: 0.35494422912597656
+2020-09-10 17:13:06,707 - INFO - Optimization problem was optimal
+2020-09-10 17:13:06,743 - INFO - 17:13:06 Running Optimization Problem starting at 2017-03-02 00:00:00 hb
+2020-09-10 17:13:07,017 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:07,962 - INFO - Time it takes for solver to finish: 0.9445126056671143
+2020-09-10 17:13:07,962 - INFO - Optimization problem was optimal
+2020-09-10 17:13:08,008 - INFO - 17:13:08 Running Optimization Problem starting at 2017-03-03 00:00:00 hb
+2020-09-10 17:13:08,328 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:09,049 - INFO - Time it takes for solver to finish: 0.7204160690307617
+2020-09-10 17:13:09,049 - INFO - Optimization problem was optimal
+2020-09-10 17:13:09,095 - INFO - 17:13:09 Running Optimization Problem starting at 2017-03-04 00:00:00 hb
+2020-09-10 17:13:09,369 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:09,681 - INFO - Time it takes for solver to finish: 0.3118298053741455
+2020-09-10 17:13:09,682 - INFO - Optimization problem was optimal
+2020-09-10 17:13:09,711 - INFO - 17:13:09 Running Optimization Problem starting at 2017-03-05 00:00:00 hb
+2020-09-10 17:13:09,873 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:09,984 - INFO - Time it takes for solver to finish: 0.1107945442199707
+2020-09-10 17:13:09,985 - INFO - Optimization problem was optimal
+2020-09-10 17:13:09,999 - INFO - 17:13:09 Running Optimization Problem starting at 2017-03-06 00:00:00 hb
+2020-09-10 17:13:10,146 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:10,366 - INFO - Time it takes for solver to finish: 0.22008442878723145
+2020-09-10 17:13:10,366 - INFO - Optimization problem was optimal
+2020-09-10 17:13:10,397 - INFO - 17:13:10 Running Optimization Problem starting at 2017-03-07 00:00:00 hb
+2020-09-10 17:13:10,873 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:11,189 - INFO - Time it takes for solver to finish: 0.3158407211303711
+2020-09-10 17:13:11,190 - INFO - Optimization problem was optimal
+2020-09-10 17:13:11,227 - INFO - 17:13:11 Running Optimization Problem starting at 2017-03-08 00:00:00 hb
+2020-09-10 17:13:11,672 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:12,038 - INFO - Time it takes for solver to finish: 0.36647462844848633
+2020-09-10 17:13:12,039 - INFO - Optimization problem was optimal
+2020-09-10 17:13:12,169 - INFO - 17:13:12 Running Optimization Problem starting at 2017-03-09 00:00:00 hb
+2020-09-10 17:13:12,477 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:12,775 - INFO - Time it takes for solver to finish: 0.29679298400878906
+2020-09-10 17:13:12,775 - INFO - Optimization problem was optimal
+2020-09-10 17:13:12,816 - INFO - 17:13:12 Running Optimization Problem starting at 2017-03-10 00:00:00 hb
+2020-09-10 17:13:13,017 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:13,320 - INFO - Time it takes for solver to finish: 0.30280542373657227
+2020-09-10 17:13:13,320 - INFO - Optimization problem was optimal
+2020-09-10 17:13:13,356 - INFO - 17:13:13 Running Optimization Problem starting at 2017-03-11 00:00:00 hb
+2020-09-10 17:13:13,719 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:13,939 - INFO - Time it takes for solver to finish: 0.22058534622192383
+2020-09-10 17:13:13,940 - INFO - Optimization problem was optimal
+2020-09-10 17:13:14,010 - INFO - 17:13:14 Running Optimization Problem starting at 2017-03-12 00:00:00 hb
+2020-09-10 17:13:14,461 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:14,877 - INFO - Time it takes for solver to finish: 0.41510486602783203
+2020-09-10 17:13:14,877 - INFO - Optimization problem was optimal
+2020-09-10 17:13:14,947 - INFO - 17:13:14 Running Optimization Problem starting at 2017-03-13 00:00:00 hb
+2020-09-10 17:13:15,425 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:16,540 - INFO - Time it takes for solver to finish: 1.1139636039733887
+2020-09-10 17:13:16,540 - INFO - Optimization problem was optimal
+2020-09-10 17:13:16,626 - INFO - 17:13:16 Running Optimization Problem starting at 2017-03-14 00:00:00 hb
+2020-09-10 17:13:16,943 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:17,621 - INFO - Time it takes for solver to finish: 0.6779947280883789
+2020-09-10 17:13:17,622 - INFO - Optimization problem was optimal
+2020-09-10 17:13:17,673 - INFO - 17:13:17 Running Optimization Problem starting at 2017-03-15 00:00:00 hb
+2020-09-10 17:13:17,993 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:18,827 - INFO - Time it takes for solver to finish: 0.8332178592681885
+2020-09-10 17:13:18,827 - INFO - Optimization problem was optimal
+2020-09-10 17:13:18,891 - INFO - 17:13:18 Running Optimization Problem starting at 2017-03-16 00:00:00 hb
+2020-09-10 17:13:19,256 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:19,590 - INFO - Time it takes for solver to finish: 0.33388352394104004
+2020-09-10 17:13:19,591 - INFO - Optimization problem was optimal
+2020-09-10 17:13:19,671 - INFO - 17:13:19 Running Optimization Problem starting at 2017-03-17 00:00:00 hb
+2020-09-10 17:13:19,996 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:20,345 - INFO - Time it takes for solver to finish: 0.34842801094055176
+2020-09-10 17:13:20,345 - INFO - Optimization problem was optimal
+2020-09-10 17:13:20,406 - INFO - 17:13:20 Running Optimization Problem starting at 2017-03-18 00:00:00 hb
+2020-09-10 17:13:20,745 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:21,055 - INFO - Time it takes for solver to finish: 0.31060123443603516
+2020-09-10 17:13:21,056 - INFO - Optimization problem was optimal
+2020-09-10 17:13:21,100 - INFO - 17:13:21 Running Optimization Problem starting at 2017-03-19 00:00:00 hb
+2020-09-10 17:13:21,573 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:21,982 - INFO - Time it takes for solver to finish: 0.40825724601745605
+2020-09-10 17:13:21,982 - INFO - Optimization problem was optimal
+2020-09-10 17:13:22,044 - INFO - 17:13:22 Running Optimization Problem starting at 2017-03-20 00:00:00 hb
+2020-09-10 17:13:22,744 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:23,086 - INFO - Time it takes for solver to finish: 0.3418540954589844
+2020-09-10 17:13:23,086 - INFO - Optimization problem was optimal
+2020-09-10 17:13:23,168 - INFO - 17:13:23 Running Optimization Problem starting at 2017-03-21 00:00:00 hb
+2020-09-10 17:13:23,576 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:23,856 - INFO - Time it takes for solver to finish: 0.27918457984924316
+2020-09-10 17:13:23,856 - INFO - Optimization problem was optimal
+2020-09-10 17:13:23,890 - INFO - 17:13:23 Running Optimization Problem starting at 2017-03-22 00:00:00 hb
+2020-09-10 17:13:24,231 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:24,592 - INFO - Time it takes for solver to finish: 0.3604590892791748
+2020-09-10 17:13:24,593 - INFO - Optimization problem was optimal
+2020-09-10 17:13:24,667 - INFO - 17:13:24 Running Optimization Problem starting at 2017-03-23 00:00:00 hb
+2020-09-10 17:13:24,925 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:25,149 - INFO - Time it takes for solver to finish: 0.22309613227844238
+2020-09-10 17:13:25,149 - INFO - Optimization problem was optimal
+2020-09-10 17:13:25,191 - INFO - 17:13:25 Running Optimization Problem starting at 2017-03-24 00:00:00 hb
+2020-09-10 17:13:25,485 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:25,862 - INFO - Time it takes for solver to finish: 0.37650084495544434
+2020-09-10 17:13:25,863 - INFO - Optimization problem was optimal
+2020-09-10 17:13:25,920 - INFO - 17:13:25 Running Optimization Problem starting at 2017-03-25 00:00:00 hb
+2020-09-10 17:13:26,519 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:26,897 - INFO - Time it takes for solver to finish: 0.3780055046081543
+2020-09-10 17:13:26,898 - INFO - Optimization problem was optimal
+2020-09-10 17:13:26,938 - INFO - 17:13:26 Running Optimization Problem starting at 2017-03-26 00:00:00 hb
+2020-09-10 17:13:27,263 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:27,505 - INFO - Time it takes for solver to finish: 0.2426435947418213
+2020-09-10 17:13:27,505 - INFO - Optimization problem was optimal
+2020-09-10 17:13:27,543 - INFO - 17:13:27 Running Optimization Problem starting at 2017-03-27 00:00:00 hb
+2020-09-10 17:13:27,829 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:27,973 - INFO - Time it takes for solver to finish: 0.14438390731811523
+2020-09-10 17:13:27,974 - INFO - Optimization problem was optimal
+2020-09-10 17:13:27,998 - INFO - 17:13:27 Running Optimization Problem starting at 2017-03-28 00:00:00 hb
+2020-09-10 17:13:28,268 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:28,454 - INFO - Time it takes for solver to finish: 0.18649625778198242
+2020-09-10 17:13:28,455 - INFO - Optimization problem was optimal
+2020-09-10 17:13:28,488 - INFO - 17:13:28 Running Optimization Problem starting at 2017-03-29 00:00:00 hb
+2020-09-10 17:13:28,753 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:28,937 - INFO - Time it takes for solver to finish: 0.18449044227600098
+2020-09-10 17:13:28,937 - INFO - Optimization problem was optimal
+2020-09-10 17:13:28,959 - INFO - 17:13:28 Running Optimization Problem starting at 2017-03-30 00:00:00 hb
+2020-09-10 17:13:29,165 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:29,337 - INFO - Time it takes for solver to finish: 0.17145609855651855
+2020-09-10 17:13:29,337 - INFO - Optimization problem was optimal
+2020-09-10 17:13:29,358 - INFO - 17:13:29 Running Optimization Problem starting at 2017-03-31 00:00:00 hb
+2020-09-10 17:13:29,557 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:29,832 - INFO - Time it takes for solver to finish: 0.2742290496826172
+2020-09-10 17:13:29,832 - INFO - Optimization problem was optimal
+2020-09-10 17:13:29,866 - INFO - 17:13:29 Running Optimization Problem starting at 2017-04-01 00:00:00 hb
+2020-09-10 17:13:30,292 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:30,499 - INFO - Time it takes for solver to finish: 0.20755338668823242
+2020-09-10 17:13:30,499 - INFO - Optimization problem was optimal
+2020-09-10 17:13:30,533 - INFO - 17:13:30 Running Optimization Problem starting at 2017-04-02 00:00:00 hb
+2020-09-10 17:13:30,791 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:30,968 - INFO - Time it takes for solver to finish: 0.1764674186706543
+2020-09-10 17:13:30,968 - INFO - Optimization problem was optimal
+2020-09-10 17:13:30,995 - INFO - 17:13:30 Running Optimization Problem starting at 2017-04-03 00:00:00 hb
+2020-09-10 17:13:31,227 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:31,449 - INFO - Time it takes for solver to finish: 0.22159075736999512
+2020-09-10 17:13:31,449 - INFO - Optimization problem was optimal
+2020-09-10 17:13:31,485 - INFO - 17:13:31 Running Optimization Problem starting at 2017-04-04 00:00:00 hb
+2020-09-10 17:13:31,705 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:31,907 - INFO - Time it takes for solver to finish: 0.2015361785888672
+2020-09-10 17:13:31,907 - INFO - Optimization problem was optimal
+2020-09-10 17:13:31,930 - INFO - 17:13:31 Running Optimization Problem starting at 2017-04-05 00:00:00 hb
+2020-09-10 17:13:32,152 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:32,501 - INFO - Time it takes for solver to finish: 0.3494298458099365
+2020-09-10 17:13:32,501 - INFO - Optimization problem was optimal
+2020-09-10 17:13:32,539 - INFO - 17:13:32 Running Optimization Problem starting at 2017-04-06 00:00:00 hb
+2020-09-10 17:13:32,818 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:33,010 - INFO - Time it takes for solver to finish: 0.19200754165649414
+2020-09-10 17:13:33,010 - INFO - Optimization problem was optimal
+2020-09-10 17:13:33,035 - INFO - 17:13:33 Running Optimization Problem starting at 2017-04-07 00:00:00 hb
+2020-09-10 17:13:33,265 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:33,443 - INFO - Time it takes for solver to finish: 0.17797183990478516
+2020-09-10 17:13:33,443 - INFO - Optimization problem was optimal
+2020-09-10 17:13:33,496 - INFO - 17:13:33 Running Optimization Problem starting at 2017-04-08 00:00:00 hb
+2020-09-10 17:13:33,728 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:33,902 - INFO - Time it takes for solver to finish: 0.1739637851715088
+2020-09-10 17:13:33,903 - INFO - Optimization problem was optimal
+2020-09-10 17:13:33,926 - INFO - 17:13:33 Running Optimization Problem starting at 2017-04-09 00:00:00 hb
+2020-09-10 17:13:34,271 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:34,788 - INFO - Time it takes for solver to finish: 0.5168769359588623
+2020-09-10 17:13:34,789 - INFO - Optimization problem was optimal
+2020-09-10 17:13:34,831 - INFO - 17:13:34 Running Optimization Problem starting at 2017-04-10 00:00:00 hb
+2020-09-10 17:13:35,381 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:35,746 - INFO - Time it takes for solver to finish: 0.36400365829467773
+2020-09-10 17:13:35,746 - INFO - Optimization problem was optimal
+2020-09-10 17:13:35,789 - INFO - 17:13:35 Running Optimization Problem starting at 2017-04-11 00:00:00 hb
+2020-09-10 17:13:36,063 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:36,542 - INFO - Time it takes for solver to finish: 0.4782729148864746
+2020-09-10 17:13:36,543 - INFO - Optimization problem was optimal
+2020-09-10 17:13:36,609 - INFO - 17:13:36 Running Optimization Problem starting at 2017-04-12 00:00:00 hb
+2020-09-10 17:13:37,074 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:37,633 - INFO - Time it takes for solver to finish: 0.558485746383667
+2020-09-10 17:13:37,633 - INFO - Optimization problem was optimal
+2020-09-10 17:13:37,712 - INFO - 17:13:37 Running Optimization Problem starting at 2017-04-13 00:00:00 hb
+2020-09-10 17:13:38,038 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:38,462 - INFO - Time it takes for solver to finish: 0.42412853240966797
+2020-09-10 17:13:38,462 - INFO - Optimization problem was optimal
+2020-09-10 17:13:38,575 - INFO - 17:13:38 Running Optimization Problem starting at 2017-04-14 00:00:00 hb
+2020-09-10 17:13:38,969 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:39,207 - INFO - Time it takes for solver to finish: 0.23311853408813477
+2020-09-10 17:13:39,208 - INFO - Optimization problem was optimal
+2020-09-10 17:13:39,241 - INFO - 17:13:39 Running Optimization Problem starting at 2017-04-15 00:00:00 hb
+2020-09-10 17:13:39,602 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:39,813 - INFO - Time it takes for solver to finish: 0.21055984497070312
+2020-09-10 17:13:39,813 - INFO - Optimization problem was optimal
+2020-09-10 17:13:39,876 - INFO - 17:13:39 Running Optimization Problem starting at 2017-04-16 00:00:00 hb
+2020-09-10 17:13:40,124 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:40,468 - INFO - Time it takes for solver to finish: 0.34441661834716797
+2020-09-10 17:13:40,469 - INFO - Optimization problem was optimal
+2020-09-10 17:13:40,512 - INFO - 17:13:40 Running Optimization Problem starting at 2017-04-17 00:00:00 hb
+2020-09-10 17:13:40,807 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:41,011 - INFO - Time it takes for solver to finish: 0.2045438289642334
+2020-09-10 17:13:41,012 - INFO - Optimization problem was optimal
+2020-09-10 17:13:41,037 - INFO - 17:13:41 Running Optimization Problem starting at 2017-04-18 00:00:00 hb
+2020-09-10 17:13:41,265 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:41,510 - INFO - Time it takes for solver to finish: 0.24414992332458496
+2020-09-10 17:13:41,510 - INFO - Optimization problem was optimal
+2020-09-10 17:13:41,547 - INFO - 17:13:41 Running Optimization Problem starting at 2017-04-19 00:00:00 hb
+2020-09-10 17:13:41,847 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:42,182 - INFO - Time it takes for solver to finish: 0.3350949287414551
+2020-09-10 17:13:42,182 - INFO - Optimization problem was optimal
+2020-09-10 17:13:42,216 - INFO - 17:13:42 Running Optimization Problem starting at 2017-04-20 00:00:00 hb
+2020-09-10 17:13:42,470 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:42,718 - INFO - Time it takes for solver to finish: 0.24865937232971191
+2020-09-10 17:13:42,718 - INFO - Optimization problem was optimal
+2020-09-10 17:13:42,749 - INFO - 17:13:42 Running Optimization Problem starting at 2017-04-21 00:00:00 hb
+2020-09-10 17:13:42,975 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:43,238 - INFO - Time it takes for solver to finish: 0.2623574733734131
+2020-09-10 17:13:43,238 - INFO - Optimization problem was optimal
+2020-09-10 17:13:43,296 - INFO - 17:13:43 Running Optimization Problem starting at 2017-04-22 00:00:00 hb
+2020-09-10 17:13:43,513 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:43,768 - INFO - Time it takes for solver to finish: 0.25518059730529785
+2020-09-10 17:13:43,768 - INFO - Optimization problem was optimal
+2020-09-10 17:13:43,795 - INFO - 17:13:43 Running Optimization Problem starting at 2017-04-23 00:00:00 hb
+2020-09-10 17:13:43,957 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:44,156 - INFO - Time it takes for solver to finish: 0.19953131675720215
+2020-09-10 17:13:44,157 - INFO - Optimization problem was optimal
+2020-09-10 17:13:44,191 - INFO - 17:13:44 Running Optimization Problem starting at 2017-04-24 00:00:00 hb
+2020-09-10 17:13:44,484 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:44,719 - INFO - Time it takes for solver to finish: 0.23462414741516113
+2020-09-10 17:13:44,719 - INFO - Optimization problem was optimal
+2020-09-10 17:13:44,753 - INFO - 17:13:44 Running Optimization Problem starting at 2017-04-25 00:00:00 hb
+2020-09-10 17:13:44,935 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:45,054 - INFO - Time it takes for solver to finish: 0.11831426620483398
+2020-09-10 17:13:45,054 - INFO - Optimization problem was optimal
+2020-09-10 17:13:45,087 - INFO - 17:13:45 Running Optimization Problem starting at 2017-04-26 00:00:00 hb
+2020-09-10 17:13:45,331 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:45,584 - INFO - Time it takes for solver to finish: 0.25217103958129883
+2020-09-10 17:13:45,585 - INFO - Optimization problem was optimal
+2020-09-10 17:13:45,615 - INFO - 17:13:45 Running Optimization Problem starting at 2017-04-27 00:00:00 hb
+2020-09-10 17:13:45,835 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:45,975 - INFO - Time it takes for solver to finish: 0.13937163352966309
+2020-09-10 17:13:45,975 - INFO - Optimization problem was optimal
+2020-09-10 17:13:46,008 - INFO - 17:13:46 Running Optimization Problem starting at 2017-04-28 00:00:00 hb
+2020-09-10 17:13:46,374 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:46,690 - INFO - Time it takes for solver to finish: 0.3158397674560547
+2020-09-10 17:13:46,690 - INFO - Optimization problem was optimal
+2020-09-10 17:13:46,735 - INFO - 17:13:46 Running Optimization Problem starting at 2017-04-29 00:00:00 hb
+2020-09-10 17:13:46,916 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:47,064 - INFO - Time it takes for solver to finish: 0.14789652824401855
+2020-09-10 17:13:47,065 - INFO - Optimization problem was optimal
+2020-09-10 17:13:47,080 - INFO - 17:13:47 Running Optimization Problem starting at 2017-04-30 00:00:00 hb
+2020-09-10 17:13:47,240 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:47,422 - INFO - Time it takes for solver to finish: 0.18148255348205566
+2020-09-10 17:13:47,422 - INFO - Optimization problem was optimal
+2020-09-10 17:13:47,451 - INFO - 17:13:47 Running Optimization Problem starting at 2017-05-01 00:00:00 hb
+2020-09-10 17:13:47,673 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:47,828 - INFO - Time it takes for solver to finish: 0.15441083908081055
+2020-09-10 17:13:47,828 - INFO - Optimization problem was optimal
+2020-09-10 17:13:47,851 - INFO - 17:13:47 Running Optimization Problem starting at 2017-05-02 00:00:00 hb
+2020-09-10 17:13:47,966 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:48,072 - INFO - Time it takes for solver to finish: 0.10527968406677246
+2020-09-10 17:13:48,072 - INFO - Optimization problem was optimal
+2020-09-10 17:13:48,100 - INFO - 17:13:48 Running Optimization Problem starting at 2017-05-03 00:00:00 hb
+2020-09-10 17:13:48,266 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:48,504 - INFO - Time it takes for solver to finish: 0.23763251304626465
+2020-09-10 17:13:48,504 - INFO - Optimization problem was optimal
+2020-09-10 17:13:48,536 - INFO - 17:13:48 Running Optimization Problem starting at 2017-05-04 00:00:00 hb
+2020-09-10 17:13:48,720 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:48,906 - INFO - Time it takes for solver to finish: 0.18499135971069336
+2020-09-10 17:13:48,906 - INFO - Optimization problem was optimal
+2020-09-10 17:13:48,920 - INFO - 17:13:48 Running Optimization Problem starting at 2017-05-05 00:00:00 hb
+2020-09-10 17:13:49,038 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:49,186 - INFO - Time it takes for solver to finish: 0.14839386940002441
+2020-09-10 17:13:49,186 - INFO - Optimization problem was optimal
+2020-09-10 17:13:49,209 - INFO - 17:13:49 Running Optimization Problem starting at 2017-05-06 00:00:00 hb
+2020-09-10 17:13:49,373 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:49,640 - INFO - Time it takes for solver to finish: 0.2663381099700928
+2020-09-10 17:13:49,640 - INFO - Optimization problem was optimal
+2020-09-10 17:13:49,718 - INFO - 17:13:49 Running Optimization Problem starting at 2017-05-07 00:00:00 hb
+2020-09-10 17:13:50,379 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:50,755 - INFO - Time it takes for solver to finish: 0.37650060653686523
+2020-09-10 17:13:50,756 - INFO - Optimization problem was optimal
+2020-09-10 17:13:50,824 - INFO - 17:13:50 Running Optimization Problem starting at 2017-05-08 00:00:00 hb
+2020-09-10 17:13:51,391 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:51,857 - INFO - Time it takes for solver to finish: 0.46674203872680664
+2020-09-10 17:13:51,858 - INFO - Optimization problem was optimal
+2020-09-10 17:13:51,887 - INFO - 17:13:51 Running Optimization Problem starting at 2017-05-09 00:00:00 hb
+2020-09-10 17:13:52,144 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:52,707 - INFO - Time it takes for solver to finish: 0.5629978179931641
+2020-09-10 17:13:52,707 - INFO - Optimization problem was optimal
+2020-09-10 17:13:52,804 - INFO - 17:13:52 Running Optimization Problem starting at 2017-05-10 00:00:00 hb
+2020-09-10 17:13:53,132 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:53,393 - INFO - Time it takes for solver to finish: 0.2606940269470215
+2020-09-10 17:13:53,393 - INFO - Optimization problem was optimal
+2020-09-10 17:13:53,427 - INFO - 17:13:53 Running Optimization Problem starting at 2017-05-11 00:00:00 hb
+2020-09-10 17:13:53,790 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:53,968 - INFO - Time it takes for solver to finish: 0.17797517776489258
+2020-09-10 17:13:53,970 - INFO - Optimization problem was optimal
+2020-09-10 17:13:53,989 - INFO - 17:13:53 Running Optimization Problem starting at 2017-05-12 00:00:00 hb
+2020-09-10 17:13:54,319 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:54,838 - INFO - Time it takes for solver to finish: 0.5153708457946777
+2020-09-10 17:13:54,839 - INFO - Optimization problem was optimal
+2020-09-10 17:13:54,862 - INFO - 17:13:54 Running Optimization Problem starting at 2017-05-13 00:00:00 hb
+2020-09-10 17:13:55,315 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:55,568 - INFO - Time it takes for solver to finish: 0.2531747817993164
+2020-09-10 17:13:55,568 - INFO - Optimization problem was optimal
+2020-09-10 17:13:55,624 - INFO - 17:13:55 Running Optimization Problem starting at 2017-05-14 00:00:00 hb
+2020-09-10 17:13:55,859 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:56,020 - INFO - Time it takes for solver to finish: 0.16042757034301758
+2020-09-10 17:13:56,027 - INFO - Optimization problem was optimal
+2020-09-10 17:13:56,109 - INFO - 17:13:56 Running Optimization Problem starting at 2017-05-15 00:00:00 hb
+2020-09-10 17:13:56,732 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:57,057 - INFO - Time it takes for solver to finish: 0.3233602046966553
+2020-09-10 17:13:57,058 - INFO - Optimization problem was optimal
+2020-09-10 17:13:57,096 - INFO - 17:13:57 Running Optimization Problem starting at 2017-05-16 00:00:00 hb
+2020-09-10 17:13:57,508 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:57,919 - INFO - Time it takes for solver to finish: 0.41059207916259766
+2020-09-10 17:13:57,919 - INFO - Optimization problem was optimal
+2020-09-10 17:13:57,948 - INFO - 17:13:57 Running Optimization Problem starting at 2017-05-17 00:00:00 hb
+2020-09-10 17:13:58,134 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:58,369 - INFO - Time it takes for solver to finish: 0.2356264591217041
+2020-09-10 17:13:58,369 - INFO - Optimization problem was optimal
+2020-09-10 17:13:58,403 - INFO - 17:13:58 Running Optimization Problem starting at 2017-05-18 00:00:00 hb
+2020-09-10 17:13:58,652 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:58,862 - INFO - Time it takes for solver to finish: 0.20905852317810059
+2020-09-10 17:13:58,862 - INFO - Optimization problem was optimal
+2020-09-10 17:13:58,895 - INFO - 17:13:58 Running Optimization Problem starting at 2017-05-19 00:00:00 hb
+2020-09-10 17:13:59,097 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:59,347 - INFO - Time it takes for solver to finish: 0.2496628761291504
+2020-09-10 17:13:59,347 - INFO - Optimization problem was optimal
+2020-09-10 17:13:59,386 - INFO - 17:13:59 Running Optimization Problem starting at 2017-05-20 00:00:00 hb
+2020-09-10 17:13:59,624 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:13:59,788 - INFO - Time it takes for solver to finish: 0.1629335880279541
+2020-09-10 17:13:59,788 - INFO - Optimization problem was optimal
+2020-09-10 17:13:59,818 - INFO - 17:13:59 Running Optimization Problem starting at 2017-05-21 00:00:00 hb
+2020-09-10 17:14:00,068 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:00,315 - INFO - Time it takes for solver to finish: 0.246657133102417
+2020-09-10 17:14:00,315 - INFO - Optimization problem was optimal
+2020-09-10 17:14:00,348 - INFO - 17:14:00 Running Optimization Problem starting at 2017-05-22 00:00:00 hb
+2020-09-10 17:14:00,656 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:01,007 - INFO - Time it takes for solver to finish: 0.350933313369751
+2020-09-10 17:14:01,007 - INFO - Optimization problem was optimal
+2020-09-10 17:14:01,028 - INFO - 17:14:01 Running Optimization Problem starting at 2017-05-23 00:00:00 hb
+2020-09-10 17:14:01,334 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:01,914 - INFO - Time it takes for solver to finish: 0.5795409679412842
+2020-09-10 17:14:01,914 - INFO - Optimization problem was optimal
+2020-09-10 17:14:01,932 - INFO - 17:14:01 Running Optimization Problem starting at 2017-05-24 00:00:00 hb
+2020-09-10 17:14:02,187 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:02,390 - INFO - Time it takes for solver to finish: 0.20253801345825195
+2020-09-10 17:14:02,390 - INFO - Optimization problem was optimal
+2020-09-10 17:14:02,424 - INFO - 17:14:02 Running Optimization Problem starting at 2017-05-25 00:00:00 hb
+2020-09-10 17:14:02,783 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:02,938 - INFO - Time it takes for solver to finish: 0.15541362762451172
+2020-09-10 17:14:02,938 - INFO - Optimization problem was optimal
+2020-09-10 17:14:02,953 - INFO - 17:14:02 Running Optimization Problem starting at 2017-05-26 00:00:00 hb
+2020-09-10 17:14:03,060 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:03,359 - INFO - Time it takes for solver to finish: 0.2987949848175049
+2020-09-10 17:14:03,360 - INFO - Optimization problem was optimal
+2020-09-10 17:14:03,398 - INFO - 17:14:03 Running Optimization Problem starting at 2017-05-27 00:00:00 hb
+2020-09-10 17:14:03,676 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:03,846 - INFO - Time it takes for solver to finish: 0.16945099830627441
+2020-09-10 17:14:03,847 - INFO - Optimization problem was optimal
+2020-09-10 17:14:03,863 - INFO - 17:14:03 Running Optimization Problem starting at 2017-05-28 00:00:00 hb
+2020-09-10 17:14:03,967 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:04,068 - INFO - Time it takes for solver to finish: 0.1013031005859375
+2020-09-10 17:14:04,068 - INFO - Optimization problem was optimal
+2020-09-10 17:14:04,084 - INFO - 17:14:04 Running Optimization Problem starting at 2017-05-29 00:00:00 hb
+2020-09-10 17:14:04,384 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:05,040 - INFO - Time it takes for solver to finish: 0.6557447910308838
+2020-09-10 17:14:05,040 - INFO - Optimization problem was optimal
+2020-09-10 17:14:05,060 - INFO - 17:14:05 Running Optimization Problem starting at 2017-05-30 00:00:00 hb
+2020-09-10 17:14:05,423 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:05,792 - INFO - Time it takes for solver to finish: 0.3679795265197754
+2020-09-10 17:14:05,792 - INFO - Optimization problem was optimal
+2020-09-10 17:14:05,830 - INFO - 17:14:05 Running Optimization Problem starting at 2017-05-31 00:00:00 hb
+2020-09-10 17:14:05,960 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:06,108 - INFO - Time it takes for solver to finish: 0.14839601516723633
+2020-09-10 17:14:06,109 - INFO - Optimization problem was optimal
+2020-09-10 17:14:06,154 - INFO - 17:14:06 Running Optimization Problem starting at 2017-06-01 00:00:00 hb
+2020-09-10 17:14:06,819 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:07,480 - INFO - Time it takes for solver to finish: 0.6602563858032227
+2020-09-10 17:14:07,480 - INFO - Optimization problem was optimal
+2020-09-10 17:14:07,539 - INFO - 17:14:07 Running Optimization Problem starting at 2017-06-02 00:00:00 hb
+2020-09-10 17:14:07,857 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:07,976 - INFO - Time it takes for solver to finish: 0.11931705474853516
+2020-09-10 17:14:07,976 - INFO - Optimization problem was optimal
+2020-09-10 17:14:07,993 - INFO - 17:14:07 Running Optimization Problem starting at 2017-06-03 00:00:00 hb
+2020-09-10 17:14:08,158 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:08,449 - INFO - Time it takes for solver to finish: 0.29027223587036133
+2020-09-10 17:14:08,451 - INFO - Optimization problem was optimal
+2020-09-10 17:14:08,488 - INFO - 17:14:08 Running Optimization Problem starting at 2017-06-04 00:00:00 hb
+2020-09-10 17:14:08,796 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:09,153 - INFO - Time it takes for solver to finish: 0.3579525947570801
+2020-09-10 17:14:09,158 - INFO - Optimization problem was optimal
+2020-09-10 17:14:09,256 - INFO - 17:14:09 Running Optimization Problem starting at 2017-06-05 00:00:00 hb
+2020-09-10 17:14:09,714 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:10,142 - INFO - Time it takes for solver to finish: 0.42763853073120117
+2020-09-10 17:14:10,142 - INFO - Optimization problem was optimal
+2020-09-10 17:14:10,170 - INFO - 17:14:10 Running Optimization Problem starting at 2017-06-06 00:00:00 hb
+2020-09-10 17:14:10,339 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:10,646 - INFO - Time it takes for solver to finish: 0.30681324005126953
+2020-09-10 17:14:10,646 - INFO - Optimization problem was optimal
+2020-09-10 17:14:10,684 - INFO - 17:14:10 Running Optimization Problem starting at 2017-06-07 00:00:00 hb
+2020-09-10 17:14:10,936 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:11,142 - INFO - Time it takes for solver to finish: 0.20604729652404785
+2020-09-10 17:14:11,143 - INFO - Optimization problem was optimal
+2020-09-10 17:14:11,162 - INFO - 17:14:11 Running Optimization Problem starting at 2017-06-08 00:00:00 hb
+2020-09-10 17:14:11,334 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:11,476 - INFO - Time it takes for solver to finish: 0.1418764591217041
+2020-09-10 17:14:11,476 - INFO - Optimization problem was optimal
+2020-09-10 17:14:11,495 - INFO - 17:14:11 Running Optimization Problem starting at 2017-06-09 00:00:00 hb
+2020-09-10 17:14:11,714 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:11,845 - INFO - Time it takes for solver to finish: 0.13034653663635254
+2020-09-10 17:14:11,845 - INFO - Optimization problem was optimal
+2020-09-10 17:14:11,860 - INFO - 17:14:11 Running Optimization Problem starting at 2017-06-10 00:00:00 hb
+2020-09-10 17:14:11,973 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:12,069 - INFO - Time it takes for solver to finish: 0.09525346755981445
+2020-09-10 17:14:12,069 - INFO - Optimization problem was optimal
+2020-09-10 17:14:12,097 - INFO - 17:14:12 Running Optimization Problem starting at 2017-06-11 00:00:00 hb
+2020-09-10 17:14:12,296 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:12,427 - INFO - Time it takes for solver to finish: 0.13034582138061523
+2020-09-10 17:14:12,427 - INFO - Optimization problem was optimal
+2020-09-10 17:14:12,450 - INFO - 17:14:12 Running Optimization Problem starting at 2017-06-12 00:00:00 hb
+2020-09-10 17:14:12,605 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:12,824 - INFO - Time it takes for solver to finish: 0.21908283233642578
+2020-09-10 17:14:12,825 - INFO - Optimization problem was optimal
+2020-09-10 17:14:12,848 - INFO - 17:14:12 Running Optimization Problem starting at 2017-06-13 00:00:00 hb
+2020-09-10 17:14:12,964 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:13,073 - INFO - Time it takes for solver to finish: 0.10979247093200684
+2020-09-10 17:14:13,073 - INFO - Optimization problem was optimal
+2020-09-10 17:14:13,094 - INFO - 17:14:13 Running Optimization Problem starting at 2017-06-14 00:00:00 hb
+2020-09-10 17:14:13,313 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:13,463 - INFO - Time it takes for solver to finish: 0.1499009132385254
+2020-09-10 17:14:13,464 - INFO - Optimization problem was optimal
+2020-09-10 17:14:13,486 - INFO - 17:14:13 Running Optimization Problem starting at 2017-06-15 00:00:00 hb
+2020-09-10 17:14:13,657 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:13,860 - INFO - Time it takes for solver to finish: 0.20203685760498047
+2020-09-10 17:14:13,861 - INFO - Optimization problem was optimal
+2020-09-10 17:14:13,876 - INFO - 17:14:13 Running Optimization Problem starting at 2017-06-16 00:00:00 hb
+2020-09-10 17:14:14,034 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:14,382 - INFO - Time it takes for solver to finish: 0.3469221591949463
+2020-09-10 17:14:14,382 - INFO - Optimization problem was optimal
+2020-09-10 17:14:14,411 - INFO - 17:14:14 Running Optimization Problem starting at 2017-06-17 00:00:00 hb
+2020-09-10 17:14:14,696 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:14,984 - INFO - Time it takes for solver to finish: 0.2882673740386963
+2020-09-10 17:14:14,984 - INFO - Optimization problem was optimal
+2020-09-10 17:14:15,002 - INFO - 17:14:15 Running Optimization Problem starting at 2017-06-18 00:00:00 hb
+2020-09-10 17:14:15,135 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:15,393 - INFO - Time it takes for solver to finish: 0.25768446922302246
+2020-09-10 17:14:15,394 - INFO - Optimization problem was optimal
+2020-09-10 17:14:15,415 - INFO - 17:14:15 Running Optimization Problem starting at 2017-06-19 00:00:00 hb
+2020-09-10 17:14:15,596 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:15,959 - INFO - Time it takes for solver to finish: 0.3634669780731201
+2020-09-10 17:14:15,960 - INFO - Optimization problem was optimal
+2020-09-10 17:14:15,987 - INFO - 17:14:15 Running Optimization Problem starting at 2017-06-20 00:00:00 hb
+2020-09-10 17:14:16,104 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:16,453 - INFO - Time it takes for solver to finish: 0.34842729568481445
+2020-09-10 17:14:16,453 - INFO - Optimization problem was optimal
+2020-09-10 17:14:16,500 - INFO - 17:14:16 Running Optimization Problem starting at 2017-06-21 00:00:00 hb
+2020-09-10 17:14:16,715 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:17,046 - INFO - Time it takes for solver to finish: 0.3318827152252197
+2020-09-10 17:14:17,047 - INFO - Optimization problem was optimal
+2020-09-10 17:14:17,065 - INFO - 17:14:17 Running Optimization Problem starting at 2017-06-22 00:00:00 hb
+2020-09-10 17:14:17,232 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:17,631 - INFO - Time it takes for solver to finish: 0.3985605239868164
+2020-09-10 17:14:17,632 - INFO - Optimization problem was optimal
+2020-09-10 17:14:17,680 - INFO - 17:14:17 Running Optimization Problem starting at 2017-06-23 00:00:00 hb
+2020-09-10 17:14:17,855 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:18,035 - INFO - Time it takes for solver to finish: 0.1804797649383545
+2020-09-10 17:14:18,035 - INFO - Optimization problem was optimal
+2020-09-10 17:14:18,052 - INFO - 17:14:18 Running Optimization Problem starting at 2017-06-24 00:00:00 hb
+2020-09-10 17:14:18,227 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:18,491 - INFO - Time it takes for solver to finish: 0.2636997699737549
+2020-09-10 17:14:18,492 - INFO - Optimization problem was optimal
+2020-09-10 17:14:18,532 - INFO - 17:14:18 Running Optimization Problem starting at 2017-06-25 00:00:00 hb
+2020-09-10 17:14:18,773 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:18,933 - INFO - Time it takes for solver to finish: 0.1594240665435791
+2020-09-10 17:14:18,934 - INFO - Optimization problem was optimal
+2020-09-10 17:14:18,950 - INFO - 17:14:18 Running Optimization Problem starting at 2017-06-26 00:00:00 hb
+2020-09-10 17:14:19,242 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:19,538 - INFO - Time it takes for solver to finish: 0.2947840690612793
+2020-09-10 17:14:19,538 - INFO - Optimization problem was optimal
+2020-09-10 17:14:19,576 - INFO - 17:14:19 Running Optimization Problem starting at 2017-06-27 00:00:00 hb
+2020-09-10 17:14:19,833 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:19,949 - INFO - Time it takes for solver to finish: 0.11630821228027344
+2020-09-10 17:14:19,949 - INFO - Optimization problem was optimal
+2020-09-10 17:14:19,962 - INFO - 17:14:19 Running Optimization Problem starting at 2017-06-28 00:00:00 hb
+2020-09-10 17:14:20,142 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:20,371 - INFO - Time it takes for solver to finish: 0.2286076545715332
+2020-09-10 17:14:20,371 - INFO - Optimization problem was optimal
+2020-09-10 17:14:20,402 - INFO - 17:14:20 Running Optimization Problem starting at 2017-06-29 00:00:00 hb
+2020-09-10 17:14:20,624 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:20,798 - INFO - Time it takes for solver to finish: 0.17446541786193848
+2020-09-10 17:14:20,799 - INFO - Optimization problem was optimal
+2020-09-10 17:14:20,824 - INFO - 17:14:20 Running Optimization Problem starting at 2017-06-30 00:00:00 hb
+2020-09-10 17:14:20,955 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:21,069 - INFO - Time it takes for solver to finish: 0.1143035888671875
+2020-09-10 17:14:21,069 - INFO - Optimization problem was optimal
+2020-09-10 17:14:21,085 - INFO - 17:14:21 Running Optimization Problem starting at 2017-07-01 00:00:00 hb
+2020-09-10 17:14:21,299 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:21,527 - INFO - Time it takes for solver to finish: 0.2276005744934082
+2020-09-10 17:14:21,527 - INFO - Optimization problem was optimal
+2020-09-10 17:14:21,557 - INFO - 17:14:21 Running Optimization Problem starting at 2017-07-02 00:00:00 hb
+2020-09-10 17:14:21,792 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:21,926 - INFO - Time it takes for solver to finish: 0.13385748863220215
+2020-09-10 17:14:21,926 - INFO - Optimization problem was optimal
+2020-09-10 17:14:21,943 - INFO - 17:14:21 Running Optimization Problem starting at 2017-07-03 00:00:00 hb
+2020-09-10 17:14:22,082 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:22,346 - INFO - Time it takes for solver to finish: 0.2626988887786865
+2020-09-10 17:14:22,346 - INFO - Optimization problem was optimal
+2020-09-10 17:14:22,389 - INFO - 17:14:22 Running Optimization Problem starting at 2017-07-04 00:00:00 hb
+2020-09-10 17:14:22,872 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:23,073 - INFO - Time it takes for solver to finish: 0.2010343074798584
+2020-09-10 17:14:23,074 - INFO - Optimization problem was optimal
+2020-09-10 17:14:23,126 - INFO - 17:14:23 Running Optimization Problem starting at 2017-07-05 00:00:00 hb
+2020-09-10 17:14:23,378 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:23,645 - INFO - Time it takes for solver to finish: 0.266709566116333
+2020-09-10 17:14:23,645 - INFO - Optimization problem was optimal
+2020-09-10 17:14:23,677 - INFO - 17:14:23 Running Optimization Problem starting at 2017-07-06 00:00:00 hb
+2020-09-10 17:14:23,905 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:24,127 - INFO - Time it takes for solver to finish: 0.2220902442932129
+2020-09-10 17:14:24,127 - INFO - Optimization problem was optimal
+2020-09-10 17:14:24,152 - INFO - 17:14:24 Running Optimization Problem starting at 2017-07-07 00:00:00 hb
+2020-09-10 17:14:24,394 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:24,721 - INFO - Time it takes for solver to finish: 0.3268697261810303
+2020-09-10 17:14:24,721 - INFO - Optimization problem was optimal
+2020-09-10 17:14:24,744 - INFO - 17:14:24 Running Optimization Problem starting at 2017-07-08 00:00:00 hb
+2020-09-10 17:14:24,924 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:25,059 - INFO - Time it takes for solver to finish: 0.13435721397399902
+2020-09-10 17:14:25,060 - INFO - Optimization problem was optimal
+2020-09-10 17:14:25,074 - INFO - 17:14:25 Running Optimization Problem starting at 2017-07-09 00:00:00 hb
+2020-09-10 17:14:25,230 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:25,438 - INFO - Time it takes for solver to finish: 0.2080545425415039
+2020-09-10 17:14:25,439 - INFO - Optimization problem was optimal
+2020-09-10 17:14:25,465 - INFO - 17:14:25 Running Optimization Problem starting at 2017-07-10 00:00:00 hb
+2020-09-10 17:14:25,664 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:25,944 - INFO - Time it takes for solver to finish: 0.27874231338500977
+2020-09-10 17:14:25,944 - INFO - Optimization problem was optimal
+2020-09-10 17:14:25,961 - INFO - 17:14:25 Running Optimization Problem starting at 2017-07-11 00:00:00 hb
+2020-09-10 17:14:26,175 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:26,581 - INFO - Time it takes for solver to finish: 0.40418171882629395
+2020-09-10 17:14:26,581 - INFO - Optimization problem was optimal
+2020-09-10 17:14:26,644 - INFO - 17:14:26 Running Optimization Problem starting at 2017-07-12 00:00:00 hb
+2020-09-10 17:14:26,942 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:27,086 - INFO - Time it takes for solver to finish: 0.14338231086730957
+2020-09-10 17:14:27,086 - INFO - Optimization problem was optimal
+2020-09-10 17:14:27,100 - INFO - 17:14:27 Running Optimization Problem starting at 2017-07-13 00:00:00 hb
+2020-09-10 17:14:27,303 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:27,546 - INFO - Time it takes for solver to finish: 0.24214434623718262
+2020-09-10 17:14:27,546 - INFO - Optimization problem was optimal
+2020-09-10 17:14:27,571 - INFO - 17:14:27 Running Optimization Problem starting at 2017-07-14 00:00:00 hb
+2020-09-10 17:14:27,790 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:27,951 - INFO - Time it takes for solver to finish: 0.15991759300231934
+2020-09-10 17:14:27,951 - INFO - Optimization problem was optimal
+2020-09-10 17:14:27,966 - INFO - 17:14:27 Running Optimization Problem starting at 2017-07-15 00:00:00 hb
+2020-09-10 17:14:28,123 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:28,332 - INFO - Time it takes for solver to finish: 0.2080531120300293
+2020-09-10 17:14:28,332 - INFO - Optimization problem was optimal
+2020-09-10 17:14:28,353 - INFO - 17:14:28 Running Optimization Problem starting at 2017-07-16 00:00:00 hb
+2020-09-10 17:14:28,584 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:28,835 - INFO - Time it takes for solver to finish: 0.2506675720214844
+2020-09-10 17:14:28,835 - INFO - Optimization problem was optimal
+2020-09-10 17:14:28,865 - INFO - 17:14:28 Running Optimization Problem starting at 2017-07-17 00:00:00 hb
+2020-09-10 17:14:29,079 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:29,449 - INFO - Time it takes for solver to finish: 0.36998486518859863
+2020-09-10 17:14:29,449 - INFO - Optimization problem was optimal
+2020-09-10 17:14:29,702 - INFO - 17:14:29 Running Optimization Problem starting at 2017-07-18 00:00:00 hb
+2020-09-10 17:14:30,414 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:31,225 - INFO - Time it takes for solver to finish: 0.8106565475463867
+2020-09-10 17:14:31,225 - INFO - Optimization problem was optimal
+2020-09-10 17:14:31,265 - INFO - 17:14:31 Running Optimization Problem starting at 2017-07-19 00:00:00 hb
+2020-09-10 17:14:31,587 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:31,957 - INFO - Time it takes for solver to finish: 0.36948323249816895
+2020-09-10 17:14:31,957 - INFO - Optimization problem was optimal
+2020-09-10 17:14:31,976 - INFO - 17:14:31 Running Optimization Problem starting at 2017-07-20 00:00:00 hb
+2020-09-10 17:14:32,116 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:32,511 - INFO - Time it takes for solver to finish: 0.3950510025024414
+2020-09-10 17:14:32,511 - INFO - Optimization problem was optimal
+2020-09-10 17:14:32,548 - INFO - 17:14:32 Running Optimization Problem starting at 2017-07-21 00:00:00 hb
+2020-09-10 17:14:32,864 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:33,043 - INFO - Time it takes for solver to finish: 0.17947769165039062
+2020-09-10 17:14:33,044 - INFO - Optimization problem was optimal
+2020-09-10 17:14:33,061 - INFO - 17:14:33 Running Optimization Problem starting at 2017-07-22 00:00:00 hb
+2020-09-10 17:14:33,298 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:33,625 - INFO - Time it takes for solver to finish: 0.3258678913116455
+2020-09-10 17:14:33,625 - INFO - Optimization problem was optimal
+2020-09-10 17:14:33,657 - INFO - 17:14:33 Running Optimization Problem starting at 2017-07-23 00:00:00 hb
+2020-09-10 17:14:33,923 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:34,040 - INFO - Time it takes for solver to finish: 0.11731266975402832
+2020-09-10 17:14:34,041 - INFO - Optimization problem was optimal
+2020-09-10 17:14:34,056 - INFO - 17:14:34 Running Optimization Problem starting at 2017-07-24 00:00:00 hb
+2020-09-10 17:14:34,236 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:34,736 - INFO - Time it takes for solver to finish: 0.4993288516998291
+2020-09-10 17:14:34,736 - INFO - Optimization problem was optimal
+2020-09-10 17:14:34,807 - INFO - 17:14:34 Running Optimization Problem starting at 2017-07-25 00:00:00 hb
+2020-09-10 17:14:35,037 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:35,285 - INFO - Time it takes for solver to finish: 0.24765968322753906
+2020-09-10 17:14:35,285 - INFO - Optimization problem was optimal
+2020-09-10 17:14:35,313 - INFO - 17:14:35 Running Optimization Problem starting at 2017-07-26 00:00:00 hb
+2020-09-10 17:14:35,548 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:35,916 - INFO - Time it takes for solver to finish: 0.3679788112640381
+2020-09-10 17:14:35,916 - INFO - Optimization problem was optimal
+2020-09-10 17:14:35,949 - INFO - 17:14:35 Running Optimization Problem starting at 2017-07-27 00:00:00 hb
+2020-09-10 17:14:36,093 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:36,268 - INFO - Time it takes for solver to finish: 0.17546772956848145
+2020-09-10 17:14:36,269 - INFO - Optimization problem was optimal
+2020-09-10 17:14:36,300 - INFO - 17:14:36 Running Optimization Problem starting at 2017-07-28 00:00:00 hb
+2020-09-10 17:14:36,507 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:36,726 - INFO - Time it takes for solver to finish: 0.2185826301574707
+2020-09-10 17:14:36,726 - INFO - Optimization problem was optimal
+2020-09-10 17:14:36,752 - INFO - 17:14:36 Running Optimization Problem starting at 2017-07-29 00:00:00 hb
+2020-09-10 17:14:36,919 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:37,156 - INFO - Time it takes for solver to finish: 0.23663067817687988
+2020-09-10 17:14:37,156 - INFO - Optimization problem was optimal
+2020-09-10 17:14:37,183 - INFO - 17:14:37 Running Optimization Problem starting at 2017-07-30 00:00:00 hb
+2020-09-10 17:14:37,336 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:37,510 - INFO - Time it takes for solver to finish: 0.1734611988067627
+2020-09-10 17:14:37,510 - INFO - Optimization problem was optimal
+2020-09-10 17:14:37,548 - INFO - 17:14:37 Running Optimization Problem starting at 2017-07-31 00:00:00 hb
+2020-09-10 17:14:37,724 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:37,949 - INFO - Time it takes for solver to finish: 0.22510170936584473
+2020-09-10 17:14:37,950 - INFO - Optimization problem was optimal
+2020-09-10 17:14:37,964 - INFO - 17:14:37 Running Optimization Problem starting at 2017-08-01 00:00:00 hb
+2020-09-10 17:14:38,194 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:38,904 - INFO - Time it takes for solver to finish: 0.7098889350891113
+2020-09-10 17:14:38,904 - INFO - Optimization problem was optimal
+2020-09-10 17:14:38,927 - INFO - 17:14:38 Running Optimization Problem starting at 2017-08-02 00:00:00 hb
+2020-09-10 17:14:39,040 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:39,327 - INFO - Time it takes for solver to finish: 0.2872636318206787
+2020-09-10 17:14:39,327 - INFO - Optimization problem was optimal
+2020-09-10 17:14:39,359 - INFO - 17:14:39 Running Optimization Problem starting at 2017-08-03 00:00:00 hb
+2020-09-10 17:14:39,540 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:39,708 - INFO - Time it takes for solver to finish: 0.16844964027404785
+2020-09-10 17:14:39,709 - INFO - Optimization problem was optimal
+2020-09-10 17:14:39,733 - INFO - 17:14:39 Running Optimization Problem starting at 2017-08-04 00:00:00 hb
+2020-09-10 17:14:39,880 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:39,999 - INFO - Time it takes for solver to finish: 0.11831831932067871
+2020-09-10 17:14:39,999 - INFO - Optimization problem was optimal
+2020-09-10 17:14:40,024 - INFO - 17:14:40 Running Optimization Problem starting at 2017-08-05 00:00:00 hb
+2020-09-10 17:14:40,210 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:40,369 - INFO - Time it takes for solver to finish: 0.15842270851135254
+2020-09-10 17:14:40,369 - INFO - Optimization problem was optimal
+2020-09-10 17:14:40,390 - INFO - 17:14:40 Running Optimization Problem starting at 2017-08-06 00:00:00 hb
+2020-09-10 17:14:40,644 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:40,874 - INFO - Time it takes for solver to finish: 0.22914862632751465
+2020-09-10 17:14:40,875 - INFO - Optimization problem was optimal
+2020-09-10 17:14:40,897 - INFO - 17:14:40 Running Optimization Problem starting at 2017-08-07 00:00:00 hb
+2020-09-10 17:14:41,054 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:41,242 - INFO - Time it takes for solver to finish: 0.18850159645080566
+2020-09-10 17:14:41,242 - INFO - Optimization problem was optimal
+2020-09-10 17:14:41,261 - INFO - 17:14:41 Running Optimization Problem starting at 2017-08-08 00:00:00 hb
+2020-09-10 17:14:41,450 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:41,648 - INFO - Time it takes for solver to finish: 0.1975250244140625
+2020-09-10 17:14:41,648 - INFO - Optimization problem was optimal
+2020-09-10 17:14:41,670 - INFO - 17:14:41 Running Optimization Problem starting at 2017-08-09 00:00:00 hb
+2020-09-10 17:14:41,857 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:42,025 - INFO - Time it takes for solver to finish: 0.16860151290893555
+2020-09-10 17:14:42,025 - INFO - Optimization problem was optimal
+2020-09-10 17:14:42,040 - INFO - 17:14:42 Running Optimization Problem starting at 2017-08-10 00:00:00 hb
+2020-09-10 17:14:42,196 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:42,541 - INFO - Time it takes for solver to finish: 0.34441447257995605
+2020-09-10 17:14:42,542 - INFO - Optimization problem was optimal
+2020-09-10 17:14:42,564 - INFO - 17:14:42 Running Optimization Problem starting at 2017-08-11 00:00:00 hb
+2020-09-10 17:14:42,921 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:43,058 - INFO - Time it takes for solver to finish: 0.13739705085754395
+2020-09-10 17:14:43,058 - INFO - Optimization problem was optimal
+2020-09-10 17:14:43,074 - INFO - 17:14:43 Running Optimization Problem starting at 2017-08-12 00:00:00 hb
+2020-09-10 17:14:43,261 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:43,542 - INFO - Time it takes for solver to finish: 0.2817504405975342
+2020-09-10 17:14:43,543 - INFO - Optimization problem was optimal
+2020-09-10 17:14:43,566 - INFO - 17:14:43 Running Optimization Problem starting at 2017-08-13 00:00:00 hb
+2020-09-10 17:14:43,808 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:43,966 - INFO - Time it takes for solver to finish: 0.15741848945617676
+2020-09-10 17:14:43,966 - INFO - Optimization problem was optimal
+2020-09-10 17:14:43,987 - INFO - 17:14:43 Running Optimization Problem starting at 2017-08-14 00:00:00 hb
+2020-09-10 17:14:44,108 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:44,263 - INFO - Time it takes for solver to finish: 0.1538681983947754
+2020-09-10 17:14:44,263 - INFO - Optimization problem was optimal
+2020-09-10 17:14:44,280 - INFO - 17:14:44 Running Optimization Problem starting at 2017-08-15 00:00:00 hb
+2020-09-10 17:14:44,477 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:44,658 - INFO - Time it takes for solver to finish: 0.1809830665588379
+2020-09-10 17:14:44,658 - INFO - Optimization problem was optimal
+2020-09-10 17:14:44,680 - INFO - 17:14:44 Running Optimization Problem starting at 2017-08-16 00:00:00 hb
+2020-09-10 17:14:44,892 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:45,056 - INFO - Time it takes for solver to finish: 0.16443967819213867
+2020-09-10 17:14:45,056 - INFO - Optimization problem was optimal
+2020-09-10 17:14:45,072 - INFO - 17:14:45 Running Optimization Problem starting at 2017-08-17 00:00:00 hb
+2020-09-10 17:14:45,210 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:45,532 - INFO - Time it takes for solver to finish: 0.3223581314086914
+2020-09-10 17:14:45,533 - INFO - Optimization problem was optimal
+2020-09-10 17:14:45,563 - INFO - 17:14:45 Running Optimization Problem starting at 2017-08-18 00:00:00 hb
+2020-09-10 17:14:45,796 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:46,008 - INFO - Time it takes for solver to finish: 0.21106195449829102
+2020-09-10 17:14:46,008 - INFO - Optimization problem was optimal
+2020-09-10 17:14:46,059 - INFO - 17:14:46 Running Optimization Problem starting at 2017-08-19 00:00:00 hb
+2020-09-10 17:14:46,431 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:46,708 - INFO - Time it takes for solver to finish: 0.27573275566101074
+2020-09-10 17:14:46,708 - INFO - Optimization problem was optimal
+2020-09-10 17:14:46,753 - INFO - 17:14:46 Running Optimization Problem starting at 2017-08-20 00:00:00 hb
+2020-09-10 17:14:47,097 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:47,334 - INFO - Time it takes for solver to finish: 0.23763179779052734
+2020-09-10 17:14:47,335 - INFO - Optimization problem was optimal
+2020-09-10 17:14:47,375 - INFO - 17:14:47 Running Optimization Problem starting at 2017-08-21 00:00:00 hb
+2020-09-10 17:14:47,612 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:47,834 - INFO - Time it takes for solver to finish: 0.22159457206726074
+2020-09-10 17:14:47,835 - INFO - Optimization problem was optimal
+2020-09-10 17:14:47,856 - INFO - 17:14:47 Running Optimization Problem starting at 2017-08-22 00:00:00 hb
+2020-09-10 17:14:47,993 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:48,150 - INFO - Time it takes for solver to finish: 0.15741801261901855
+2020-09-10 17:14:48,150 - INFO - Optimization problem was optimal
+2020-09-10 17:14:48,173 - INFO - 17:14:48 Running Optimization Problem starting at 2017-08-23 00:00:00 hb
+2020-09-10 17:14:48,320 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:48,596 - INFO - Time it takes for solver to finish: 0.27573394775390625
+2020-09-10 17:14:48,596 - INFO - Optimization problem was optimal
+2020-09-10 17:14:48,636 - INFO - 17:14:48 Running Optimization Problem starting at 2017-08-24 00:00:00 hb
+2020-09-10 17:14:48,877 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:49,383 - INFO - Time it takes for solver to finish: 0.5058465003967285
+2020-09-10 17:14:49,383 - INFO - Optimization problem was optimal
+2020-09-10 17:14:49,461 - INFO - 17:14:49 Running Optimization Problem starting at 2017-08-25 00:00:00 hb
+2020-09-10 17:14:49,914 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:50,469 - INFO - Time it takes for solver to finish: 0.5546135902404785
+2020-09-10 17:14:50,469 - INFO - Optimization problem was optimal
+2020-09-10 17:14:50,606 - INFO - 17:14:50 Running Optimization Problem starting at 2017-08-26 00:00:00 hb
+2020-09-10 17:14:51,377 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:52,014 - INFO - Time it takes for solver to finish: 0.6366941928863525
+2020-09-10 17:14:52,014 - INFO - Optimization problem was optimal
+2020-09-10 17:14:52,052 - INFO - 17:14:52 Running Optimization Problem starting at 2017-08-27 00:00:00 hb
+2020-09-10 17:14:52,429 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:52,939 - INFO - Time it takes for solver to finish: 0.5103585720062256
+2020-09-10 17:14:52,940 - INFO - Optimization problem was optimal
+2020-09-10 17:14:52,964 - INFO - 17:14:52 Running Optimization Problem starting at 2017-08-28 00:00:00 hb
+2020-09-10 17:14:53,209 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:53,699 - INFO - Time it takes for solver to finish: 0.4171102046966553
+2020-09-10 17:14:53,699 - INFO - Optimization problem was optimal
+2020-09-10 17:14:53,739 - INFO - 17:14:53 Running Optimization Problem starting at 2017-08-29 00:00:00 hb
+2020-09-10 17:14:53,992 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:54,222 - INFO - Time it takes for solver to finish: 0.22961163520812988
+2020-09-10 17:14:54,222 - INFO - Optimization problem was optimal
+2020-09-10 17:14:54,255 - INFO - 17:14:54 Running Optimization Problem starting at 2017-08-30 00:00:00 hb
+2020-09-10 17:14:54,525 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:54,842 - INFO - Time it takes for solver to finish: 0.315838098526001
+2020-09-10 17:14:54,843 - INFO - Optimization problem was optimal
+2020-09-10 17:14:54,898 - INFO - 17:14:54 Running Optimization Problem starting at 2017-08-31 00:00:00 hb
+2020-09-10 17:14:55,127 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:55,506 - INFO - Time it takes for solver to finish: 0.3780064582824707
+2020-09-10 17:14:55,506 - INFO - Optimization problem was optimal
+2020-09-10 17:14:55,545 - INFO - 17:14:55 Running Optimization Problem starting at 2017-09-01 00:00:00 hb
+2020-09-10 17:14:55,849 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:56,167 - INFO - Time it takes for solver to finish: 0.31784582138061523
+2020-09-10 17:14:56,168 - INFO - Optimization problem was optimal
+2020-09-10 17:14:56,200 - INFO - 17:14:56 Running Optimization Problem starting at 2017-09-02 00:00:00 hb
+2020-09-10 17:14:56,426 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:56,816 - INFO - Time it takes for solver to finish: 0.39003872871398926
+2020-09-10 17:14:56,817 - INFO - Optimization problem was optimal
+2020-09-10 17:14:56,845 - INFO - 17:14:56 Running Optimization Problem starting at 2017-09-03 00:00:00 hb
+2020-09-10 17:14:57,039 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:57,322 - INFO - Time it takes for solver to finish: 0.28275322914123535
+2020-09-10 17:14:57,322 - INFO - Optimization problem was optimal
+2020-09-10 17:14:57,348 - INFO - 17:14:57 Running Optimization Problem starting at 2017-09-04 00:00:00 hb
+2020-09-10 17:14:57,594 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:57,835 - INFO - Time it takes for solver to finish: 0.24013924598693848
+2020-09-10 17:14:57,835 - INFO - Optimization problem was optimal
+2020-09-10 17:14:57,859 - INFO - 17:14:57 Running Optimization Problem starting at 2017-09-05 00:00:00 hb
+2020-09-10 17:14:58,037 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:58,289 - INFO - Time it takes for solver to finish: 0.2526731491088867
+2020-09-10 17:14:58,290 - INFO - Optimization problem was optimal
+2020-09-10 17:14:58,322 - INFO - 17:14:58 Running Optimization Problem starting at 2017-09-06 00:00:00 hb
+2020-09-10 17:14:58,549 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:58,915 - INFO - Time it takes for solver to finish: 0.36597275733947754
+2020-09-10 17:14:58,915 - INFO - Optimization problem was optimal
+2020-09-10 17:14:58,955 - INFO - 17:14:58 Running Optimization Problem starting at 2017-09-07 00:00:00 hb
+2020-09-10 17:14:59,147 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:59,376 - INFO - Time it takes for solver to finish: 0.22961139678955078
+2020-09-10 17:14:59,376 - INFO - Optimization problem was optimal
+2020-09-10 17:14:59,399 - INFO - 17:14:59 Running Optimization Problem starting at 2017-09-08 00:00:00 hb
+2020-09-10 17:14:59,613 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:14:59,844 - INFO - Time it takes for solver to finish: 0.23011255264282227
+2020-09-10 17:14:59,844 - INFO - Optimization problem was optimal
+2020-09-10 17:14:59,874 - INFO - 17:14:59 Running Optimization Problem starting at 2017-09-09 00:00:00 hb
+2020-09-10 17:15:00,075 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:00,364 - INFO - Time it takes for solver to finish: 0.288769006729126
+2020-09-10 17:15:00,364 - INFO - Optimization problem was optimal
+2020-09-10 17:15:00,391 - INFO - 17:15:00 Running Optimization Problem starting at 2017-09-10 00:00:00 hb
+2020-09-10 17:15:00,653 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:01,003 - INFO - Time it takes for solver to finish: 0.3485233783721924
+2020-09-10 17:15:01,003 - INFO - Optimization problem was optimal
+2020-09-10 17:15:01,043 - INFO - 17:15:01 Running Optimization Problem starting at 2017-09-11 00:00:00 hb
+2020-09-10 17:15:01,225 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:01,539 - INFO - Time it takes for solver to finish: 0.3133373260498047
+2020-09-10 17:15:01,540 - INFO - Optimization problem was optimal
+2020-09-10 17:15:01,559 - INFO - 17:15:01 Running Optimization Problem starting at 2017-09-12 00:00:00 hb
+2020-09-10 17:15:01,752 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:01,974 - INFO - Time it takes for solver to finish: 0.21958398818969727
+2020-09-10 17:15:01,974 - INFO - Optimization problem was optimal
+2020-09-10 17:15:01,997 - INFO - 17:15:01 Running Optimization Problem starting at 2017-09-13 00:00:00 hb
+2020-09-10 17:15:02,313 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:02,740 - INFO - Time it takes for solver to finish: 0.4261331558227539
+2020-09-10 17:15:02,741 - INFO - Optimization problem was optimal
+2020-09-10 17:15:02,769 - INFO - 17:15:02 Running Optimization Problem starting at 2017-09-14 00:00:00 hb
+2020-09-10 17:15:02,994 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:03,110 - INFO - Time it takes for solver to finish: 0.11630916595458984
+2020-09-10 17:15:03,110 - INFO - Optimization problem was optimal
+2020-09-10 17:15:03,125 - INFO - 17:15:03 Running Optimization Problem starting at 2017-09-15 00:00:00 hb
+2020-09-10 17:15:03,420 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:03,707 - INFO - Time it takes for solver to finish: 0.2872648239135742
+2020-09-10 17:15:03,707 - INFO - Optimization problem was optimal
+2020-09-10 17:15:03,745 - INFO - 17:15:03 Running Optimization Problem starting at 2017-09-16 00:00:00 hb
+2020-09-10 17:15:03,912 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:04,032 - INFO - Time it takes for solver to finish: 0.11931705474853516
+2020-09-10 17:15:04,033 - INFO - Optimization problem was optimal
+2020-09-10 17:15:04,067 - INFO - 17:15:04 Running Optimization Problem starting at 2017-09-17 00:00:00 hb
+2020-09-10 17:15:04,218 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:04,345 - INFO - Time it takes for solver to finish: 0.12683773040771484
+2020-09-10 17:15:04,345 - INFO - Optimization problem was optimal
+2020-09-10 17:15:04,367 - INFO - 17:15:04 Running Optimization Problem starting at 2017-09-18 00:00:00 hb
+2020-09-10 17:15:04,653 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:04,813 - INFO - Time it takes for solver to finish: 0.1594240665435791
+2020-09-10 17:15:04,813 - INFO - Optimization problem was optimal
+2020-09-10 17:15:04,835 - INFO - 17:15:04 Running Optimization Problem starting at 2017-09-19 00:00:00 hb
+2020-09-10 17:15:04,962 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:05,065 - INFO - Time it takes for solver to finish: 0.10177397727966309
+2020-09-10 17:15:05,065 - INFO - Optimization problem was optimal
+2020-09-10 17:15:05,087 - INFO - 17:15:05 Running Optimization Problem starting at 2017-09-20 00:00:00 hb
+2020-09-10 17:15:05,250 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:05,405 - INFO - Time it takes for solver to finish: 0.15491318702697754
+2020-09-10 17:15:05,405 - INFO - Optimization problem was optimal
+2020-09-10 17:15:05,431 - INFO - 17:15:05 Running Optimization Problem starting at 2017-09-21 00:00:00 hb
+2020-09-10 17:15:05,588 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:05,814 - INFO - Time it takes for solver to finish: 0.22459673881530762
+2020-09-10 17:15:05,814 - INFO - Optimization problem was optimal
+2020-09-10 17:15:05,836 - INFO - 17:15:05 Running Optimization Problem starting at 2017-09-22 00:00:00 hb
+2020-09-10 17:15:06,066 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:06,338 - INFO - Time it takes for solver to finish: 0.2712211608886719
+2020-09-10 17:15:06,338 - INFO - Optimization problem was optimal
+2020-09-10 17:15:06,370 - INFO - 17:15:06 Running Optimization Problem starting at 2017-09-23 00:00:00 hb
+2020-09-10 17:15:06,534 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:06,745 - INFO - Time it takes for solver to finish: 0.20955681800842285
+2020-09-10 17:15:06,745 - INFO - Optimization problem was optimal
+2020-09-10 17:15:06,784 - INFO - 17:15:06 Running Optimization Problem starting at 2017-09-24 00:00:00 hb
+2020-09-10 17:15:07,037 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:07,369 - INFO - Time it takes for solver to finish: 0.33138251304626465
+2020-09-10 17:15:07,369 - INFO - Optimization problem was optimal
+2020-09-10 17:15:07,402 - INFO - 17:15:07 Running Optimization Problem starting at 2017-09-25 00:00:00 hb
+2020-09-10 17:15:07,614 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:07,817 - INFO - Time it takes for solver to finish: 0.20254039764404297
+2020-09-10 17:15:07,817 - INFO - Optimization problem was optimal
+2020-09-10 17:15:07,837 - INFO - 17:15:07 Running Optimization Problem starting at 2017-09-26 00:00:00 hb
+2020-09-10 17:15:07,952 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:08,087 - INFO - Time it takes for solver to finish: 0.1348586082458496
+2020-09-10 17:15:08,087 - INFO - Optimization problem was optimal
+2020-09-10 17:15:08,106 - INFO - 17:15:08 Running Optimization Problem starting at 2017-09-27 00:00:00 hb
+2020-09-10 17:15:08,387 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:08,665 - INFO - Time it takes for solver to finish: 0.2772390842437744
+2020-09-10 17:15:08,665 - INFO - Optimization problem was optimal
+2020-09-10 17:15:08,706 - INFO - 17:15:08 Running Optimization Problem starting at 2017-09-28 00:00:00 hb
+2020-09-10 17:15:09,009 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:09,269 - INFO - Time it takes for solver to finish: 0.2596902847290039
+2020-09-10 17:15:09,269 - INFO - Optimization problem was optimal
+2020-09-10 17:15:09,320 - INFO - 17:15:09 Running Optimization Problem starting at 2017-09-29 00:00:00 hb
+2020-09-10 17:15:09,634 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:09,913 - INFO - Time it takes for solver to finish: 0.27874207496643066
+2020-09-10 17:15:09,913 - INFO - Optimization problem was optimal
+2020-09-10 17:15:09,957 - INFO - 17:15:09 Running Optimization Problem starting at 2017-09-30 00:00:00 hb
+2020-09-10 17:15:10,515 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:10,919 - INFO - Time it takes for solver to finish: 0.40357422828674316
+2020-09-10 17:15:10,919 - INFO - Optimization problem was optimal
+2020-09-10 17:15:10,984 - INFO - 17:15:10 Running Optimization Problem starting at 2017-10-01 00:00:00 hb
+2020-09-10 17:15:11,218 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:11,365 - INFO - Time it takes for solver to finish: 0.14688611030578613
+2020-09-10 17:15:11,365 - INFO - Optimization problem was optimal
+2020-09-10 17:15:11,392 - INFO - 17:15:11 Running Optimization Problem starting at 2017-10-02 00:00:00 hb
+2020-09-10 17:15:11,643 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:11,886 - INFO - Time it takes for solver to finish: 0.24314665794372559
+2020-09-10 17:15:11,886 - INFO - Optimization problem was optimal
+2020-09-10 17:15:11,904 - INFO - 17:15:11 Running Optimization Problem starting at 2017-10-03 00:00:00 hb
+2020-09-10 17:15:12,005 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:12,128 - INFO - Time it takes for solver to finish: 0.12382984161376953
+2020-09-10 17:15:12,128 - INFO - Optimization problem was optimal
+2020-09-10 17:15:12,149 - INFO - 17:15:12 Running Optimization Problem starting at 2017-10-04 00:00:00 hb
+2020-09-10 17:15:12,310 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:12,452 - INFO - Time it takes for solver to finish: 0.14137601852416992
+2020-09-10 17:15:12,452 - INFO - Optimization problem was optimal
+2020-09-10 17:15:12,470 - INFO - 17:15:12 Running Optimization Problem starting at 2017-10-05 00:00:00 hb
+2020-09-10 17:15:12,705 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:12,927 - INFO - Time it takes for solver to finish: 0.2215895652770996
+2020-09-10 17:15:12,927 - INFO - Optimization problem was optimal
+2020-09-10 17:15:12,953 - INFO - 17:15:12 Running Optimization Problem starting at 2017-10-06 00:00:00 hb
+2020-09-10 17:15:13,112 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:13,371 - INFO - Time it takes for solver to finish: 0.25768589973449707
+2020-09-10 17:15:13,371 - INFO - Optimization problem was optimal
+2020-09-10 17:15:13,427 - INFO - 17:15:13 Running Optimization Problem starting at 2017-10-07 00:00:00 hb
+2020-09-10 17:15:14,069 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:14,757 - INFO - Time it takes for solver to finish: 0.6883316040039062
+2020-09-10 17:15:14,757 - INFO - Optimization problem was optimal
+2020-09-10 17:15:14,860 - INFO - 17:15:14 Running Optimization Problem starting at 2017-10-08 00:00:00 hb
+2020-09-10 17:15:15,118 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:15,465 - INFO - Time it takes for solver to finish: 0.3474249839782715
+2020-09-10 17:15:15,465 - INFO - Optimization problem was optimal
+2020-09-10 17:15:15,519 - INFO - 17:15:15 Running Optimization Problem starting at 2017-10-09 00:00:00 hb
+2020-09-10 17:15:15,913 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:16,076 - INFO - Time it takes for solver to finish: 0.1629328727722168
+2020-09-10 17:15:16,076 - INFO - Optimization problem was optimal
+2020-09-10 17:15:16,094 - INFO - 17:15:16 Running Optimization Problem starting at 2017-10-10 00:00:00 hb
+2020-09-10 17:15:16,329 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:16,602 - INFO - Time it takes for solver to finish: 0.27222728729248047
+2020-09-10 17:15:16,603 - INFO - Optimization problem was optimal
+2020-09-10 17:15:16,667 - INFO - 17:15:16 Running Optimization Problem starting at 2017-10-11 00:00:00 hb
+2020-09-10 17:15:16,940 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:17,067 - INFO - Time it takes for solver to finish: 0.12733888626098633
+2020-09-10 17:15:17,067 - INFO - Optimization problem was optimal
+2020-09-10 17:15:17,087 - INFO - 17:15:17 Running Optimization Problem starting at 2017-10-12 00:00:00 hb
+2020-09-10 17:15:17,380 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:17,655 - INFO - Time it takes for solver to finish: 0.2742297649383545
+2020-09-10 17:15:17,656 - INFO - Optimization problem was optimal
+2020-09-10 17:15:17,699 - INFO - 17:15:17 Running Optimization Problem starting at 2017-10-13 00:00:00 hb
+2020-09-10 17:15:17,958 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:18,445 - INFO - Time it takes for solver to finish: 0.48679304122924805
+2020-09-10 17:15:18,445 - INFO - Optimization problem was optimal
+2020-09-10 17:15:18,506 - INFO - 17:15:18 Running Optimization Problem starting at 2017-10-14 00:00:00 hb
+2020-09-10 17:15:18,846 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:19,097 - INFO - Time it takes for solver to finish: 0.2501652240753174
+2020-09-10 17:15:19,097 - INFO - Optimization problem was optimal
+2020-09-10 17:15:19,130 - INFO - 17:15:19 Running Optimization Problem starting at 2017-10-15 00:00:00 hb
+2020-09-10 17:15:19,408 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:19,673 - INFO - Time it takes for solver to finish: 0.2647056579589844
+2020-09-10 17:15:19,674 - INFO - Optimization problem was optimal
+2020-09-10 17:15:19,707 - INFO - 17:15:19 Running Optimization Problem starting at 2017-10-16 00:00:00 hb
+2020-09-10 17:15:19,945 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:20,094 - INFO - Time it takes for solver to finish: 0.14839434623718262
+2020-09-10 17:15:20,094 - INFO - Optimization problem was optimal
+2020-09-10 17:15:20,107 - INFO - 17:15:20 Running Optimization Problem starting at 2017-10-17 00:00:00 hb
+2020-09-10 17:15:20,250 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:20,449 - INFO - Time it takes for solver to finish: 0.19867992401123047
+2020-09-10 17:15:20,449 - INFO - Optimization problem was optimal
+2020-09-10 17:15:20,486 - INFO - 17:15:20 Running Optimization Problem starting at 2017-10-18 00:00:00 hb
+2020-09-10 17:15:20,658 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:20,812 - INFO - Time it takes for solver to finish: 0.15290522575378418
+2020-09-10 17:15:20,812 - INFO - Optimization problem was optimal
+2020-09-10 17:15:20,828 - INFO - 17:15:20 Running Optimization Problem starting at 2017-10-19 00:00:00 hb
+2020-09-10 17:15:20,968 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:21,090 - INFO - Time it takes for solver to finish: 0.12132668495178223
+2020-09-10 17:15:21,090 - INFO - Optimization problem was optimal
+2020-09-10 17:15:21,105 - INFO - 17:15:21 Running Optimization Problem starting at 2017-10-20 00:00:00 hb
+2020-09-10 17:15:21,260 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:21,387 - INFO - Time it takes for solver to finish: 0.12690210342407227
+2020-09-10 17:15:21,388 - INFO - Optimization problem was optimal
+2020-09-10 17:15:21,417 - INFO - 17:15:21 Running Optimization Problem starting at 2017-10-21 00:00:00 hb
+2020-09-10 17:15:21,596 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:21,732 - INFO - Time it takes for solver to finish: 0.1353588104248047
+2020-09-10 17:15:21,732 - INFO - Optimization problem was optimal
+2020-09-10 17:15:21,776 - INFO - 17:15:21 Running Optimization Problem starting at 2017-10-22 00:00:00 hb
+2020-09-10 17:15:22,022 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:22,231 - INFO - Time it takes for solver to finish: 0.20855331420898438
+2020-09-10 17:15:22,231 - INFO - Optimization problem was optimal
+2020-09-10 17:15:22,252 - INFO - 17:15:22 Running Optimization Problem starting at 2017-10-23 00:00:00 hb
+2020-09-10 17:15:22,427 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:22,588 - INFO - Time it takes for solver to finish: 0.15992498397827148
+2020-09-10 17:15:22,588 - INFO - Optimization problem was optimal
+2020-09-10 17:15:22,632 - INFO - 17:15:22 Running Optimization Problem starting at 2017-10-24 00:00:00 hb
+2020-09-10 17:15:22,916 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:23,031 - INFO - Time it takes for solver to finish: 0.1148064136505127
+2020-09-10 17:15:23,031 - INFO - Optimization problem was optimal
+2020-09-10 17:15:23,046 - INFO - 17:15:23 Running Optimization Problem starting at 2017-10-25 00:00:00 hb
+2020-09-10 17:15:23,193 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:23,399 - INFO - Time it takes for solver to finish: 0.20554685592651367
+2020-09-10 17:15:23,399 - INFO - Optimization problem was optimal
+2020-09-10 17:15:23,419 - INFO - 17:15:23 Running Optimization Problem starting at 2017-10-26 00:00:00 hb
+2020-09-10 17:15:23,588 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:23,794 - INFO - Time it takes for solver to finish: 0.20654773712158203
+2020-09-10 17:15:23,794 - INFO - Optimization problem was optimal
+2020-09-10 17:15:23,817 - INFO - 17:15:23 Running Optimization Problem starting at 2017-10-27 00:00:00 hb
+2020-09-10 17:15:23,957 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:24,065 - INFO - Time it takes for solver to finish: 0.1077871322631836
+2020-09-10 17:15:24,065 - INFO - Optimization problem was optimal
+2020-09-10 17:15:24,081 - INFO - 17:15:24 Running Optimization Problem starting at 2017-10-28 00:00:00 hb
+2020-09-10 17:15:24,206 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:24,348 - INFO - Time it takes for solver to finish: 0.14087486267089844
+2020-09-10 17:15:24,348 - INFO - Optimization problem was optimal
+2020-09-10 17:15:24,372 - INFO - 17:15:24 Running Optimization Problem starting at 2017-10-29 00:00:00 hb
+2020-09-10 17:15:24,549 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:24,758 - INFO - Time it takes for solver to finish: 0.20905613899230957
+2020-09-10 17:15:24,758 - INFO - Optimization problem was optimal
+2020-09-10 17:15:24,788 - INFO - 17:15:24 Running Optimization Problem starting at 2017-10-30 00:00:00 hb
+2020-09-10 17:15:24,968 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:25,073 - INFO - Time it takes for solver to finish: 0.10527968406677246
+2020-09-10 17:15:25,073 - INFO - Optimization problem was optimal
+2020-09-10 17:15:25,105 - INFO - 17:15:25 Running Optimization Problem starting at 2017-10-31 00:00:00 hb
+2020-09-10 17:15:25,287 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:25,458 - INFO - Time it takes for solver to finish: 0.17095565795898438
+2020-09-10 17:15:25,459 - INFO - Optimization problem was optimal
+2020-09-10 17:15:25,485 - INFO - 17:15:25 Running Optimization Problem starting at 2017-11-01 00:00:00 hb
+2020-09-10 17:15:25,644 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:25,915 - INFO - Time it takes for solver to finish: 0.2702195644378662
+2020-09-10 17:15:25,915 - INFO - Optimization problem was optimal
+2020-09-10 17:15:25,928 - INFO - 17:15:25 Running Optimization Problem starting at 2017-11-02 00:00:00 hb
+2020-09-10 17:15:26,071 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:26,265 - INFO - Time it takes for solver to finish: 0.19401836395263672
+2020-09-10 17:15:26,265 - INFO - Optimization problem was optimal
+2020-09-10 17:15:26,307 - INFO - 17:15:26 Running Optimization Problem starting at 2017-11-03 00:00:00 hb
+2020-09-10 17:15:26,487 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:26,657 - INFO - Time it takes for solver to finish: 0.1699528694152832
+2020-09-10 17:15:26,657 - INFO - Optimization problem was optimal
+2020-09-10 17:15:26,694 - INFO - 17:15:26 Running Optimization Problem starting at 2017-11-04 00:00:00 hb
+2020-09-10 17:15:26,929 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:27,018 - INFO - Time it takes for solver to finish: 0.08823513984680176
+2020-09-10 17:15:27,018 - INFO - Optimization problem was optimal
+2020-09-10 17:15:27,033 - INFO - 17:15:27 Running Optimization Problem starting at 2017-11-05 00:00:00 hb
+2020-09-10 17:15:27,169 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:27,425 - INFO - Time it takes for solver to finish: 0.2556796073913574
+2020-09-10 17:15:27,425 - INFO - Optimization problem was optimal
+2020-09-10 17:15:27,465 - INFO - 17:15:27 Running Optimization Problem starting at 2017-11-06 00:00:00 hb
+2020-09-10 17:15:28,110 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:28,455 - INFO - Time it takes for solver to finish: 0.34491825103759766
+2020-09-10 17:15:28,456 - INFO - Optimization problem was optimal
+2020-09-10 17:15:28,500 - INFO - 17:15:28 Running Optimization Problem starting at 2017-11-07 00:00:00 hb
+2020-09-10 17:15:28,788 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:28,945 - INFO - Time it takes for solver to finish: 0.1564159393310547
+2020-09-10 17:15:28,946 - INFO - Optimization problem was optimal
+2020-09-10 17:15:28,978 - INFO - 17:15:28 Running Optimization Problem starting at 2017-11-08 00:00:00 hb
+2020-09-10 17:15:29,091 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:29,223 - INFO - Time it takes for solver to finish: 0.13235211372375488
+2020-09-10 17:15:29,223 - INFO - Optimization problem was optimal
+2020-09-10 17:15:29,256 - INFO - 17:15:29 Running Optimization Problem starting at 2017-11-09 00:00:00 hb
+2020-09-10 17:15:29,864 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:30,194 - INFO - Time it takes for solver to finish: 0.3293764591217041
+2020-09-10 17:15:30,194 - INFO - Optimization problem was optimal
+2020-09-10 17:15:30,259 - INFO - 17:15:30 Running Optimization Problem starting at 2017-11-10 00:00:00 hb
+2020-09-10 17:15:30,529 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:30,897 - INFO - Time it takes for solver to finish: 0.361461877822876
+2020-09-10 17:15:30,897 - INFO - Optimization problem was optimal
+2020-09-10 17:15:30,925 - INFO - 17:15:30 Running Optimization Problem starting at 2017-11-11 00:00:00 hb
+2020-09-10 17:15:31,109 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:31,380 - INFO - Time it takes for solver to finish: 0.270721435546875
+2020-09-10 17:15:31,380 - INFO - Optimization problem was optimal
+2020-09-10 17:15:31,423 - INFO - 17:15:31 Running Optimization Problem starting at 2017-11-12 00:00:00 hb
+2020-09-10 17:15:31,719 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:31,906 - INFO - Time it takes for solver to finish: 0.18649649620056152
+2020-09-10 17:15:31,906 - INFO - Optimization problem was optimal
+2020-09-10 17:15:31,919 - INFO - 17:15:31 Running Optimization Problem starting at 2017-11-13 00:00:00 hb
+2020-09-10 17:15:32,021 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:32,174 - INFO - Time it takes for solver to finish: 0.1524043083190918
+2020-09-10 17:15:32,174 - INFO - Optimization problem was optimal
+2020-09-10 17:15:32,218 - INFO - 17:15:32 Running Optimization Problem starting at 2017-11-14 00:00:00 hb
+2020-09-10 17:15:32,387 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:32,511 - INFO - Time it takes for solver to finish: 0.12382936477661133
+2020-09-10 17:15:32,511 - INFO - Optimization problem was optimal
+2020-09-10 17:15:32,533 - INFO - 17:15:32 Running Optimization Problem starting at 2017-11-15 00:00:00 hb
+2020-09-10 17:15:32,728 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:32,892 - INFO - Time it takes for solver to finish: 0.16393613815307617
+2020-09-10 17:15:32,893 - INFO - Optimization problem was optimal
+2020-09-10 17:15:32,923 - INFO - 17:15:32 Running Optimization Problem starting at 2017-11-16 00:00:00 hb
+2020-09-10 17:15:33,050 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:33,203 - INFO - Time it takes for solver to finish: 0.15290617942810059
+2020-09-10 17:15:33,204 - INFO - Optimization problem was optimal
+2020-09-10 17:15:33,247 - INFO - 17:15:33 Running Optimization Problem starting at 2017-11-17 00:00:00 hb
+2020-09-10 17:15:33,381 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:33,524 - INFO - Time it takes for solver to finish: 0.14338088035583496
+2020-09-10 17:15:33,524 - INFO - Optimization problem was optimal
+2020-09-10 17:15:33,547 - INFO - 17:15:33 Running Optimization Problem starting at 2017-11-18 00:00:00 hb
+2020-09-10 17:15:33,746 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:33,886 - INFO - Time it takes for solver to finish: 0.14087557792663574
+2020-09-10 17:15:33,887 - INFO - Optimization problem was optimal
+2020-09-10 17:15:33,908 - INFO - 17:15:33 Running Optimization Problem starting at 2017-11-19 00:00:00 hb
+2020-09-10 17:15:34,015 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:34,116 - INFO - Time it takes for solver to finish: 0.10126948356628418
+2020-09-10 17:15:34,117 - INFO - Optimization problem was optimal
+2020-09-10 17:15:34,133 - INFO - 17:15:34 Running Optimization Problem starting at 2017-11-20 00:00:00 hb
+2020-09-10 17:15:34,312 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:34,449 - INFO - Time it takes for solver to finish: 0.13686490058898926
+2020-09-10 17:15:34,449 - INFO - Optimization problem was optimal
+2020-09-10 17:15:34,469 - INFO - 17:15:34 Running Optimization Problem starting at 2017-11-21 00:00:00 hb
+2020-09-10 17:15:34,598 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:34,798 - INFO - Time it takes for solver to finish: 0.19902968406677246
+2020-09-10 17:15:34,798 - INFO - Optimization problem was optimal
+2020-09-10 17:15:34,817 - INFO - 17:15:34 Running Optimization Problem starting at 2017-11-22 00:00:00 hb
+2020-09-10 17:15:34,976 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:35,088 - INFO - Time it takes for solver to finish: 0.11129641532897949
+2020-09-10 17:15:35,089 - INFO - Optimization problem was optimal
+2020-09-10 17:15:35,104 - INFO - 17:15:35 Running Optimization Problem starting at 2017-11-23 00:00:00 hb
+2020-09-10 17:15:35,235 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:35,420 - INFO - Time it takes for solver to finish: 0.18198490142822266
+2020-09-10 17:15:35,420 - INFO - Optimization problem was optimal
+2020-09-10 17:15:35,446 - INFO - 17:15:35 Running Optimization Problem starting at 2017-11-24 00:00:00 hb
+2020-09-10 17:15:35,588 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:35,784 - INFO - Time it takes for solver to finish: 0.19602131843566895
+2020-09-10 17:15:35,785 - INFO - Optimization problem was optimal
+2020-09-10 17:15:35,811 - INFO - 17:15:35 Running Optimization Problem starting at 2017-11-25 00:00:00 hb
+2020-09-10 17:15:35,969 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:36,064 - INFO - Time it takes for solver to finish: 0.09525418281555176
+2020-09-10 17:15:36,065 - INFO - Optimization problem was optimal
+2020-09-10 17:15:36,078 - INFO - 17:15:36 Running Optimization Problem starting at 2017-11-26 00:00:00 hb
+2020-09-10 17:15:36,182 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:36,370 - INFO - Time it takes for solver to finish: 0.18799972534179688
+2020-09-10 17:15:36,370 - INFO - Optimization problem was optimal
+2020-09-10 17:15:36,393 - INFO - 17:15:36 Running Optimization Problem starting at 2017-11-27 00:00:00 hb
+2020-09-10 17:15:36,553 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:36,751 - INFO - Time it takes for solver to finish: 0.19803190231323242
+2020-09-10 17:15:36,752 - INFO - Optimization problem was optimal
+2020-09-10 17:15:36,780 - INFO - 17:15:36 Running Optimization Problem starting at 2017-11-28 00:00:00 hb
+2020-09-10 17:15:36,983 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:37,073 - INFO - Time it takes for solver to finish: 0.09074163436889648
+2020-09-10 17:15:37,073 - INFO - Optimization problem was optimal
+2020-09-10 17:15:37,086 - INFO - 17:15:37 Running Optimization Problem starting at 2017-11-29 00:00:00 hb
+2020-09-10 17:15:37,227 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:37,368 - INFO - Time it takes for solver to finish: 0.13987255096435547
+2020-09-10 17:15:37,368 - INFO - Optimization problem was optimal
+2020-09-10 17:15:37,412 - INFO - 17:15:37 Running Optimization Problem starting at 2017-11-30 00:00:00 hb
+2020-09-10 17:15:37,577 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:37,748 - INFO - Time it takes for solver to finish: 0.17095422744750977
+2020-09-10 17:15:37,748 - INFO - Optimization problem was optimal
+2020-09-10 17:15:37,785 - INFO - 17:15:37 Running Optimization Problem starting at 2017-12-01 00:00:00 hb
+2020-09-10 17:15:37,970 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:38,076 - INFO - Time it takes for solver to finish: 0.10477852821350098
+2020-09-10 17:15:38,076 - INFO - Optimization problem was optimal
+2020-09-10 17:15:38,089 - INFO - 17:15:38 Running Optimization Problem starting at 2017-12-02 00:00:00 hb
+2020-09-10 17:15:38,200 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:38,349 - INFO - Time it takes for solver to finish: 0.1488962173461914
+2020-09-10 17:15:38,349 - INFO - Optimization problem was optimal
+2020-09-10 17:15:38,373 - INFO - 17:15:38 Running Optimization Problem starting at 2017-12-03 00:00:00 hb
+2020-09-10 17:15:38,552 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:38,716 - INFO - Time it takes for solver to finish: 0.16443824768066406
+2020-09-10 17:15:38,716 - INFO - Optimization problem was optimal
+2020-09-10 17:15:38,738 - INFO - 17:15:38 Running Optimization Problem starting at 2017-12-04 00:00:00 hb
+2020-09-10 17:15:38,876 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:39,042 - INFO - Time it takes for solver to finish: 0.16493916511535645
+2020-09-10 17:15:39,042 - INFO - Optimization problem was optimal
+2020-09-10 17:15:39,056 - INFO - 17:15:39 Running Optimization Problem starting at 2017-12-05 00:00:00 hb
+2020-09-10 17:15:39,147 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:39,285 - INFO - Time it takes for solver to finish: 0.13686490058898926
+2020-09-10 17:15:39,285 - INFO - Optimization problem was optimal
+2020-09-10 17:15:39,305 - INFO - 17:15:39 Running Optimization Problem starting at 2017-12-06 00:00:00 hb
+2020-09-10 17:15:39,433 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:39,622 - INFO - Time it takes for solver to finish: 0.18950462341308594
+2020-09-10 17:15:39,622 - INFO - Optimization problem was optimal
+2020-09-10 17:15:39,659 - INFO - 17:15:39 Running Optimization Problem starting at 2017-12-07 00:00:00 hb
+2020-09-10 17:15:39,852 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:39,951 - INFO - Time it takes for solver to finish: 0.09876203536987305
+2020-09-10 17:15:39,951 - INFO - Optimization problem was optimal
+2020-09-10 17:15:39,981 - INFO - 17:15:39 Running Optimization Problem starting at 2017-12-08 00:00:00 hb
+2020-09-10 17:15:40,143 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:40,427 - INFO - Time it takes for solver to finish: 0.2837538719177246
+2020-09-10 17:15:40,427 - INFO - Optimization problem was optimal
+2020-09-10 17:15:40,456 - INFO - 17:15:40 Running Optimization Problem starting at 2017-12-09 00:00:00 hb
+2020-09-10 17:15:40,800 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:40,923 - INFO - Time it takes for solver to finish: 0.12332844734191895
+2020-09-10 17:15:40,923 - INFO - Optimization problem was optimal
+2020-09-10 17:15:40,938 - INFO - 17:15:40 Running Optimization Problem starting at 2017-12-10 00:00:00 hb
+2020-09-10 17:15:41,042 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:41,172 - INFO - Time it takes for solver to finish: 0.12884283065795898
+2020-09-10 17:15:41,172 - INFO - Optimization problem was optimal
+2020-09-10 17:15:41,192 - INFO - 17:15:41 Running Optimization Problem starting at 2017-12-11 00:00:00 hb
+2020-09-10 17:15:41,352 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:41,478 - INFO - Time it takes for solver to finish: 0.12583470344543457
+2020-09-10 17:15:41,478 - INFO - Optimization problem was optimal
+2020-09-10 17:15:41,502 - INFO - 17:15:41 Running Optimization Problem starting at 2017-12-12 00:00:00 hb
+2020-09-10 17:15:41,680 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:41,824 - INFO - Time it takes for solver to finish: 0.14338207244873047
+2020-09-10 17:15:41,824 - INFO - Optimization problem was optimal
+2020-09-10 17:15:41,845 - INFO - 17:15:41 Running Optimization Problem starting at 2017-12-13 00:00:00 hb
+2020-09-10 17:15:41,980 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:42,105 - INFO - Time it takes for solver to finish: 0.12483358383178711
+2020-09-10 17:15:42,105 - INFO - Optimization problem was optimal
+2020-09-10 17:15:42,129 - INFO - 17:15:42 Running Optimization Problem starting at 2017-12-14 00:00:00 hb
+2020-09-10 17:15:42,269 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:42,390 - INFO - Time it takes for solver to finish: 0.12082195281982422
+2020-09-10 17:15:42,390 - INFO - Optimization problem was optimal
+2020-09-10 17:15:42,415 - INFO - 17:15:42 Running Optimization Problem starting at 2017-12-15 00:00:00 hb
+2020-09-10 17:15:42,589 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:42,808 - INFO - Time it takes for solver to finish: 0.2185807228088379
+2020-09-10 17:15:42,808 - INFO - Optimization problem was optimal
+2020-09-10 17:15:42,845 - INFO - 17:15:42 Running Optimization Problem starting at 2017-12-16 00:00:00 hb
+2020-09-10 17:15:43,003 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:43,133 - INFO - Time it takes for solver to finish: 0.129347562789917
+2020-09-10 17:15:43,133 - INFO - Optimization problem was optimal
+2020-09-10 17:15:43,152 - INFO - 17:15:43 Running Optimization Problem starting at 2017-12-17 00:00:00 hb
+2020-09-10 17:15:43,342 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:43,548 - INFO - Time it takes for solver to finish: 0.20655012130737305
+2020-09-10 17:15:43,549 - INFO - Optimization problem was optimal
+2020-09-10 17:15:43,575 - INFO - 17:15:43 Running Optimization Problem starting at 2017-12-18 00:00:00 hb
+2020-09-10 17:15:43,789 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:43,929 - INFO - Time it takes for solver to finish: 0.14037418365478516
+2020-09-10 17:15:43,929 - INFO - Optimization problem was optimal
+2020-09-10 17:15:43,944 - INFO - 17:15:43 Running Optimization Problem starting at 2017-12-19 00:00:00 hb
+2020-09-10 17:15:44,045 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:44,143 - INFO - Time it takes for solver to finish: 0.09775352478027344
+2020-09-10 17:15:44,143 - INFO - Optimization problem was optimal
+2020-09-10 17:15:44,159 - INFO - 17:15:44 Running Optimization Problem starting at 2017-12-20 00:00:00 hb
+2020-09-10 17:15:44,368 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:44,504 - INFO - Time it takes for solver to finish: 0.13586044311523438
+2020-09-10 17:15:44,504 - INFO - Optimization problem was optimal
+2020-09-10 17:15:44,527 - INFO - 17:15:44 Running Optimization Problem starting at 2017-12-21 00:00:00 hb
+2020-09-10 17:15:44,718 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:44,923 - INFO - Time it takes for solver to finish: 0.2050459384918213
+2020-09-10 17:15:44,923 - INFO - Optimization problem was optimal
+2020-09-10 17:15:44,943 - INFO - 17:15:44 Running Optimization Problem starting at 2017-12-22 00:00:00 hb
+2020-09-10 17:15:45,038 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:45,142 - INFO - Time it takes for solver to finish: 0.10477900505065918
+2020-09-10 17:15:45,143 - INFO - Optimization problem was optimal
+2020-09-10 17:15:45,156 - INFO - 17:15:45 Running Optimization Problem starting at 2017-12-23 00:00:00 hb
+2020-09-10 17:15:45,489 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:45,636 - INFO - Time it takes for solver to finish: 0.14638853073120117
+2020-09-10 17:15:45,636 - INFO - Optimization problem was optimal
+2020-09-10 17:15:45,673 - INFO - 17:15:45 Running Optimization Problem starting at 2017-12-24 00:00:00 hb
+2020-09-10 17:15:45,867 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:45,984 - INFO - Time it takes for solver to finish: 0.11630916595458984
+2020-09-10 17:15:45,984 - INFO - Optimization problem was optimal
+2020-09-10 17:15:45,996 - INFO - 17:15:45 Running Optimization Problem starting at 2017-12-25 00:00:00 hb
+2020-09-10 17:15:46,118 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:46,255 - INFO - Time it takes for solver to finish: 0.13636279106140137
+2020-09-10 17:15:46,255 - INFO - Optimization problem was optimal
+2020-09-10 17:15:46,289 - INFO - 17:15:46 Running Optimization Problem starting at 2017-12-26 00:00:00 hb
+2020-09-10 17:15:46,500 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:46,652 - INFO - Time it takes for solver to finish: 0.15140628814697266
+2020-09-10 17:15:46,653 - INFO - Optimization problem was optimal
+2020-09-10 17:15:46,684 - INFO - 17:15:46 Running Optimization Problem starting at 2017-12-27 00:00:00 hb
+2020-09-10 17:15:46,859 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:47,025 - INFO - Time it takes for solver to finish: 0.1659412384033203
+2020-09-10 17:15:47,025 - INFO - Optimization problem was optimal
+2020-09-10 17:15:47,039 - INFO - 17:15:47 Running Optimization Problem starting at 2017-12-28 00:00:00 hb
+2020-09-10 17:15:47,146 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:47,325 - INFO - Time it takes for solver to finish: 0.17897629737854004
+2020-09-10 17:15:47,326 - INFO - Optimization problem was optimal
+2020-09-10 17:15:47,355 - INFO - 17:15:47 Running Optimization Problem starting at 2017-12-29 00:00:00 hb
+2020-09-10 17:15:47,558 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:47,753 - INFO - Time it takes for solver to finish: 0.19501876831054688
+2020-09-10 17:15:47,753 - INFO - Optimization problem was optimal
+2020-09-10 17:15:47,772 - INFO - 17:15:47 Running Optimization Problem starting at 2017-12-30 00:00:00 hb
+2020-09-10 17:15:47,997 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:48,158 - INFO - Time it takes for solver to finish: 0.16142940521240234
+2020-09-10 17:15:48,158 - INFO - Optimization problem was optimal
+2020-09-10 17:15:48,215 - INFO - 17:15:48 Running Optimization Problem starting at 2017-12-31 00:00:00 hb
+2020-09-10 17:15:48,557 - INFO - Finished setting up the problem. Solving now.
+2020-09-10 17:15:49,185 - INFO - Time it takes for solver to finish: 0.6271681785583496
+2020-09-10 17:15:49,186 - INFO - Optimization problem was optimal
+2020-09-10 17:15:49,263 - DEBUG - Performing Post Optimization Analysis...
+2020-09-10 17:15:50,009 - DEBUG - Finished post optimization analysis
+2020-09-10 17:15:52,226 - INFO - Results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase3\planned\step2\es+pv
+2020-09-10 17:15:52,265 - INFO - DER results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase3\planned\step2\es+pv
+2020-09-10 17:15:52,265 - INFO - DERVET runtime: 213.97459864616394

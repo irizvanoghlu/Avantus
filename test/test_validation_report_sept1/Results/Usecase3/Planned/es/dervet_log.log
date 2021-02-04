@@ -1,0 +1,31 @@
+2020-08-27 14:17:04,245 - INFO - Started logging...
+2020-08-27 14:17:04,325 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/hourly_timeseries_reference_case_planned_24h.csv
+2020-08-27 14:17:04,331 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-08-27 14:17:04,337 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-08-27 14:17:04,340 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-08-27 14:17:04,343 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-08-27 14:17:04,343 - INFO - Updating data for Sensitivity Analysis...
+2020-08-27 14:17:04,350 - INFO - Data sets are loaded successfully.
+2020-08-27 14:17:04,351 - INFO - Successfully prepared the Scenario
+2020-08-27 14:17:04,351 - INFO - Successfully prepared the Finance
+2020-08-27 14:17:04,352 - INFO - Successfully prepared the Technologies
+2020-08-27 14:17:04,352 - INFO - Successfully prepared the value-stream (services)
+2020-08-27 14:17:04,352 - DEBUG - Successfully prepared the value-streams
+2020-08-27 14:17:04,357 - DEBUG - ScenarioSizing initialized ...
+2020-08-27 14:17:04,357 - INFO - Initializing: Battery-
+2020-08-27 14:17:04,357 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-08-27 14:17:04,358 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-08-27 14:17:04,358 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-08-27 14:17:04,358 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-27 14:17:04,358 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-27 14:17:04,358 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-27 14:17:04,359 - INFO - Initializing: Load-0
+2020-08-27 14:17:04,359 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-08-27 14:17:04,360 - DEBUG - Initializing storagevet.Technology.Load
+2020-08-27 14:17:04,360 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-08-27 14:17:04,360 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-27 14:17:04,360 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-27 14:17:04,361 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-27 14:17:04,361 - INFO - Initializing: Reliability
+2020-08-27 14:17:04,364 - DEBUG - Finished adding value streams
+2020-08-27 14:17:04,370 - DEBUG - [2031]

@@ -1,9 +1,16 @@
+#services:
+#  - docker:dind
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+
 pytest:
+#  stage: test
   image: python:3.6
   script:
     - apt-get update -q -y
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - python -m pytest test\test_1battery.py --rootdir=[currentPath] --import-mode=importlib
+    - python -m pytest test\test_1battery.py --rootdir=%PATH% --import-mode=importlib
   tags:
     - 'docker'

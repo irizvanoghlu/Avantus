@@ -14,17 +14,13 @@ import pytest
 from pathlib import Path
 from test.TestingLib import assert_ran, compare_proforma_results, run_case
 
-PROGRAMS = ['storagevet', 'dervet']
-TEST_PROGRAM = PROGRAMS[0]  # change this str to switch between storagevet
-# and dervet
-
 
 DIR = Path('./test/DummyCases/Model_params/')
 JSON = '.json'
 
 
 def test_da_month():
-    assert_ran(DIR / f'000-DA_battery_month{JSON}', TEST_PROGRAM)
+    assert_ran(DIR / f'000-DA_battery_month{JSON}')
 
 
 # @pytest.mark.slow

@@ -1,21 +1,11 @@
 from dervet.DERVET import DERVET
-from storagevet.run_StorageVET import StorageVET
 import os
 import pandas as pd
 
 
-DERVET_DICT = {'schema': "./dervet/SchemaDER.xml",
-               'run_script': DERVET}
-STORAGEVET_DICT = {'schema': "./dervet/storagevet/Schema.xml",
-                   'run_script': StorageVET}
-
-TEST_DICT = {'storagevet': STORAGEVET_DICT,
-             'dervet': DERVET_DICT}
-
-
-def run_case(model_param_location: str, program: str):
-    print(f"Testing {program}...")
-    case = TEST_DICT[program]['run_script'](model_param_location, TEST_DICT[program]['schema'])
+def run_case(model_param_location: str):
+    print(f"Testing {model_param_location}...")
+    case = DERVET(model_param_location)
     results = case.solve()
     print(results.dir_abs_path)
     return results
@@ -41,8 +31,8 @@ def assert_within_error_bound(actual: float, test_value: float, error_bound: flo
 ##########################################
 
 
-def assert_ran(model_param_location: str, program: str):
-    results = run_case(model_param_location, program)
+def assert_ran(model_param_location: str):
+    results = run_case(model_param_location)
     assert_file_exists(results)
 
 

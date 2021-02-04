@@ -1,3 +1,4 @@
 [submodule "storagevet"]
 	path = storagevet
 	url = ../../storagevet/storagevet.git
+	branch = refactoring-project

@@ -16,7 +16,6 @@ __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
 import time
-import argparse
 
 from dervet.MicrogridScenario import MicrogridScenario
 from dervet.DERVETParams import ParamsDER

@@ -1,16 +1,29 @@
-#services:
-#  - docker:dind
+image: python:3.6
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+stages:
+  - test
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+    - echo "... Checking runner specifications ..."
+    - apt-get update -q -y
+    - pip install virtualenv
+    - virtualenv dervet-venv
+    - source dervet-venv/bin/activate
 
 pytest:
-#  stage: test
-  image: python:3.6
+  stage: test
   script:
-    - apt-get update -q -y
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - python -m pytest test\test_1battery.py --rootdir=%PATH% --import-mode=importlib
+    - python -m pytest test\test_1battery.py --import-mode=importlib
   tags:
     - 'docker'

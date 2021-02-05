@@ -24,7 +24,7 @@ def test_da_month():
 
 @pytest.mark.slow
 def test_da_month3():
-    assert_ran(DIR / f'018-DA_battery_month_5min{CSV}')
+    assert_ran(DIR / f'018-DA_battery_month_5min{JSON}')
 
 
 def test_da_12hr():

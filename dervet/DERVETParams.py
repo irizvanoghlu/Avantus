@@ -11,14 +11,11 @@ __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = 'beta'  # beta version
 
-import xml.etree.ElementTree as et
-import pandas as pd
 import numpy as np
 from storagevet.Params import Params
 import copy
 from storagevet.ErrorHandelling import *
 from pathlib import Path
-import json
 
 
 class ParamsDER(Params):

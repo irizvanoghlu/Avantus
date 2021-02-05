@@ -55,7 +55,7 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
 
         self.capital_cost_function = params['ccost']
 
-        self.fixed_om = params['fixed_om']
+        self.fixed_om = params['fixed_om_cost']
         self.incl_binary = False  # params['binary'] #TODO
 
         self.variable_names = {'ene', 'ch', 'uene', 'uch', 'on_c'}
@@ -389,7 +389,7 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
 
         self.capital_cost_function = params['ccost']
 
-        self.fixed_om = params['fixed_om']
+        self.fixed_om = params['fixed_om_cost']
 
         self.variable_names = {'ch'}
 

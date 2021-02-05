@@ -172,7 +172,7 @@
                         "type": "float"
                     },
                     "expected_lifetime": {
-                        "opt_value": "99",
+                        "opt_value": "5",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3006,7 +3006,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2018",
+                        "opt_value": "2030",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

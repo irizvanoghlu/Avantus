@@ -779,6 +779,12 @@
                         "allowed_values": "1|0",
                         "unit": "yes/no"
                     },
+                    "replacement_construction_time": {
+                        "cba": "n",
+                        "min": "1",
+                        "type": "int",
+                        "unit": "year"
+                    },
                     "ter": {
                         "cba": "n",
                         "max": "100.0",
@@ -1263,12 +1269,6 @@
                         "type": "int",
                         "unit": "years"
                     },
-                    "fixed_om": {
-                        "cba": "y",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "$/year"
-                    },
                     "macrs_term": {
                         "allowed_values": "3|5|7|10|15|20|25|27.5|39",
                         "cba": "n",
@@ -1382,7 +1382,7 @@
                         "type": "int",
                         "unit": "years"
                     },
-                    "fixed_om": {
+                    "fixed_om_cost": {
                         "cba": "y",
                         "min": "0.0",
                         "type": "float",

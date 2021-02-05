@@ -111,6 +111,12 @@
                         "type": "bool",
                         "unit": "yes/no"
                     },
+                    "cycle_life_table_eol_condition": {
+                        "max": "100.0",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "%"
+                    },
                     "incl_ts_charge_limits": {
                         "allowed_values": "1|0",
                         "cba": "n",

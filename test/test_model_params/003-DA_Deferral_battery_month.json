@@ -844,7 +844,7 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\test\\datasets\\000-010-timeseriesDeferral.csv",
+                        "opt_value": ".\\test\\datasets\\000-010-timeseries-deferral.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

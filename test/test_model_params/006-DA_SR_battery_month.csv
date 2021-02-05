@@ -56,6 +56,7 @@ Battery,construction_year,2017,year,Period,,,None,Construction Date of the Syste
 Battery,operation_year,2017,year,Period,,,None,Operation Date of the System,.,no,
 Battery,soc_target,50,,float,"[0, 1] ",,None,The SOC the storage system will return to after every optimization window,.,no,
 Battery,yearly_degrade,0,,int,"[0, 100] ",,None,% degradation per year. This calendar degradation combines with cycling degradation to get total degradation.,.,no,
+Battery,cycle_life_table_eol_condition,80,%,int,"[0, 100] ",,None,End of life condition used to make the cycle_life input table.,.,no,
 Battery,incl_cycle_degrade,0,,bool,"{0,1}",,None,T or F to include degradation per year,.,no,
 Battery,cycle_life_filename,./test/datasets/000-001-cycle.csv,,string,,,None, ,.,no,
 Battery,p_start_ch,0,$,float,"[0, p_start_ch)",,None,Startup cost to start charging,.,no,

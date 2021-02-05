@@ -492,6 +492,9 @@ class ParamsDER(Params):
                     self.record_input_error('Error: maximum rated power is less than the minimum rated power.' +
                                             f"PV {id_str}")
         for id_str, battery_inputs in self.Battery.items():
+            if battery_inputs['state_of_health'] > battery_inputs['cycle_life_table_eol_condition']:
+                self.record_input_error(f"Battery #{id_str} state_of_health > cycle_life_table_eol_condition. SOH input should be lesser than eol condition used to create cycle life table for accurate degradation calculation")
+
             if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
                 if not battery_inputs['ch_max_rated']:
                     if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:

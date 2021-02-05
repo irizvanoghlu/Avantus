@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -213,7 +213,7 @@
                         "type": "bool"
                     },
                     "llsoc": {
-                        "opt_value": "20",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -506,7 +506,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -578,41 +578,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-yearly.csv",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "Results": {
-            "": {
-                "active": "yes",
-                "keys": {
-                    "dir_absolute_path": {
-                        "opt_value": ".\\Results\\custom_path\\",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "string"
-                    },
-                    "errors_log_path": {
-                        "opt_value": ".\\Results\\custom_path\\",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "string"
-                    },
-                    "label": {
-                        "opt_value": "label",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -664,7 +630,7 @@
                         "type": "float"
                     },
                     "end_year": {
-                        "opt_value": "2030",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -673,7 +639,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -772,7 +738,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -826,11 +792,11 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-timeseries.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": ".\\Data\\test1.csv"
+                            "value": "nan"
                         },
                         "type": "string"
                     },
@@ -851,6 +817,22 @@
                             "value": "nan"
                         },
                         "type": "bool"
+                    }
+                }
+            }
+        },
+        "User": {
+            "": {
+                "active": "yes",
+                "keys": {
+                    "price": {
+                        "opt_value": "100",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
                     }
                 }
             }

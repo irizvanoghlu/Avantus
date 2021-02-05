@@ -6,7 +6,7 @@
                 "active": "yes",
                 "keys": {
                     "OMexpenses": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -141,7 +141,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "10000",
+                        "opt_value": "2000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -159,7 +159,7 @@
                         "type": "int"
                     },
                     "fixedOM": {
-                        "opt_value": "10",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -213,7 +213,7 @@
                         "type": "bool"
                     },
                     "llsoc": {
-                        "opt_value": "20",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -231,7 +231,7 @@
                         "type": "float"
                     },
                     "name": {
-                        "opt_value": "2MW-5hr",
+                        "opt_value": "Battery",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -506,7 +506,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -578,7 +578,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-yearly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -630,7 +630,7 @@
                         "type": "float"
                     },
                     "end_year": {
-                        "opt_value": "2030",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -639,7 +639,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -738,7 +738,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -792,11 +792,11 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-timeseries.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": ".\\Data\\test1.csv"
+                            "value": "nan"
                         },
                         "type": "string"
                     },

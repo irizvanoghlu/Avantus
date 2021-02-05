@@ -51,7 +51,7 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "500",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -105,7 +105,7 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "500",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -141,7 +141,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "2000",
+                        "opt_value": "5000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -492,6 +492,85 @@
                 }
             }
         },
+        "FR": {
+            "": {
+                "active": "yes",
+                "keys": {
+                    "CombinedMarket": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
+                    "d_ts_constraints": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
+                    "duration": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "energyprice_growth": {
+                        "opt_value": "5",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "eod": {
+                        "opt_value": "0.16",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "eou": {
+                        "opt_value": "0.3",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "growth": {
+                        "opt_value": "0.3",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "u_ts_constraints": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    }
+                }
+            }
+        },
         "Finance": {
             "": {
                 "active": "yes",
@@ -506,7 +585,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -578,7 +657,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-yearly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -594,7 +673,7 @@
                 "active": "yes",
                 "keys": {
                     "apply_interconnection_constraints": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -738,7 +817,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -747,7 +826,7 @@
                         "type": "string"
                     },
                     "n": {
-                        "opt_value": "month",
+                        "opt_value": "168",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -792,7 +871,7 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-timeseries.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

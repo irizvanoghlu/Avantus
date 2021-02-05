@@ -6,7 +6,7 @@
                 "active": "yes",
                 "keys": {
                     "OMexpenses": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -33,7 +33,7 @@
                         "type": "float"
                     },
                     "ccost_kw": {
-                        "opt_value": "100",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -42,7 +42,7 @@
                         "type": "float"
                     },
                     "ccost_kwh": {
-                        "opt_value": "800",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -55,7 +55,7 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "nan"
+                            "value": "[120, 400, 850]"
                         },
                         "type": "float"
                     },
@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -87,7 +87,7 @@
                         "type": "string"
                     },
                     "daily_cycle_limit": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -109,7 +109,7 @@
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "nan"
+                            "value": "[100, 100, 100]"
                         },
                         "type": "float"
                     },
@@ -141,7 +141,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "10000",
+                        "opt_value": "8000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -159,7 +159,7 @@
                         "type": "int"
                     },
                     "fixedOM": {
-                        "opt_value": "10",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -168,7 +168,7 @@
                         "type": "float"
                     },
                     "hp": {
-                        "opt_value": "100",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -213,7 +213,7 @@
                         "type": "bool"
                     },
                     "llsoc": {
-                        "opt_value": "20",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -231,7 +231,7 @@
                         "type": "float"
                     },
                     "name": {
-                        "opt_value": "2MW-5hr",
+                        "opt_value": "Deferral Battery",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -481,7 +481,59 @@
                 "active": "yes",
                 "keys": {
                     "growth": {
+                        "opt_value": "3",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    }
+                }
+            }
+        },
+        "Deferral": {
+            "": {
+                "active": "yes",
+                "keys": {
+                    "growth": {
+                        "opt_value": "2",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "min_year_objective": {
                         "opt_value": "0",
+                        "sensitivity": {
+                            "active": "nan",
+                            "coupled": "nan",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
+                    "planned_load_limit": {
+                        "opt_value": "11700",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "price": {
+                        "opt_value": "10000",
+                        "sensitivity": {
+                            "active": ".",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "reverse_power_flow_limit": {
+                        "opt_value": "-15000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -506,7 +558,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -578,7 +630,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-yearly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -612,7 +664,7 @@
                         "type": "bool"
                     },
                     "def_growth": {
-                        "opt_value": "2",
+                        "opt_value": "6",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -630,7 +682,7 @@
                         "type": "float"
                     },
                     "end_year": {
-                        "opt_value": "2030",
+                        "opt_value": "2037",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -738,7 +790,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -792,16 +844,16 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-timeseries.csv",
+                        "opt_value": ".\\test\\datasets\\000-010-timeseriesDeferral.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": ".\\Data\\test1.csv"
+                            "value": "nan"
                         },
                         "type": "string"
                     },
                     "verbose": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

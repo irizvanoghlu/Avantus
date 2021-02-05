@@ -33,7 +33,7 @@
                         "type": "float"
                     },
                     "ccost_kw": {
-                        "opt_value": "0",
+                        "opt_value": "100",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -42,7 +42,7 @@
                         "type": "float"
                     },
                     "ccost_kwh": {
-                        "opt_value": "0",
+                        "opt_value": "800",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -51,11 +51,11 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "2000",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "[120, 400, 850]"
+                            "value": "nan"
                         },
                         "type": "float"
                     },
@@ -78,7 +78,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-cycle.csv",
+                        "opt_value": "./test/datasets/000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -87,7 +87,7 @@
                         "type": "string"
                     },
                     "daily_cycle_limit": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -105,11 +105,11 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "2000",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "[100, 100, 100]"
+                            "value": "nan"
                         },
                         "type": "float"
                     },
@@ -141,7 +141,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "8000",
+                        "opt_value": "2000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -159,7 +159,7 @@
                         "type": "int"
                     },
                     "fixedOM": {
-                        "opt_value": "0",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -231,7 +231,7 @@
                         "type": "float"
                     },
                     "name": {
-                        "opt_value": "Deferral Battery",
+                        "opt_value": "Battery",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -481,59 +481,7 @@
                 "active": "yes",
                 "keys": {
                     "growth": {
-                        "opt_value": "3",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    }
-                }
-            }
-        },
-        "Deferral": {
-            "": {
-                "active": "yes",
-                "keys": {
-                    "growth": {
-                        "opt_value": "2",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "min_year_objective": {
                         "opt_value": "0",
-                        "sensitivity": {
-                            "active": "nan",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "int"
-                    },
-                    "planned_load_limit": {
-                        "opt_value": "11700",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "price": {
-                        "opt_value": "10000",
-                        "sensitivity": {
-                            "active": ".",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "reverse_power_flow_limit": {
-                        "opt_value": "-15000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -558,7 +506,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": "./Testing/Datasets/000-001-tariff.csv",
+                        "opt_value": "./test/datasets/000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -630,7 +578,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-yearly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -664,7 +612,7 @@
                         "type": "bool"
                     },
                     "def_growth": {
-                        "opt_value": "6",
+                        "opt_value": "2",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -673,7 +621,7 @@
                         "type": "float"
                     },
                     "dt": {
-                        "opt_value": "1",
+                        "opt_value": "0.083",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -682,7 +630,7 @@
                         "type": "float"
                     },
                     "end_year": {
-                        "opt_value": "2037",
+                        "opt_value": "2019",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -790,7 +738,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-001-monthly.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -799,7 +747,7 @@
                         "type": "string"
                     },
                     "n": {
-                        "opt_value": "month",
+                        "opt_value": "2",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -808,7 +756,7 @@
                         "type": "string/int"
                     },
                     "opt_years": {
-                        "opt_value": "2017",
+                        "opt_value": "2019",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -835,7 +783,7 @@
                         "type": "bool"
                     },
                     "start_year": {
-                        "opt_value": "2017",
+                        "opt_value": "2019",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -844,7 +792,7 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\Testing\\Datasets\\000-010-timeseriesDeferral.csv",
+                        "opt_value": ".\\test\\datasets\\000-004-timeseries_5min_powerEneConst.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

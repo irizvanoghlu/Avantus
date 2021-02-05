@@ -84,7 +84,7 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\Battery_Cycle_Life.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-cycle.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1763,7 +1763,7 @@
                         "type": "int"
                     },
                     "customer_tariff_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\tariff.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1835,7 +1835,7 @@
                         "type": "float"
                     },
                     "yearly_data_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\yearly_data.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-yearly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2771,7 +2771,7 @@
                         "type": "float"
                     },
                     "monthly_data_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv",
+                        "opt_value": ".\\test\\datasets\\000-001-monthly.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2825,7 +2825,7 @@
                         "type": "Period"
                     },
                     "time_series_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv",
+                        "opt_value": ".\\test\\datasets\\hourly_timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

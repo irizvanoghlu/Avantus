@@ -360,6 +360,7 @@ class CostBenefitAnalysis(Financial):
         # zero out all costs and benefits after the last equipement piece fails
         if self.end_year.year >= no_more_der_yr + 1 >= self.start_year.year:
             proforma.loc[pd.Period(no_more_der_yr + 1, freq='y'):, ] = 0
+
         return proforma
 
     @staticmethod

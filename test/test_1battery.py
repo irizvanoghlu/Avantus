@@ -36,9 +36,9 @@ def test_da_month5():
 
 
 # TODO add this test after GitLab issue [##]
-# def test_da_month_degradation_multi_yr_battery_replaced_during_optimization():
-#     assert_ran(r".\Testing\cba_validation\Model_params" +
-#                r"\Model_Parameters_Template_ENEA_S1_8_12_UC1_DAETS.csv")
+def xtest_da_month_degradation_multi_yr_battery_replaced_during_optimization():
+    assert_ran(r".\Testing\cba_validation\Model_params" +
+               r"\Model_Parameters_Template_ENEA_S1_8_12_UC1_DAETS.csv")
 
 
 def test_da_month_degradation_battery_replaced_during_optimization():

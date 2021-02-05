@@ -1,6 +1,6 @@
 Tag,Key,Value,Units,Type,Allowed Values,Sensitivity Parameters,Coupled,Description,Active,Sensitivity Analysis,Options/Notes
 Scenario,monthly_data_filename,.\test\datasets\000-001-monthly.csv,,string,valid file path to a monthly data file,,None,,yes,no,
-Scenario,time_series_filename,.\test\datasets\000-004-timeseries_5min_powerEneConst.csv,,string,valid file path to a time series data file,,None,,.,no,
+Scenario,time_series_filename,.\test\datasets\000-004-timeseries_5min_power_ene_const.csv,,string,valid file path to a time series data file,,None,,.,no,
 Scenario,dt,0.083,,float,"{0,1}",,None,Time step in the time series data file,.,no,
 Scenario,opt_years,2019,,list/int,the year number(s) specified here must appear in the time series file,,None,which years to run optimization for. You must have data for these years in the time series file.,.,no,
 Scenario,start_year,2019,,Period,opt_years must be between start_year and end_year,,None,first year of analysis,.,no,

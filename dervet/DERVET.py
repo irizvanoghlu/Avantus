@@ -20,7 +20,7 @@ import time
 from dervet.MicrogridScenario import MicrogridScenario
 from dervet.DERVETParams import ParamsDER
 from dervet.MicrogridResult import MicrogridResult
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class DERVET:

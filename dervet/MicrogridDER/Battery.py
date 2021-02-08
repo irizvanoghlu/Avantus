@@ -15,7 +15,7 @@ __version__ = 'beta'  # beta version
 import cvxpy as cvx
 from storagevet.Technology import BatteryTech
 from dervet.MicrogridDER.ESSSizing import ESSSizing
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import pandas as pd
 import numpy as np
 

@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 
 import pandas as pd
 from storagevet.Result import Result
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class MicrogridResult(Result):

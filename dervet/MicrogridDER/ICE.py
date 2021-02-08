@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 from storagevet.Technology import InternalCombustionEngine
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 from dervet.MicrogridDER.RotatingGeneratorSizing import RotatingGeneratorSizing
 

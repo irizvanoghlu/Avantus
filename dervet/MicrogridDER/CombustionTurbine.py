@@ -17,7 +17,7 @@ from dervet.MicrogridDER.RotatingGeneratorSizing import RotatingGeneratorSizing
 import pandas as pd
 import storagevet.Library as Lib
 import numpy as np
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 from dervet.DERVETParams import ParamsDER
 
 

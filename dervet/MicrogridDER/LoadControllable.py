@@ -17,7 +17,7 @@ import numpy as np
 from storagevet.Technology.Load import Load
 from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
 from dervet.MicrogridDER.DERExtension import DERExtension
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class ControllableLoad(Load, DERExtension, ContinuousSizing):

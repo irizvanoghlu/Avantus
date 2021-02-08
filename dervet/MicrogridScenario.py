@@ -39,7 +39,7 @@ from storagevet.Scenario import Scenario
 from dervet.CBA import CostBenefitAnalysis
 from dervet.MicrogridPOI import MicrogridPOI
 from dervet.MicrogridServiceAggregator import MicrogridServiceAggregator
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 
 

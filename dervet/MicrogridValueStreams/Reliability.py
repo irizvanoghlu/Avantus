@@ -27,7 +27,7 @@ import cvxpy as cvx
 import pandas as pd
 import time
 import random
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import copy
 
 DEBUG = False

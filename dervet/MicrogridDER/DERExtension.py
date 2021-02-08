@@ -14,7 +14,7 @@ __version__ = 'beta'
 
 import numpy as np
 import pandas as pd
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class DERExtension:

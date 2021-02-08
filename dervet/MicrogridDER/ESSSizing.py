@@ -16,7 +16,7 @@ from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology.EnergyStorage import EnergyStorage
 from dervet.MicrogridDER.DERExtension import DERExtension
 import cvxpy as cvx
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 
 

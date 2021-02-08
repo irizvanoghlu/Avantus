@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 import numpy as np
 from storagevet.Params import Params
 import copy
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 from pathlib import Path
 
 

@@ -16,7 +16,7 @@ import cvxpy as cvx
 from dervet.MicrogridDER.DERExtension import DERExtension
 from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology.RotatingGenerator import RotatingGenerator
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 
 

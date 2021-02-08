@@ -19,7 +19,7 @@ import pandas as pd
 from storagevet.Technology.DistributedEnergyResource import DER
 from dervet.MicrogridDER.DERExtension import DERExtension
 from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class ElectricVehicle1(DER, ContinuousSizing, DERExtension):

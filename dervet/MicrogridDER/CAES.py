@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 
 from storagevet.Technology import CAESTech
 from dervet.MicrogridDER.ESSSizing import ESSSizing
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 from dervet.DERVETParams import ParamsDER
 
 

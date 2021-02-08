@@ -15,7 +15,7 @@ __email__ = ['egiarta@epri.com', 'mevans@epri.com']
 import pandas as pd
 from storagevet.POI import POI
 import cvxpy as cvx
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 
 

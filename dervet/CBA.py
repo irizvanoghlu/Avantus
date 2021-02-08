@@ -16,7 +16,7 @@ from storagevet.Finances import Financial
 import numpy as np
 import copy
 import pandas as pd
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 SATURDAY = 5
 

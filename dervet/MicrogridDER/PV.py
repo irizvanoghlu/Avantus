@@ -14,7 +14,7 @@ __version__ = 'beta'  # beta version
 
 import cvxpy as cvx
 from dervet.MicrogridDER.IntermittentResourceSizing import IntermittentResourceSizing
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 
 

@@ -16,7 +16,7 @@ import cvxpy as cvx
 from dervet.MicrogridDER.DERExtension import DERExtension
 from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology import PVSystem
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 import pandas as pd
 

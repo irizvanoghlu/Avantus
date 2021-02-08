@@ -11,7 +11,7 @@ __maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = 'beta'
 
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import numpy as np
 import pandas as pd
 import cvxpy as cvx

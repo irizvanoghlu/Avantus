@@ -7,7 +7,7 @@ __email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
 __version__ = "x.x.x"
 
 from storagevet.ServiceAggregator import ServiceAggregator
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 import cvxpy as cvx
 
 

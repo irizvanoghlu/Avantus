@@ -15,7 +15,7 @@ __version__ = 'beta'  # beta version
 import cvxpy as cvx
 from dervet.MicrogridDER.CombustionTurbine import CT
 import storagevet.Library as Lib
-from storagevet.ErrorHandelling import *
+from storagevet.ErrorHandling import *
 
 
 class CHP(CT):

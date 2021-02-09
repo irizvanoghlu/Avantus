@@ -1,0 +1,81 @@
+2020-08-26 18:37:52,311 - INFO - Started logging...
+2020-08-26 18:38:59,428 - INFO - Started logging...
+2020-08-26 18:38:59,476 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:38:59,479 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:38:59,484 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:38:59,487 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:38:59,489 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:38:59,495 - INFO - Data sets are loaded successfully.
+2020-08-26 18:38:59,497 - INFO - Successfully prepared the Scenario
+2020-08-26 18:38:59,497 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:38:59,497 - INFO - Successfully prepared the Finance
+2020-08-26 18:38:59,497 - INFO - Successfully prepared the Technologies
+2020-08-26 18:38:59,572 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:38:59,573 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:38:59,574 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:38:59,574 - INFO - Creating Scenario...
+2020-08-26 18:38:59,575 - INFO - Scenario Created Successfully...
+2020-08-26 18:38:59,575 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:38:59,575 - INFO - Initializing: Battery-
+2020-08-26 18:38:59,577 - INFO - Initializing: PV-
+2020-08-26 18:38:59,577 - INFO - Initializing: ICE-
+2020-08-26 18:38:59,578 - INFO - Initializing: Load-0
+2020-08-26 18:38:59,578 - INFO - Initializing: DCM
+2020-08-26 18:38:59,579 - INFO - Initializing: retailTimeShift
+2020-08-26 18:38:59,580 - INFO - Initializing: Reliability
+2020-08-26 18:38:59,582 - INFO - Finished adding value streams
+2020-08-26 18:39:06,834 - INFO - Starting optimization loop
+2020-08-26 18:39:07,426 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:41:49,528 - INFO - Time it takes for solver to finish: 162.1013674736023
+2020-08-26 18:41:49,528 - INFO - Optimization problem was optimal
+2020-08-26 18:41:49,912 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:41:55,645 - INFO - Time it takes for solver to finish: 5.732893466949463
+2020-08-26 18:41:55,645 - INFO - Optimization problem was optimal
+2020-08-26 18:41:56,687 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:41:56,761 - INFO - ecos solver
+2020-08-26 18:41:56,762 - INFO - Time it takes for solver to finish: 0.07419729232788086
+2020-08-26 18:41:56,762 - INFO - Optimization problem was optimal
+2020-08-26 18:41:57,674 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-26 18:41:57,677 - INFO - Critical Load Coverage Curve overhead time: 0.003009319305419922
+2020-08-26 18:42:09,877 - INFO - Critical Load Coverage Curve calculation time: 12.19982624053955
+2020-08-26 18:42:09,879 - INFO - Finished load coverage calculation.
+2020-08-26 18:42:11,670 - INFO - DER results have been saved to: .\storagevet\testing\results\beta_version_ref_case\usecase3\planned\es+pv+dg
+2020-08-26 19:24:24,588 - INFO - Started logging...
+2020-08-26 19:24:24,640 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 19:24:24,645 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 19:24:24,649 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 19:24:24,651 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 19:24:24,653 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 19:24:24,661 - INFO - Data sets are loaded successfully.
+2020-08-26 19:24:24,662 - INFO - Successfully prepared the Scenario
+2020-08-26 19:24:24,662 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 19:24:24,662 - INFO - Successfully prepared the Finance
+2020-08-26 19:24:24,662 - INFO - Successfully prepared the Technologies
+2020-08-26 19:24:24,662 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 19:24:24,663 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 19:24:24,667 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 19:24:24,667 - INFO - Creating Scenario...
+2020-08-26 19:24:24,668 - INFO - Scenario Created Successfully...
+2020-08-26 19:24:24,668 - INFO - ScenarioSizing initialized ...
+2020-08-26 19:24:24,668 - INFO - Initializing: Battery-
+2020-08-26 19:24:24,672 - INFO - Initializing: PV-
+2020-08-26 19:24:24,672 - INFO - Initializing: ICE-
+2020-08-26 19:24:24,672 - INFO - Initializing: Load-0
+2020-08-26 19:24:24,673 - INFO - Initializing: Reliability
+2020-08-26 19:24:24,675 - INFO - Finished adding value streams
+2020-08-26 19:24:38,651 - INFO - Starting optimization loop
+2020-08-26 19:24:39,555 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 19:24:41,350 - INFO - Time it takes for solver to finish: 1.7956221103668213
+2020-08-26 19:24:41,350 - INFO - Optimization problem was optimal
+2020-08-26 19:24:41,572 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 19:24:42,297 - INFO - Time it takes for solver to finish: 0.7249798774719238
+2020-08-26 19:24:42,297 - INFO - Optimization problem was optimal
+2020-08-26 19:24:42,580 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 19:24:42,584 - INFO - ecos solver
+2020-08-26 19:24:42,585 - INFO - Time it takes for solver to finish: 0.004010200500488281
+2020-08-26 19:24:42,585 - INFO - Optimization problem was optimal
+2020-08-26 19:24:42,950 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-26 19:24:42,955 - INFO - Critical Load Coverage Curve overhead time: 0.005514860153198242
+2020-08-26 19:24:54,612 - INFO - Critical Load Coverage Curve calculation time: 11.655662536621094
+2020-08-26 19:24:54,615 - INFO - Finished load coverage calculation.
+2020-08-26 19:24:55,948 - INFO - DER results have been saved to: .\storagevet\testing\results\beta_version_ref_case\usecase3\planned\es+pv+dg

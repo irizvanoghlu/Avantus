@@ -1,96 +1,25 @@
 """
 runDERVET.py
 
-This Python script serves as the initial launch point executing the Python-based version of DERVET
-(AKA StorageVET 2.0 or SVETpy).
+This Python script serves as the initial launch point executing the
+Python-based version of DERVET.
 """
 
 __author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', "Thien Nguyen", 'Kunle Awojinrin']
+__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). ' \
+                'All Rights Reserved.'
+__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta',
+               'Halley Nathwani', "Thien Nguyen", 'Kunle Awojinrin']
 __license__ = 'EPRI'
 __maintainer__ = ['Halley Nathwani', 'Miles Evans']
 __email__ = ['hnathwani@epri.com', 'mevans@epri.com']
 __version__ = '0.1.1'
 
-import logging
-import time
 import argparse
-import os
-import sys
-
-# ADD STORAGEVET TO PYTHONPATH BEFORE IMPORTING ANY LIBRARIES OTHERWISE IMPORTERROR
-
-# dervet's directory path is the first in sys.path
-# determine storagevet path (absolute path)
-storagevet_path = os.path.join(sys.path[0], 'storagevet')
-
-# add storagevet (source root) to PYTHONPATH
-sys.path.insert(0, storagevet_path)
-
-
-import storagevet
-from MicrogridScenario import MicrogridScenario
-from DERVETParams import ParamsDER
-from MicrogridResult import MicrogridResult
-from ErrorHandelling import *
-
-
-class DERVET:
-    """ DERVET API. This will eventually allow StorageVET to be imported and used like any
-    other python library.
-
-    """
-
-    @classmethod
-    def load_case(cls, model_parameters_path, **kwargs):
-        return cls(model_parameters_path, **kwargs)
-
-    def __init__(self, model_parameters_path, verbose=False, **kwargs):
-        """
-            Constructor to initialize the parameters and data needed to run StorageVET\
-
-            Args:
-                model_parameters_path (str): Filename of the model parameters CSV or XML that
-                    describes the optimization case to be analysed
-
-            Notes: kwargs is in place for testing purposes
-        """
-        self.verbose = verbose
-
-        # Initialize the Params Object from Model Parameters and Simulation Cases
-        self.cases = ParamsDER.initialize(model_parameters_path, self.verbose)
-        self.results = MicrogridResult.initialize(ParamsDER.results_inputs, ParamsDER.case_definitions)
-
-        if self.verbose:
-            from storagevet.Visualization import Visualization
-            Visualization(ParamsDER).class_summary()
-
-    def solve(self):
-        starts = time.time()
-
-        for key, value in self.cases.items():
-            run = MicrogridScenario(value)
-            run.set_up_poi_and_service_aggregator()
-            run.initialize_cba()
-            run.fill_and_drop_extra_data()
-            run.sizing_module()
-            run.optimize_problem_loop()
-
-            MicrogridResult.add_instance(key, run)
-
-        MicrogridResult.sensitivity_summary()
-
-        ends = time.time()
-        TellUser.info(f"DERVET runtime: {ends - starts}")
-
-        return MicrogridResult
+from dervet.DERVET import DERVET
 
 
 if __name__ == '__main__':
-    """
-        This section is run when the file is called from the command line.
-    """
 
     parser = argparse.ArgumentParser(prog='run_DERVET.py',
                                      description='The Electric Power Research Institute\'s energy storage system ' +

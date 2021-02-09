@@ -1,0 +1,458 @@
+2020-08-26 17:01:00,611 - INFO - Started logging...
+2020-08-26 17:01:00,655 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:01:00,660 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:01:00,666 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:01:00,669 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:01:00,674 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:01:00,683 - INFO - Data sets are loaded successfully.
+2020-08-26 17:01:00,684 - INFO - Successfully prepared the Scenario
+2020-08-26 17:01:00,690 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:01:00,690 - INFO - Successfully prepared the Finance
+2020-08-26 17:01:00,691 - INFO - Successfully prepared the Technologies
+2020-08-26 17:01:00,837 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:01:00,837 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:01:00,839 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:01:00,839 - INFO - Creating Scenario...
+2020-08-26 17:01:00,839 - INFO - Scenario Created Successfully...
+2020-08-26 17:01:00,840 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:01:00,840 - INFO - Initializing: Battery-
+2020-08-26 17:01:00,842 - INFO - Initializing: Load-0
+2020-08-26 17:01:00,843 - INFO - Initializing: DCM
+2020-08-26 17:01:00,844 - INFO - Initializing: retailTimeShift
+2020-08-26 17:01:00,845 - INFO - Initializing: Reliability
+2020-08-26 17:01:00,848 - INFO - Finished adding value streams
+2020-08-26 17:01:05,726 - INFO - Starting optimization loop
+2020-08-26 17:01:06,037 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 17:01:26,203 - INFO - Time it takes for solver to finish: 20.165925979614258
+2020-08-26 17:01:26,203 - INFO - Optimization problem was optimal
+2020-08-26 17:01:26,635 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 17:01:26,933 - INFO - Time it takes for solver to finish: 0.2988147735595703
+2020-08-26 17:01:26,933 - INFO - Optimization problem was infeasible
+2020-08-26 17:07:15,855 - INFO - Started logging...
+2020-08-26 17:07:15,913 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:07:15,921 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:07:15,929 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:07:15,933 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:07:15,937 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:07:15,948 - INFO - Data sets are loaded successfully.
+2020-08-26 17:07:15,949 - INFO - Successfully prepared the Scenario
+2020-08-26 17:07:15,949 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:07:15,949 - INFO - Successfully prepared the Finance
+2020-08-26 17:07:15,950 - INFO - Successfully prepared the Technologies
+2020-08-26 17:07:16,091 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:07:16,091 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:07:16,094 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:07:16,096 - INFO - Creating Scenario...
+2020-08-26 17:07:16,097 - INFO - Scenario Created Successfully...
+2020-08-26 17:07:16,097 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:07:16,098 - INFO - Initializing: Battery-
+2020-08-26 17:07:16,103 - INFO - Initializing: Load-0
+2020-08-26 17:07:16,105 - INFO - Initializing: DCM
+2020-08-26 17:07:16,107 - INFO - Initializing: retailTimeShift
+2020-08-26 17:07:16,112 - INFO - Initializing: Reliability
+2020-08-26 17:07:16,116 - INFO - Finished adding value streams
+2020-08-26 17:07:42,122 - INFO - Started logging...
+2020-08-26 17:07:42,217 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:07:42,229 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:07:42,245 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:07:42,256 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:07:42,276 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:07:42,302 - INFO - Data sets are loaded successfully.
+2020-08-26 17:07:42,306 - INFO - Successfully prepared the Scenario
+2020-08-26 17:07:42,306 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:07:42,306 - INFO - Successfully prepared the Finance
+2020-08-26 17:07:42,307 - INFO - Successfully prepared the Technologies
+2020-08-26 17:07:42,758 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:07:42,759 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:07:42,768 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:07:42,772 - INFO - Creating Scenario...
+2020-08-26 17:07:42,776 - INFO - Scenario Created Successfully...
+2020-08-26 17:07:42,777 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:07:42,777 - INFO - Initializing: Battery-
+2020-08-26 17:07:42,790 - INFO - Initializing: Load-0
+2020-08-26 17:07:42,793 - INFO - Initializing: DCM
+2020-08-26 17:07:42,799 - INFO - Initializing: retailTimeShift
+2020-08-26 17:07:42,807 - INFO - Initializing: Reliability
+2020-08-26 17:07:42,818 - INFO - Finished adding value streams
+2020-08-26 17:17:33,465 - INFO - Started logging...
+2020-08-26 17:17:33,551 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:17:33,564 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:17:33,577 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:17:33,584 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:17:33,588 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:17:33,601 - INFO - Data sets are loaded successfully.
+2020-08-26 17:17:33,603 - INFO - Successfully prepared the Scenario
+2020-08-26 17:17:33,603 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:17:33,603 - INFO - Successfully prepared the Finance
+2020-08-26 17:17:33,604 - INFO - Successfully prepared the Technologies
+2020-08-26 17:17:33,768 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:17:33,768 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:17:33,772 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:17:33,773 - INFO - Creating Scenario...
+2020-08-26 17:17:33,775 - INFO - Scenario Created Successfully...
+2020-08-26 17:17:33,775 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:17:33,776 - INFO - Initializing: Battery-
+2020-08-26 17:17:33,781 - INFO - Initializing: Load-0
+2020-08-26 17:17:33,782 - INFO - Initializing: DCM
+2020-08-26 17:17:33,785 - INFO - Initializing: retailTimeShift
+2020-08-26 17:17:33,788 - INFO - Initializing: Reliability
+2020-08-26 17:17:33,792 - INFO - Finished adding value streams
+2020-08-26 17:21:16,726 - INFO - Started logging...
+2020-08-26 17:21:16,816 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:21:16,823 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:21:16,831 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:21:16,838 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:21:16,840 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:21:16,848 - INFO - Data sets are loaded successfully.
+2020-08-26 17:21:16,849 - INFO - Successfully prepared the Scenario
+2020-08-26 17:21:16,849 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:21:16,849 - INFO - Successfully prepared the Finance
+2020-08-26 17:21:16,850 - INFO - Successfully prepared the Technologies
+2020-08-26 17:21:16,969 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:21:16,969 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:21:16,971 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:21:16,971 - INFO - Creating Scenario...
+2020-08-26 17:21:16,972 - INFO - Scenario Created Successfully...
+2020-08-26 17:21:16,972 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:21:16,972 - INFO - Initializing: Battery-
+2020-08-26 17:21:16,974 - INFO - Initializing: Load-0
+2020-08-26 17:21:16,974 - INFO - Initializing: DCM
+2020-08-26 17:21:16,976 - INFO - Initializing: retailTimeShift
+2020-08-26 17:21:16,977 - INFO - Initializing: Reliability
+2020-08-26 17:21:16,979 - INFO - Finished adding value streams
+2020-08-26 17:26:27,814 - INFO - Started logging...
+2020-08-26 17:26:27,873 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:26:27,878 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:26:27,882 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:26:27,885 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:26:27,887 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:26:27,893 - INFO - Data sets are loaded successfully.
+2020-08-26 17:26:27,894 - INFO - Successfully prepared the Scenario
+2020-08-26 17:26:27,894 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:26:27,894 - INFO - Successfully prepared the Finance
+2020-08-26 17:26:27,895 - INFO - Successfully prepared the Technologies
+2020-08-26 17:26:27,985 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:26:27,985 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:26:27,986 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:26:27,986 - INFO - Creating Scenario...
+2020-08-26 17:26:27,987 - INFO - Scenario Created Successfully...
+2020-08-26 17:26:27,988 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:26:27,988 - INFO - Initializing: Battery-
+2020-08-26 17:26:27,991 - INFO - Initializing: Load-0
+2020-08-26 17:26:27,992 - INFO - Initializing: DCM
+2020-08-26 17:26:27,994 - INFO - Initializing: retailTimeShift
+2020-08-26 17:26:27,996 - INFO - Initializing: Reliability
+2020-08-26 17:26:27,999 - INFO - Finished adding value streams
+2020-08-26 17:27:06,595 - INFO - Started logging...
+2020-08-26 17:27:06,682 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:27:06,694 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:27:06,706 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:27:06,712 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:27:06,719 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:27:06,735 - INFO - Data sets are loaded successfully.
+2020-08-26 17:27:06,736 - INFO - Successfully prepared the Scenario
+2020-08-26 17:27:06,736 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:27:06,736 - INFO - Successfully prepared the Finance
+2020-08-26 17:27:06,737 - INFO - Successfully prepared the Technologies
+2020-08-26 17:27:06,935 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:27:06,936 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:27:06,941 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:27:06,944 - INFO - Creating Scenario...
+2020-08-26 17:27:06,946 - INFO - Scenario Created Successfully...
+2020-08-26 17:27:06,946 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:27:06,947 - INFO - Initializing: Battery-
+2020-08-26 17:27:06,954 - INFO - Initializing: Load-0
+2020-08-26 17:27:06,956 - INFO - Initializing: DCM
+2020-08-26 17:27:06,961 - INFO - Initializing: retailTimeShift
+2020-08-26 17:27:06,965 - INFO - Initializing: Reliability
+2020-08-26 17:27:06,971 - INFO - Finished adding value streams
+2020-08-26 17:47:40,826 - INFO - Started logging...
+2020-08-26 17:47:40,887 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:47:40,895 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:47:40,902 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:47:40,907 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:47:40,911 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:47:40,921 - INFO - Data sets are loaded successfully.
+2020-08-26 17:47:40,923 - INFO - Successfully prepared the Scenario
+2020-08-26 17:47:40,923 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:47:40,923 - INFO - Successfully prepared the Finance
+2020-08-26 17:47:40,924 - INFO - Successfully prepared the Technologies
+2020-08-26 17:47:41,086 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:47:41,087 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:47:41,090 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:47:41,091 - INFO - Creating Scenario...
+2020-08-26 17:47:41,093 - INFO - Scenario Created Successfully...
+2020-08-26 17:47:41,093 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:47:41,093 - INFO - Initializing: Battery-
+2020-08-26 17:47:41,100 - INFO - Initializing: Load-0
+2020-08-26 17:47:41,101 - INFO - Initializing: DCM
+2020-08-26 17:47:41,104 - INFO - Initializing: retailTimeShift
+2020-08-26 17:47:41,107 - INFO - Initializing: Reliability
+2020-08-26 17:47:41,112 - INFO - Finished adding value streams
+2020-08-26 17:48:50,939 - INFO - Started logging...
+2020-08-26 17:48:50,998 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:48:51,007 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:48:51,015 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:48:51,020 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:48:51,024 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:48:51,035 - INFO - Data sets are loaded successfully.
+2020-08-26 17:48:51,036 - INFO - Successfully prepared the Scenario
+2020-08-26 17:48:51,036 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:48:51,036 - INFO - Successfully prepared the Finance
+2020-08-26 17:48:51,037 - INFO - Successfully prepared the Technologies
+2020-08-26 17:48:51,212 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:48:51,212 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:48:51,216 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:48:51,218 - INFO - Creating Scenario...
+2020-08-26 17:48:51,220 - INFO - Scenario Created Successfully...
+2020-08-26 17:48:51,220 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:48:51,221 - INFO - Initializing: Battery-
+2020-08-26 17:48:51,225 - INFO - Initializing: Load-0
+2020-08-26 17:48:51,227 - INFO - Initializing: DCM
+2020-08-26 17:48:51,229 - INFO - Initializing: retailTimeShift
+2020-08-26 17:48:51,232 - INFO - Initializing: Reliability
+2020-08-26 17:48:51,238 - INFO - Finished adding value streams
+2020-08-26 17:49:21,682 - INFO - Started logging...
+2020-08-26 17:49:21,765 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:49:21,777 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:49:21,789 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:49:21,798 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:49:21,805 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:49:21,823 - INFO - Data sets are loaded successfully.
+2020-08-26 17:49:21,826 - INFO - Successfully prepared the Scenario
+2020-08-26 17:49:21,826 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:49:21,826 - INFO - Successfully prepared the Finance
+2020-08-26 17:49:21,828 - INFO - Successfully prepared the Technologies
+2020-08-26 17:49:22,006 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:49:22,006 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:49:22,009 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:49:22,011 - INFO - Creating Scenario...
+2020-08-26 17:49:22,013 - INFO - Scenario Created Successfully...
+2020-08-26 17:49:22,013 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:49:22,013 - INFO - Initializing: Battery-
+2020-08-26 17:49:22,018 - INFO - Initializing: Load-0
+2020-08-26 17:49:22,019 - INFO - Initializing: DCM
+2020-08-26 17:49:22,022 - INFO - Initializing: retailTimeShift
+2020-08-26 17:49:22,024 - INFO - Initializing: Reliability
+2020-08-26 17:49:22,028 - INFO - Finished adding value streams
+2020-08-26 17:52:22,492 - INFO - Started logging...
+2020-08-26 17:52:22,571 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 17:52:22,584 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 17:52:22,594 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 17:52:22,600 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 17:52:22,605 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 17:52:22,618 - INFO - Data sets are loaded successfully.
+2020-08-26 17:52:22,620 - INFO - Successfully prepared the Scenario
+2020-08-26 17:52:22,620 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 17:52:22,620 - INFO - Successfully prepared the Finance
+2020-08-26 17:52:22,622 - INFO - Successfully prepared the Technologies
+2020-08-26 17:52:22,825 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:52:22,825 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 17:52:22,830 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 17:52:22,831 - INFO - Creating Scenario...
+2020-08-26 17:52:22,833 - INFO - Scenario Created Successfully...
+2020-08-26 17:52:22,834 - INFO - ScenarioSizing initialized ...
+2020-08-26 17:52:22,834 - INFO - Initializing: Battery-
+2020-08-26 17:52:22,840 - INFO - Initializing: Load-0
+2020-08-26 17:52:22,841 - INFO - Initializing: DCM
+2020-08-26 17:52:22,846 - INFO - Initializing: retailTimeShift
+2020-08-26 17:52:22,851 - INFO - Initializing: Reliability
+2020-08-26 17:52:22,856 - INFO - Finished adding value streams
+2020-08-26 18:08:08,946 - INFO - Started logging...
+2020-08-26 18:08:09,100 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:08:09,121 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:08:09,137 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:08:09,152 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:08:09,163 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:08:09,187 - INFO - Data sets are loaded successfully.
+2020-08-26 18:08:09,190 - INFO - Successfully prepared the Scenario
+2020-08-26 18:08:09,190 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:08:09,190 - INFO - Successfully prepared the Finance
+2020-08-26 18:08:09,191 - INFO - Successfully prepared the Technologies
+2020-08-26 18:08:09,468 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:08:09,468 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:08:09,473 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:08:09,475 - INFO - Creating Scenario...
+2020-08-26 18:08:09,478 - INFO - Scenario Created Successfully...
+2020-08-26 18:08:09,478 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:08:09,478 - INFO - Initializing: Battery-
+2020-08-26 18:08:09,485 - INFO - Initializing: Load-0
+2020-08-26 18:08:09,487 - INFO - Initializing: DCM
+2020-08-26 18:08:09,490 - INFO - Initializing: retailTimeShift
+2020-08-26 18:08:09,494 - INFO - Initializing: Reliability
+2020-08-26 18:08:09,499 - INFO - Finished adding value streams
+2020-08-26 18:15:29,769 - INFO - Started logging...
+2020-08-26 18:15:29,826 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:15:29,835 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:15:29,842 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:15:29,847 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:15:29,852 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:15:29,863 - INFO - Data sets are loaded successfully.
+2020-08-26 18:15:29,865 - INFO - Successfully prepared the Scenario
+2020-08-26 18:15:29,865 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:15:29,865 - INFO - Successfully prepared the Finance
+2020-08-26 18:15:29,866 - INFO - Successfully prepared the Technologies
+2020-08-26 18:15:30,006 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:15:30,006 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:15:30,010 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:15:30,012 - INFO - Creating Scenario...
+2020-08-26 18:15:30,013 - INFO - Scenario Created Successfully...
+2020-08-26 18:15:30,013 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:15:30,014 - INFO - Initializing: Battery-
+2020-08-26 18:15:30,018 - INFO - Initializing: Load-0
+2020-08-26 18:15:30,020 - INFO - Initializing: DCM
+2020-08-26 18:15:30,024 - INFO - Initializing: retailTimeShift
+2020-08-26 18:15:30,028 - INFO - Initializing: Reliability
+2020-08-26 18:15:30,035 - INFO - Finished adding value streams
+2020-08-26 18:22:37,244 - INFO - Started logging...
+2020-08-26 18:22:37,300 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:22:37,304 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:22:37,308 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:22:37,312 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:22:37,315 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:22:37,327 - INFO - Data sets are loaded successfully.
+2020-08-26 18:22:37,328 - INFO - Successfully prepared the Scenario
+2020-08-26 18:22:37,328 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:22:37,328 - INFO - Successfully prepared the Finance
+2020-08-26 18:22:37,329 - INFO - Successfully prepared the Technologies
+2020-08-26 18:22:37,424 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:22:37,424 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:22:37,426 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:22:37,426 - INFO - Creating Scenario...
+2020-08-26 18:22:37,427 - INFO - Scenario Created Successfully...
+2020-08-26 18:22:37,427 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:22:37,427 - INFO - Initializing: Battery-
+2020-08-26 18:22:37,429 - INFO - Initializing: Load-0
+2020-08-26 18:22:37,429 - INFO - Initializing: DCM
+2020-08-26 18:22:37,430 - INFO - Initializing: retailTimeShift
+2020-08-26 18:22:37,431 - INFO - Initializing: Reliability
+2020-08-26 18:22:37,434 - INFO - Finished adding value streams
+2020-08-26 18:22:48,428 - INFO - Started logging...
+2020-08-26 18:22:48,496 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:22:48,506 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:22:48,514 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:22:48,522 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:22:48,528 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:22:48,542 - INFO - Data sets are loaded successfully.
+2020-08-26 18:22:48,543 - INFO - Successfully prepared the Scenario
+2020-08-26 18:22:48,543 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:22:48,543 - INFO - Successfully prepared the Finance
+2020-08-26 18:22:48,545 - INFO - Successfully prepared the Technologies
+2020-08-26 18:22:48,758 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:22:48,759 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:22:48,762 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:22:48,765 - INFO - Creating Scenario...
+2020-08-26 18:22:48,767 - INFO - Scenario Created Successfully...
+2020-08-26 18:22:48,767 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:22:48,767 - INFO - Initializing: Battery-
+2020-08-26 18:22:48,774 - INFO - Initializing: Load-0
+2020-08-26 18:22:48,775 - INFO - Initializing: DCM
+2020-08-26 18:22:48,780 - INFO - Initializing: retailTimeShift
+2020-08-26 18:22:48,783 - INFO - Initializing: Reliability
+2020-08-26 18:22:48,790 - INFO - Finished adding value streams
+2020-08-26 18:29:01,906 - INFO - Started logging...
+2020-08-26 18:29:01,959 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:29:01,964 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:29:01,968 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:29:01,971 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:29:01,974 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:29:01,980 - INFO - Data sets are loaded successfully.
+2020-08-26 18:29:01,981 - INFO - Successfully prepared the Scenario
+2020-08-26 18:29:01,981 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:29:01,981 - INFO - Successfully prepared the Finance
+2020-08-26 18:29:01,982 - INFO - Successfully prepared the Technologies
+2020-08-26 18:29:02,076 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:29:02,076 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:29:02,078 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:29:02,079 - INFO - Creating Scenario...
+2020-08-26 18:29:02,080 - INFO - Scenario Created Successfully...
+2020-08-26 18:29:02,080 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:29:02,080 - INFO - Initializing: Battery-
+2020-08-26 18:29:02,083 - INFO - Initializing: Load-0
+2020-08-26 18:29:02,084 - INFO - Initializing: DCM
+2020-08-26 18:29:02,086 - INFO - Initializing: retailTimeShift
+2020-08-26 18:29:02,088 - INFO - Initializing: Reliability
+2020-08-26 18:29:02,090 - INFO - Finished adding value streams
+2020-08-26 18:29:06,418 - INFO - Starting optimization loop
+2020-08-26 18:29:06,765 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:29:17,651 - INFO - Time it takes for solver to finish: 10.885937213897705
+2020-08-26 18:29:17,652 - INFO - Optimization problem was optimal
+2020-08-26 18:29:18,912 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:29:18,944 - INFO - ecos solver
+2020-08-26 18:29:18,944 - INFO - Time it takes for solver to finish: 0.031584978103637695
+2020-08-26 18:29:18,944 - INFO - Optimization problem was optimal
+2020-08-26 18:29:19,337 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-26 18:29:19,340 - INFO - Critical Load Coverage Curve overhead time: 0.0020029544830322266
+2020-08-26 18:29:26,940 - INFO - Critical Load Coverage Curve calculation time: 7.600895643234253
+2020-08-26 18:29:26,941 - INFO - Finished load coverage calculation.
+2020-08-26 18:29:28,108 - INFO - DER results have been saved to: .\storagevet\testing\results\beta_version_ref_case\usecase3\planned\es
+2020-08-26 18:30:14,262 - INFO - Started logging...
+2020-08-26 18:30:14,367 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 18:30:14,371 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 18:30:14,377 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 18:30:14,381 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 18:30:14,385 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 18:30:14,393 - INFO - Data sets are loaded successfully.
+2020-08-26 18:30:14,394 - INFO - Successfully prepared the Scenario
+2020-08-26 18:30:14,395 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 18:30:14,395 - INFO - Successfully prepared the Finance
+2020-08-26 18:30:14,395 - INFO - Successfully prepared the Technologies
+2020-08-26 18:30:14,608 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:30:14,610 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 18:30:14,619 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 18:30:14,619 - INFO - Creating Scenario...
+2020-08-26 18:30:14,639 - INFO - Scenario Created Successfully...
+2020-08-26 18:30:14,644 - INFO - ScenarioSizing initialized ...
+2020-08-26 18:30:14,645 - INFO - Initializing: Battery-
+2020-08-26 18:30:14,657 - INFO - Initializing: Load-0
+2020-08-26 18:30:14,659 - INFO - Initializing: DCM
+2020-08-26 18:30:14,663 - INFO - Initializing: retailTimeShift
+2020-08-26 18:30:14,666 - INFO - Initializing: Reliability
+2020-08-26 18:30:14,670 - INFO - Finished adding value streams
+2020-08-26 18:30:19,553 - INFO - Starting optimization loop
+2020-08-26 18:30:19,916 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:30:30,401 - INFO - Time it takes for solver to finish: 10.48356032371521
+2020-08-26 18:30:30,401 - INFO - Optimization problem was optimal
+2020-08-26 18:30:30,818 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 18:30:30,838 - INFO - ecos solver
+2020-08-26 18:30:30,838 - INFO - Time it takes for solver to finish: 0.02005290985107422
+2020-08-26 18:30:30,838 - INFO - Optimization problem was optimal
+2020-08-26 18:30:31,043 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-26 18:30:31,044 - INFO - Critical Load Coverage Curve overhead time: 0.0010023117065429688
+2020-08-26 18:30:38,438 - INFO - Critical Load Coverage Curve calculation time: 7.39393949508667
+2020-08-26 18:30:38,443 - INFO - Finished load coverage calculation.
+2020-08-26 18:30:41,971 - INFO - DER results have been saved to: .\storagevet\testing\results\beta_version_ref_case\usecase3\planned\es
+2020-08-26 19:22:51,915 - INFO - Started logging...
+2020-08-26 19:22:51,994 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\hourly_timeseries_reference_case_planned_24h.csv
+2020-08-26 19:22:51,998 - INFO - Successfully read in: .\storagevet\data\monthly_data.csv
+2020-08-26 19:22:52,003 - INFO - Successfully read in: .\storagevet\testing\datasets\beta_version_ref_case\tariff_refernce_case_1.csv
+2020-08-26 19:22:52,005 - INFO - Successfully read in: .\storagevet\data\yearly_data.csv
+2020-08-26 19:22:52,009 - INFO - Successfully read in: .\storagevet\data\battery_cycle_life.csv
+2020-08-26 19:22:52,015 - INFO - Data sets are loaded successfully.
+2020-08-26 19:22:52,015 - INFO - Successfully prepared the Scenario
+2020-08-26 19:22:52,016 - INFO - Successfully prepared the Scenario and some Finance
+2020-08-26 19:22:52,016 - INFO - Successfully prepared the Finance
+2020-08-26 19:22:52,017 - INFO - Successfully prepared the Technologies
+2020-08-26 19:22:52,017 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 19:22:52,017 - INFO - Successfully prepared the value-stream (services)
+2020-08-26 19:22:52,021 - INFO - Successfully initialized the Params class with the XML file.
+2020-08-26 19:22:52,022 - INFO - Creating Scenario...
+2020-08-26 19:22:52,023 - INFO - Scenario Created Successfully...
+2020-08-26 19:22:52,023 - INFO - ScenarioSizing initialized ...
+2020-08-26 19:22:52,023 - INFO - Initializing: Battery-
+2020-08-26 19:22:52,026 - INFO - Initializing: Load-0
+2020-08-26 19:22:52,027 - INFO - Initializing: Reliability
+2020-08-26 19:22:52,031 - INFO - Finished adding value streams
+2020-08-26 19:22:57,812 - INFO - Starting optimization loop
+2020-08-26 19:22:57,942 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 19:22:58,588 - INFO - Time it takes for solver to finish: 0.6462576389312744
+2020-08-26 19:22:58,588 - INFO - Optimization problem was optimal
+2020-08-26 19:22:58,736 - INFO - Finished setting up the problem. Solving now.
+2020-08-26 19:22:58,741 - INFO - ecos solver
+2020-08-26 19:22:58,741 - INFO - Time it takes for solver to finish: 0.005014181137084961
+2020-08-26 19:22:58,741 - INFO - Optimization problem was optimal
+2020-08-26 19:22:58,903 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-26 19:22:58,904 - INFO - Critical Load Coverage Curve overhead time: 0.0010039806365966797
+2020-08-26 19:23:05,766 - INFO - Critical Load Coverage Curve calculation time: 6.861973285675049
+2020-08-26 19:23:05,767 - INFO - Finished load coverage calculation.
+2020-08-26 19:23:06,469 - INFO - DER results have been saved to: .\storagevet\testing\results\beta_version_ref_case\usecase3\planned\es

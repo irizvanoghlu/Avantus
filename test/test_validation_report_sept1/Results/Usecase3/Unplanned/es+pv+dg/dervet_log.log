@@ -1,0 +1,10 @@
+2020-08-28 17:47:14,567 - INFO - Started logging...
+2020-08-28 17:47:14,568 - ERROR - INPUT: PV-grid_charge_penalty is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,575 - ERROR - INPUT: PV-max_rated_capacity is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,575 - ERROR - INPUT: PV-min_rated_capacity is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,576 - ERROR - INPUT: Battery-user_ch_rated_max is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,576 - ERROR - INPUT: Battery-user_ch_rated_min is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,576 - ERROR - INPUT: Battery-user_dis_rated_max is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,577 - ERROR - INPUT: Battery-user_dis_rated_min is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,577 - ERROR - INPUT: Battery-user_ene_rated_max is not found in model parameter. Please include and rerun.
+2020-08-28 17:47:14,577 - ERROR - INPUT: Battery-user_ene_rated_min is not found in model parameter. Please include and rerun.

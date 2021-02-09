@@ -1,0 +1,52 @@
+2020-08-28 10:30:17,164 - INFO - Started logging...
+2020-08-28 10:30:17,220 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/uc3/es/hourly_timeseries_ref_wholesale_es.csv
+2020-08-28 10:30:17,224 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-08-28 10:30:17,228 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-08-28 10:30:17,230 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-08-28 10:30:17,232 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-08-28 10:30:17,232 - INFO - Updating data for Sensitivity Analysis...
+2020-08-28 10:30:17,240 - INFO - Data sets are loaded successfully.
+2020-08-28 10:30:17,241 - INFO - Successfully prepared the Scenario
+2020-08-28 10:30:17,241 - INFO - Successfully prepared the Finance
+2020-08-28 10:30:17,241 - INFO - Successfully prepared the Technologies
+2020-08-28 10:30:17,320 - INFO - Successfully prepared the value-stream (services)
+2020-08-28 10:30:17,320 - DEBUG - Successfully prepared the value-streams
+2020-08-28 10:30:17,322 - DEBUG - ScenarioSizing initialized ...
+2020-08-28 10:30:17,322 - INFO - Initializing: Battery-
+2020-08-28 10:30:17,322 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-08-28 10:30:17,322 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-08-28 10:30:17,322 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-08-28 10:30:17,322 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-28 10:30:17,322 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 10:30:17,322 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 10:30:17,323 - INFO - Initializing: PV-
+2020-08-28 10:30:17,323 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-28 10:30:17,324 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 10:30:17,324 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 10:30:17,324 - INFO - Initializing: Load-0
+2020-08-28 10:30:17,324 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-08-28 10:30:17,324 - DEBUG - Initializing storagevet.Technology.Load
+2020-08-28 10:30:17,324 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-08-28 10:30:17,325 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 10:30:17,325 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 10:30:17,325 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 10:30:17,325 - INFO - Initializing: DCM
+2020-08-28 10:30:17,326 - INFO - Initializing: retailTimeShift
+2020-08-28 10:30:17,327 - INFO - Initializing: Reliability
+2020-08-28 10:30:17,330 - DEBUG - Finished adding value streams
+2020-08-28 10:30:17,333 - DEBUG - []
+2020-08-28 10:30:17,350 - INFO - Starting optimization loop
+2020-08-28 10:30:17,354 - INFO - 10:30:17 Running Optimization Problem starting at 2017-01-01 00:00:00 hb
+2020-08-28 10:30:17,484 - DEBUG - time took to make demand charge term: 0.1163179874420166
+2020-08-28 10:30:17,605 - INFO - Finished setting up the problem. Solving now.
+2020-08-28 10:31:35,737 - INFO - Time it takes for solver to finish: 78.13186883926392
+2020-08-28 10:31:35,737 - INFO - Optimization problem was optimal
+2020-08-28 10:31:35,766 - DEBUG - Performing Post Optimization Analysis...
+2020-08-28 10:31:36,004 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-28 10:31:36,006 - INFO - Critical Load Coverage Curve overhead time: 0.0020058155059814453
+2020-08-28 10:31:37,382 - INFO - Critical Load Coverage Curve calculation time: 1.3756556510925293
+2020-08-28 10:31:37,383 - INFO - Finished load coverage calculation.
+2020-08-28 10:31:37,383 - DEBUG - Finished post optimization analysis
+2020-08-28 10:31:38,269 - INFO - Results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase1\es+pv
+2020-08-28 10:31:38,274 - INFO - DER results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase1\es+pv
+2020-08-28 10:31:38,274 - INFO - DERVET runtime: 80.95338439941406

@@ -1,0 +1,42 @@
+2020-12-04 16:38:59,457 - INFO - Started logging...
+2020-12-04 16:38:59,531 - INFO - Successfully read in: ./dervet/storagevet/testing/datasets/beta_version_ref_case/hourly_timeseries_reference_case_1.csv
+2020-12-04 16:38:59,535 - INFO - Successfully read in: ./dervet/storagevet/data/monthly_data.csv
+2020-12-04 16:38:59,541 - INFO - Successfully read in: ./dervet/storagevet/data/tariff.csv
+2020-12-04 16:38:59,545 - INFO - Successfully read in: ./dervet/storagevet/data/yearly_data.csv
+2020-12-04 16:38:59,547 - INFO - Successfully read in: ./dervet/storagevet/data/battery_cycle_life.csv
+2020-12-04 16:38:59,551 - INFO - Successfully read in: ./dervet/storagevet/data/load_shed_percentage.csv
+2020-12-04 16:38:59,551 - INFO - Updating data for Sensitivity Analysis...
+2020-12-04 16:38:59,552 - INFO - Loading case 0...
+2020-12-04 16:38:59,552 - INFO - Data sets are loaded successfully.
+2020-12-04 16:38:59,566 - INFO - Successfully prepared the Scenario
+2020-12-04 16:38:59,566 - INFO - Successfully prepared the Finance
+2020-12-04 16:38:59,567 - INFO - Successfully prepared the Technologies
+2020-12-04 16:38:59,567 - INFO - Successfully prepared the value-stream (services)
+2020-12-04 16:38:59,567 - DEBUG - Successfully prepared the value-streams
+2020-12-04 16:38:59,572 - DEBUG - ScenarioSizing initialized ...
+2020-12-04 16:38:59,572 - INFO - Initializing: Battery-1
+2020-12-04 16:38:59,572 - DEBUG - Initializing MicrogridDER.Battery
+2020-12-04 16:38:59,572 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-12-04 16:38:59,572 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-12-04 16:38:59,572 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-12-04 16:38:59,572 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-12-04 16:38:59,573 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-12-04 16:38:59,573 - DEBUG - Initializing MicrogridDER.ContinuousSizing
+2020-12-04 16:38:59,575 - INFO - Initializing: Load-0
+2020-12-04 16:38:59,575 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-12-04 16:38:59,575 - DEBUG - Initializing storagevet.Technology.Load
+2020-12-04 16:38:59,576 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-12-04 16:38:59,576 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-12-04 16:38:59,576 - DEBUG - Initializing MicrogridDER.ContinuousSizing
+2020-12-04 16:38:59,576 - INFO - Initializing: Reliability
+2020-12-04 16:38:59,578 - DEBUG - Finished adding value streams
+2020-12-04 16:38:59,582 - DEBUG - []
+2020-12-04 16:43:21,988 - DEBUG - Performing Post Optimization Analysis...
+2020-12-04 16:43:22,006 - INFO - Starting load coverage calculation. This may take a while.
+2020-12-04 16:43:22,007 - INFO - Critical Load Coverage Curve overhead time: 0.0009953975677490234
+2020-12-04 16:44:01,805 - INFO - Critical Load Coverage Curve calculation time: 39.79853415489197
+2020-12-04 16:44:01,807 - INFO - Finished load coverage calculation.
+2020-12-04 16:44:01,807 - DEBUG - Finished post optimization analysis
+2020-12-04 16:44:01,916 - INFO - Results have been saved to: dervet\storagevet\testing\results\reliability_load_shed\sizing\w_ls1
+2020-12-04 16:44:01,921 - INFO - DER results have been saved to: dervet\storagevet\testing\results\reliability_load_shed\sizing\w_ls1
+2020-12-04 16:44:01,921 - INFO - DERVET runtime: 302.3498992919922

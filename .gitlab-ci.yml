@@ -1,0 +1,32 @@
+image: python:3.6
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+stages:
+  - test
+
+cache:
+  paths:
+    - .cache/pip
+    - dervet-venv/
+
+before_script:
+  - echo "... pulling submodule ..."
+  - echo "... Checking runner specifications ..."
+  - apt-get update -q -y
+  - pip install virtualenv
+  - virtualenv dervet-venv
+  - source dervet-venv/bin/activate
+
+pytest:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
+    - file ./storagevet/storagevet/Scenario.py
+    - pip install -e ./storagevet
+    - python -m pytest test --import-mode=importlib
+  tags:
+    - 'docker'

@@ -233,3 +233,12 @@ def xtest_esclation_btw_analysis_years():
             over
     """
     assert_ran(r" ", )    # TODO
+
+
+def xtest_taxes():
+    """ Test if taxes is calculated correctly.
+    This test will also check for:
+        - taxes is opposite sign of net profit
+    """
+    assert_ran(r" ", )    # TODO
+

@@ -1,118 +1,95 @@
----
-title: "StoragetVET Py"
-output: html_document
----
+# DER-VET™
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+DER-VET™ provides a free, publicly accessible, open-source platform for calculating, understanding, and optimizing the value of distributed 
+energy resources (DER) based on their technical merits and constraints. An extension of EPRI's [StorageVET®](./storagevet) tool, DER-VET supports 
+site-specific assessments of energy storage and additional DER technologies—including solar, wind, demand response, electric vehicle charging, 
+internal combustion engines, and combined heat and power—in different configurations, such as microgrids. It uses load and other data to determine 
+optimal size, duration, and other characteristics for maximizing benefits based on site conditions and the value that can be extracted from targeted 
+use cases. Customers, developers, utilities, and regulators across the industry can apply this tool to inform project-level decisions based on sound 
+technical understanding and unbiased cost-performance data.
 
-One Paragraph of project description goes here
+DER-VET was developed with funding from the California Energy Commission. EPRI plans to support continuing updates and enhancements.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for 
+notes on how to deploy the project on a live system.
 
 ### Prerequisites & Installing
 
 #### 1. Install [Anaconda](https://www.anaconda.com/download/) for python 3.**
 
-#### 2. Install Microsoft Visual C++ 14.0
+#### 2. Open Anaconda Prompt
 
-- Download and install Build Tools 2017 for [Visual Studio 2017](https://visualstudio.microsoft.com/downloads/).
+#### 3. Activate Python 3.6 environment
 
-- Open the Visual Studio Installer and select Visual Studio Build Tools to be installed, but do not install yet
-
-- Select the appropriate "Windows SDK" specified below:
-
-| Windows OS   | SDK        |
-|--------------|------------|
-| Windows 7    | Windows 8.1|
-| Windows 8.1  | Windows 8.1|
-| Windows 10   | Windows 10 |
-
-
-- Install Visual Studio Build Tools
-
-#### 3. Open Anaconda Prompt and install the following dependencies
-
-- Install ecos 
-    
+On Linux/Mac   
+Note that pip should be associated to a python 3.6 installation  
 ```
-conda install ecos
-pip install ecos
+pip install virtualenv
+virtualenv dervet-venv
+source dervet-venv/bin/activate
 ```
-When installing with conda, you maybe be prompted by the command prompt. Do not worry, it is just asking if you want to install the library. To continue, type "y" and enter in the command prompt.
+On Windows  
+Note that pip should be associated to a python 3.6 installation    
+```
+pip install virtualenv
+virtualenv dervet-venv
+"./dervet-venv/Scripts/activate"
+```
+With Conda
+Note that the python version is specified, meaning conda does not have to be associated with a python 3.6
+```
+conda create -n dervet-venv python=3.6
+conda activate dervet-venv
+```
 
-- Install cvxopt 
-    
+#### 3. Install project dependencies
+ 
 ```
-conda install cvxopt
-pip install cvxopt
-```
-You will be prompted again. Just keep going.
-
-- Install cvxpy 
-    
-```
-pip install cvxpy
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pip install -e ./storagevet
 ```
 
 ## Running the tests
 
-To run tests, simply enter the following into your terminal:
+To run tests, activate Python environment. Then enter the following into your terminal:
 ```
-Python/Testing/runSvetTests.bat
-```
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+python -m pytest test
 ```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+To use this project as a dependency in your own, clone this repo directly into the root of your project.
+Open terminal or command prompt from your project root, and input the following command:
+```
+pip install -e ./dervet
+```
 
 ## Versioning
 
-We use [Gitlab](http://gitlab.com/) for versioning. For the versions available, see the [tags on this repository](https://gitlab.epri.com/storagetvet/SVETpy/tags). 
+We use [Gitlab](https://gitlab.epri.com/storagevet/storagevet) for versioning. For the versions available, 
+see the [tags on this repository](https://gitlab.epri.com/storagetvet/storagevet/tags). 
 
 ## Authors
 
 * **Miles Evans**
-* **Andres Cortes**
-* **Evan Giarta**
+* **Ramakrishnan Ravikumar**
+* **Suma Jothibasu**
 * **Halley Nathwani**
+* **Andres Cortes**
+* **Andrew Etringer**
+* **Evan Giarta**
+* **Thien Nguyen**
 * **Micah Botkin-Levy**
+* **Yekta Yazar**
+* **Kunle Awojinrin**
+* **Arindam Maitra**
+* **Giovanni Damato**
+
 
 ## License
 
-This project is licensed under the BSD (3-clause) License - see the [LICENSE.txt](LICENSE.txt) file for details
+This project is licensed under the BSD (3-clause) License - see the [LICENSE.txt](./LICENSE.txt) file for details
 
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc

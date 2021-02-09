@@ -77,8 +77,8 @@ see the [tags on this repository](https://gitlab.epri.com/storagetvet/storagevet
 * **Miles Evans**
 * **Ramakrishnan Ravikumar**
 * **Suma Jothibasu**
-* **Halley Nathwani**
 * **Andres Cortes**
+* **Halley Nathwani**
 * **Andrew Etringer**
 * **Evan Giarta**
 * **Thien Nguyen**

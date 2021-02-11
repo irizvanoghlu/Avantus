@@ -30,3 +30,5 @@ pytest:
     - python -m pytest test --import-mode=importlib
   tags:
     - 'docker'
+  only:
+    - merge_requests

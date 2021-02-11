@@ -62,6 +62,7 @@ def test_monthly():
 
 
 def test_catch_wrong_length():
+    # trying to do sensetivity analysis and evaluation columns
     # following should fail
     with pytest.raises(ModelParameterError):
         assert_ran(rf'{BAT_DIR}/103-catch_wrong_length.csv', )

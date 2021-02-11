@@ -1,6 +1,7 @@
 # DER-VET™
 
-DER-VET™ provides a free, publicly accessible, open-source platform for calculating, understanding, and optimizing the value of distributed 
+[DER-VET™](https://der-vet.com) provides a free, publicly accessible, open-source platform for calculating, understanding, and optimizing the value 
+of distributed 
 energy resources (DER) based on their technical merits and constraints. An extension of EPRI's [StorageVET®](./storagevet) tool, DER-VET supports 
 site-specific assessments of energy storage and additional DER technologies—including solar, wind, demand response, electric vehicle charging, 
 internal combustion engines, and combined heat and power—in different configurations, such as microgrids. It uses load and other data to determine 
@@ -17,34 +18,44 @@ notes on how to deploy the project on a live system.
 
 ### Prerequisites & Installing
 
-#### 1. Install [Anaconda](https://www.anaconda.com/download/) for python 3.**
+#### New Installation
+##### 1. Install [Anaconda](https://www.anaconda.com/download/) for python 3.**
 
-#### 2. Open Anaconda Prompt
+##### 2. Open Anaconda Prompt and navigate to your "dervet" folder
 
-#### 3. Activate Python 3.6 environment
+##### 3. Create Python 3.6 environment
 
-On Linux/Mac   
+On Linux/Mac/Windows  
 Note that pip should be associated to a python 3.6 installation  
 ```
 pip install virtualenv
 virtualenv dervet-venv
-source dervet-venv/bin/activate
-```
-On Windows  
-Note that pip should be associated to a python 3.6 installation    
-```
-pip install virtualenv
-virtualenv dervet-venv
-"./dervet-venv/Scripts/activate"
 ```
 With Conda
 Note that the python version is specified, meaning conda does not have to be associated with a python 3.6
 ```
 conda create -n dervet-venv python=3.6
+```
+
+##### 3. Activate Python 3.6 environment
+
+On Linux/Mac   
+Note that pip should be associated to a python 3.6 installation  
+```
+source dervet-venv/bin/activate
+```
+On Windows  
+Note that pip should be associated to a python 3.6 installation    
+```
+"./dervet-venv/Scripts/activate"
+```
+With Conda
+Note that the python version is specified, meaning conda does not have to be associated with a python 3.6
+```
 conda activate dervet-venv
 ```
 
-#### 3. Install project dependencies
+##### 3. Install project dependencies
  
 ```
 pip install -r requirements.txt
@@ -52,9 +63,88 @@ pip install -r requirements-dev.txt
 pip install -e ./storagevet
 ```
 
+#### Update Old Installation (Replace Beta Release Happy Path) For Windows
+
+##### 1. Delete all folders in "C:\DERVET" expect "C:\DERVET\DervetBackEnd"
+
+##### 2. Place the new "dervet" folder in "C:\DERVET\DervetBackEnd", placing the existing one
+
+##### 3. Open Anaconda Prompt
+
+##### 4. Activate Python 3.6 environment
+
+```
+conda activate "C:\DERVET\DervetBackEnd\"
+cd C:\DERVET\DervetBackEnd\dervet
+```
+
+##### 5. Install project dependencies
+ 
+```
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pip install -e ./storagevet
+```
+
+### Running Your First Case
+
+##### 1. Activate Python environment. 
+###### New Installation
+
+On Linux/Mac   
+Note that pip should be associated to a python 3.6 installation  
+```
+source dervet-venv/bin/activate
+```
+On Windows  
+Note that pip should be associated to a python 3.6 installation    
+```
+"./dervet-venv/Scripts/activate"
+```
+With Conda
+Note that the python version is specified, meaning conda does not have to be associated with a python 3.6
+```
+conda activate dervet-venv
+```
+###### Old Installation
+```
+conda activate "C:\DERVET\DervetBackEnd\"
+```
+
+##### 2. Enter the following into your terminal from inside the root "dervet" folder:
+###### New & Old Installation
+
+```
+python run_DERVET.py Model_Parameters_Template_DER.csv
+```
+
 ## Running the tests
 
-To run tests, activate Python environment. Then enter the following into your terminal:
+##### 1. Activate Python environment. 
+###### New Installation
+
+On Linux/Mac   
+Note that pip should be associated to a python 3.6 installation  
+```
+source dervet-venv/bin/activate
+```
+On Windows  
+Note that pip should be associated to a python 3.6 installation    
+```
+"./dervet-venv/Scripts/activate"
+```
+With Conda
+Note that the python version is specified, meaning conda does not have to be associated with a python 3.6
+```
+conda activate dervet-venv
+```
+###### Old Installation
+```
+conda activate "C:\DERVET\DervetBackEnd\"
+```
+
+##### 2. Enter the following into your terminal from inside the root "dervet" folder:
+###### New & Old Installation
 ```
 python -m pytest test
 ```
@@ -69,8 +159,8 @@ pip install -e ./dervet
 
 ## Versioning
 
-We use [Gitlab](https://gitlab.epri.com/storagevet/storagevet) for versioning. For the versions available, 
-see the [tags on this repository](https://gitlab.epri.com/storagetvet/storagevet/tags). 
+We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available, 
+see the [tags on this repository](https://gitlab.epri.com/storagetvet/dervet/tags). 
 
 ## Authors
 

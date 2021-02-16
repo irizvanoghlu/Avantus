@@ -952,7 +952,7 @@
                 "keys": {
                     "growth": {
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     }
@@ -965,7 +965,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     }
@@ -978,7 +978,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -1184,7 +1184,7 @@
                     },
                     "growth": {
                         "max": "100",
-                        "min": "0",
+                        "min": "-100",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -1192,13 +1192,16 @@
                         "max": "24",
                         "min": "0",
                         "type": "string/int",
-                        "unit": "hours"
+                        "unit": "hours",
+                        "optional": "program_end_hour"
+
                     },
                     "program_end_hour": {
                         "max": "24",
                         "min": "0",
                         "type": "string/int",
-                        "unit": "hours"
+                        "unit": "hours",
+                        "optional": "length"
                     },
                     "program_start_hour": {
                         "max": "24",
@@ -1557,7 +1560,7 @@
                     "energyprice_growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -1578,7 +1581,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -1774,14 +1777,14 @@
                     "energyprice_growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -1807,7 +1810,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },
@@ -2019,7 +2022,7 @@
                     },
                     "growth": {
                         "max": "100",
-                        "min": "0",
+                        "min": "-100",
                         "type": "float",
                         "unit": "%"
                     },
@@ -2107,7 +2110,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     }
@@ -2131,7 +2134,7 @@
                     "def_growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%"
                     },
@@ -2265,7 +2268,7 @@
                     "growth": {
                         "cba": "n",
                         "max": "100.0",
-                        "min": "0.0",
+                        "min": "-100.0",
                         "type": "float",
                         "unit": "%/year"
                     },

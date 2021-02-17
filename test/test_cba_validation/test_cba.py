@@ -16,7 +16,6 @@ MP_DIR = r".\Testing\Model_params"
 DIR = Path("./test/test_cba_validation/model_params")
 """
 Evaluation column tests
-TODO check that post-facto cash flows are ZERO
 TODO add test to make sure that evaluation data of different dt is caught
 """
 
@@ -66,10 +65,12 @@ class TestEvaluateBatteryICECostsToZero:
 
 
 def test_sensitivity_evaluation():
+    # TODO check that post-facto cash flows are ZERO
     assert_ran(DIR / '003-cba_valuation_sensitivity.csv', )
 
 
 def test_coupled_evaluation():
+    # TODO check that post-facto cash flows are ZERO
     assert_ran(DIR / '004-cba_valuation_coupled_dt.csv', )
 
 
@@ -78,6 +79,7 @@ def xtest_tariff():  # TODO
 
 
 def test_monthly():
+    # TODO check that post-facto cash flows are ZERO
     assert_ran(DIR / '005-cba_monthly_timseries.csv', )
 
 
@@ -94,11 +96,10 @@ Analysis end mode tests
 
 
 class TestLongestLifetimeNoReplacement:
-
+    """ Battery lifetime = 14 years, PV lifetime = 13 years, ICE lifetime = 12
+    analysis_horizon_mode = 3, start_year = 2017
+    """
     def setup_class(self):
-        self.actual_proforma = None
-
-    def test_case_ran(self):
         run_results = run_case(DIR / "longest_lifetime.csv")
         # get proforma
         self.actual_proforma = run_results.proforma_df()
@@ -111,9 +112,10 @@ class TestLongestLifetimeNoReplacement:
         #  no replacement costs
         pass
 
-    def xtest_proforma_length(self):
+    def test_proforma_length(self):
         #  proforma should be the length of the longest life time + 1 year
-        pass
+        expected_length = 14 + 1
+        assert len(self.actual_proforma.index) == expected_length
 
     def xtest_no_der_costs_after_der_last_year_of_life(self):
         #  no costs for a DER after the end of its expected life time
@@ -121,11 +123,10 @@ class TestLongestLifetimeNoReplacement:
 
 
 class TestLongestLifetimeReplacements:
-
+    """ Battery lifetime = 14 years, PV lifetime = 13 years, ICE lifetime = 12 ALL replaceable
+    analysis_horizon_mode = 3, start_year = 2017
+    """
     def setup_class(self):
-        self.actual_proforma = None
-
-    def test_case_ran(self):
         run_results = run_case(DIR / "longest_lifetime_replaceble.csv")
         # get proforma
         self.actual_proforma = run_results.proforma_df()
@@ -138,21 +139,21 @@ class TestLongestLifetimeReplacements:
         #  check to make sure there are replacement costs on the years that a new DER is installed
         pass
 
-    def xtest_proforma_length(self):
+    def test_proforma_length(self):
         #  proforma should be the length of the longest life time + 1 year
-        pass
+        expected_length = 14 + 1
+        assert len(self.actual_proforma.index) == expected_length
 
 
 class TestShortestLifetime:
 
     def setup_class(self):
-        self.actual_proforma_no_replacements = None
-        self.actual_proforma_replacements = None
-
-    def test_case_ran_no_replacements(self):
         run_results = run_case(DIR / "shortest_lifetime.csv")
         # get proforma
         self.actual_proforma_no_replacements = run_results.proforma_df()
+        run_results = run_case(DIR / "shortest_lifetime_replaceble.csv")
+        # get proforma
+        self.actual_proforma_replacements = run_results.proforma_df()
 
     def xtest_decommissing_cost_no_replacements(self):
         #  all decomissioning costs should be on the last year
@@ -165,11 +166,6 @@ class TestShortestLifetime:
     def xtest_proforma_length_no_replacements(self):
         #  proforma should be the same as shortest_lifetime_replacement
         pass
-
-    def test_case_ran_replacements(self):
-        run_results = run_case(DIR / "shortest_lifetime_replaceble.csv")
-        # get proforma
-        self.actual_proforma_replacements = run_results.proforma_df()
 
     def xtest_decommissing_cost_replacements(self):
         #  all decomissioning costs should be on the last year
@@ -184,7 +180,7 @@ class TestShortestLifetime:
         pass
 
     def test_replacements_and_no_replacements_same_proforma(self):
-        assert self.actual_proforma_replacements == self.actual_proforma_no_replacements
+        assert np.all(self.actual_proforma_replacements == self.actual_proforma_no_replacements)
 
 
 # mode==2 + a DER is being sized
@@ -204,17 +200,17 @@ End of life cost tests
 """
 
 
-def test_linear_salvage_value():
+def xtest_linear_salvage_value():
     # TODO check to make sure that salvage value is some nonzero value
     assert_ran(CBA_DIR + r"\110-linear_salvage_value.csv", )
 
 
-def test_user_defined_salvage_value():
+def xtest_user_defined_salvage_value():
     # TODO check to make sure that salvage value is some nonzero value
     assert_ran(CBA_DIR + r"\user_salvage_value.csv", )
 
 
-def test_shortest_lifetime_linear_salvage():
+def xtest_shortest_lifetime_linear_salvage():
     assert_ran(DIR / "shortest_lifetime_linear_salvage.csv")
 
 
@@ -229,7 +225,7 @@ def xtest_carrying_cost_d_is_e_error():
         run_case(DIR / "109-carrying_cost_d_is_e_error.csv")
 
 
-def test_ppa():
+def xtest_ppa():
     """ Test solar's PPA feature"""
     assert_ran(DIR / "ppa_payment.csv")
 
@@ -264,7 +260,7 @@ def xtest_carrying_cost_not_replacable():
     assert_ran(r" ", )    # TODO
 
 
-def test_carrying_cost_error():
+def xtest_carrying_cost_error():
     """ 3 DERs not all are replaceable"""
     # ECC should be run in a Reliability/Deferral case
     with pytest.raises(ModelParameterError):
@@ -294,7 +290,7 @@ All other tests for the cost benefit analysis and financials class
 """
 
 
-def test_da_month_degradation_predict_when_battery_will_be_replaced():
+def xtest_da_month_degradation_predict_when_battery_will_be_replaced():
     assert_ran(CBA_DIR +
                r"\Model_Parameters_Template_ENEA_S1_8_12_UC1_DAETS_" +
                r"doesnt_reach_eol_during_opt.csv", )

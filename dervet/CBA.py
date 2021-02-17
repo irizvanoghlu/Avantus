@@ -98,7 +98,8 @@ class CostBenefitAnalysis(Financial):
         if self.horizon_mode == 3:
             longest_lifetime = 0
             for der_instance in der_list:
-                longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
+                if der_instance.technology_type != 'Load':
+                    longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
                     TellUser.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
@@ -158,9 +159,11 @@ class CostBenefitAnalysis(Financial):
             if not der_instance.replaceable:
                 # if the DER is not replaceable then add the following year to the set of analysis years
                 rerun_opt_on += yrs_failed
-        # increase the year by 1 (this will be the years that the operational DER mix will change)
-        diff_der_mix_yrs = [year+1 for year in rerun_opt_on if year < end_year.year]
-        return list(set(diff_der_mix_yrs + rerun_opt_on))  # get rid of any duplicates
+        # filter out any years beyond end_year
+        rerun_opt_on = [year for year in rerun_opt_on if year < end_year.year]
+        # add years that the operational DER mix will change (year after last year of operation)
+        rerun_opt_on += [year+1 for year in rerun_opt_on if year < end_year.year]
+        return list(set(rerun_opt_on))  # get rid of any duplicates
 
     def annuity_scalar(self, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits

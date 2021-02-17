@@ -181,3 +181,4 @@ PV,PPA_inflation_rate,2,%,float,"(-100,100)",,,An escalation rate exclusively fo
 Finance,ecc_mode,0,y/n,bool,"{0,1}",,None,Setting to TRUE will tell the cost benefit analysis to do the Economic Carrying Cost of your DERs,.,no,.,.,
 Reliability,load_shed_percentage,0,y/n,bool,"{1,0}",,None,Considers the load shed percentage values for reliability calculation.,.,no,.,.,
 Reliability,load_shed_perc_filename,.\dervet\Data\load_shed_percentage.csv,,string,valid file path to a degradation data file,,None,load shed percentage for maximum outage length as an input,.,,,,
+Battery,cycle_life_table_eol_condition,80,%,int,"[0, 100] ",,None,End of life condition used to make the cycle_life input table.,.,no,,,

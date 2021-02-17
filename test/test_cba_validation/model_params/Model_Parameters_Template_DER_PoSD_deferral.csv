@@ -305,3 +305,4 @@ PV,1,replacement_construction_time,1,years,int,"[1, inf)",,None,"The time, in ye
 ICE,1,ter,-5,%,,,,,technology escalation rate: how quickly the technology increases/decreases in cost,.,no,.,.,
 ICE,1,ecc%,10,%,float,"[0, 100] ",,,the economic carrying cost percent,.,no,.,.,
 ICE,1,replacement_construction_time,1,years,int,"[1, inf)",,None,"The time, in years, it takes finish DER equipement replacement construction",.,no,.,.,
+Battery,1,cycle_life_table_eol_condition,80,%,int,"[0, 100] ",,None,End of life condition used to make the cycle_life input table.,.,no,,,

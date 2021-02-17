@@ -90,3 +90,4 @@ Battery,1,ecc%,0,%,float,"[0, 100] ",,,the economic carrying cost percent,.,no,.
 DA,1,growth,1.3,%/yr,float,"[0, 100]",,None,Growth Rate of day ahead energy prices,yes,no,.,.,
 Battery,1,state_of_health,40,%,float,,,,State of heath at end of life (percentage of original energy capacity that will tigger a replacement of the equipement),.,no,.,.,
 Battery,1,replacement_construction_time,1,years,int,"[1, inf)",,None,The time (in years) it takes finish DER equipement replacement construction,.,no,.,.,
+Battery,1,cycle_life_table_eol_condition,80,%,int,"[0, 100] ",,None,End of life condition used to make the cycle_life input table.,.,no,,,

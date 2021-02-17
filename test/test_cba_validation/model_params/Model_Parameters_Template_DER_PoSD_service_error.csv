@@ -302,3 +302,4 @@ PV,1,gamma,43,%,float,"[0, 100]",,None,Percent of the timestep for which PV is a
 PV,1,PPA,0,y/n,float,"{0,1}",,None,Calculate the annual PV energy cost as a Power Purchase Aggreement (PPA),.,no,.,.,
 PV,1,PPA_cost,0.0275,$/kWh,float,"[0,inf)",,None,Power Purchasing Agreement's cost,.,no,.,.,
 PV,1,PPA_inflation_rate,2,%,float,"(-100,100)",,,An escalation rate exclusively for the Solar PPA Cost (For operation year 2 onwards),.,no,,,
+Battery,1,cycle_life_table_eol_condition,80,%,int,"[0, 100] ",,None,End of life condition used to make the cycle_life input table.,.,no,,,

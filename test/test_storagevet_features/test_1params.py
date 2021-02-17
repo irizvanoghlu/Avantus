@@ -6,11 +6,11 @@ The tests in this file can be run with .
 """
 import pytest
 from pathlib import Path
-from test_storagevet_features.TestingLib import *
+from test.TestingLib import *
 from storagevet.ErrorHandling import *
 
 
-DIR = Path("./test/model_params")
+DIR = Path("./test/test_storagevet_features/model_params")
 
 
 def test_missing_tariff_row():

@@ -10,10 +10,10 @@ would like the tests to run on.
 """
 import pytest
 from pathlib import Path
-from test_storagevet_features.TestingLib import *
+from test.TestingLib import *
 
 
-DIR = Path('./test/model_params/')
+DIR = Path("./test/test_storagevet_features/model_params")
 JSON = '.json'
 CSV = '.csv'
 

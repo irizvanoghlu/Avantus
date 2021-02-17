@@ -287,6 +287,7 @@ class MicrogridScenario(Scenario):
         sub_index = self.optimization_levels.loc[mask].index
         # drop any ders that are not operational
         self.poi.grab_active_ders(sub_index)
+        print(self.poi.active_ders)
         if not len(self.poi.active_ders):
             return {}, [], sub_index
         return super(MicrogridScenario, self).set_up_optimization(opt_window_num, annuity_scalar, ignore_der_costs)

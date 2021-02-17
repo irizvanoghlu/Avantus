@@ -6,45 +6,41 @@ update TEST_PROGRAM with the lower case string name of the program that you
 would like the tests to run on.
 
 """
-from test_storagevet_features.TestingLib import assert_ran, run_case
+from test.TestingLib import assert_ran, run_case
 from pathlib import Path
 
 
-DIR = Path('./test/model_params/')
+DIR = Path("./test/test_storagevet_features/model_params")
 
 
 def test_ice():
-    assert_ran(DIR / "100-billreduction_ice_month.json")
+    assert_ran(DIR / "030-billreduction_ice_month.csv")
 
 
 def test_controllable_load_month():
-    assert_ran(DIR / "152-billreduction_battery_controllableload_month.json")
+    assert_ran(DIR / "031-billreduction_battery_controllableload_month.csv")
 
 
 def test_ice_pv():
-    assert_ran(DIR / "101-pv_ice_bill_reduction.json")
+    assert_ran(DIR / "032-pv_ice_bill_reduction.csv")
 
 
 def test_ice_ice():
-    assert_ran(DIR / "105-ice_ice_bill_reduction.json")
+    assert_ran(DIR / "033-ice_ice_bill_reduction.csv")
 
 
 def test_pv_ice_ice():
-    assert_ran(DIR / "106-pv_ice_ice_bill_reduction.json")
+    assert_ran(DIR / "034-pv_ice_ice_bill_reduction.csv")
 
 
 def test_pv_pv_ice():
-    assert_ran(DIR / "104-pv_pv_ice_bill_reduction.json")
+    assert_ran(DIR / "035-pv_pv_ice_bill_reduction.csv")
 
 
 def test_battery():
     """tests fixed size with retail ETS and DCM services through 1 battery"""
-    assert_ran(DIR / "004-fixed_size_battery_retailets_dcm.json")
+    assert_ran(DIR / "004-fixed_size_battery_retailets_dcm.csv")
 
 
-def test_pv_curtail():
-    assert_ran(DIR / "103-pv_cutail_bill_reduction.json")
-
-
-def test_pv_no_curtail():
-    assert_ran(DIR / "102-pv_bill_reduction.json")
+# def test_pv():
+#     assert_ran(DIR / "036-pv_bill_reduction.csv")

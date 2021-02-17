@@ -364,7 +364,7 @@ class ParamsDER(Params):
         for ts_file in ts_files:
             cls.referenced_data['time_series'][ts_file] = cls.read_from_file('time_series', ts_file, 'Datetime (he)')
         for md_file in md_files:
-            cls.referenced_data['monthly_data'][md_file] = cls.process_monthly(cls.read_from_file('monthly_data', md_file, ['Year', 'Month']))
+            cls.referenced_data['monthly_data'][md_file] = cls.read_from_file('monthly_data', md_file, ['Year', 'Month'])
         for ct_file in ct_files:
             cls.referenced_data['customer_tariff'][ct_file] = cls.read_from_file('customer_tariff', ct_file, 'Billing Period')
         for yr_file in yr_files:
@@ -422,13 +422,16 @@ class ParamsDER(Params):
     @classmethod
     def cba_input_builder(cls):
         """
-            Function to create all the possible combinations of inputs to correspond to the sensitivity analysis case being run
+            Function to create all the possible combinations of inputs to correspond to the
+            sensitivity analysis case being run
 
         """
-        # while case definitions is not an empty df (there is SA) or if it is the last row in case definitions
-        for index in cls.instances.keys():
+        # while case definitions is not an empty df (there is SA)
+        # or if it is the last row in case definitions
+        for index, case in cls.instances.items():
             cba_dict = copy.deepcopy(cls.cba_input_template)
-            # check to see if there are any CBA values included in case definition OTHERWISE just read in any referenced data
+            # check to see if there are any CBA values included in case definition
+            # OTHERWISE just read in any referenced data
             for tag_key_id in cls.sensitivity['cba_values'].keys():
                 row = cls.case_definitions.iloc[index]
                 # modify the case dictionary
@@ -439,35 +442,44 @@ class ParamsDER(Params):
                 else:
                     cba_dict[tag_key_id[0]][tag_key_id[2]][tag_key_id[1]] = row.loc[f"CBA {tag_key_id}"]
             # flatten dictionaries for VS, Scenario, and Fiances & prepare referenced data
-            case = cls.instances[index]
-            cba_dict = cls.load_and_prepare_cba(cba_dict, case.Scenario['frequency'], case.Scenario['dt'], case.Scenario['opt_years'])
+            cba_dict = case.load_values_evaluation_column(cba_dict)
             cls.instances[index].Finance['CBA'] = cba_dict
 
-    @classmethod
-    def load_and_prepare_cba(cls, cba_dict, freq, dt, opt_years):
-        """ Flattens each tag that the Schema has defined to only have 1 allowed. Loads data sets that are specified by the '_filename' parameters
+    def load_values_evaluation_column(self, cba_dict):
+        """ Flattens each tag that the Schema has defined to only have 1 allowed. Loads data sets
+         that are specified by the '_filename' parameters
 
-        Returns a params class where the tag attributes that are not allowed to have more than one set of key inputs are just dictionaries of
-            their key inputs (while the rest remain dictionaries of the sets of key inputs)
+        Returns a params class where the tag attributes that are not allowed to have more than one
+        set of key inputs are just dictionaries of their key inputs (while the rest remain
+        dictionaries of the sets of key inputs)
         """
-        cba_dict['Scenario'] = cls.flatten_tag_id(cba_dict['Scenario'])
-        cba_dict['Finance'] = cls.flatten_tag_id(cba_dict['Finance'])
-        cba_dict['valuestream_values']['User'] = cls.flatten_tag_id(cba_dict['valuestream_values']['User'])
-        cba_dict['valuestream_values']['Deferral'] = cls.flatten_tag_id(cba_dict['valuestream_values']['Deferral'])
+        freq, dt, opt_years = \
+            self.Scenario['frequency'], self.Scenario['dt'], self.Scenario['opt_years']
+        cba_dict['Scenario'] = self.flatten_tag_id(cba_dict['Scenario'])
+        cba_dict['Finance'] = self.flatten_tag_id(cba_dict['Finance'])
+        cba_dict['valuestream_values']['User'] = \
+            self.flatten_tag_id(cba_dict['valuestream_values']['User'])
+        cba_dict['valuestream_values']['Deferral'] = \
+            self.flatten_tag_id(cba_dict['valuestream_values']['Deferral'])
 
         scenario = cba_dict['Scenario']
         scenario['frequency'] = freq
         if 'time_series_filename' in scenario.keys():
-            time_series = cls.referenced_data['time_series'][scenario['time_series_filename']]
-            scenario["time_series"] = cls.process_time_series(time_series, freq, dt, opt_years)
+            time_series = self.referenced_data['time_series'][scenario['time_series_filename']]
+            scenario["time_series"] = \
+                self.process_time_series(time_series, freq, dt, opt_years)
         if 'monthly_data_filename' in scenario.keys():
-            scenario["monthly_data"] = cls.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
+            raw_monthly_data = self.referenced_data["monthly_data"][scenario["monthly_data_filename"]]
+            scenario["monthly_data"] = \
+                self.process_monthly(raw_monthly_data, opt_years)
 
         finance = cba_dict['Finance']
         if 'yearly_data_filename' in finance.keys():
-            finance["yearly_data"] = cls.referenced_data["yearly_data"][finance["yearly_data_filename"]]
+            finance["yearly_data"] = \
+                self.referenced_data["yearly_data"][finance["yearly_data_filename"]]
         if 'customer_tariff_filename' in finance.keys():
-            finance["customer_tariff"] = cls.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
+            finance["customer_tariff"] = \
+                self.referenced_data["customer_tariff"][finance["customer_tariff_filename"]]
         return cba_dict
 
     def load_finance(self):
@@ -647,7 +659,7 @@ class ParamsDER(Params):
         """
         super().read_referenced_data()
         cls.referenced_data['load_shed_percentage'] = dict()
-        rel_files=cls.grab_value_set('Reliability', 'load_shed_perc_filename')
+        rel_files = cls.grab_value_set('Reliability', 'load_shed_perc_filename')
         for rel_file in rel_files:
             cls.referenced_data['load_shed_percentage'][rel_file] = cls.read_from_file('load_shed_percentage', rel_file,'Outage Length (hrs)')
 

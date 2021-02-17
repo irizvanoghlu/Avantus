@@ -279,18 +279,22 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
 
-        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-            pertaining to this instance
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
 
         """
         tech_id = self.unique_tech_id()
         results = pd.DataFrame(index=self.variables_df.index)
-        results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
-        results[tech_id + ' State of Energy (kWh)'] = self.variables_df['ene']
+        solve_dispatch_opt = self.variables_df.get('ch')
+        if solve_dispatch_opt is not None:
+            results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
+            results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
+            results[tech_id + ' State of Energy (kWh)'] = \
+                self.variables_df['ene']
 
-        results[tech_id + ' Energy Option (kWh)'] = self.variables_df['uene']
-        results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
+            results[tech_id + ' Energy Option (kWh)'] = \
+                self.variables_df['uene']
+            results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
 
         return results
 
@@ -522,14 +526,16 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
 
-        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-            pertaining to this instance
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
 
         """
         tech_id = self.unique_tech_id()
         results = pd.DataFrame(index=self.variables_df.index)
-        results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
+        solve_dispatch_opt = self.variables_df.get('ch')
+        if solve_dispatch_opt is not None:
+            results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
+            results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
 
         return results
 

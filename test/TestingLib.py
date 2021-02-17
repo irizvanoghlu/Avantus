@@ -5,7 +5,7 @@ import pandas as pd
 
 def run_case(model_param_location: str):
     print(f"Testing {model_param_location}...")
-    case = DERVET(model_param_location, True)
+    case = DERVET(model_param_location)
     results = case.solve()
     print(results.dir_abs_path)
     return results
@@ -13,7 +13,7 @@ def run_case(model_param_location: str):
 
 def check_initialization(model_param_location: str):
     print(f"Testing {model_param_location}...")
-    case = DERVET(model_param_location, True)
+    case = DERVET(model_param_location)
     return case
 
 

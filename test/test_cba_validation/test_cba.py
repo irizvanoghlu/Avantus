@@ -307,3 +307,11 @@ def xtest_taxes():
     """
     assert_ran(r" ", )    # TODO
 
+
+def xtest_taxes_no_capex_year():
+    """ Test if taxes is calculated correctly.
+    This test will also check for:
+        - taxes is opposite sign of net profit
+        - capex value is not included in yearly net profit
+    """
+    assert_ran(r" ", )    # TODO

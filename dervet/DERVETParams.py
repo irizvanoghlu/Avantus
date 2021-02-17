@@ -113,7 +113,7 @@ class ParamsDER(Params):
         """
         super().__init__()
         self.Reliability = self.read_and_validate('Reliability')  # Value Stream
-        self.Load = self.read_and_validate('ControllableLoad')  # DER
+        self.ControllableLoad = self.read_and_validate('ControllableLoad')
         self.DieselGenset = self.read_and_validate('DieselGenset')
         self.CT = self.read_and_validate('CT')
         self.CHP = self.read_and_validate('CHP')
@@ -535,17 +535,16 @@ class ParamsDER(Params):
             if caes_inputs['incl_ts_discharge_limits']:
                 self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Discharge', 'kW', time_series)
 
-        if len(self.Load):
-            if self.Scenario['incl_site_load'] != 1:
-                self.record_input_error('Load is active, so incl_site_load should be 1')
+        for id_str, load_inputs in self.ControllableLoad.items():
             # check to make sure data was included
-            for id_str, load_inputs in self.Load.items():
-                try:
-                    load_inputs['site_load'] = time_series.loc[:, f'Site Load (kW)/{id_str}']
-                except KeyError:
-                    self.record_input_error(f"Missing 'Site Load (kW)/{id_str}' from timeseries input. Please include a site load.")
-                load_inputs.update({'dt': dt,
-                                    'growth': self.Scenario['def_growth']})
+            col_name = "Site Load (kW)"
+            error_msg = f"Missing '{col_name}/{id_str}' from timeseries " \
+                        f"input. Please include a site load."
+            load_value = self.grab_column(time_series, col_name, error_msg,
+                                          id_str)
+            load_inputs['site_load'] = load_value
+            load_inputs.update({'dt': dt,
+                                'growth': self.Scenario['def_growth']})
 
         for id_str, ev1_input in self.ElectricVehicle1.items():
             # max ratings should not be greater than the min rating for power and energy
@@ -647,6 +646,26 @@ class ParamsDER(Params):
 
         inputs_dct.update({f'ts_{measurement.lower()}_max': ts_max,
                            f'ts_{measurement.lower()}_min': ts_min})
+
+    def grab_column(self, df, column_name, error, id_str=None):
+        """ Handles all getting of data
+
+        Args:
+            column_name (str):
+            df (DataFrame):
+            id_str (str):
+            error (str): error message if not found
+
+        Returns: A Series of data
+
+        """
+        if id_str == '':
+            value = df.get(column_name)
+        else:
+            value = df.get(f"{column_name}/{id_str}")
+        if value is None:
+            self.record_input_error(error)
+        return value
 
     @classmethod
     def read_referenced_data(cls):

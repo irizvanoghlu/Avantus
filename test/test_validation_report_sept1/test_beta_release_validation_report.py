@@ -79,7 +79,7 @@ class TestUseCase1C:
 USECASE2 = 'Usecase2'
 
 
-class xTestUseCase2A1:
+class TestUseCase2A1:
     """ Part 1 of Usecase 2A - 1ESS - size for just reliability"""
     def setup_class(self):
         self.mp_name = "Model_Parameters_Template_Usecase3_Planned_ES.csv"
@@ -101,7 +101,7 @@ class xTestUseCase2A1:
                              ERROR_BOUND)
 
 
-class xTestUseCase2A2:
+class TestUseCase2A2:
     """ Part 2 of Usecase 2A - 1 ESS - given size , bill reduction and user constraint with PF
     reliability"""
 
@@ -125,7 +125,7 @@ class xTestUseCase2A2:
                              ERROR_BOUND-1)
 
 
-class xTestUsecase2B1:
+class TestUsecase2B1:
     """ Part 1 of Usecase 2B - BAT sized for reliability with fixed size PV"""
     def setup_class(self):
         self.mp_name = "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV.csv"
@@ -148,7 +148,7 @@ class xTestUsecase2B1:
                              ERROR_BOUND)
 
 
-class xTestUsecase2B2:
+class TestUsecase2B2:
     """ Part 2 of Usecase 2B - 1ESS, 1PV - fixed size, BTM with user constraint and PF
     reliabilty calculations"""
     def setup_class(self):

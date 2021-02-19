@@ -142,7 +142,10 @@ class MicrogridPOI(POI):
             report = der_instance.monthly_report()
             monthly_data = pd.concat([monthly_data, report], axis=1, sort=False)
             # assumes the orginal net load only does not contain the Storage system
-
+            # check if Total Original Load and Total Load are the same.
+            if np.all(results['Total Load (kW)'] == results['Total Original Load (kW)']):
+                # Drop Total Original Load
+                results.drop('Total Original Load (kW)', xais=1, inplace=True)
             # net load is the load see at the POI
             results.loc[:, 'Net Load (kW)'] = results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - results.loc[:, 'Total Storage Power (kW)']
         return results, monthly_data

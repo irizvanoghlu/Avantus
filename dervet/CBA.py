@@ -98,7 +98,8 @@ class CostBenefitAnalysis(Financial):
         if self.horizon_mode == 3:
             longest_lifetime = 0
             for der_instance in der_list:
-                longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
+                if der_instance.technology_type != 'Load':
+                    longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
                     TellUser.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
                                    f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
@@ -135,7 +136,7 @@ class CostBenefitAnalysis(Financial):
                 raise ModelParameterError("TER and discount rates conflict. Please see log file for more information.")
 
     @staticmethod
-    def get_years_after_failures(end_year, der_list):
+    def get_years_before_and_after_failures(end_year, der_list):
         """ The optimization should be re-run for every year an 'unreplacable' piece of equipment fails before the
         lifetime of the longest-lived equipment. No need to re-run the optimization if equipment fails in some
         year and is replaced.
@@ -158,9 +159,11 @@ class CostBenefitAnalysis(Financial):
             if not der_instance.replaceable:
                 # if the DER is not replaceable then add the following year to the set of analysis years
                 rerun_opt_on += yrs_failed
-        # increase the year by 1 (this will be the years that the operational DER mix will change)
-        diff_der_mix_yrs = [year+1 for year in rerun_opt_on if year < end_year.year]
-        return list(set(diff_der_mix_yrs))  # get rid of any duplicates
+        # filter out any years beyond end_year
+        rerun_opt_on = [year for year in rerun_opt_on if year < end_year.year]
+        # add years that the operational DER mix will change (year after last year of operation)
+        rerun_opt_on += [year+1 for year in rerun_opt_on if year < end_year.year]
+        return list(set(rerun_opt_on))  # get rid of any duplicates
 
     def annuity_scalar(self, opt_years):
         """Calculates an annuity scalar, used for sizing, to convert yearly costs/benefits
@@ -289,7 +292,8 @@ class CostBenefitAnalysis(Financial):
         proforma = self.zero_out_dead_der_costs(proforma, technologies)
         proforma = self.update_capital_cost_construction_year(proforma, technologies)
         # add EOL costs to proforma
-        der_eol = self.calculate_end_of_life_value(proforma, technologies, self.inflation_rate)
+        der_eol = self.calculate_end_of_life_value(proforma, technologies, self.inflation_rate,
+                                                   opt_years)
         proforma = proforma.join(der_eol)
 
         if self.ecc_mode:
@@ -297,7 +301,8 @@ class CostBenefitAnalysis(Financial):
                 if der_inst.tag == "Load":
                     continue
                 # replace capital cost columns with economic_carrying cost
-                der_ecc_df, total_ecc = der_inst.economic_carrying_cost_report(self.inflation_rate, self.end_year, self.apply_escalation)
+                der_ecc_df, total_ecc = der_inst.economic_carrying_cost_report(
+                    self.inflation_rate, self.end_year, self.apply_rate)
                 # drop original Capital Cost
                 proforma.drop(columns=[der_inst.zero_column_name()], inplace=True)
                 # drop any replacement costs
@@ -330,7 +335,7 @@ class CostBenefitAnalysis(Financial):
         """
         replacement_df = pd.DataFrame()
         for der_inst in technologies:
-            temp = der_inst.replacement_report(self.end_year, self.apply_escalation)
+            temp = der_inst.replacement_report(self.end_year, self.apply_rate)
             if temp is not None and not temp.empty:
                 replacement_df = pd.concat([replacement_df, temp], axis=1)
         proforma = proforma.join(replacement_df)
@@ -380,7 +385,7 @@ class CostBenefitAnalysis(Financial):
             proforma.update(capex_df)
         return proforma
 
-    def calculate_end_of_life_value(self, proforma, technologies, inflation_rate):
+    def calculate_end_of_life_value(self, proforma, technologies, inflation_rate, opt_years):
         """ takes the proforma and adds cash flow columns that represent any tax that was received or paid
         as a result
 
@@ -396,13 +401,15 @@ class CostBenefitAnalysis(Financial):
             decommission_pd = der_inst.decommissioning_report(self.end_year)
             if decommission_pd is not None and not decommission_pd.empty:
                 # apply inflation rate from operation year
-                decommission_pd = Financial.apply_escalation(decommission_pd, inflation_rate, self.start_year.year)
+                decommission_pd = super().apply_rate(decommission_pd, inflation_rate,
+                                                     min(opt_years))
                 temp = temp.join(decommission_pd)
 
             salvage_pd = der_inst.salvage_value_report(self.end_year)
             if salvage_pd is not None and not salvage_pd.empty:
                 # apply technology escalation rate from operation year
-                salvage_pd = Financial.apply_escalation(salvage_pd, der_inst.escalation_rate, der_inst.operation_year.year)
+                salvage_pd = super().apply_rate(salvage_pd, der_inst.escalation_rate,
+                                                min(opt_years))
                 temp = temp.join(salvage_pd)
             end_of_life_costs = end_of_life_costs.join(temp)
         end_of_life_costs = end_of_life_costs.fillna(value=0)

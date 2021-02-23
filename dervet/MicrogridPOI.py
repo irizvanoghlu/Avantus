@@ -102,7 +102,7 @@ class MicrogridPOI(POI):
         sizing_df.set_index('DER')
         return sizing_df
 
-    def merge_reports(self, index):
+    def merge_reports(self, is_dispatch_opt, index):
         """ Collects and merges the optimization results for all DERs into
         Builds extends StorageVET's method to take into account types of technologies added by DERVET
 
@@ -123,27 +123,31 @@ class MicrogridPOI(POI):
         for der_instance in self.der_list:
             report_df = der_instance.timeseries_report()
             results = pd.concat([report_df, results], axis=1)
-            if der_instance.technology_type in ['Generator', 'Intermittent Resource']:
-                results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Electric Generation (kW)']
-            if der_instance.technology_type == 'Energy Storage System':
-                results.loc[:, 'Total Storage Power (kW)'] += results[f'{der_instance.unique_tech_id()} Power (kW)']
-                results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']
-            if der_instance.technology_type == 'Load':
-                results.loc[:, 'Total Original Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
-                if der_instance.tag == "ControllableLoad":
-                    results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Load (kW)']
-                else:
-                    results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
-            if der_instance.technology_type == 'Electric Vehicle':
-                results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Charge (kW)']
-                if der_instance.tag == 'ElectricVehicle1':
+            if is_dispatch_opt:
+                if der_instance.technology_type in ['Generator', 'Intermittent Resource']:
+                    results.loc[:, 'Total Generation (kW)'] += results[f'{der_instance.unique_tech_id()} Electric Generation (kW)']
+                if der_instance.technology_type == 'Energy Storage System':
+                    results.loc[:, 'Total Storage Power (kW)'] += results[f'{der_instance.unique_tech_id()} Power (kW)']
                     results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']
+                if der_instance.technology_type == 'Load':
+                    results.loc[:, 'Total Original Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
+                    if der_instance.tag == "ControllableLoad":
+                        results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Load (kW)']
+                    else:
+                        results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Original Load (kW)']
+                if der_instance.technology_type == 'Electric Vehicle':
+                    results.loc[:, 'Total Load (kW)'] += results[f'{der_instance.unique_tech_id()} Charge (kW)']
+                    if der_instance.tag == 'ElectricVehicle1':
+                        results.loc[:, 'Aggregated State of Energy (kWh)'] += results[f'{der_instance.unique_tech_id()} State of Energy (kWh)']
             report = der_instance.monthly_report()
             monthly_data = pd.concat([monthly_data, report], axis=1, sort=False)
-            # assumes the orginal net load only does not contain the Storage system
-
-            # net load is the load see at the POI
-            results.loc[:, 'Net Load (kW)'] = results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - results.loc[:, 'Total Storage Power (kW)']
+        # assumes the orginal net load only does not contain the Storage system
+        # check if Total Original Load and Total Load are the same.
+        if np.all(results['Total Load (kW)'] == results['Total Original Load (kW)']):
+            # Drop Total Original Load
+            results.drop('Total Original Load (kW)', axis=1, inplace=True)
+        # net load is the load see at the POI
+        results.loc[:, 'Net Load (kW)'] = results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - results.loc[:, 'Total Storage Power (kW)']
         return results, monthly_data
 
     def get_state_of_system(self, mask):

@@ -11,6 +11,12 @@ def run_case(model_param_location: str):
     return results
 
 
+def check_initialization(model_param_location: str):
+    print(f"Testing {model_param_location}...")
+    case = DERVET(model_param_location)
+    return case
+
+
 def assert_file_exists(model_results, results_file_name='timeseries_results'):
     if model_results.sensitivity_df.empty:
         check_for_file = model_results.dir_abs_path / f'{results_file_name}{model_results.csv_label}.csv'
@@ -36,11 +42,19 @@ def assert_ran(model_param_location: str):
     assert_file_exists(results)
 
 
+def assert_ran_with_services(model_param_location: str, services: list):
+    results = run_case(model_param_location)
+    assert_file_exists(results)
+    value_stream_keys = results.instances[0].service_agg.value_streams.keys()
+    print(set(value_stream_keys))
+    assert set(services) == set(value_stream_keys)
+
+
 def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float):
     assert_file_exists(results, 'pro_forma')
     test_proforma_df = results.proforma_df()
-    actual_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
-    for yr_indx, values_series in actual_df.iterrows():
+    expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+    for yr_indx, values_series in expected_df.iterrows():
         try:
             actual_indx = pd.Period(yr_indx)
         except ValueError:
@@ -49,7 +63,7 @@ def compare_proforma_results(results, frozen_proforma_location: str, error_bound
         for col_indx in values_series.index:
             assert col_indx in test_proforma_df.columns, f'{col_indx} not in test proforma columns'
             error_message = f'ValueError in Proforma [{yr_indx}, {col_indx}]\n'
-            assert_within_error_bound(actual_df.loc[yr_indx, col_indx], test_proforma_df.loc[actual_indx, col_indx], error_bound, error_message)
+            assert_within_error_bound(expected_df.loc[yr_indx, col_indx], test_proforma_df.loc[actual_indx, col_indx], error_bound, error_message)
 
 
 def check_lcpc(results, test_model_param_location: str):

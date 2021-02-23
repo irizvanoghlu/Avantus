@@ -99,11 +99,10 @@ class CT(RotatingGeneratorSizing):
                 except KeyError:
                     pass
 
-    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
+    def proforma_report(self, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            inflation_rate (float):
             apply_inflation_rate_func:
             fill_forward_func:
             results (pd.DataFrame):
@@ -111,13 +110,9 @@ class CT(RotatingGeneratorSizing):
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
 
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
-
         """
+        pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func, results)
         tech_id = self.unique_tech_id()
-        pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
         fuel_col_name = tech_id + ' Natural Gas Costs'
 
         elec = self.variables_df['elec']
@@ -128,10 +123,10 @@ class CT(RotatingGeneratorSizing):
             # add diesel fuel costs in $/kW
             fuel_costs_df.loc[pd.Period(year=year, freq='y'), fuel_col_name] = -np.sum(self.heat_rate * self.natural_gas_price * self.dt * elec_sub)
 
-        # apply inflation rates
-        fuel_costs_df = apply_inflation_rate_func(fuel_costs_df, inflation_rate, min(analysis_years))
         # fill forward
-        fuel_costs_df = fill_forward_func(fuel_costs_df, inflation_rate)
+        fuel_costs_df = fill_forward_func(fuel_costs_df, None)
+        # apply inflation rates
+        fuel_costs_df = apply_inflation_rate_func(fuel_costs_df, None, min(analysis_years))
         # append will super class's proforma
         pro_forma = pd.concat([pro_forma, fuel_costs_df], axis=1)
 

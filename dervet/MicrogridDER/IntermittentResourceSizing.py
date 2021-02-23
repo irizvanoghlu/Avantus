@@ -238,21 +238,16 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             rated_capacity = self.rated_capacity
         return np.dot(self.replacement_cost_function, [rated_capacity])
 
-    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
+    def proforma_report(self, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            inflation_rate (float):
             apply_inflation_rate_func:
             fill_forward_func:
             results (pd.DataFrame):
 
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
-
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
 
         """
         if self.ppa:
@@ -267,12 +262,13 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
                 total_annual_production = subset_max_production.sum() * self.dt
                 # multiply with Solar PPA Cost ($/kWh), and set at YEAR's value
                 pro_forma.loc[pd.Period(year, freq='y'), ppa_label] = total_annual_production * -self.ppa_cost
-            # apply PPA inflation rate
-            pro_forma = apply_inflation_rate_func(pro_forma, self.ppa_inflation, min(analysis_years))
             # fill forward
             pro_forma = fill_forward_func(pro_forma, self.ppa_inflation)
+            # apply PPA inflation rate
+            pro_forma = apply_inflation_rate_func(pro_forma, self.ppa_inflation, min(analysis_years))
         else:
-            pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
+            pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func,
+                                                results)
         return pro_forma
 
     def tax_contribution(self, depreciation_schedules, project_length):

@@ -279,26 +279,29 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
 
-        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-            pertaining to this instance
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
 
         """
         tech_id = self.unique_tech_id()
         results = pd.DataFrame(index=self.variables_df.index)
-        results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
-        results[tech_id + ' State of Energy (kWh)'] = self.variables_df['ene']
+        solve_dispatch_opt = self.variables_df.get('ch')
+        if solve_dispatch_opt is not None:
+            results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
+            results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
+            results[tech_id + ' State of Energy (kWh)'] = \
+                self.variables_df['ene']
 
-        results[tech_id + ' Energy Option (kWh)'] = self.variables_df['uene']
-        results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
+            results[tech_id + ' Energy Option (kWh)'] = \
+                self.variables_df['uene']
+            results[tech_id + ' Charge Option (kW)'] = self.variables_df['uch']
 
         return results
 
-    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
+    def proforma_report(self, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            inflation_rate (float):
             apply_inflation_rate_func:
             fill_forward_func:
             results (pd.DataFrame):
@@ -306,12 +309,8 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
 
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
-
         """
-        pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
+        pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func, results)
         if self.variables_df.empty:
             return pro_forma
         analysis_years = self.variables_df.index.year.unique()
@@ -320,10 +319,10 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
             # add fixed o&m costs
             index_yr = pd.Period(year=year, freq='y')
             om_costs.loc[index_yr, self.fixed_column_name()] = -self.fixed_om
-        # apply inflation rates
-        om_costs = apply_inflation_rate_func(om_costs, inflation_rate, min(analysis_years))
         # fill forward
-        om_costs = fill_forward_func(om_costs, inflation_rate)
+        om_costs = fill_forward_func(om_costs, None)
+        # apply inflation rates
+        om_costs = apply_inflation_rate_func(om_costs, None, min(analysis_years))
         # append will super class's proforma
         pro_forma = pd.concat([pro_forma, om_costs], axis=1)
         return pro_forma
@@ -527,36 +526,32 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
     def timeseries_report(self):
         """ Summaries the optimization results for this DER.
 
-        Returns: A timeseries dataframe with user-friendly column headers that summarize the results
-            pertaining to this instance
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
 
         """
         tech_id = self.unique_tech_id()
         results = pd.DataFrame(index=self.variables_df.index)
-        results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
-        results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
+        solve_dispatch_opt = self.variables_df.get('ch')
+        if solve_dispatch_opt is not None:
+            results[tech_id + ' Charge (kW)'] = self.variables_df['ch']
+            results[tech_id + ' Power (kW)'] = -self.variables_df['ch']
 
         return results
 
-    def proforma_report(self, inflation_rate, apply_inflation_rate_func, fill_forward_func, results):
+    def proforma_report(self, apply_inflation_rate_func, fill_forward_func, results):
         """ Calculates the proforma that corresponds to participation in this value stream
 
         Args:
-            inflation_rate (float):
             apply_inflation_rate_func:
             fill_forward_func:
             results (pd.DataFrame):
 
-
         Returns: A DateFrame of with each year in opt_year as the index and
             the corresponding value this stream provided.
 
-            Creates a dataframe with only the years that we have data for. Since we do not label the column,
-            it defaults to number the columns with a RangeIndex (starting at 0) therefore, the following
-            DataFrame has only one column, labeled by the int 0
-
         """
-        pro_forma = super().proforma_report(inflation_rate, apply_inflation_rate_func, fill_forward_func, results)
+        pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func, results)
         if self.variables_df.empty:
             return pro_forma
         analysis_years = self.variables_df.index.year.unique()
@@ -565,10 +560,10 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
             # add fixed o&m costs
             index_yr = pd.Period(year=year, freq='y')
             om_costs.loc[index_yr, self.fixed_column_name()] = -self.fixed_om
-        # apply inflation rates
-        om_costs = apply_inflation_rate_func(om_costs, inflation_rate, min(analysis_years))
         # fill forward
-        om_costs = fill_forward_func(om_costs, inflation_rate)
+        om_costs = fill_forward_func(om_costs, None)
+        # apply inflation rates
+        om_costs = apply_inflation_rate_func(om_costs, None, min(analysis_years))
         # append will super class's proforma
         pro_forma = pd.concat([pro_forma, om_costs], axis=1)
         return pro_forma

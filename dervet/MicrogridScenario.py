@@ -205,7 +205,7 @@ class MicrogridScenario(Scenario):
         if self.cost_benefit_analysis.ecc_mode:
             self.cost_benefit_analysis.ecc_checks(self.poi.der_list, self.service_agg.value_streams)
         # update opt_years based on this new end_year
-        add_analysis_years = self.cost_benefit_analysis.get_years_after_failures(self.end_year, self.poi.der_list)
+        add_analysis_years = self.cost_benefit_analysis.get_years_before_and_after_failures(self.end_year, self.poi.der_list)
         TellUser.debug(add_analysis_years)
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
@@ -287,6 +287,7 @@ class MicrogridScenario(Scenario):
         sub_index = self.optimization_levels.loc[mask].index
         # drop any ders that are not operational
         self.poi.grab_active_ders(sub_index)
+        print(self.poi.active_ders)
         if not len(self.poi.active_ders):
             return {}, [], sub_index
         return super(MicrogridScenario, self).set_up_optimization(opt_window_num, annuity_scalar, ignore_der_costs)

@@ -10,6 +10,7 @@
 *.xls
 *.xlsx
 *.xlsm
+*.json
 
 # IDE config files / folders
 *.idea

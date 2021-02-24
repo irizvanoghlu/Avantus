@@ -659,13 +659,9 @@ class ParamsDER(Params):
         Returns: A Series of data
 
         """
-        if id_str == '':
-            value = df.get(column_name)
-        else:
-            value = df.get(f"{column_name}/{id_str}")
-        if value is None:
-            self.record_input_error(error)
-        return value
+        if id_str != '':
+            column_name = f"{column_name}/{id_str}"
+        return super(ParamsDER, self).grab_column(df, column_name, error)
 
     @classmethod
     def read_referenced_data(cls):

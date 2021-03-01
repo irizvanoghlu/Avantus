@@ -222,7 +222,8 @@ class MicrogridScenario(Scenario):
             # Resetting sizing flag. It doesn't size for other services.
             self.poi.is_sizing_optimization = False
 
-        if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined():
+        if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined_constraints():
+            self.service_agg.value_streams['Reliability'].use_sizing_module_results = True
             self.opt_engine = False
 
         if self.deferral_sizing:
@@ -245,7 +246,7 @@ class MicrogridScenario(Scenario):
             TellUser.info("Only active Value Stream is post facto only, so not optimizations will run...")
             self.service_agg.value_streams['Reliability'].use_soc_init = True
             TellUser.info("SOC_init will be used for Post-Facto Calculation")
-        elif self.service_agg.post_facto_reliability_only_and_user_defined():
+        elif self.service_agg.post_facto_reliability_only_and_user_defined_constraints():
             TellUser.info("Only active Value Stream is post facto only, so not optimizations will run." +
                              " Energy min profile from User_constraint will be used")
             self.service_agg.value_streams['Reliability'].use_user_const = True

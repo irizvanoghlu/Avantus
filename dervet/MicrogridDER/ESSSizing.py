@@ -267,6 +267,27 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         self.effective_soe_max = self.operational_max_energy(solution=True)
         return
 
+    def timeseries_report(self):
+        """ Summaries the optimization results for this DER.
+
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
+
+        """
+        tech_id = self.unique_tech_id()
+        results = super().timeseries_report()
+        if self.incl_energy_limits:
+            results[tech_id + ' User Energy Max (kWh)'] = self.limit_energy_max
+            results[tech_id + ' User Energy Min (kWh)'] = self.limit_energy_min
+        if self.incl_charge_limits:
+            results[tech_id + ' User Charge Max (kWh)'] = self.limit_charge_max
+            results[tech_id + ' User Charge Min (kWh)'] = self.limit_charge_min
+        if self.incl_discharge_limits:
+            results[tech_id + ' User Discharge Max (kWh)'] = self.limit_discharge_max
+            results[tech_id + ' User Discharge Min (kWh)'] = self.limit_discharge_min
+
+        return results
+
     def sizing_summary(self):
         """
 

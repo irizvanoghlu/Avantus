@@ -33,7 +33,7 @@ class MicrogridServiceAggregator(ServiceAggregator):
         """
         return 'Reliability' in self.value_streams.keys() and self.value_streams['Reliability'].post_facto_only
 
-    def post_facto_reliability_only_and_user_defined(self):
+    def post_facto_reliability_only_and_user_defined_constraints(self):
         """
 
         Returns: A boolean that is true if Reliability is doing post facto and user-defined service is active

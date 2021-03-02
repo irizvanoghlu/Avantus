@@ -10,6 +10,7 @@ would like the tests to run on.
 """
 import pytest
 from pathlib import Path
+import numpy as np
 from test.TestingLib import *
 
 
@@ -20,4 +21,11 @@ CSV = '.csv'
 
 def test_battery_timeseries_constraints():
     test_file = DIR / f'001-DA_FR_SR_NSR_battery_month_ts_constraints{CSV}'
-    assert_ran_with_services(test_file, ['DA'])
+    results = assert_ran(test_file)
+    case_results = results.instances[0]
+    timeseries = case_results.time_series_data
+    discharge_constraint = timeseries['BATTERY: battery User Discharge Max (kW)']
+    charge_constraint = timeseries['BATTERY: battery User Charge Max (kW)']
+    assert np.all(timeseries['BATTERY: battery Discharge (kW)'] <= discharge_constraint)
+    assert np.all(timeseries['BATTERY: battery Charge (kW)'] <= charge_constraint)
+

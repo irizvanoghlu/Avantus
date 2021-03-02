@@ -280,11 +280,11 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             results[tech_id + ' User Energy Max (kWh)'] = self.limit_energy_max
             results[tech_id + ' User Energy Min (kWh)'] = self.limit_energy_min
         if self.incl_charge_limits:
-            results[tech_id + ' User Charge Max (kWh)'] = self.limit_charge_max
-            results[tech_id + ' User Charge Min (kWh)'] = self.limit_charge_min
+            results[tech_id + ' User Charge Max (kW)'] = self.limit_charge_max
+            results[tech_id + ' User Charge Min (kW)'] = self.limit_charge_min
         if self.incl_discharge_limits:
-            results[tech_id + ' User Discharge Max (kWh)'] = self.limit_discharge_max
-            results[tech_id + ' User Discharge Min (kWh)'] = self.limit_discharge_min
+            results[tech_id + ' User Discharge Max (kW)'] = self.limit_discharge_max
+            results[tech_id + ' User Discharge Min (kW)'] = self.limit_discharge_min
 
         return results
 

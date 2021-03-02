@@ -218,8 +218,31 @@ class TestUsecase2C2:
                              MAX_PERCENT_ERROR)
 
 
+class TestUseCase3A1:
+    """ Part 1 of Usecase 3A - BAT sizing for a planned outage on one day"""
+
+    def setup_class(self):
+        self.mp_name = TEST_DIR / USECASE2 / "Model_Parameters_Template_Usecase3_Planned_ES_Step2.csv"
+        self.results = run_case(self.mp_name)
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase2/es/Step2")
+
+    def test_lcpc_exists(self):
+        assert_file_exists(self.results, 'load_coverage_prob')
+
+    def test_lcpc_meets_target(self):
+        check_lcpc(self.results, self.mp_name)
+
+    def test_proforma_results_are_expected(self):
+        compare_proforma_results(self.results, self.validated_folder / "pro_formauc3_es_step2.csv",
+                                 11)  # This is an exception
+
+    def test_size_results_are_expected(self):
+        compare_size_results(self.results, self.validated_folder / "sizeuc3_es_step2.csv",
+                             MAX_PERCENT_ERROR - 1)
+
+
 def xtest_uc3_p1a():
-    """ BAT sizing for a planned outage on one day"""
+    """ """
     mp_location = r".\Testing\validation_report_Sept1\Model_params\Usecase3\Planned\Model_Parameters_Template_Usecase3_Planned_ES.csv"
     results = run_case(mp_location, 'dervet')
     assert_file_exists(results, 'load_coverage_prob')

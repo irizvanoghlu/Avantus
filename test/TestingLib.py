@@ -40,6 +40,7 @@ def assert_within_error_bound(actual: float, test_value: float, error_bound: flo
 def assert_ran(model_param_location: str):
     results = run_case(model_param_location)
     assert_file_exists(results)
+    return results
 
 
 def assert_ran_with_services(model_param_location: str, services: list):

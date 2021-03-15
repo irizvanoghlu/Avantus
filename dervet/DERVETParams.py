@@ -661,7 +661,7 @@ class ParamsDER(Params):
         """
         if id_str != '':
             column_name = f"{column_name}/{id_str}"
-        return super(ParamsDER, self).grab_column(df, column_name, error)
+        return super(ParamsDER, self).grab_column(df, column_name, error, None)
 
     @classmethod
     def read_referenced_data(cls):

@@ -11,7 +11,7 @@ import numpy as np
 
 
 CBA_DIR = r".\Testing\cba_validation\Model_params"
-MP_DIR = r".\Testing\Model_params"
+MP_DIR = Path("./test/model_params")
 
 DIR = Path("./test/test_cba_validation/model_params")
 """
@@ -296,18 +296,30 @@ def xtest_da_month_degradation_predict_when_battery_will_be_replaced():
                r"doesnt_reach_eol_during_opt.csv", )
 
 
-def xtest_taxes():
-    """ Test if taxes is calculated correctly.
-    This test will also check for:
-        - taxes is opposite sign of net profit
-    """
-    assert_ran(r" ", )    # TODO
+class TestAssetDepreciation:
 
+    def setup_class(self):
+        run_results = run_case(MP_DIR / "002-tax_scenario.csv")
+        # get tax calculation data frame
+        self.actual_tax_calc = run_results.instances[0].cost_benefit_analysis.tax_calculations
 
-def xtest_taxes_no_capex_year():
-    """ Test if taxes is calculated correctly.
-    This test will also check for:
-        - taxes is opposite sign of net profit
-        - capex value is not included in yearly net profit
-    """
-    assert_ran(r" ", )    # TODO
+    def test_macrs_depreciation(self):
+        actual_depreciation = [0, -274972.5, -366712.5, -122182.5, -61132.5, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0]
+        assert list(self.actual_tax_calc['BATTERY: es MACRS Depreciation'].values) == \
+               actual_depreciation
+
+    def test_zero_tax_in_capex(self):
+        assert self.actual_tax_calc.loc['CAPEX Year', 'Taxable Yearly Net'] == 0
+
+    def test_sign_of_state_tax(self):
+        no_capex_year = self.actual_tax_calc[self.actual_tax_calc.index != 'CAPEX Year']
+        taxable = no_capex_year['Taxable Yearly Net'].values
+        state_tax = no_capex_year['State Tax Burden'].values
+        assert np.all(np.sign(taxable) != np.sign(state_tax))
+
+    def test_sign_of_federal_tax(self):
+        no_capex_year = self.actual_tax_calc[self.actual_tax_calc.index != 'CAPEX Year']
+        taxable = no_capex_year['Taxable Yearly Net'].values
+        federal_tax = no_capex_year['Federal Tax Burden'].values
+        assert np.all(np.sign(taxable) != np.sign(federal_tax))

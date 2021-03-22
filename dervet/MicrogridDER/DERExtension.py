@@ -27,7 +27,6 @@ class DERExtension:
         """
 
         """
-        TellUser.debug(f"Initializing {__name__}")
         # try to look for DERVET specific user inputs that are shared by all DERs
         self.nsr_response_time = params['nsr_response_time']
         self.sr_response_time = params['sr_response_time']
@@ -37,6 +36,10 @@ class DERExtension:
         self.macrs = params.get('macrs_term')
         self.construction_year = params.get('construction_year')
         self.operation_year = params.get('operation_year')
+        if self.construction_year == self.operation_year:
+            TellUser.warning(f" Construction year and operation year of {self.name} "
+                             f"are the same. Do you mean this? Capitol Costs will appear the "
+                             f"same year operation costs/benefits will.")
         self.decommission_cost = params['decommissioning_cost']
         self.salvage_value = params['salvage_value']
         self.expected_lifetime = params['expected_lifetime']
@@ -281,14 +284,45 @@ class DERExtension:
         ecc[f'{self.unique_tech_id()} Carrying Cost'] = ecc.sum(axis=1)
         return ecc, ecc.loc[:, f'{self.unique_tech_id()} Carrying Cost']
 
-    def tax_contribution(self, depreciation_schedules, project_length):
+    def tax_contribution(self, depreciation_schedules, year_idx, start_year):
+        """ Returns an array that represents this technology's tax contribution.
+        Used to calculate a year's state and federal tax burdens
+
+        Args:
+            depreciation_schedules (dict):
+            year_idx (pd.Index):
+            start_year (pd.Period): the project's start year
+
+        Returns (pd.DataFrame): 2 columns, the MACRS Depreciation, amount to disregard from net
+        taxable income
+
+        """
         macrs_yr = self.macrs
         if macrs_yr is None:
             return
+        # column names
+        macrs_name = f"{self.unique_tech_id()} MACRS Depreciation"
+        disregard_name = f"{self.unique_tech_id()} Disregard From Taxable Income"
+        # set up data frame
+        tax_info = pd.DataFrame(index=year_idx)
+        tax_info[macrs_name] = 0
+        tax_info[disregard_name] = 0
+        # get capex
+        capex = self.get_capex(solution=True)
+        # CALCULATE MACRS DEPRECIATION
         tax_schedule = depreciation_schedules[macrs_yr]
+        start_taxing = max(self.construction_year + 1, start_year)
         # extend/cut tax schedule to match length of project
+        project_length = len(tax_info.loc[start_taxing:, macrs_name])
         if len(tax_schedule) < project_length:
             tax_schedule = tax_schedule + list(np.zeros(project_length - len(tax_schedule)))
         else:
             tax_schedule = tax_schedule[:project_length]
-        return np.multiply(tax_schedule, self.get_capex() / 100)
+        depreciation = np.multiply(tax_schedule, -capex / 100)
+        tax_info.loc[start_taxing:, macrs_name] = depreciation
+        # ADD CAPEX BACK TO YEARLY NET
+        if start_taxing == start_year:
+            tax_info.loc["CAPEX Year", disregard_name] = capex
+        else:
+            tax_info.loc[self.construction_year, disregard_name] = capex
+        return tax_info

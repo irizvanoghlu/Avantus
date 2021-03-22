@@ -67,14 +67,15 @@ class Reliability(ValueStream):
 
         # INITIAL ATTRIBUTES TO BE SET LATER
         self.outage_contribution_df = None
+        self.min_soe_df = None
+        self.soe_profile_all_0 = {}
+        self.soe_profile_all_1 = {}
         # this is the rating of all DERs (expect for the intermittent ER)
         self.dg_rating = 0
-        self.min_soe_df = None
+
         self.use_soc_init = False
         self.use_user_const = False
         self.use_sizing_module_results = False
-        self.soe_profile_all_0 = {}
-        self.soe_profile_all_1 = {}
 
     def grow_drop_data(self, years, frequency, load_growth):
         """ Adds data by growing the given data OR drops any extra data that

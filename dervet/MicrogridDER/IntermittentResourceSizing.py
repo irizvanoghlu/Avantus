@@ -271,9 +271,9 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
                                                 results)
         return pro_forma
 
-    def tax_contribution(self, depreciation_schedules, project_length):
+    def tax_contribution(self, depreciation_schedules, year_idx, start_year):
         if not self.ppa:
-            return super().tax_contribution(depreciation_schedules, project_length)
+            return super().tax_contribution(depreciation_schedules, year_idx, start_year)
 
     def replacement_report(self, end_year, escalation_func):
         if not self.ppa:

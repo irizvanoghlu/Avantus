@@ -43,6 +43,7 @@ class CostBenefitAnalysis(Financial):
         self.ecc_mode = financial_params['ecc_mode']
         self.ecc_df = pd.DataFrame()
         self.equipment_lifetime_report = pd.DataFrame()
+        self.tax_calculations = None
 
         self.Scenario = financial_params['CBA']['Scenario']
         self.Finance = financial_params['CBA']['Finance']
@@ -291,11 +292,13 @@ class CostBenefitAnalysis(Financial):
         proforma = self.replacement_costs(proforma_wo_yr_net, technologies)
         proforma = self.zero_out_dead_der_costs(proforma, technologies)
         proforma = self.update_capital_cost_construction_year(proforma, technologies)
+        # check if there are are costs on CAPEX YEAR - if there arent, then remove it from proforma
+        if not proforma.loc['CAPEX Year', :].any():
+            proforma.drop('CAPEX Year', inplace=True)
         # add EOL costs to proforma
         der_eol = self.calculate_end_of_life_value(proforma, technologies, self.inflation_rate,
                                                    opt_years)
         proforma = proforma.join(der_eol)
-
         if self.ecc_mode:
             for der_inst in technologies:
                 if der_inst.tag == "Load":
@@ -314,9 +317,6 @@ class CostBenefitAnalysis(Financial):
                 self.ecc_df = pd.concat([self.ecc_df, der_ecc_df], axis=1)
         else:
             proforma = self.calculate_taxes(proforma, technologies)
-        # check if there are are costs on CAPEX YEAR -- if there arent, then remove it from proforma
-        if not proforma.loc['CAPEX Year', :].any():
-            proforma.drop('CAPEX Year', inplace=True)
         # sort alphabetically
         proforma.sort_index(axis=1, inplace=True)
         proforma.fillna(value=0, inplace=True)
@@ -427,30 +427,32 @@ class CostBenefitAnalysis(Financial):
         Returns: proforma considering the 'Overall Tax Burden'
 
         """
-        proj_years = len(proforma) - 1
-        yearly_net = proforma.drop('CAPEX Year').sum(axis=1).values
-
-        # 1) Redistribute capital cost columns according to the DER's MACRS value
-        capital_costs = np.zeros(proj_years)
+        tax_calcs = copy.deepcopy(proforma)
+        # 1) Redistribute capital cost according to the DER's MACRS value to get depreciation
         for der_inst in technologies:
-            tax_contribution = der_inst.tax_contribution(self.macrs_depreciation, proj_years)
+            tax_contribution = der_inst.tax_contribution(self.macrs_depreciation,
+                                                         tax_calcs.index, self.start_year)
             if tax_contribution is not None:
-                capital_costs += tax_contribution
-        yearly_net += capital_costs
+                tax_calcs = pd.concat([tax_calcs, tax_contribution], axis=1)
+        # 2) calculate yearly_net (taking into account the taxable contribution of each technology
+        # asset)
+        yearly_net = tax_calcs.sum(axis=1)
+        tax_calcs['Taxable Yearly Net'] = yearly_net
 
-        # 2) Calculate State tax based on the net cash flows in each year
-        state_tax = yearly_net * self.state_tax_rate
+        # 3) Calculate State tax based on the net cash flows in each year
+        tax_calcs['State Tax Burden'] = yearly_net * -self.state_tax_rate
 
-        # 3) Calculate Federal tax based on the net cash flow in each year minus State taxes from that year
-        yearly_net_post_state_tax = yearly_net - state_tax
-        federal_tax = yearly_net_post_state_tax * self.federal_tax_rate
+        # 4) Calculate Federal tax based on the net cash flow in each year minus State taxes
+        # from that year
+        yearly_net_post_state_tax = yearly_net + tax_calcs['State Tax Burden']
+        tax_calcs['Federal Tax Burden'] = yearly_net_post_state_tax * -self.federal_tax_rate
 
-        # 4) Add the overall tax burden (= state tax + federal tax) to proforma, make sure columns are ordered s.t. yrly net is last
-        overall_tax_burden = state_tax + federal_tax
-
-        proforma['State Tax Burden'] = np.insert(state_tax, 0, 0)
-        proforma['Federal Tax Burden'] = np.insert(federal_tax, 0, 0)
-        proforma['Overall Tax Burden'] = np.insert(overall_tax_burden, 0, 0)
+        # 5) Add the overall tax burden (= state tax + federal tax) to proforma
+        tax_calcs['Overall Tax Burden'] = tax_calcs['State Tax Burden'] + tax_calcs['Federal Tax Burden']
+        proforma['State Tax Burden'] = tax_calcs['State Tax Burden']
+        proforma['Federal Tax Burden'] = tax_calcs['Federal Tax Burden']
+        proforma['Overall Tax Burden'] = tax_calcs['Overall Tax Burden']
+        self.tax_calculations = tax_calcs
         return proforma
 
     def payback_report(self, techologies, proforma, opt_years):

@@ -24,15 +24,6 @@
                         },
                         "type": "float"
                     },
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
                     "ccost": {
                         "evaluation": {
                             "active": "n",
@@ -91,7 +82,7 @@
                         "type": "float"
                     },
                     "construction_year": {
-                        "opt_value": "2017",
+                        "opt_value": "2016",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -185,7 +176,7 @@
                         "type": "float"
                     },
                     "expected_lifetime": {
-                        "opt_value": "5",
+                        "opt_value": "15",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -220,7 +211,7 @@
                         "type": "float"
                     },
                     "incl_cycle_degrade": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -287,7 +278,7 @@
                         "type": "string"
                     },
                     "nsr_response_time": {
-                        "opt_value": "10",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -416,7 +407,7 @@
                         "type": "float"
                     },
                     "sr_response_time": {
-                        "opt_value": "10",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1910,7 +1901,7 @@
         },
         "FR": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "CombinedMarket": {
                         "opt_value": "1",
@@ -2036,7 +2027,7 @@
                         "type": "bool"
                     },
                     "federal_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "23",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2071,7 +2062,7 @@
                         "type": "float"
                     },
                     "property_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2080,7 +2071,7 @@
                         "type": "float"
                     },
                     "state_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "10",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2942,7 +2933,7 @@
         },
         "SR": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
                     "duration": {
                         "opt_value": "0",
@@ -2954,7 +2945,7 @@
                         "type": "float"
                     },
                     "growth": {
-                        "opt_value": "3",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2997,7 +2988,7 @@
                         "type": "bool"
                     },
                     "def_growth": {
-                        "opt_value": "6",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

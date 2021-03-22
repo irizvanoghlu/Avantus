@@ -3,15 +3,6 @@ Load
 
 This Python class contains methods and attributes specific for technology analysis within DERVET.
 """
-
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
-__version__ = 'beta'
-
 import cvxpy as cvx
 import numpy as np
 from storagevet.Technology.Load import Load

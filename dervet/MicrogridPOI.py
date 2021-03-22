@@ -3,15 +3,6 @@ MicrogridPOI.py
 
 """
 
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani',
-               'Micah Botkin-Levy', "Thien Nguyen", 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Evan Giarta', 'Miles Evans']
-__email__ = ['egiarta@epri.com', 'mevans@epri.com']
-
-
 import pandas as pd
 from storagevet.POI import POI
 import cvxpy as cvx

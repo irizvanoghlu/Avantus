@@ -3,14 +3,6 @@ Params.py
 
 """
 
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani',  "Thien Nguyen"]
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = 'beta'  # beta version
-
 import numpy as np
 from storagevet.Params import Params
 import copy

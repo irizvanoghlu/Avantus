@@ -4,14 +4,6 @@ CAES.py
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
 
-__author__ = 'Thien Nguyen'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Thien Nguyen', 'Micah Botkin-Levy', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = 'beta'  # beta version
-
 from storagevet.Technology import CAESTech
 from dervet.MicrogridDER.ESSSizing import ESSSizing
 from storagevet.ErrorHandling import *

@@ -3,15 +3,6 @@ Discrete Sizing Module
   NOTE: currently not used in favor of ContinuousSizing
 
 """
-
-__author__ = 'Andrew Etringer'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
-__version__ = 'beta'
-
 import numpy as np
 import cvxpy as cvx
 

@@ -119,8 +119,9 @@ class TestUseCase2Ess4BtmUserConstraints:
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3_es_step2.csv",
-                                 11)  # This is an exception
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es_step2.csv",
@@ -167,9 +168,10 @@ class TestUsecase2EssPv4BtmUserConstraints:
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results,
                                  self.validated_folder / "pro_formauc3_es+pv_step2.csv",
-                                 MAX_PERCENT_ERROR+2)
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es+pv_step2.csv",
@@ -252,7 +254,9 @@ class TestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es")
 
     def test_proforma_results_are_expected(self):
-        compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv", 10)
+        opt_years = self.results.instances[0].opt_years
+        compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
@@ -283,7 +287,9 @@ class TestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es+pv")
 
     def test_proforma_results_are_expected(self):
-        compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv", 10)
+        opt_years = self.results.instances[0].opt_years
+        compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",

@@ -1,4 +1,4 @@
-,BATTERY: es Capital Cost,BATTERY: es Decommissioning Cost,BATTERY: es Fixed O&M Cost,BATTERY: es Salvage Value,BATTERY: es Variable O&M Cost,DA ETS,FR Energy Throughput,Overall Tax Burden,PV: solar1 Capital Cost,PV: solar1 Decommissioning Cost,Regulation Down,Regulation Up,User Constraints Value,Yearly Net Value
+,BATTERY: es Capital Cost,BATTERY: es Decommissioning Cost,BATTERY: es Fixed O&M Cost,BATTERY: es Salvage Value,BATTERY: es Variable O&M Cost,DA ETS,FR Energy Throughput,Overall Tax Burden,PV: solar1 Capital Cost,PV: solar1 Decommissioning Cost,Frequency Regulation Down,Frequency Regulation Up,User Constraints Value,Yearly Net Value
 CAPEX Year,-1545000,0,0,0,0,0,0,0,0,0,0,0,0,-1545000
 2017,0,0,-5250,0,0,57263.18826,9512.85984,0,0,0,5987.726122,8259.841726,0,75773.61595
 2018,0,0,-5250,0,0,58522.9784,9722.142757,0,0,0,6119.456097,8441.558244,0,77556.1355

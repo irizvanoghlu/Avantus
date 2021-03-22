@@ -302,18 +302,13 @@ class TestUseCase3EssSizingPvIce4PlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES+PV+DG.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/es+pv+dg")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/es+pv+dg")
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
     def test_lcpc_meets_target(self):
         check_lcpc(self.results, self.mp_name)
-
-    def test_proforma_results_are_expected(self):
-        compare_proforma_results(self.results,
-                                 self.validated_folder / "pro_formauc3.csv",
-                                 MAX_PERCENT_ERROR)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
@@ -345,8 +340,9 @@ class TestUseCase3Ess4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned A - FR + DA + UserConstraints, BAT fixed size with PF
     reliability"""
     def setup_class(self):
-        self.mp_name = "Model_Parameters_Template_Usecase3_UnPlanned_ES_Step2.csv"
-        self.results = run_case(TEST_DIR / USECASE3UNPLANNED_STEP2 / self.mp_name)
+        self.mp_name = TEST_DIR / USECASE3UNPLANNED_STEP2 / \
+                       "Model_Parameters_Template_Usecase3_UnPlanned_ES_Step2.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es")
 
     def test_lcpc_exists(self):

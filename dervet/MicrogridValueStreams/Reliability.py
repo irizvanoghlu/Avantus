@@ -466,8 +466,8 @@ class Reliability(ValueStream):
 
             # record value of foo in frequency count
             longest_outage = len(outage_soc_profile)
-            if longest_outage < 4:
-                print(longest_outage)
+            # if longest_outage > 4:
+            #     print(longest_outage)
             frequency_simulate_outage[int(longest_outage)] += 1
             # start outage on next timestep
             outage_init += 1

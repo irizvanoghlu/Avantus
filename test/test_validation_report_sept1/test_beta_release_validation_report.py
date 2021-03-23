@@ -324,9 +324,10 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es+pv+dg")
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results,
                                  self.validated_folder / "pro_formauc3.csv",
-                                 MAX_PERCENT_ERROR)
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
@@ -352,8 +353,9 @@ class TestUseCase3Ess4DaFrUserConstraintsUnplannedOutage:
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3_es_step2.csv",
-                                 MAX_PERCENT_ERROR+2)
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es_step2.csv",
@@ -364,8 +366,9 @@ class TestUseCase3EssPv4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned B - FR + DA + UserConstraints, BAT + PV fixed size with PF
     reliability"""
     def setup_class(self):
-        self.mp_name = "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV_Step2.csv"
-        self.results = run_case(TEST_DIR / USECASE3UNPLANNED_STEP2 / self.mp_name)
+        self.mp_name = TEST_DIR / USECASE3UNPLANNED_STEP2 / \
+                       "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV_Step2.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es+pv1")
 
     def test_lcpc_exists(self):
@@ -375,9 +378,10 @@ class TestUseCase3EssPv4DaFrUserConstraintsUnplannedOutage:
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder /
                                  "pro_formauc3_es+pv_step2.csv",
-                                 MAX_PERCENT_ERROR+2)
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es+pv_step2.csv",
@@ -388,8 +392,9 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned C - FR + DA + UserConstraints, BAT + PV fixed size with PF
     reliability"""
     def setup_class(self):
-        self.mp_name = "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV+DG_Step2.csv"
-        self.results = run_case(TEST_DIR / USECASE3UNPLANNED_STEP2 / self.mp_name)
+        self.mp_name = TEST_DIR / USECASE3UNPLANNED_STEP2 / \
+                       "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV+DG_Step2.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es+pv+dg")
 
     def test_lcpc_exists(self):
@@ -399,9 +404,10 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
+        opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder /
                                  "pro_formauc3_es+pv_step2.csv",
-                                 MAX_PERCENT_ERROR+2)
+                                 MAX_PERCENT_ERROR, opt_years)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es+pv_step2.csv",

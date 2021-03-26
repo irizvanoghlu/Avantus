@@ -33,7 +33,7 @@ Finance,.,federal_tax_rate,3,%/year,float,"[0, 100]",,None,Federal tax rate for 
 Finance,.,state_tax_rate,3,%/year,float,"[0, 100]",,None,state tax rate for use in the financial analysis,.,no,.,.,
 Finance,.,property_tax_rate,3,%/year,float,"[0, 100]",,None,property tax rate for use in the financial analysis,.,no,.,.,
 PV,1,name,solar1,,string,,,,User defined name specific to this tag,yes,no,.,.,
-PV,1,curtail,0,,bool,"{1,0}",,None,Use generation profile as the max generation and treat PV generation as an optimization variables,.,no,.,.,
+PV,1,curtail,1,,bool,"{1,0}",,None,Use generation profile as the max generation and treat PV generation as an optimization variables,.,no,.,.,
 PV,1,startup_time,0,min,int,"[0, startup_time)",,None,Time (in minutes) it takes to start generating,.,no,.,.,
 PV,1,inv_max,3000,kW,float,"[0, inv_max)",,None,Max net import or export power flow through inverter,.,no,.,.,
 PV,1,loc,ac,,string,"{ac, dc}",,None,Solar plus storage AC or DC coupled system (not case sensitive),.,no,.,.,

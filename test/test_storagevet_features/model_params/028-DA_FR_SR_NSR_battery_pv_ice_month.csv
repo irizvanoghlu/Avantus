@@ -82,7 +82,7 @@ Battery,incl_ts_energy_limits,0,,bool,"{0,1}",,None,T of F to indicate whether o
 Battery,acr,10,%,float,"[0, 100] ",,,"annual charge rate (ACR), the % of capital cost that is incurred each year",.,no,
 Battery,ter,7,%,float,"[0, 100] ",,,technology escalation rate: how quickly the technology increases/decreases in cost,.,no,
 PV,name,PV,,string,,,None,User-defined name,yes,no,
-PV,curtail,0,,bool,"{1,0}",,None,Use generation profile as the max generation and treat PV generation as an optimization variables,.,no,
+PV,curtail,1,,bool,"{1,0}",,None,Use generation profile as the max generation and treat PV generation as an optimization variables,.,no,
 PV,startup_time,0,,int,,,None, ,.,no,
 PV,inv_max,3000,kW,float,"[0, inv_max)",,None,Max net import or export power flow through inverter,.,no,
 PV,loc,ac,,string,,,None, ,.,no, 

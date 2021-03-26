@@ -14,7 +14,7 @@ TEST_DIR = Path("./test/test_validation_report_sept1")
 USECASE1 = Path("./Model_params/Usecase1")
 
 
-class TestUseCase1EssSizing4Btm:
+class xTestUseCase1EssSizing4Btm:
     """ 1ESS sizing - BTM with PF reliability calculations"""
     def setup_class(self):
         self.mp_name = "Model_Parameters_Template_Usecase1_UnPlanned_ES.csv"
@@ -36,7 +36,7 @@ class TestUseCase1EssSizing4Btm:
                              MAX_PERCENT_ERROR-1)
 
 
-class TestUseCase1EssSizingPv4Btm:
+class xTestUseCase1EssSizingPv4Btm:
     """ 1ESS sizing, 1PV fixed - BTM with PF reliability calculations"""
     def setup_class(self):
         self.mp_name = "Model_Parameters_Template_Usecase1_UnPlanned_ES+PV.csv"
@@ -58,7 +58,7 @@ class TestUseCase1EssSizingPv4Btm:
                              MAX_PERCENT_ERROR-1)
 
 
-class TestUseCase1EssPvIce4UserConstraints:
+class xTestUseCase1EssPvIce4UserConstraints:
     """ Part 2 of Usecase 1C - 1ESS fixed, 1PV fixed, 1ICE fixed - user constraints with PF
     reliability calculations"""
     def setup_class(self):
@@ -81,7 +81,7 @@ class TestUseCase1EssPvIce4UserConstraints:
 USECASE2 = Path("./Model_params/Usecase2")
 
 
-class TestUseCase2EssSizing4Reliability:
+class xTestUseCase2EssSizing4Reliability:
     """ Part 1 of Usecase 2A - 1ESS - size for just reliability"""
     def setup_class(self):
         self.mp_name = TEST_DIR / USECASE2 / "Model_Parameters_Template_Usecase3_Planned_ES.csv"
@@ -102,7 +102,7 @@ class TestUseCase2EssSizing4Reliability:
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es_step1.csv", .1)
 
 
-class TestUseCase2Ess4BtmUserConstraints:
+class xTestUseCase2Ess4BtmUserConstraints:
     """ Part 2 of Usecase 2A - 1 ESS - given size , bill reduction and user constraint with PF
     reliability"""
 
@@ -128,7 +128,7 @@ class TestUseCase2Ess4BtmUserConstraints:
                              MAX_PERCENT_ERROR-1)
 
 
-class TestUsecase2EssSizingPv4Reliability:
+class xTestUsecase2EssSizingPv4Reliability:
     """ Part 1 of Usecase 2B - BAT sized for reliability with fixed size PV"""
     def setup_class(self):
         self.mp_name = TEST_DIR / USECASE2 / \
@@ -152,7 +152,7 @@ class TestUsecase2EssSizingPv4Reliability:
                              MAX_PERCENT_ERROR)
 
 
-class TestUsecase2EssPv4BtmUserConstraints:
+class xTestUsecase2EssPv4BtmUserConstraints:
     """ Part 2 of Usecase 2B - 1ESS, 1PV - fixed size, BTM with user constraint and PF
     reliabilty calculations"""
     def setup_class(self):
@@ -178,7 +178,7 @@ class TestUsecase2EssPv4BtmUserConstraints:
                              MAX_PERCENT_ERROR)
 
 
-class TestUsecase2EssSizingPvIce4Reliability:
+class xTestUsecase2EssSizingPvIce4Reliability:
     """ Part 1 of Usecase 2C - BAT, PV (fixed size), ICE fixed sized - sized for reliability"""
     def setup_class(self):
         self.mp_name = TEST_DIR / USECASE2 / \
@@ -202,7 +202,7 @@ class TestUsecase2EssSizingPvIce4Reliability:
                              MAX_PERCENT_ERROR)
 
 
-class TestUsecase2EssPvIce4BtmUserConstraints:
+class xTestUsecase2EssPvIce4BtmUserConstraints:
     """ Part 2 of Usecase 2C - fixed size BAT + PV, DCM and retailTimeShift with User constraints
     and PF reliability calculations"""
     def setup_class(self):
@@ -227,7 +227,7 @@ class TestUsecase2EssPvIce4BtmUserConstraints:
 USECASE3PLANNED = Path("./Model_params/Usecase3/Planned")
 
 
-class TestUseCase3EssSizing4PlannedOutage:
+class xTestUseCase3EssSizing4PlannedOutage:
     """ Part 1 of Usecase 3A - BAT sizing for a planned outage on one day"""
 
     def setup_class(self):
@@ -244,7 +244,7 @@ class TestUseCase3EssSizing4PlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-class TestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
+class xTestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
     """ Part 2 of Usecase 3A - Sized BAT, DA + FR + User constraints"""
 
     def setup_class(self):
@@ -263,7 +263,7 @@ class TestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-class TestUseCase3EssSizingPv4PlannedOutage:
+class xTestUseCase3EssSizingPv4PlannedOutage:
     """ Part 1 of Usecase 3A - BAT sizing for planned outage with fixed PV"""
 
     def setup_class(self):
@@ -277,7 +277,7 @@ class TestUseCase3EssSizingPv4PlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-class TestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
+class xTestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
     """ Part 2 of Usecase 3A - User constraints + FR + DA with fixed size PV and Battery"""
 
     def setup_class(self):
@@ -296,7 +296,7 @@ class TestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-class TestUseCase3EssSizingPvIce4PlannedOutage:
+class xTestUseCase3EssSizingPvIce4PlannedOutage:
     """ Part 1 of Usecase 3 Planned C - BAT sizing + fixed PV + fixed ICE  for reliability"""
     def setup_class(self):
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
@@ -315,7 +315,7 @@ class TestUseCase3EssSizingPvIce4PlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-class TestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
+class xTestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
     """ Part 2 of Usecase 3 Planned C - fixed sized BAT, PV, ICE for FR + DA"""
     def setup_class(self):
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
@@ -395,7 +395,7 @@ class TestUseCase3EssPvSizing4Reliability:
     def test_lcpc_meets_target(self):
         check_lcpc(self.results, self.mp_name)
 
-    def test_size_results_are_expected(self):
+    def test_size_results_are_expected(self): #failed
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
                              MAX_PERCENT_ERROR)
 
@@ -437,10 +437,10 @@ class TestUseCase3EssPvIceSizing4Reliability:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
-    def test_lcpc_meets_target(self):
+    def test_lcpc_meets_target(self): #failed
         check_lcpc(self.results, self.mp_name)
 
-    def test_size_results_are_expected(self):
+    def test_size_results_are_expected(self): #failed
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
                              MAX_PERCENT_ERROR)
 
@@ -457,7 +457,7 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
-    def test_lcpc_meets_target(self):
+    def test_lcpc_meets_target(self): #failed
         check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):

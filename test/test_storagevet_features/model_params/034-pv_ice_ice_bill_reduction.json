@@ -647,7 +647,7 @@
                         "type": "Period"
                     },
                     "curtail": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

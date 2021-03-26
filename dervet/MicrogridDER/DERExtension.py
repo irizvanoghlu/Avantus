@@ -26,8 +26,8 @@ class DERExtension:
 
         # CBA terms shared by all DERs
         self.macrs = params.get('macrs_term')
-        self.construction_year = params.get('construction_year')
-        self.operation_year = params.get('operation_year')
+        self.construction_year = params.get('construction_year').asfreq('y')
+        self.operation_year = params.get('operation_year').asfreq('y')
         if self.construction_year == self.operation_year:
             TellUser.warning(f" Construction year and operation year of {self.name} "
                              f"are the same. Do you mean this? Capitol Costs will appear the "

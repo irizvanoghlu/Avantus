@@ -11,7 +11,7 @@ from test.TestingLib import *
 RESULTS = Path("./test/test_load_shedding/results")
 SIZING_RESULTS = Path("./test/test_load_shedding/results/Sizing")
 MP = Path("./test/test_load_shedding/mp")
-MP_SIZING = Path("./test/test_load_shedding/mp/sizing")
+MP_SIZING = Path("./test/test_load_shedding/mp/Sizing")
 JSON = '.json'
 CSV = '.csv'
 

@@ -187,12 +187,10 @@ class Reliability(ValueStream):
                 if der_instance.technology_type == 'Intermittent Resource':
                     gen_sum += der_instance.get_discharge(mask) * \
                                der_instance.nu
-
+            critical_load = self.critical_load.loc[mask].values
             if self.load_shed:
-                critical_load = self.critical_load.loc[mask].values * (
-                            self.load_shed_data[0:outage_length] / 100)
-            else:
-                critical_load = self.critical_load.loc[mask].values
+                critical_load = critical_load * (self.load_shed_data[0:outage_length].values / 100)
+
             critical_load_arr = cvx.Parameter(value=critical_load,
                                               shape=outage_length)
             consts += [

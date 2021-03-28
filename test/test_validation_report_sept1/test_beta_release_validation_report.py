@@ -224,7 +224,7 @@ class TestUsecase2EssPvIce4BtmUserConstraints:
                              MAX_PERCENT_ERROR)
 
 
-USECASE3PLANNED = Path("./Model_params/Usecase3/Planned")
+USECASE3PLANNED = Path("./Model_params/Usecase3/planned")
 
 
 class TestUseCase3EssSizing4PlannedOutage:
@@ -334,7 +334,7 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
                              MAX_PERCENT_ERROR)
 
 
-USECASE3UNPLANNED = Path("./Model_params/Usecase3/Unplanned")
+USECASE3UNPLANNED = Path("./Model_params/Usecase3/unplanned")
 
 
 class TestUseCase3EssSizing4Reliability:

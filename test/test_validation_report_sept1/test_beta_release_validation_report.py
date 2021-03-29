@@ -234,7 +234,7 @@ class TestUseCase3EssSizing4PlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/es")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/es")
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
@@ -251,7 +251,7 @@ class TestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es")
 
     def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
@@ -270,7 +270,7 @@ class TestUseCase3EssSizingPv4PlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES+PV.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/es+pv")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/es+pv")
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
@@ -284,7 +284,7 @@ class TestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES+PV_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es+pv")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es+pv")
 
     def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
@@ -321,7 +321,7 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
         self.mp_name = TEST_DIR / USECASE3PLANNED / \
                        "Model_Parameters_Template_Usecase3_Planned_ES+PV+DG_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Planned/step2/es+pv+dg")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es+pv+dg")
 
     def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
@@ -363,7 +363,7 @@ class TestUseCase3EssSizing4DaFrUserConstraintsUnplannedOutage:
         self.mp_name = TEST_DIR / USECASE3UNPLANNED / \
                        "Model_Parameters_Template_Usecase3_UnPlanned_ES_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/unplanned/step2_ws/es")
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
@@ -407,7 +407,7 @@ class TestUseCase3EssPv4DaFrUserConstraintsUnplannedOutage:
         self.mp_name = TEST_DIR / USECASE3UNPLANNED / \
                        "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es+pv1")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/unplanned/step2_ws/es+pv1")
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
@@ -452,7 +452,7 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
         self.mp_name = TEST_DIR / USECASE3UNPLANNED / \
                        "Model_Parameters_Template_Usecase3_UnPlanned_ES+PV+DG_Step2.csv"
         self.results = run_case(self.mp_name)
-        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/Unplanned/step2_ws/es+pv+dg")
+        self.validated_folder = TEST_DIR / Path("./Results/Usecase3/unplanned/step2_ws/es+pv+dg")
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')

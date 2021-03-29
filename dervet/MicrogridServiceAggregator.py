@@ -1,11 +1,3 @@
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Thien Nguyen', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
-__version__ = "x.x.x"
-
 from storagevet.ServiceAggregator import ServiceAggregator
 from storagevet.ErrorHandling import *
 import cvxpy as cvx
@@ -58,7 +50,7 @@ class MicrogridServiceAggregator(ServiceAggregator):
         return {'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
 
     def set_size(self, der_lst, start_year):
-        """ part of Deferral's sizing module:
+        """ part of Deferral's sizing module: TODO REPLACE WITH set_size IN MICROGRID POI
         iterates over a list of DER+DERExtension objects and sets their minimum size
         based on the P and E requirements set by MIN_YEAR objective.
 

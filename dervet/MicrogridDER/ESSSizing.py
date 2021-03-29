@@ -4,14 +4,6 @@ ESSSizing.py
 This file defines the ability for ESSes to be sized by DERVET
 """
 
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = 'beta'  # beta version
-
 from dervet.MicrogridDER.ContinuousSizing import ContinuousSizing
 from storagevet.Technology.EnergyStorage import EnergyStorage
 from dervet.MicrogridDER.DERExtension import DERExtension

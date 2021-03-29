@@ -51,15 +51,19 @@ def assert_ran_with_services(model_param_location: str, services: list):
     assert set(services) == set(value_stream_keys)
 
 
-def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float):
+def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float,
+                             opt_years=None):
     assert_file_exists(results, 'pro_forma')
     test_proforma_df = results.proforma_df()
     expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
     for yr_indx, values_series in expected_df.iterrows():
         try:
             actual_indx = pd.Period(yr_indx)
+            if opt_years is not None and actual_indx.year not in opt_years:
+                continue
         except ValueError:
             actual_indx = yr_indx
+        print(actual_indx)
         assert actual_indx in test_proforma_df.index, f'{actual_indx} not in test proforma index'
         for col_indx in values_series.index:
             assert col_indx in test_proforma_df.columns, f'{col_indx} not in test proforma columns'

@@ -5,20 +5,6 @@ This Python class contains methods and attributes specific for service analysis
  within StorageVet.
 """
 
-__author__ = 'Suma Jothibasu, Halley Nathwani and Miles Evans'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). ' \
-                'All Rights Reserved.'
-__credits__ = [
-    'Miles Evans',
-    'Andres Cortes',
-    'Evan Giarta',
-    'Halley Nathwani'
-]
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'mevans@epri.com']
-__version__ = '0.1.1'
-
 from storagevet.SystemRequirement import Requirement
 import storagevet.Library as Lib
 from storagevet.ValueStreams.ValueStream import ValueStream
@@ -130,8 +116,7 @@ class Reliability(ValueStream):
                 soe = np.zeros(data_size)
                 der_props = None
             else:
-                soe = np.repeat(self.soc_init, data_size) * der_props[
-                    'energy rating']
+                soe = np.repeat(self.soc_init, data_size) * der_props['energy rating']
             start = 0
             first_fail_ind = 0
             # note: if this is too large, then you will get a RecursionError
@@ -160,6 +145,61 @@ class Reliability(ValueStream):
 
                 # This is a slower method to find optimal min SOE
                 # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+
+        return der_list
+
+    def size_for_outages(self, opt_index, outage_start_indices, der_list):
+        """ Sets up sizing optimization.
+
+        Args:
+            opt_index (Index): index should match the index of the timeseries
+                data being passed around
+            der_list (list): list of initialized DERs from the POI class
+            outage_start_indices
+
+        Returns: modified DER list
+
+        """
+
+        consts = []
+        cost_funcs = sum([der_instance.get_capex() for der_instance in der_list])
+        outage_length = int(self.outage_duration / self.dt)
+
+        mask = pd.Series(index=opt_index)
+        for outage_ind in outage_start_indices:
+            mask.iloc[:] = False
+            mask.iloc[outage_ind: (outage_ind + outage_length)] = True
+            # set up variables
+            gen_sum = cvx.Parameter(value=np.zeros(outage_length),
+                                    shape=outage_length, name='POI-Zero')
+            tot_net_ess = cvx.Parameter(value=np.zeros(outage_length),
+                                        shape=outage_length, name='POI-Zero')
+
+            for der_instance in der_list:
+                # initialize variables
+                der_instance.initialize_variables(outage_length)
+                consts += der_instance.constraints(mask, sizing_for_rel=True,
+                                                   find_min_soe=False)
+                if der_instance.technology_type == 'Energy Storage System':
+                    tot_net_ess += der_instance.get_net_power(mask)
+                if der_instance.technology_type == 'Generator':
+                    gen_sum += der_instance.get_discharge(mask)
+                if der_instance.technology_type == 'Intermittent Resource':
+                    gen_sum += der_instance.get_discharge(mask) * \
+                               der_instance.nu
+            critical_load = self.critical_load.loc[mask].values
+            if self.load_shed:
+                critical_load = critical_load * (self.load_shed_data[0:outage_length].values / 100)
+
+            critical_load_arr = cvx.Parameter(value=critical_load,
+                                              shape=outage_length)
+            consts += [
+                cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)
+            ]
+
+        obj = cvx.Minimize(cost_funcs)
+        prob = cvx.Problem(obj, consts)
+        prob.solve(solver=cvx.GLPK_MI)
 
         return der_list
 
@@ -192,13 +232,15 @@ class Reliability(ValueStream):
         largest_gamma = 0
         total_dg_max = 0
         for der_inst in der_list:
-            if der_inst.technology_type == 'Intermittent Resource' and (not der_inst.being_sized() or not need_solution):
+            if der_inst.technology_type == 'Intermittent Resource' and \
+                    (not der_inst.being_sized() or not need_solution):
                 pv_inst_gen = der_inst.maximum_generation()
                 tot_pv_max += pv_inst_gen
                 tot_pv_vari += pv_inst_gen * der_inst.nu
                 largest_gamma = max(largest_gamma, der_inst.gamma)
                 props['pv present'] = True
-            if der_inst.technology_type == 'Generator' and (not der_inst.being_sized() or not need_solution):
+            if der_inst.technology_type == 'Generator' and \
+                    (not der_inst.being_sized() or not need_solution):
                 total_dg_max += der_inst.max_power_out()
             if der_inst.technology_type == 'Energy Storage System':
                 props['rte list'].append(der_inst.rte)
@@ -218,48 +260,6 @@ class Reliability(ValueStream):
         tot_dg_gen = np.repeat(total_dg_max, len(self.critical_load))
 
         return tot_dg_gen, tot_pv_max, props, tot_pv_vari, largest_gamma
-
-    def reliability_data_process(self, ts_index, generation, total_pv_max,
-                                 ess_properties, total_pv_vari, largest_gamma):
-        """ TODO fill this out
-
-        Args:
-            ts_index:
-            generation:
-            total_pv_max:
-            ess_properties: (unused by method TODO: remove)
-            total_pv_vari:
-            largest_gamma:
-
-        Returns:
-
-        """
-        ts_max_index = ts_index + self.max_outage_duration
-        critical_load_sub = self.critical_load.values[ts_index:ts_max_index]
-        gen_sub = generation[ts_index:ts_max_index]
-        var_pv_sub = total_pv_vari[ts_index:ts_max_index]
-        max_pv_sub = total_pv_max[ts_index:ts_max_index]
-        if not self.load_shed:
-            demand_left = np.around(critical_load_sub - gen_sub - max_pv_sub,
-                                    decimals=5)
-            reliability_check = np.around(critical_load_sub - gen_sub -
-                                          var_pv_sub, decimals=5)
-            energy_requirement_check = reliability_check * largest_gamma
-        else:
-            extra_index = ts_max_index - len(self.critical_load)
-            if extra_index <= 0:
-                cl_with_loadshed = critical_load_sub * \
-                                   (self.load_shed_data / 100)
-            else:
-                load_shed_data = self.load_shed_data[:-extra_index]
-                cl_with_loadshed = critical_load_sub * (load_shed_data / 100)
-            demand_left = np.around(cl_with_loadshed - gen_sub - max_pv_sub,
-                                    decimals=5)
-            reliability_check = np.around(cl_with_loadshed - gen_sub -
-                                          var_pv_sub, decimals=5)
-            energy_requirement_check = reliability_check * largest_gamma
-
-        return demand_left, reliability_check, energy_requirement_check
 
     def calculate_system_requirements(self, der_lst):
         """ Calculate the system requirements that must be meet regardless of
@@ -302,214 +302,6 @@ class Reliability(ValueStream):
         data = reverse.iloc[::-1]
         return data
 
-    def timeseries_report(self):
-        """ Summaries the optimization results for this Value Stream.
-
-        Returns: A timeseries dataframe with user-friendly column headers that
-            summarize the results pertaining to this instance
-
-        """
-        report = pd.DataFrame(index=self.critical_load.index)
-        if not self.post_facto_only:
-            report.loc[:, 'Total Critical Load (kWh)'] = self.requirement
-
-        report.loc[:, 'Critical Load (kW)'] = self.critical_load
-        if self.min_soe_df is not None:
-            report.loc[:, 'Reliability Min State of Energy (kWh)'] = \
-                self.min_soe_df['soe']
-            # TODO These two lines have to commented out if
-            #  using the optimized soe routine
-            report.loc[:, 'Reliability Min SOE profile 0'] = \
-                self.soe_profile_all_0.values()
-            report.loc[:, 'Reliability Min SOE profile 1'] = \
-                self.soe_profile_all_1.values()
-
-        return report
-
-    def drill_down_reports(self, monthly_data=None, time_series_data=None,
-                           technology_summary=None, sizing_df=None,
-                           der_list=None):
-        """ Calculates any service related dataframe that is reported to the
-        user.
-
-        Returns: dictionary of DataFrames of any reports that are value stream
-            keys are the file name that the df will be saved with
-
-        """
-        df_dict = {}
-        TellUser.info(
-            'Starting load coverage calculation. This may take a while.')
-        df_dict['load_coverage_prob'] = self.load_coverage_probability(
-            der_list, time_series_data, technology_summary)
-        TellUser.info('Finished load coverage calculation.')
-
-        # calculate potential energy contribution from each DER in every outage
-        if not self.post_facto_only:
-            self.contribution_summary(technology_summary, time_series_data)
-            df_dict['outage_energy_contributions'] = \
-                self.outage_contribution_df
-
-        return df_dict
-
-    def contribution_summary(self, technology_summary_df, results):
-        """ Determines that contribution from each DER type in the event of an
-        outage. Call IFF attribute POST_FACTO_ONLY is False
-
-        Args:
-            technology_summary_df (DataFrame): list of active technologies
-            results (DataFrame): dataframe that holds all the results of the
-                optimzation
-
-        Returns: dataframe of der's outage contribution
-
-        """
-        outage_energy = self.requirement
-        contribution_arrays = {}
-
-        pv_names = technology_summary_df.loc[
-            technology_summary_df['Type'] == 'Intermittent Resource']
-        if len(pv_names):
-            agg_pv_max = np.zeros(len(results))
-            for name in pv_names['Name']:
-                agg_pv_max += results.loc[:, f'PV: {name} Maximum (kW)'].values
-            agg_pv_max = pd.Series(agg_pv_max, index=results.index)
-            # rolling sum of energy within a coverage_timestep window
-            pv_outage_e = self.rolling_sum(agg_pv_max,
-                                           self.coverage_dt) * self.dt
-            # try to cover as much of the outage that can be with PV energy
-            net_outage_energy = outage_energy - pv_outage_e
-            # pv generation might have more energy than in the outage, so dont
-            # let energy go negative
-            outage_energy = net_outage_energy.clip(lower=0)
-
-            # remove any extra energy from PV contribution
-            pv_outage_e += net_outage_energy.clip(upper=0)
-
-            # record contribution
-            contribution_arrays.update(
-                {'PV Outage Contribution (kWh)': pv_outage_e})
-
-        ess_names = technology_summary_df.loc[
-            technology_summary_df['Type'] == 'Energy Storage System']
-        if len(ess_names):
-            try:
-                ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
-
-            except KeyError:
-                ess_outage = results.loc[:, 'Reliability Min State of Energy (kWh)']
-
-            # try to cover as much of the outage that can be with the ES
-            net_outage_energy = outage_energy - ess_outage
-            # ESS might have more energy than in the outage, so dont let energy
-            # go negative
-            outage_energy = net_outage_energy.clip(lower=0)
-
-            # remove any extra energy from ESS contribution
-            ess_outage = ess_outage + net_outage_energy.clip(upper=0)
-
-            # record contribution
-            contribution_arrays.update(
-                {'Storage Outage Contribution (kWh)': ess_outage.values})
-
-        ice_names = technology_summary_df.loc[
-            technology_summary_df['Type'] == 'ICE']
-        if len(ice_names):
-            # supplies what every energy that cannot be by pv and diesel
-            # diesel_contribution is what ever is left
-            contribution_arrays.update(
-                {'ICE Outage Contribution (kWh)': outage_energy.values})
-
-        self.outage_contribution_df = pd.DataFrame(contribution_arrays,
-                                                   index=self.critical_load.index)
-
-    def load_coverage_probability(self, der_list, results_df,
-                                  technology_summary_df):
-        """ Creates and returns a data frame with that reports the load
-        coverage probability of outages that last from 0 to OUTAGE_LENGTH
-        hours with the DER mix described in TECHNOLOGIES
-
-        Args:
-            results_df (DataFrame): the dataframe that consolidates all results
-            technology_summary_df(DataFrame): maps DER type to user inputted
-                name that indexes the size df
-            der_list (list): list of ders
-
-        Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and
-            'Load Coverage Probability (%)'
-
-        """
-        start = time.time()
-
-        # 1) collect information required to call simulate_outage
-        aggregate_soe = None
-        dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
-            self.get_der_mix_properties(der_list)
-        if 'Energy Storage System' in technology_summary_df['Type'].values:
-            # save the state of charge
-            if self.use_user_const:
-                aggregate_soe = results_df.loc[:, 'Aggregate Energy Min (kWh)']
-            elif not self.use_soc_init:
-                if self.use_sizing_module_results:
-                    aggregate_soe = results_df.loc[:, 'Reliability Min State of Energy (kWh)']
-                else:
-                    aggregate_soe = results_df.loc[:, 'Aggregated State of Energy (kWh)']
-
-        end = time.time()
-        TellUser.info(f'Critical Load Coverage Curve overhead time: {end - start}')
-
-        # 2) simulate outage starting on every timestep
-        start = time.time()
-        outage_len = int(self.max_outage_duration / self.dt)
-        # initialize a list to track the frequency of the results of the
-        # simulate_outage method
-        frequency_simulate_outage = np.zeros(outage_len + 1)
-        outage_init = 0
-        while outage_init < (len(self.critical_load)):
-            if aggregate_soe is not None:
-                der_props['init_soe'] = aggregate_soe[outage_init]
-            demand_left, reliability_check, energy_requirement_check = \
-                self.reliability_data_process(outage_init, dg_gen,
-                                              total_pv_max, der_props,
-                                              total_pv_vari, largest_gamma)
-
-            outage_soc_profile = self.simulate_outage(reliability_check,
-                                                      demand_left,
-                                                      energy_requirement_check,
-                                                      outage_len,
-                                                      **der_props)
-
-            # record value of foo in frequency count
-            longest_outage = len(outage_soc_profile)
-            if longest_outage < 4:
-                print(longest_outage)
-            frequency_simulate_outage[int(longest_outage)] += 1
-            # start outage on next timestep
-            outage_init += 1
-
-        # 3) calculate probabilities
-        load_coverage_prob = []
-        length = self.dt
-        while length <= self.max_outage_duration:
-            scenarios_covered = frequency_simulate_outage[
-                                int(length / self.dt):].sum()
-            total_possible_scenarios = len(self.critical_load) - (
-                        length / self.dt) + 1
-            percentage = scenarios_covered / total_possible_scenarios
-            load_coverage_prob.append(percentage)
-            length += self.dt
-
-        # 3) build DataFrame to return
-        outage_coverage = {'Outage Length (hrs)': np.arange(self.dt,
-                                                            self.max_outage_duration + self.dt,
-                                                            self.dt),
-                           'Load Coverage Probability (%)': load_coverage_prob}
-        end = time.time()
-        TellUser.info(
-            f'Critical Load Coverage Curve calculation time: {end - start}')
-        lcpc_df = pd.DataFrame(outage_coverage)
-        lcpc_df.set_index('Outage Length (hrs)', inplace=True)
-        return lcpc_df
-
     @staticmethod
     def get_first_data(array):
         """ TODO fill this
@@ -525,6 +317,104 @@ class Reliability(ValueStream):
         except KeyError:
             first_data = array.values[0]
         return first_data
+
+    def find_first_uncovered(self, generation, total_pv_max, total_pv_vari,
+                             largest_gamma, ess_properties=None, soe=None,
+                             start_indx=0, stop_at=600):
+        """ THis function will return the first outage that is not covered with
+         the given DERs
+
+        Args:
+            generation:
+            total_pv_max:
+            total_pv_vari:
+            largest_gamma:
+            ess_properties (dict): dictionary that describes the physical
+                properties of the ess in the analysis includes 'charge max',
+                'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
+            soe (list, None): if ESSs are active, then this is an array
+                indicating the soe at the start of the outage
+            start_indx (int): start index, idetifies the index of the start of
+                the outage we are going to simulate
+            stop_at (int): when the start_index is divisible by this number,
+                stop recursion
+
+        Returns: index of the first outage that cannot be covered by the DER
+            sizes, or -1 if none is found
+
+        """
+        # base case 1: outage_init is beyond range of critical load
+        if start_indx >= (len(self.critical_load)):
+            return -1
+        # find longest possible outage
+
+        demand_left, reliability_check, energy_requirement_check = \
+            self.data_process(start_indx, generation, total_pv_max,
+                              ess_properties, total_pv_vari,
+                              largest_gamma)
+        ess_properties['init_soe'] = soe[start_indx]
+        soe_profile = self.simulate_outage(reliability_check, demand_left,
+                                           energy_requirement_check,
+                                           self.max_outage_duration / self.dt,
+                                           **ess_properties)
+
+        longest_outage = len(soe_profile)
+        # base case 2: longest outage is less than the outage duration target
+        if longest_outage < self.outage_duration / self.dt:
+            if longest_outage < (len(self.critical_load) - start_indx):
+                return start_indx
+        # base case 3: break recursion when you get to this (like a limit to
+        # the resursion)
+        if (start_indx + 1) % stop_at == 0:
+            return start_indx + 1
+        # else, go on to test the next outage_init (increase index returned
+        return self.find_first_uncovered(generation, total_pv_max,
+                                         total_pv_vari, largest_gamma,
+                                         ess_properties=ess_properties,
+                                         soe=soe, start_indx=start_indx + 1,
+                                         stop_at=stop_at)
+
+    def data_process(self, ts_index, generation, total_pv_max,
+                     ess_properties, total_pv_vari, largest_gamma):
+        """ TODO fill this out
+
+        Args:
+            ts_index:
+            generation:
+            total_pv_max:
+            ess_properties: (unused by method TODO: remove)
+            total_pv_vari:
+            largest_gamma:
+
+        Returns:
+
+        """
+        ts_max_index = ts_index + self.max_outage_duration
+        critical_load_sub = self.critical_load.values[ts_index:ts_max_index]
+        gen_sub = generation[ts_index:ts_max_index]
+        var_pv_sub = total_pv_vari[ts_index:ts_max_index]
+        max_pv_sub = total_pv_max[ts_index:ts_max_index]
+        if not self.load_shed:
+            demand_left = np.around(critical_load_sub - gen_sub - max_pv_sub,
+                                    decimals=5)
+            reliability_check = np.around(critical_load_sub - gen_sub -
+                                          var_pv_sub, decimals=5)
+            energy_requirement_check = reliability_check * largest_gamma
+        else:
+            extra_index = ts_max_index - len(self.critical_load)
+            if extra_index <= 0:
+                cl_with_loadshed = critical_load_sub * \
+                                   (self.load_shed_data / 100)
+            else:
+                load_shed_data = self.load_shed_data[:-extra_index]
+                cl_with_loadshed = critical_load_sub * (load_shed_data / 100)
+            demand_left = np.around(cl_with_loadshed - gen_sub - max_pv_sub,
+                                    decimals=5)
+            reliability_check = np.around(cl_with_loadshed - gen_sub -
+                                          var_pv_sub, decimals=5)
+            energy_requirement_check = reliability_check * largest_gamma
+
+        return demand_left, reliability_check, energy_requirement_check
 
     def simulate_outage(self, reliability_check, demand_left, energy_check,
                         outage_left, **kwargs):
@@ -608,120 +498,6 @@ class Reliability(ValueStream):
         kwargs['init_soe'] = next_soe
         return [next_soe] + self.simulate_outage(reliability_check[1:], demand_left[1:],
                                                  energy_check[1:], outage_left - 1, **kwargs)
-
-    def find_first_uncovered(self, generation, total_pv_max, total_pv_vari,
-                             largest_gamma, ess_properties=None, soe=None,
-                             start_indx=0, stop_at=600):
-        """ THis function will return the first outage that is not covered with
-         the given DERs
-
-        Args:
-            generation:
-            total_pv_max:
-            total_pv_vari:
-            largest_gamma:
-            ess_properties (dict): dictionary that describes the physical
-                properties of the ess in the analysis includes 'charge max',
-                'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
-            soe (list, None): if ESSs are active, then this is an array
-                indicating the soe at the start of the outage
-            start_indx (int): start index, idetifies the index of the start of
-                the outage we are going to simulate
-            stop_at (int): when the start_index is divisible by this number,
-                stop recursion
-
-        Returns: index of the first outage that cannot be covered by the DER
-            sizes, or -1 if none is found
-
-        """
-        # base case 1: outage_init is beyond range of critical load
-        if start_indx >= (len(self.critical_load)):
-            return -1
-        # find longest possible outage
-
-        demand_left, reliability_check, energy_requirement_check = \
-            self.reliability_data_process(start_indx, generation, total_pv_max,
-                                          ess_properties, total_pv_vari,
-                                          largest_gamma)
-        ess_properties['init_soe'] = soe[start_indx]
-        soe_profile = self.simulate_outage(reliability_check, demand_left,
-                                           energy_requirement_check,
-                                           self.max_outage_duration / self.dt,
-                                           **ess_properties)
-
-        longest_outage = len(soe_profile)
-        # base case 2: longest outage is less than the outage duration target
-        if longest_outage < self.outage_duration / self.dt:
-            if longest_outage < (len(self.critical_load) - start_indx):
-                return start_indx
-        # base case 3: break recursion when you get to this (like a limit to
-        # the resursion)
-        if (start_indx + 1) % stop_at == 0:
-            return start_indx + 1
-        # else, go on to test the next outage_init (increase index returned
-        return self.find_first_uncovered(generation, total_pv_max,
-                                         total_pv_vari, largest_gamma,
-                                         ess_properties=ess_properties,
-                                         soe=soe, start_indx=start_indx + 1,
-                                         stop_at=stop_at)
-
-    def size_for_outages(self, opt_index, outage_start_indices, der_list):
-        """ Sets up sizing optimization.
-
-        Args:
-            opt_index (Index): index should match the index of the timeseries
-                data being passed around
-            der_list (list): list of initialized DERs from the POI class
-            outage_start_indices
-
-        Returns: modified DER list
-
-        """
-
-        consts = []
-        cost_funcs = sum(
-            [der_instance.get_capex() for der_instance in der_list])
-        outage_length = int(self.outage_duration / self.dt)
-
-        mask = pd.Series(index=opt_index)
-        for outage_ind in outage_start_indices:
-            mask.iloc[:] = False
-            mask.iloc[outage_ind: (outage_ind + outage_length)] = True
-            # set up variables
-            gen_sum = cvx.Parameter(value=np.zeros(outage_length),
-                                    shape=outage_length, name='POI-Zero')
-            tot_net_ess = cvx.Parameter(value=np.zeros(outage_length),
-                                        shape=outage_length, name='POI-Zero')
-
-            for der_instance in der_list:
-                # initialize variables
-                der_instance.initialize_variables(outage_length)
-                consts += der_instance.constraints(mask, sizing_for_rel=True,
-                                                   find_min_soe=False)
-                if der_instance.technology_type == 'Energy Storage System':
-                    tot_net_ess += der_instance.get_net_power(mask)
-                if der_instance.technology_type == 'Generator':
-                    gen_sum += der_instance.get_discharge(mask)
-                if der_instance.technology_type == 'Intermittent Resource':
-                    gen_sum += der_instance.get_discharge(mask) * \
-                               der_instance.nu
-
-            if self.load_shed:
-                critical_load = self.critical_load.loc[mask].values * (
-                            self.load_shed_data[0:outage_length] / 100)
-            else:
-                critical_load = self.critical_load.loc[mask].values
-            critical_load_arr = cvx.Parameter(value=critical_load,
-                                              shape=outage_length)
-            consts += [
-                cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)
-            ]
-
-        obj = cvx.Minimize(cost_funcs)
-        prob = cvx.Problem(obj, consts)
-        prob.solve(solver=cvx.GLPK_MI)
-
-        return der_list
 
     def min_soe_opt(self, opt_index, der_list):
         """ Calculates min SOE at every time step for the given DER size
@@ -865,11 +641,11 @@ class Reliability(ValueStream):
                                     len(self.critical_load))
                     for outage_init in range(len(opt_index)):
                         demand, power_req, energy_req = \
-                            self.reliability_data_process(outage_init, dg_gen,
-                                                          pv_max,
-                                                          der_props,
-                                                          pv_vari,
-                                                          largest_gamma)
+                            self.data_process(outage_init, dg_gen,
+                                              pv_max,
+                                              der_props,
+                                              pv_vari,
+                                              largest_gamma)
                         der_props['init_soe'] = soe[outage_init]
                         outage_len = self.outage_duration / self.dt
                         soe_outage_profile = \
@@ -908,3 +684,209 @@ class Reliability(ValueStream):
             self.soe_profile_all_0[dict_size] = 0
             self.soe_profile_all_1[dict_size] = 0
         return effective_soe
+
+    def timeseries_report(self):
+        """ Summaries the optimization results for this Value Stream.
+
+        Returns: A timeseries dataframe with user-friendly column headers that
+            summarize the results pertaining to this instance
+
+        """
+        report = pd.DataFrame(index=self.critical_load.index)
+        if not self.post_facto_only:
+            report.loc[:, 'Total Critical Load (kWh)'] = self.requirement
+
+        report.loc[:, 'Critical Load (kW)'] = self.critical_load
+        if self.min_soe_df is not None:
+            report.loc[:, 'Reliability Min State of Energy (kWh)'] = \
+                self.min_soe_df['soe']
+            # These two following lines have to commented out if using the optimized soe routine
+            report.loc[:, 'Reliability Min SOE profile 0'] = \
+                self.soe_profile_all_0.values()
+            report.loc[:, 'Reliability Min SOE profile 1'] = \
+                self.soe_profile_all_1.values()
+
+        return report
+
+    def drill_down_reports(self, monthly_data=None, time_series_data=None,
+                           technology_summary=None, sizing_df=None,
+                           der_list=None):
+        """ Calculates any service related dataframe that is reported to the
+        user.
+
+        Returns: dictionary of DataFrames of any reports that are value stream
+            keys are the file name that the df will be saved with
+
+        """
+        df_dict = {}
+        TellUser.info(
+            'Starting load coverage calculation. This may take a while.')
+        df_dict['load_coverage_prob'] = self.load_coverage_probability(
+            der_list, time_series_data, technology_summary)
+        TellUser.info('Finished load coverage calculation.')
+
+        # calculate potential energy contribution from each DER in every outage
+        if not self.post_facto_only:
+            self.contribution_summary(technology_summary, time_series_data)
+            df_dict['outage_energy_contributions'] = \
+                self.outage_contribution_df
+
+        return df_dict
+
+    def contribution_summary(self, technology_summary_df, results):
+        """ Determines that contribution from each DER type in the event of an
+        outage. Call IFF attribute POST_FACTO_ONLY is False
+
+        Args:
+            technology_summary_df (DataFrame): list of active technologies
+            results (DataFrame): dataframe that holds all the results of the
+                optimzation
+
+        Returns: dataframe of der's outage contribution
+
+        """
+        outage_energy = self.requirement
+        contribution_arrays = {}
+
+        pv_names = technology_summary_df.loc[
+            technology_summary_df['Type'] == 'Intermittent Resource']
+        if len(pv_names):
+            agg_pv_max = np.zeros(len(results))
+            for name in pv_names['Name']:
+                agg_pv_max += results.loc[:, f'PV: {name} Maximum (kW)'].values
+            agg_pv_max = pd.Series(agg_pv_max, index=results.index)
+            # rolling sum of energy within a coverage_timestep window
+            pv_outage_e = self.rolling_sum(agg_pv_max,
+                                           self.coverage_dt) * self.dt
+            # try to cover as much of the outage that can be with PV energy
+            net_outage_energy = outage_energy - pv_outage_e
+            # pv generation might have more energy than in the outage, so dont
+            # let energy go negative
+            outage_energy = net_outage_energy.clip(lower=0)
+
+            # remove any extra energy from PV contribution
+            pv_outage_e += net_outage_energy.clip(upper=0)
+
+            # record contribution
+            contribution_arrays.update({'PV Outage Contribution (kWh)': pv_outage_e})
+
+        ess_names = technology_summary_df.loc[
+            technology_summary_df['Type'] == 'Energy Storage System']
+        if len(ess_names):
+            try:
+                ess_outage = results.loc[:, 'Aggregated State of Energy (kWh)']
+
+            except KeyError:
+                ess_outage = results.loc[:, 'Reliability Min State of Energy (kWh)']
+
+            # try to cover as much of the outage that can be with the ES
+            net_outage_energy = outage_energy - ess_outage
+            # ESS might have more energy than in the outage, so dont let energy
+            # go negative
+            outage_energy = net_outage_energy.clip(lower=0)
+
+            # remove any extra energy from ESS contribution
+            ess_outage = ess_outage + net_outage_energy.clip(upper=0)
+
+            # record contribution
+            contribution_arrays.update(
+                {'Storage Outage Contribution (kWh)': ess_outage.values})
+
+        ice_names = technology_summary_df.loc[
+            technology_summary_df['Type'] == 'ICE']
+        if len(ice_names):
+            # supplies what every energy that cannot be by pv and diesel
+            # diesel_contribution is what ever is left
+            contribution_arrays.update(
+                {'ICE Outage Contribution (kWh)': outage_energy.values})
+
+        self.outage_contribution_df = pd.DataFrame(contribution_arrays,
+                                                   index=self.critical_load.index)
+
+    def load_coverage_probability(self, der_list, results_df,
+                                  technology_summary_df):
+        """ Creates and returns a data frame with that reports the load
+        coverage probability of outages that last from 0 to OUTAGE_LENGTH
+        hours with the DER mix described in TECHNOLOGIES
+
+        Args:
+            results_df (DataFrame): the dataframe that consolidates all results
+            technology_summary_df(DataFrame): maps DER type to user inputted
+                name that indexes the size df
+            der_list (list): list of ders
+
+        Returns: DataFrame with 2 columns - 'Outage Length (hrs)' and
+            'Load Coverage Probability (%)'
+
+        """
+        start = time.time()
+
+        # 1) collect information required to call simulate_outage
+        aggregate_soe = None
+        dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
+            self.get_der_mix_properties(der_list)
+        if 'Energy Storage System' in technology_summary_df['Type'].values:
+            # save the state of charge
+            if self.use_user_const:
+                aggregate_soe = results_df.loc[:, 'Aggregate Energy Min (kWh)']
+            elif not self.use_soc_init:
+                if self.use_sizing_module_results:
+                    aggregate_soe = results_df.loc[:, 'Reliability Min State of Energy (kWh)']
+                else:
+                    aggregate_soe = results_df.loc[:, 'Aggregated State of Energy (kWh)']
+
+        end = time.time()
+        TellUser.info(f'Critical Load Coverage Curve overhead time: {end - start}')
+
+        # 2) simulate outage starting on every timestep
+        start = time.time()
+        outage_len = int(self.max_outage_duration / self.dt)
+        # initialize a list to track the frequency of the results of the
+        # simulate_outage method
+        frequency_simulate_outage = np.zeros(outage_len + 1)
+        outage_init = 0
+        while outage_init < (len(self.critical_load)):
+            if aggregate_soe is not None:
+                der_props['init_soe'] = aggregate_soe[outage_init]
+            demand_left, reliability_check, energy_requirement_check = \
+                self.data_process(outage_init, dg_gen,
+                                  total_pv_max, der_props,
+                                  total_pv_vari, largest_gamma)
+
+            outage_soc_profile = self.simulate_outage(reliability_check,
+                                                      demand_left,
+                                                      energy_requirement_check,
+                                                      outage_len,
+                                                      **der_props)
+
+            # record value of foo in frequency count
+            longest_outage = len(outage_soc_profile)
+            # if longest_outage > 4:
+            #     print(longest_outage)
+            frequency_simulate_outage[int(longest_outage)] += 1
+            # start outage on next timestep
+            outage_init += 1
+
+        # 3) calculate probabilities
+        load_coverage_prob = []
+        length = self.dt
+        while length <= self.max_outage_duration:
+            scenarios_covered = frequency_simulate_outage[
+                                int(length / self.dt):].sum()
+            total_possible_scenarios = len(self.critical_load) - (
+                        length / self.dt) + 1
+            percentage = scenarios_covered / total_possible_scenarios
+            load_coverage_prob.append(percentage)
+            length += self.dt
+
+        # 3) build DataFrame to return
+        outage_coverage = {'Outage Length (hrs)': np.arange(self.dt,
+                                                            self.max_outage_duration + self.dt,
+                                                            self.dt),
+                           'Load Coverage Probability (%)': load_coverage_prob}
+        end = time.time()
+        TellUser.info(
+            f'Critical Load Coverage Curve calculation time: {end - start}')
+        lcpc_df = pd.DataFrame(outage_coverage)
+        lcpc_df.set_index('Outage Length (hrs)', inplace=True)
+        return lcpc_df

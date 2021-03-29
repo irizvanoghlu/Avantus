@@ -3,15 +3,6 @@ Storage
 
 This Python class contains methods and attributes specific for technology analysis within StorageVet.
 """
-
-__author__ = 'Miles Evans, Evan Giarta and Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
-__version__ = '2.1.1.1'
-
 import logging
 import cvxpy as cvx
 import numpy as np

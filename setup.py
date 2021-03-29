@@ -15,12 +15,12 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='dervet',
-      version='0.1',
-      description='Testing installation of DERVET Package',
-      url='#',
+      version='1.0.0',
+      description='',
+      url='der-vet.com',
       long_description=README,
-      author='auth',
-      author_email='author@email.com',
+      author='Halley Nathwani',
+      author_email='hnathwani@epri.com',
       license='EPRI',
       classifiers=[
               "License :: EPRI License",

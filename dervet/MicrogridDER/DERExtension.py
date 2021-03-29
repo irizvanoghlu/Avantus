@@ -4,14 +4,6 @@ for the purpose of DER-VET functionallty
 
 """
 
-__author__ = 'Halley Nathwani'
-__copyright__ = 'Copyright 2018. Electric Power Research Institute (EPRI). All Rights Reserved.'
-__credits__ = ['Miles Evans', 'Andres Cortes', 'Evan Giarta', 'Halley Nathwani', 'Micah Botkin-Levy', 'Yekta Yazar']
-__license__ = 'EPRI'
-__maintainer__ = ['Halley Nathwani', 'Evan Giarta', 'Miles Evans']
-__email__ = ['hnathwani@epri.com', 'egiarta@epri.com', 'mevans@epri.com']
-__version__ = 'beta'
-
 import numpy as np
 import pandas as pd
 from storagevet.ErrorHandling import *
@@ -34,8 +26,8 @@ class DERExtension:
 
         # CBA terms shared by all DERs
         self.macrs = params.get('macrs_term')
-        self.construction_year = params.get('construction_year')
-        self.operation_year = params.get('operation_year')
+        self.construction_year = params.get('construction_year').asfreq('y')
+        self.operation_year = params.get('operation_year').asfreq('y')
         if self.construction_year == self.operation_year:
             TellUser.warning(f" Construction year and operation year of {self.name} "
                              f"are the same. Do you mean this? Capitol Costs will appear the "

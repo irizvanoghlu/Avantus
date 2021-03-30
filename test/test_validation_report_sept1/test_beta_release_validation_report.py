@@ -7,6 +7,7 @@ The tests in this file can be run with DERVET.
 """
 from pathlib import Path
 from test.TestingLib import *
+import pytest
 
 MAX_PERCENT_ERROR = 3
 TEST_DIR = Path("./test/test_validation_report_sept1")
@@ -356,6 +357,7 @@ class TestUseCase3EssSizing4Reliability:
                              MAX_PERCENT_ERROR)
 
 
+@pytest.mark.slow
 class TestUseCase3EssSizing4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned A - FR + DA + UserConstraints, BAT fixed size with PF
     reliability"""
@@ -400,6 +402,7 @@ class TestUseCase3EssPvSizing4Reliability:
                              MAX_PERCENT_ERROR)
 
 
+@pytest.mark.slow
 class TestUseCase3EssPv4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned B - FR + DA + UserConstraints, BAT + PV fixed size with PF
     reliability"""
@@ -445,6 +448,7 @@ class TestUseCase3EssPvIceSizing4Reliability:
                              MAX_PERCENT_ERROR)
 
 
+@pytest.mark.slow
 class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned C - FR + DA + UserConstraints, BAT + PV fixed size with PF
     reliability"""

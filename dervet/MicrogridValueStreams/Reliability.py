@@ -54,6 +54,7 @@ class Reliability(ValueStream):
         # INITIAL ATTRIBUTES TO BE SET LATER
         self.outage_contribution_df = None
         self.min_soe_df = None
+        self.outage_soe_profile = None
         self.soe_profile_all_0 = {}
         self.soe_profile_all_1 = {}
         # this is the rating of all DERs (expect for the intermittent ER)
@@ -723,7 +724,7 @@ class Reliability(ValueStream):
         df_dict['load_coverage_prob'] = self.load_coverage_probability(
             der_list, time_series_data, technology_summary)
         TellUser.info('Finished load coverage calculation.')
-
+        df_dict['lcp_outage_soe_profiles'] = self.outage_soe_profile
         # calculate potential energy contribution from each DER in every outage
         if not self.post_facto_only:
             self.contribution_summary(technology_summary, time_series_data)
@@ -844,6 +845,7 @@ class Reliability(ValueStream):
         # simulate_outage method
         frequency_simulate_outage = np.zeros(outage_len + 1)
         outage_init = 0
+        self.outage_soe_profile = {hour+1: [] for hour in range(outage_len)}
         while outage_init < (len(self.critical_load)):
             if aggregate_soe is not None:
                 der_props['init_soe'] = aggregate_soe[outage_init]
@@ -859,13 +861,17 @@ class Reliability(ValueStream):
                                                       **der_props)
 
             # record value of foo in frequency count
-            longest_outage = len(outage_soc_profile)
-            # if longest_outage > 4:
-            #     print(longest_outage)
-            frequency_simulate_outage[int(longest_outage)] += 1
+            coverage_length = len(outage_soc_profile)
+            for key, value in self.outage_soe_profile.items():
+                value.append(outage_soc_profile[key-1] if key-1 < coverage_length else 0)
+
+            frequency_simulate_outage[int(coverage_length)] += 1
             # start outage on next timestep
             outage_init += 1
 
+        self.outage_soe_profile = pd.DataFrame(self.outage_soe_profile,
+                                               index=self.critical_load.index)
+        self.outage_soe_profile.fillna(0, inplace=True)
         # 3) calculate probabilities
         load_coverage_prob = []
         length = self.dt

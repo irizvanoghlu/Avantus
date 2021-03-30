@@ -194,7 +194,7 @@ class Reliability(ValueStream):
             critical_load_arr = cvx.Parameter(value=critical_load,
                                               shape=outage_length)
             consts += [
-                cvx.Zero(tot_net_ess + (-1) * gen_sum + critical_load_arr)
+                cvx.NonPos(tot_net_ess + (-1) * gen_sum + critical_load_arr)
             ]
 
         obj = cvx.Minimize(cost_funcs)

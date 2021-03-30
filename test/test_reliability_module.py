@@ -10,8 +10,9 @@ from test.TestingLib import *
 
 RESULTS = Path("./test/test_load_shedding/results")
 SIZING_RESULTS = Path("./test/test_load_shedding/results/Sizing")
-MP = Path("./test/test_load_shedding/mp")
-MP_SIZING = Path("./test/test_load_shedding/mp/Sizing")
+LOAD_FOLLOWING_MP = Path("./test/test_load_shedding/mp")
+LOAD_FOLLOWING_MP_SIZING = LOAD_FOLLOWING_MP / "Sizing"
+MP = Path("./model_params")
 JSON = '.json'
 CSV = '.csv'
 
@@ -26,7 +27,7 @@ MAX_PERCENT_ERROR = 3
 
 class TestLoadShedding:
     def setup_class(self):
-        self.mp_name = MP / "Model_Parameters_Template_DER_w_ls1.csv"
+        self.mp_name = LOAD_FOLLOWING_MP / "Model_Parameters_Template_DER_w_ls1.csv"
         self.results = run_case(self.mp_name)
         self.validated_folder = RESULTS / Path("./reliability_load_shed1")
 
@@ -45,7 +46,7 @@ class TestLoadShedding:
 class TestWoLoadShedding:
 
     def setup_class(self):
-        self.mp_name = MP / "Model_Parameters_Template_DER_wo_ls1.csv"
+        self.mp_name = LOAD_FOLLOWING_MP / "Model_Parameters_Template_DER_wo_ls1.csv"
         self.results = run_case(self.mp_name)
         self.validated_folder = RESULTS / Path("./reliability_load_shed_wo_ls1")
 
@@ -63,7 +64,7 @@ class TestWoLoadShedding:
 
 class TestSizingLoadShedding:
     def setup_class(self):
-        self.mp_name = MP_SIZING / "Model_Parameters_Template_DER_w_ls1.csv"
+        self.mp_name = LOAD_FOLLOWING_MP_SIZING / "Model_Parameters_Template_DER_w_ls1.csv"
         self.results = run_case(self.mp_name)
         self.validated_folder = SIZING_RESULTS / Path("./w_ls1")
 
@@ -81,7 +82,7 @@ class TestSizingLoadShedding:
 
 class TestSizingWoLoadShedding:
     def setup_class(self):
-        self.mp_name = MP_SIZING / "Model_Parameters_Template_DER_wo_ls1.csv"
+        self.mp_name = LOAD_FOLLOWING_MP_SIZING / "Model_Parameters_Template_DER_wo_ls1.csv"
         self.results = run_case(self.mp_name)
         self.validated_folder = SIZING_RESULTS / Path("./wo_ls1")
 
@@ -95,3 +96,8 @@ class TestSizingWoLoadShedding:
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "size_2mw_5hr.csv",
                              MAX_PERCENT_ERROR)
+
+
+def test_post_facto_calculations_with_user_constraints():
+    """ Test solar's PPA feature"""
+    assert_ran(MP / f"Model_Parameters_Template_issue162{CSV}")

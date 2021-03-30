@@ -76,8 +76,7 @@ class Reliability(ValueStream):
                 loads in this simulation
 
         """
-        self.critical_load = Lib.fill_extra_data(self.critical_load, years,
-                                                 load_growth, frequency)
+        self.critical_load = Lib.fill_extra_data(self.critical_load, years, load_growth, frequency)
         self.critical_load = Lib.drop_extra_data(self.critical_load, years)
 
     def sizing_module(self, der_lst, opt_index):

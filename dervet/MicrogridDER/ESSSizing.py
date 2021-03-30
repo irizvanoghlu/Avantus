@@ -27,15 +27,15 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         EnergyStorage.__init__(self, params)
         DERExtension.__init__(self, params)
         ContinuousSizing.__init__(self, params)
-        self.incl_energy_limits = params.get('incl_ts_energy_limits', False)  # this is an input included in the dervet schema only --HN
+        self.incl_energy_limits = params.get('incl_ts_energy_limits', False)
         if self.incl_energy_limits:
             self.limit_energy_max = params['ts_energy_max'].fillna(self.ene_max_rated)
             self.limit_energy_min = params['ts_energy_min'].fillna(0)
-        self.incl_charge_limits = params.get('incl_ts_charge_limits', False)  # this is an input included in the dervet schema only --HN
+        self.incl_charge_limits = params.get('incl_ts_charge_limits', False)
         if self.incl_charge_limits:
             self.limit_charge_max = params['ts_charge_max'].fillna(self.ch_max_rated)
             self.limit_charge_min = params['ts_charge_min'].fillna(self.ch_min_rated)
-        self.incl_discharge_limits = params.get('incl_ts_discharge_limits', False)  # this is an input included in the dervet schema only --HN
+        self.incl_discharge_limits = params.get('incl_ts_discharge_limits', False)
         if self.incl_discharge_limits:
             self.limit_discharge_max = params['ts_discharge_max'].fillna(self.dis_max_rated)
             self.limit_discharge_min = params['ts_discharge_min'].fillna(self.dis_min_rated)

@@ -1,6 +1,6 @@
 Tag,ID,Key,Optimization Value,Units,Type,Allowed Values,Sensitivity Parameters,Coupled,Description,Active,Sensitivity Analysis,Evaluation Value,Evaluation Active,Options/Notes
 Scenario,.,monthly_data_filename,.\data\monthly_data.csv,,string,valid file path to a monthly data file,,None,,yes,no,.\dervet\storagevet\Data\Monthly_Data.csv,n,
-Scenario,.,time_series_filename,.\test\datasets\hourly_timeseries_reference_PF_userconst_Econ_sizing.csv,,string,valid file path to a time series data file,.\Data\test1.csv,None,,.,no,.\dervet\storagevet\Data\hourly_timeseries.csv,n,
+Scenario,.,time_series_filename,.\test\datasets\hourly_timeseries_reference_pf_userconst_econ_sizing.csv,,string,valid file path to a time series data file,.\Data\test1.csv,None,,.,no,.\dervet\storagevet\Data\hourly_timeseries.csv,n,
 Scenario,.,dt,1,hours,float,"(0,1]",,None,Time step in the time series data file,.,no,.,.,
 Scenario,.,opt_years,2017,year,list/int,the year number(s) specified here must appear in the time series file,,None,which years to run optimization for. You must have data for these years in the time series file.,.,no,.,.,
 Scenario,.,start_year,2017,year,Period,opt_years must be between start_year and end_year,,None,first year of analysis,.,no,2017,n,

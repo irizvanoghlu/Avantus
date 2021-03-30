@@ -99,5 +99,4 @@ class TestSizingWoLoadShedding:
 
 
 def test_post_facto_calculations_with_user_constraints():
-    """ Test solar's PPA feature"""
     assert_ran(MP / f"Model_Parameters_Template_issue162{CSV}")

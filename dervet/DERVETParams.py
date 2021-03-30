@@ -500,6 +500,10 @@ class ParamsDER(Params):
                 self.record_input_error(f"Battery #{id_str} state_of_health > cycle_life_table_eol_condition. SOH input should be lesser than eol condition used to create cycle life table for accurate degradation calculation")
 
             if not battery_inputs['ch_max_rated'] or not battery_inputs['dis_max_rated']:
+                if battery_inputs['incl_cycle_degrade']:
+                    self.record_input_error(
+                        f'Error: BATTERY {id_str}: Degradation with power sizing is still under ' +
+                        f'development. Please choose to do one or the other.')
                 if not battery_inputs['ch_max_rated']:
                     if battery_inputs['user_ch_rated_min'] > battery_inputs['user_ch_rated_max']:
                         self.record_input_error('Error: User battery min charge power requirement is greater than max charge power requirement.' +
@@ -508,6 +512,10 @@ class ParamsDER(Params):
                     if battery_inputs['user_dis_rated_min'] > battery_inputs['user_dis_rated_max']:
                         self.record_input_error('User battery min discharge power requirement is greater than max discharge power requirement.')
             if not battery_inputs['ene_max_rated']:
+                if battery_inputs['incl_cycle_degrade']:
+                    self.record_input_error(
+                        f'Error: BATTERY {id_str}: Degradation with energy sizing is still under' +
+                        f' development. Please choose to do one or the other.')
                 if battery_inputs['user_ene_rated_min'] > battery_inputs['user_ene_rated_max']:
                     self.record_input_error('Error: User battery min energy requirement is greater than max energy requirement.')
             # check if user wants to include timeseries constraints -> grab data

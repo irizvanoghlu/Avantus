@@ -12,7 +12,7 @@ RESULTS = Path("./test/test_load_shedding/results")
 SIZING_RESULTS = Path("./test/test_load_shedding/results/Sizing")
 LOAD_FOLLOWING_MP = Path("./test/test_load_shedding/mp")
 LOAD_FOLLOWING_MP_SIZING = LOAD_FOLLOWING_MP / "Sizing"
-MP = Path("./model_params")
+MP = Path("./test/model_params")
 JSON = '.json'
 CSV = '.csv'
 

@@ -1255,7 +1255,7 @@
                         "type": "float"
                     },
                     "gamma": {
-                        "opt_value": "43",
+                        "opt_value": "100",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1358,7 +1358,7 @@
                         "type": "int"
                     },
                     "nu": {
-                        "opt_value": "20",
+                        "opt_value": "100",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1459,7 +1459,7 @@
                 "active": "yes",
                 "keys": {
                     "gamma": {
-                        "opt_value": "100",
+                        "opt_value": "43",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1508,7 +1508,7 @@
                         "type": "bool"
                     },
                     "nu": {
-                        "opt_value": "100",
+                        "opt_value": "20",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

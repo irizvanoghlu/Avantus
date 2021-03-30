@@ -395,7 +395,7 @@ class TestUseCase3EssPvSizing4Reliability:
     def test_lcpc_meets_target(self):
         check_lcpc(self.results, self.mp_name)
 
-    def xtest_size_results_are_expected(self):  # TODO fails
+    def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
                              MAX_PERCENT_ERROR)
 
@@ -437,10 +437,10 @@ class TestUseCase3EssPvIceSizing4Reliability:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
-    def xtest_lcpc_meets_target(self):  # TODO fails
+    def test_lcpc_meets_target(self):
         check_lcpc(self.results, self.mp_name)
 
-    def xtest_size_results_are_expected(self):  # TODO fails
+    def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
                              MAX_PERCENT_ERROR)
 
@@ -456,9 +456,6 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsUnplannedOutage:
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
-
-    def xtest_lcpc_meets_target(self):  # TODO fails
-        check_lcpc(self.results, self.mp_name)
 
     def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years

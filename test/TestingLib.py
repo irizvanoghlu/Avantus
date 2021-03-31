@@ -63,7 +63,7 @@ def compare_proforma_results(results, frozen_proforma_location: str, error_bound
                 continue
         except ValueError:
             actual_indx = yr_indx
-        print(actual_indx)
+        # print(actual_indx)
         assert actual_indx in test_proforma_df.index, f'{actual_indx} not in test proforma index'
         for col_indx in values_series.index:
             assert col_indx in test_proforma_df.columns, f'{col_indx} not in test proforma columns'

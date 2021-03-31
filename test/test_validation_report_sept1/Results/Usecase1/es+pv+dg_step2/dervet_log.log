@@ -1,0 +1,50 @@
+2020-08-28 14:11:17,513 - INFO - Started logging...
+2020-08-28 14:11:17,578 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/uc1/hourly_timeseries_ref_retail_es+dg+pv.csv
+2020-08-28 14:11:17,582 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-08-28 14:11:17,586 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-08-28 14:11:17,589 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-08-28 14:11:17,591 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-08-28 14:11:17,591 - INFO - Updating data for Sensitivity Analysis...
+2020-08-28 14:11:17,600 - INFO - Data sets are loaded successfully.
+2020-08-28 14:11:17,602 - INFO - Successfully prepared the Scenario
+2020-08-28 14:11:17,602 - INFO - Successfully prepared the Finance
+2020-08-28 14:11:17,602 - INFO - Successfully prepared the Technologies
+2020-08-28 14:11:17,604 - INFO - Successfully prepared the value-stream (services)
+2020-08-28 14:11:17,604 - DEBUG - Successfully prepared the value-streams
+2020-08-28 14:11:17,609 - DEBUG - ScenarioSizing initialized ...
+2020-08-28 14:11:17,609 - INFO - Initializing: Battery-
+2020-08-28 14:11:17,609 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-08-28 14:11:17,609 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-08-28 14:11:17,609 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-08-28 14:11:17,609 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-28 14:11:17,609 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 14:11:17,609 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 14:11:17,610 - INFO - Initializing: PV-
+2020-08-28 14:11:17,610 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-28 14:11:17,610 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 14:11:17,610 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 14:11:17,610 - INFO - Initializing: ICE-
+2020-08-28 14:11:17,610 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 14:11:17,610 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 14:11:17,611 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-28 14:11:17,611 - INFO - Initializing: Load-0
+2020-08-28 14:11:17,611 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-08-28 14:11:17,611 - DEBUG - Initializing storagevet.Technology.Load
+2020-08-28 14:11:17,611 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-08-28 14:11:17,612 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 14:11:17,612 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-28 14:11:17,612 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-28 14:11:17,612 - INFO - Initializing: User
+2020-08-28 14:11:17,612 - INFO - Initializing: Reliability
+2020-08-28 14:11:17,614 - DEBUG - Finished adding value streams
+2020-08-28 14:11:17,618 - DEBUG - []
+2020-08-28 14:11:17,636 - WARNING - Only active Value Stream is post facto only, so not optimizations will run. Energy min profile from User_constraint will be used
+2020-08-28 14:11:17,661 - DEBUG - Performing Post Optimization Analysis...
+2020-08-28 14:11:17,670 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-28 14:11:17,672 - INFO - Critical Load Coverage Curve overhead time: 0.0014684200286865234
+2020-08-28 14:11:25,553 - INFO - Critical Load Coverage Curve calculation time: 7.880200147628784
+2020-08-28 14:11:25,554 - INFO - Finished load coverage calculation.
+2020-08-28 14:11:25,555 - DEBUG - Finished post optimization analysis
+2020-08-28 14:11:25,622 - INFO - Results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase1\es+pv+dg
+2020-08-28 14:11:25,625 - INFO - DER results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase1\es+pv+dg
+2020-08-28 14:11:25,626 - INFO - DERVET runtime: 8.017605304718018

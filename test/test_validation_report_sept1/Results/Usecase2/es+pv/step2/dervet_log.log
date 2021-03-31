@@ -1,0 +1,54 @@
+2020-08-31 14:13:57,769 - INFO - Started logging...
+2020-08-31 14:13:57,823 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/uc2/es+pv/hourly_timeseries_ref_es+pv_step2.csv
+2020-08-31 14:13:57,827 - INFO - Successfully read in: ./storagevet/data/monthly_data.csv
+2020-08-31 14:13:57,831 - INFO - Successfully read in: ./storagevet/testing/datasets/beta_version_ref_case/tariff_refernce_case_1.csv
+2020-08-31 14:13:57,833 - INFO - Successfully read in: ./storagevet/data/yearly_data.csv
+2020-08-31 14:13:57,837 - INFO - Successfully read in: ./storagevet/data/battery_cycle_life.csv
+2020-08-31 14:13:57,837 - INFO - Updating data for Sensitivity Analysis...
+2020-08-31 14:13:57,847 - INFO - Data sets are loaded successfully.
+2020-08-31 14:13:57,848 - INFO - Successfully prepared the Scenario
+2020-08-31 14:13:57,848 - INFO - Successfully prepared the Finance
+2020-08-31 14:13:57,848 - INFO - Successfully prepared the Technologies
+2020-08-31 14:13:57,923 - INFO - Successfully prepared the value-stream (services)
+2020-08-31 14:13:57,923 - DEBUG - Successfully prepared the value-streams
+2020-08-31 14:13:57,925 - DEBUG - ScenarioSizing initialized ...
+2020-08-31 14:13:57,925 - INFO - Initializing: Battery-
+2020-08-31 14:13:57,925 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2020-08-31 14:13:57,925 - DEBUG - Initializing MicrogridDER.ESSSizing
+2020-08-31 14:13:57,925 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2020-08-31 14:13:57,925 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-31 14:13:57,926 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-31 14:13:57,926 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-31 14:13:57,926 - INFO - Initializing: PV-
+2020-08-31 14:13:57,926 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2020-08-31 14:13:57,926 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-31 14:13:57,926 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-31 14:13:57,927 - INFO - Initializing: Load-0
+2020-08-31 14:13:57,927 - DEBUG - Initializing MicrogridDER.LoadControllable
+2020-08-31 14:13:57,927 - DEBUG - Initializing storagevet.Technology.Load
+2020-08-31 14:13:57,927 - DEBUG - Initializing Technology.DistributedEnergyResource
+2020-08-31 14:13:57,927 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-31 14:13:57,927 - DEBUG - Initializing MicrogridDER.DERExtension
+2020-08-31 14:13:57,927 - DEBUG - Initializing MicrogridDER.Sizing
+2020-08-31 14:13:57,927 - INFO - Initializing: User
+2020-08-31 14:13:57,928 - INFO - Initializing: DCM
+2020-08-31 14:13:57,928 - INFO - Initializing: retailTimeShift
+2020-08-31 14:13:57,929 - INFO - Initializing: Reliability
+2020-08-31 14:13:57,931 - DEBUG - Finished adding value streams
+2020-08-31 14:13:57,934 - DEBUG - []
+2020-08-31 14:13:57,982 - INFO - Starting optimization loop
+2020-08-31 14:13:57,985 - INFO - 14:13:57 Running Optimization Problem starting at 2017-01-01 00:00:00 hb
+2020-08-31 14:13:58,125 - DEBUG - time took to make demand charge term: 0.12383651733398438
+2020-08-31 14:13:58,272 - INFO - Finished setting up the problem. Solving now.
+2020-08-31 14:13:59,896 - DEBUG - ecos solver
+2020-08-31 14:13:59,896 - INFO - Time it takes for solver to finish: 1.6237430572509766
+2020-08-31 14:13:59,896 - INFO - Optimization problem was optimal
+2020-08-31 14:13:59,913 - DEBUG - Performing Post Optimization Analysis...
+2020-08-31 14:14:00,110 - INFO - Starting load coverage calculation. This may take a while.
+2020-08-31 14:14:00,111 - INFO - Critical Load Coverage Curve overhead time: 0.0010018348693847656
+2020-08-31 14:14:02,844 - INFO - Critical Load Coverage Curve calculation time: 2.733079671859741
+2020-08-31 14:14:02,846 - INFO - Finished load coverage calculation.
+2020-08-31 14:14:02,846 - DEBUG - Finished post optimization analysis
+2020-08-31 14:14:04,052 - INFO - Results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase2\es+pv\step2
+2020-08-31 14:14:04,063 - INFO - DER results have been saved to: storagevet\testing\results\beta_version_ref_case\usecase2\es+pv\step2
+2020-08-31 14:14:04,064 - INFO - DERVET runtime: 6.139585256576538

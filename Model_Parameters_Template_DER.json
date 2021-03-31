@@ -16,19 +16,10 @@
                             "active": "n",
                             "value": "1"
                         },
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "float"
-                    },
-                    "acr": {
-                        "opt_value": "10",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "nan",
                             "value": "nan"
                         },
                         "type": "float"
@@ -73,7 +64,7 @@
                         "type": "float"
                     },
                     "ch_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "250",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -91,7 +82,7 @@
                         "type": "float"
                     },
                     "construction_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2016",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -100,13 +91,26 @@
                         "type": "Period"
                     },
                     "cycle_life_filename": {
-                        "opt_value": ".\\dervet\\storagevet\\Data\\Battery_Cycle_Life.csv",
+                        "opt_value": ".\\data\\battery_cycle_life.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
                             "value": "nan"
                         },
                         "type": "string"
+                    },
+                    "cycle_life_table_eol_condition": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": "80",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
                     },
                     "daily_cycle_limit": {
                         "opt_value": "0",
@@ -127,7 +131,7 @@
                         "type": "float"
                     },
                     "dis_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "250",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -163,7 +167,7 @@
                         "type": "float"
                     },
                     "ene_max_rated": {
-                        "opt_value": "0",
+                        "opt_value": "1000",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -172,7 +176,7 @@
                         "type": "float"
                     },
                     "expected_lifetime": {
-                        "opt_value": "99",
+                        "opt_value": "15",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -274,7 +278,7 @@
                         "type": "string"
                     },
                     "nsr_response_time": {
-                        "opt_value": "10",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -283,7 +287,7 @@
                         "type": "int"
                     },
                     "operation_year": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -357,6 +361,15 @@
                         },
                         "type": "bool"
                     },
+                    "replacement_construction_time": {
+                        "opt_value": "1",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "int"
+                    },
                     "rte": {
                         "opt_value": "85",
                         "sensitivity": {
@@ -394,7 +407,7 @@
                         "type": "float"
                     },
                     "sr_response_time": {
-                        "opt_value": "10",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1307,7 +1320,7 @@
         },
         "DA": {
             "1": {
-                "active": "no",
+                "active": "yes",
                 "keys": {
                     "growth": {
                         "opt_value": "0",
@@ -1891,7 +1904,7 @@
                 "active": "no",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1900,7 +1913,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1954,7 +1967,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -1983,13 +1996,22 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\tariff.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\tariff.csv",
+                        "opt_value": ".\\data\\tariff.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
                             "value": "nan"
                         },
                         "type": "string"
+                    },
+                    "ecc_mode": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
                     },
                     "external_incentives": {
                         "evaluation": {
@@ -2005,7 +2027,7 @@
                         "type": "bool"
                     },
                     "federal_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "23",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2040,7 +2062,7 @@
                         "type": "float"
                     },
                     "property_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2049,7 +2071,7 @@
                         "type": "float"
                     },
                     "state_tax_rate": {
-                        "opt_value": "3",
+                        "opt_value": "10",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2062,7 +2084,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\yearly_data.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\yearly_data.csv",
+                        "opt_value": ".\\data\\yearly_data.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2364,7 +2386,7 @@
                 "active": "no",
                 "keys": {
                     "CombinedMarket": {
-                        "opt_value": "0",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2373,7 +2395,7 @@
                         "type": "bool"
                     },
                     "d_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2409,7 +2431,7 @@
                         "type": "float"
                     },
                     "u_ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2803,8 +2825,30 @@
         },
         "Reliability": {
             "1": {
-                "active": "yes",
+                "active": "no",
                 "keys": {
+                    "load_shed_perc_filename": {
+                        "evaluation": {
+                            "active": "nan",
+                            "value": "nan"
+                        },
+                        "opt_value": ".\\data\\load_shed_percentage.csv",
+                        "sensitivity": {
+                            "active": "nan",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "string"
+                    },
+                    "load_shed_percentage": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
                     "max_outage_duration": {
                         "opt_value": "80",
                         "sensitivity": {
@@ -2901,7 +2945,7 @@
                         "type": "float"
                     },
                     "growth": {
-                        "opt_value": "3",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2944,7 +2988,7 @@
                         "type": "bool"
                     },
                     "def_growth": {
-                        "opt_value": "6",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2953,7 +2997,7 @@
                         "type": "float"
                     },
                     "dt": {
-                        "opt_value": "0.25",
+                        "opt_value": "1",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2966,7 +3010,7 @@
                             "active": "n",
                             "value": "2030"
                         },
-                        "opt_value": "2021",
+                        "opt_value": "2030",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -2975,7 +3019,7 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3078,7 +3122,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\Monthly_Data.csv",
+                        "opt_value": ".\\data\\monthly_Data.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3096,7 +3140,7 @@
                         "type": "string/int"
                     },
                     "opt_years": {
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3131,7 +3175,7 @@
                             "active": "n",
                             "value": "2017"
                         },
-                        "opt_value": "2020",
+                        "opt_value": "2017",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3144,7 +3188,7 @@
                             "active": "n",
                             "value": ".\\dervet\\storagevet\\Data\\hourly_timeseries.csv"
                         },
-                        "opt_value": ".\\dervet\\storagevet\\Data\\min15_timeseries_PoSD.xlsx",
+                        "opt_value": ".\\data\\hourly_timeseries.csv",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

@@ -22,13 +22,16 @@ notes on how to deploy the project on a live system.
 
 #### 2. (Windows Only) Install [Anaconda](https://www.anaconda.com/download/) for python 3.**
 Please note that it is recommended for Windows users to install and use Anaconda
-#### 3. Open Anaconda Prompt (Windows) or you corresponding shell/terminal/console/prompt and navigate to your "dervet" folder
+#### 3. Open Anaconda Prompt (Windows) or a corresponding shell/terminal/console/prompt
+ 
+#### 4. Navigate to your "dervet" folder
+This is the location of the repository on your computer.
 
-#### 4. Create Python 3.6 environment
+#### 5. Create Python 3.6 environment
 We give the user 2 paths to create a python environment. Each path results in a siloed python environment, but with different properties.
 Choose path A or B and stick to it--commands are not interchangeable. 
 You will need to activate the environment to run the model, always. This is the next step. 
-Please remember which environment is created in order to activate it again later.
+**Please remember which environment is created in order to activate it again later.**
 
 ##### Path A
 On Linux/Mac/Windows  
@@ -44,7 +47,7 @@ Note that the python version is specified, meaning conda does not have to be ass
 conda create -n dervet-venv python=3.6
 ```
 
-#### 3. Activate Python 3.6 environment
+#### 6. Activate Python 3.6 environment
 ##### Path A
 On Linux/Mac   
 Note that pip should be associated to a python 3.6 installation  
@@ -63,7 +66,7 @@ Note that the python version is specified, meaning conda does not have to be ass
 conda activate dervet-venv
 ```
 
-#### 3. Install project dependencies
+#### 7. Install project dependencies
  
 ```
 pip install -r requirements.txt
@@ -172,10 +175,37 @@ Third-Party Software
 EPRI does not own any portion of the software that is attributed
 below.
 
-<CVXPY/1.1.11> - <Steven Diamond>, <diamond@cs.stanford.edu>
+<CVXPY/1.1.11> - &lt;Steven Diamond&gt;, <diamond@cs.stanford.edu>
 Copyright © 2017 Steven Diamond
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+CVXPY is provided by the copyright holders and contributors "as is" and
+any express or implied warranties, including, but not limited to, the
+implied warranties of merchantability and fitness for a particular
+purpose are disclaimed.
+
+This software relies on CVXPY to interface with work(s) covered by the
+following copyright and permission notice(s): 
+
+GLPK 5.0 - Andrew Makhorin, mao@gnu.org
+Copyright © 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+2010, 2011, 2012 Andrew Makhorin, Department for Applied Informatics,
+Moscow Aviation Institute, Moscow, Russia. All rights reserved.
+
+Licensed under GNU Public License v3.0; you may not use GLPK except in
+compliance with the License. You may obtain a copy of the License at
+https://www.gnu.org/licenses/gpl-3.0.en.html.
+
+GLPK is a free program and is provided by the copyright holders and
+contributors "as is" and any express or implied warranties, including,
+but not limited to, the implied warranties of merchantability and fitness
+for a particular purpose are disclaimed.

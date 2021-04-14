@@ -147,10 +147,6 @@ see the [tags on this repository](https://gitlab.epri.com/storagetvet/dervet/tag
 * **Arindam Maitra**
 * **Giovanni Damato**
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## License
 

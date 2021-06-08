@@ -45,13 +45,13 @@ Follow these steps to run DER-VET through your command line on your local comput
     or a corresponding shell/terminal/console/prompt, in **administrator mode**  
    >You will need administrator access on your computer.
    
-   *Refer to step [7](#Create-Python-3.6-environment) for more guidance on which prompt to open.*
+   *Refer to step [7](#Create-Python-environment) for more guidance on which prompt to open.*
 
 6. #### Navigate to your "dervet" folder.  
    This is the location of the repository or downloaded folder on your local computer.
 
-7. #### Create Python 3.6 environment  
-    We give the user 2 paths to create a python environment. 
+7. #### Create Python environment  
+    We give the user 2 paths to create a python environment for python 3.6.10. 
    >Most Windows users have success with the Conda path. 
    
     Each path results in a siloed python environment, but with different properties.

@@ -27,23 +27,25 @@ Follow these steps to run DER-VET through your command line on your local comput
 3. #### Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**  
    >It is recommended for Windows users to install and use Anaconda.
 
-4. #### Install system requirements  
-    >**On Windows**  
-Install the Build Tools for [Visual Studio](https://visualstudio.microsoft.com/downloads/). When prompted by the installer, select C++ build tools and the appropriate Windows SDK specified below and install.
-    >
-    >     | Windows OS   | SDK        |
-    >     |--------------|------------|
-    >     | Windows 7    | Windows 8.1|
-    >     | Windows 8.1  | Windows 8.1|
-    >     | Windows 10   | Windows 10 |  
+4. #### Install system requirements
+    **On Windows**  
+    Install the Build Tools for [Visual Studio](https://visualstudio.microsoft.com/downloads/). When prompted by the 
+    installer, select C++ build tools and the appropriate Windows SDK specified in the table below and install.
+    
+    | Windows OS   | SDK        |
+    |--------------|------------|
+    | Windows 7    | Windows 8.1|
+    | Windows 8.1  | Windows 8.1|
+    | Windows 10   | Windows 10 |  
 
-   >**On Mac**  
-Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
+   **On Mac**  
+    Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
 
-5. #### Open Anaconda Prompt (Windows), or a corresponding shell/terminal/console/prompt, in **administrator mode**  
+5. #### Open Anaconda Prompt
+    or a corresponding shell/terminal/console/prompt, in **administrator mode**  
    >You will need administrator access on your computer.
    
-   *Refer to step 7 for more guidance on which prompt to open.*
+   *Refer to step [7](Create-Python-3.6-environment) for more guidance on which prompt to open.*
 
 6. #### Navigate to your "dervet" folder  
    *This is the location of the repository or downloaded folder on your local computer.*
@@ -54,7 +56,8 @@ Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.
    
     Each path results in a siloed python environment, but with different properties.
     Choose the conda OR pip path and stick to it. Commands are not interchangeable. 
-    >Please remember which environment is created in order to activate it again later.** You will need to activate the environment to run the model, always.** 
+    >Please remember the path which created the python environment in order to activate it again later. 
+   > **You will need to activate the python environment to run the model, always.** 
 
     #### Conda Path - Recommended Path for Windows OS
     This path requires you to open Anaconda Prompt in step 5. 
@@ -68,7 +71,7 @@ Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.
     ##### Pip Path
     If you have Python 3.6.10 installed directly on your computer, then we recommend trying this path.
     
-    This path lets you to open the prompt of your choice in step 5. 
+    >This path lets you to open the prompt of your choice in step 5. 
     
     Enter the following commands:
     ```

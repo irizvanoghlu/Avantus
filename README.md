@@ -18,142 +18,153 @@ notes on how to deploy the project on a live system.
 
 ### New Installation
 
-#### 1. Clone/download this repository onto your local computer.
+Follow these steps to run DER-VET through your command line on your local computer.
 
-#### 2. Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the root of the dervet folder (created in the previous step).
+1. #### Clone/download this repository onto your local computer.  
 
-#### 3. Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**
-Please note that it is recommended for Windows users to install and use Anaconda
+2. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the root of the dervet folder (created in the previous step).
 
-#### 4. Install system requirements
-On Windows  
+3. #### Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**  
+   >It is recommended for Windows users to install and use Anaconda.
+
+4. #### Install system requirements  
+    >**On Windows**  
 Install the Build Tools for [Visual Studio](https://visualstudio.microsoft.com/downloads/). When prompted by the installer, select C++ build tools and the appropriate Windows SDK specified below and install.
+    >
+    >     | Windows OS   | SDK        |
+    >     |--------------|------------|
+    >     | Windows 7    | Windows 8.1|
+    >     | Windows 8.1  | Windows 8.1|
+    >     | Windows 10   | Windows 10 |  
 
-     | Windows OS   | SDK        |
-     |--------------|------------|
-     | Windows 7    | Windows 8.1|
-     | Windows 8.1  | Windows 8.1|
-     | Windows 10   | Windows 10 |
-
-On Mac  
+   >**On Mac**  
 Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
 
-#### 5. Open Anaconda Prompt (Windows), or a corresponding shell/terminal/console/prompt, in **administrator mode**
-**You will need administrator access on your computer.** Refer to step 7 for more guidance on which prompt to open.
+5. #### Open Anaconda Prompt (Windows), or a corresponding shell/terminal/console/prompt, in **administrator mode**  
+   >You will need administrator access on your computer.
+   
+   *Refer to step 7 for more guidance on which prompt to open.*
 
-#### 6. Navigate to your "dervet" folder
-This is the location of the repository on your computer.
+6. #### Navigate to your "dervet" folder  
+   *This is the location of the repository or downloaded folder on your local computer.*
 
-#### 7. Create Python 3.6 environment
-We give the user 2 paths to create a python environment. *Most Windows users have success with the Conda path.* Each path results in a siloed python environment, but with different properties.
-Choose the conda OR pip path and stick to it. Commands are not interchangeable. 
+7. #### Create Python 3.6 environment  
+    We give the user 2 paths to create a python environment. 
+   >Most Windows users have success with the Conda path. 
+   
+    Each path results in a siloed python environment, but with different properties.
+    Choose the conda OR pip path and stick to it. Commands are not interchangeable. 
+    >Please remember which environment is created in order to activate it again later.** You will need to activate the environment to run the model, always.** 
 
-**Please remember which environment is created in order to activate it again later.** You will need to activate the environment to run the model, always. This is the next step. 
+    #### Conda Path - Recommended Path for Windows OS
+    This path requires you to open Anaconda Prompt in step 5. 
 
-#### Conda Path - Recommended Path for Windows OS
-This path requires you to open Anaconda Prompt in step 5. 
+    Enter the following command:
+    ```
+    conda create -n dervet-venv python=3.6.10
+    ```
+    >The python version is specified, meaning conda does not have to be associated with a python 3.6.10.
 
-Enter the following command:
-```
-conda create -n dervet-venv python=3.6.10
-```
-Note that the python version is specified, meaning conda does not have to be associated with a python 3.6.10.
+    ##### Pip Path
+    If you have Python 3.6.10 installed directly on your computer, then we recommend trying this path.
+    
+    This path lets you to open the prompt of your choice in step 5. 
+    
+    Enter the following commands:
+    ```
+    pip install virtualenv
+    virtualenv dervet-venv
+    ```
+    >The `pip` should be associated to the **python 3.6.10 installation**
 
-##### Pip Path
-If you have Python 3.6.10 installed directly on your computer, then we recommend trying this path.
+8. #### Activate Python 3.6 environment
+    ##### Conda Path
+    Enter the following command into anaconda prompt:
+    ```
+    conda activate dervet-venv
+    ```
+    
+    ##### Pip Path
+    Enter the corresponding command into the open prompt:  
+    **On Linux/Mac**   
+    ```
+    source dervet-venv/bin/activate
+    ```
+    **On Windows**  
+    ```
+    "./dervet-venv/Scripts/activate"
+    ```
 
-This path lets you to open the prompt of your choice in step 5. 
+9. #### Install project dependencies
+    ##### Conda Path
+    Open "./requirements.txt" with a text editor. This file can be found in the root directory. Delete the line with "scipy" in it. Save the file.
+    Then enter the following commands in anaconda prompt:
+    ```
+    conda install -c conda-forge --file requirements.txt
+    pip install -r requirements-dev.txt
+    pip install -e ./storagevet
+    ```
+    
+    ##### Pip Path
+    Enter the following commands into the open prompt:
+    ```
+    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
+    pip install -e ./storagevet
+    ```
 
-Enter the following commands:
-```
-pip install virtualenv
-virtualenv dervet-venv
-```
-Note that pip should be associated to the **python 3.6.10 installation**
+### Update Old Installation - For Windows
 
-#### 8. Activate Python 3.6 environment
-#### Conda Path
-Enter the following command into anaconda prompt:
-```
-conda activate dervet-venv
-```
+Are you a Beta Tester? Have an old graphical interface installed on your computer? Follow these instructions to replace
+the `beta` version. We assume you installed the code previously with the "Happy Path" -- which assumes you installed 
+DER-VET on you local `C:\` drive.
 
-##### Pip Path
-Enter the corresponding command into the open prompt:
-On Linux/Mac   
-```
-source dervet-venv/bin/activate
-```
-On Windows  
-```
-"./dervet-venv/Scripts/activate"
-```
+1. #### Delete all folders in `C:\DERVET` expect `C:\DERVET\DervetBackEnd`
 
-#### 9. Install project dependencies
-#### Conda Path
-Open "./requirements.txt" with a text editor. This file can be found in the root directory. Delete the line with "scipy" in it. Save the file.
-Then enter the following commands in anaconda prompt:
-```
-conda install -c conda-forge --file requirements.txt
-pip install -r requirements-dev.txt
-pip install -e ./storagevet
-```
+2. #### Clone/download this repository onto your local computer.  
+    Place this new `dervet` folder in `C:\DERVET\DervetBackEnd`, thus placing the existing one.
 
-##### Pip Path
-Enter the following commands into the open prompt:
-```
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-pip install -e ./storagevet
-```
+3. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer into the root of the dervet folder.
+    The root of the dervet folder in `C:\DERVET\DervetBackEnd\dervet`, which was updated in the previous step.
 
-### Update Old Installation (Replace Beta Release Happy Path) For Windows
+4. #### Open Anaconda Prompt
 
-#### 1. Delete all folders in "C:\DERVET" expect "C:\DERVET\DervetBackEnd"
+5. #### Activate Python 3.6 environment
+    ```
+    conda activate "C:\DERVET\DervetBackEnd\"
+    cd C:\DERVET\DervetBackEnd\dervet
+    ```
 
-#### 2. Clone/download this repository onto your local computer. Place this new "dervet" folder in "C:\DERVET\DervetBackEnd", thus placing the existing one.
-
-#### 3. Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the root of the dervet folder (created in the previous step).
-
-#### 4. Open Anaconda Prompt
-
-#### 5. Activate Python 3.6 environment
-
-```
-conda activate "C:\DERVET\DervetBackEnd\"
-cd C:\DERVET\DervetBackEnd\dervet
-```
-
-#### 6. Update project dependencies
-```
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-pip install -e ./storagevet
-```
-
-Should this step error, then please close your anaconda prompt and delete everything in "C:\DERVET\DervetBackEnd"
-_except_ the downloaded "dervet" folder. Then follow steps 5 - 9 of **New Installation**.
+6. #### Update project dependencies
+    ```
+    conda install -c conda-forge --file requirements.txt
+    pip install -r requirements-dev.txt
+    pip install -e ./storagevet
+    ```
 
 ### Running Your First Case
+Follow these steps to run DER-VET from the command prompt
+1. ####  Open a command prompt and activate Python environment. 
+    Skip this step if your python environment is already active.  
+    >Refer to *New Installation* steps 5 and 8.
 
-#### 1. Activate Python environment. 
-Skip this step if your python environment is already active. **Refer to installation step 8.**
+2. ####  Navigate to the root "dervet" folder.
 
-#### 2. Enter the following into your terminal from inside the root "dervet" folder:
+2. ####  Enter the following into your command prompt:
 
-```
-python run_DERVET.py Model_Parameters_Template_DER.csv
-```
+    ```
+    python run_DERVET.py Model_Parameters_Template_DER.csv
+    ```
 
-## Running the tests
+### Running the tests
 
-#### 1. Activate Python environment. 
-Skip this step if your python environment is already active. Refer to installation or update installation steps for activation instructions.
+1. #### Activate Python environment. 
+    > Skip this step if your python environment is already active. Refer to installation or update installation steps for activation instructions.
 
-#### 2. Enter the following into your terminal from inside the root "dervet" folder:
-```
-python -m pytest test
-```
+2. #### Enter the following into your terminal from inside the root "dervet" folder:
+    ```
+    python -m pytest test
+    ```
 
 ## Deployment
 
@@ -166,7 +177,7 @@ pip install -e ./dervet
 ## Versioning
 
 We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available, 
-see the [tags on this repository](https://gitlab.epri.com/storagetvet/dervet/tags). 
+see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository. 
 
 ## Authors
 

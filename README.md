@@ -17,17 +17,33 @@ These instructions will get you a copy of the project up and running on your loc
 notes on how to deploy the project on a live system.
 
 ### New Installation
- 
-#### 1. Clone/download this repository, and its sub-repository, onto your local computer.
 
-#### 2. (Windows Only) Install [Anaconda](https://www.anaconda.com/download/) for python 3.**
+#### 1. Clone/download this repository onto your local computer.
+
+#### 2. Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the root of the dervet folder (created in the previous step).
+
+#### 3. Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**
 Please note that it is recommended for Windows users to install and use Anaconda
-#### 3. Open Anaconda Prompt (Windows) or a corresponding shell/terminal/console/prompt
- 
-#### 4. Navigate to your "dervet" folder
+
+#### 4. Install system requirements
+On Windows
+Install the Build Tools for [Visual Studio](https://visualstudio.microsoft.com/downloads/). When prompted by the installer, select C++ build tools and the appropriate Windows SDK specified below and install.
+
+     | Windows OS   | SDK        |
+     |--------------|------------|
+     | Windows 7    | Windows 8.1|
+     | Windows 8.1  | Windows 8.1|
+     | Windows 10   | Windows 10 |
+
+On Mac
+Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
+
+#### 5. Open Anaconda Prompt (Windows) or a corresponding shell/terminal/console/prompt in **administrator mode**
+
+#### 6. Navigate to your "dervet" folder
 This is the location of the repository on your computer.
 
-#### 5. Create Python 3.6 environment
+#### 7. Create Python 3.6 environment
 We give the user 2 paths to create a python environment. Each path results in a siloed python environment, but with different properties.
 Choose path A or B and stick to it--commands are not interchangeable. 
 You will need to activate the environment to run the model, always. This is the next step. 
@@ -47,7 +63,7 @@ Note that the python version is specified, meaning conda does not have to be ass
 conda create -n dervet-venv python=3.6
 ```
 
-#### 6. Activate Python 3.6 environment
+#### 8. Activate Python 3.6 environment
 ##### Path A
 On Linux/Mac   
 Note that pip should be associated to a python 3.6 installation  
@@ -66,8 +82,7 @@ Note that the python version is specified, meaning conda does not have to be ass
 conda activate dervet-venv
 ```
 
-#### 7. Install project dependencies
- 
+#### 9. Install project dependencies
 ```
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
@@ -90,7 +105,6 @@ cd C:\DERVET\DervetBackEnd\dervet
 ```
 
 #### 5. Install project dependencies
- 
 ```
 pip install -r requirements.txt
 pip install -r requirements-dev.txt

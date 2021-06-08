@@ -45,7 +45,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     or a corresponding shell/terminal/console/prompt, in **administrator mode**  
    >You will need administrator access on your computer.
    
-   *Refer to step [7](#Create-Python-environment) for more guidance on which prompt to open.*
+   *Refer to step 7 for more guidance on which prompt to open.*
 
 6. #### Navigate to your "dervet" folder.  
    This is the location of the repository or downloaded folder on your local computer.
@@ -59,7 +59,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     >Please remember the path which created the python environment in order to activate it again later. 
    > **You will need to activate the python environment to run the model, always.** 
 
-    #### Conda Path - Recommended Path for Windows OS
+    **Conda Path - Recommended Path for Windows OS**  
     This path requires you to open Anaconda Prompt in step 5. 
 
     Enter the following command:
@@ -68,7 +68,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     ```
     >The python version is specified, meaning conda does not have to be associated with a python 3.6.10.
 
-    ##### Pip Path
+    **Pip Path**  
     If you have Python 3.6.10 installed directly on your computer, then we recommend trying this path.
     
     >This path lets you to open the prompt of your choice in step 5. 
@@ -81,25 +81,25 @@ Follow these steps to run DER-VET through your command line on your local comput
     >The `pip` should be associated to the **python 3.6.10 installation**
 
 8. #### Activate Python 3.6 environment
-    ##### Conda Path
+    **Conda Path**  
     Enter the following command into anaconda prompt:
     ```
     conda activate dervet-venv
     ```
     
-    ##### Pip Path
+    **Pip Path**  
     Enter the corresponding command into the open prompt:  
-    **On Linux/Mac**   
+    *On Linux/Mac*   
     ```
     source dervet-venv/bin/activate
     ```
-    **On Windows**  
+    *On Windows*  
     ```
     "./dervet-venv/Scripts/activate"
     ```
 
 9. #### Install project dependencies
-    ##### Conda Path
+    **Conda Path**  
     Open "./requirements.txt" with a text editor. This file can be found in the root directory. Delete the line with "scipy" in it. Save the file.
     Then enter the following commands in anaconda prompt:
     ```
@@ -108,7 +108,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     pip install -e ./storagevet
     ```
     
-    ##### Pip Path
+    **Pip Path**  
     Enter the following commands into the open prompt:
     ```
     pip install -r requirements.txt

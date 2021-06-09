@@ -511,14 +511,18 @@ class ParamsDER(Params):
         self.Finance.update({'location': self.Scenario['location'],
                              'ownership': self.Scenario['ownership']})
 
-    def load_technology(self, names_list=[]):
+    def load_technology(self, names_list=None):
         """ Interprets user given data and prepares it for each technology.
 
         """
-
         time_series = self.Scenario['time_series']
         dt = self.Scenario['dt']
         binary = self.Scenario['binary']
+
+        if names_list is None:
+            # then no name_lst was inherited so initialize as list type
+            names_list = []
+
         for id_str, pv_inputs in self.PV.items():
             if not pv_inputs['rated_capacity']:
                 if pv_inputs['min_rated_capacity'] > pv_inputs['max_rated_capacity']:

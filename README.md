@@ -156,7 +156,7 @@ DER-VET on you local `C:\` drive.
 Follow these steps to run DER-VET from the command prompt
 1. ####  Open a command prompt and activate Python environment. 
     Skip this step if your python environment is already active.  
-    >Refer to *New Installation* steps 5 and 8.
+    >Refer to *New Installation* steps 5 and 8 OR to *Update Old Installation* step 5.
 
 2. ####  Navigate to the root "dervet" folder.
 

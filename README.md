@@ -20,9 +20,15 @@ notes on how to deploy the project on a live system.
 
 Follow these steps to run DER-VET through your command line on your local computer.
 
-1. #### Clone/download this repository onto your local computer.  
+1. #### Clone/download this repository onto your local computer.
+    When cloning a repo with 'git clone', if you do not specify a new directory as the last argument, it will be named 
+   `DER-VET`. Alternatively, you can specify this and name it as you please. Regardless of what the downloaded folder is
+   named or located, this new directory becomes the 'root directory' of dervet.
+   
+    >The *root directory* refers to the folder with folders/files such as 
+   > `dervet`, `data`, `test`, `README.md` (this file), `Model_Parameters_Template_DER.csv`, and `run_DERVET.py`.
 
-2. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the root of the dervet folder (created in the previous step).
+2. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the *root directory* as `storagevet`.
 
 3. #### Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**  
    >It is recommended for Windows users to install and use Anaconda.
@@ -47,8 +53,9 @@ Follow these steps to run DER-VET through your command line on your local comput
    
    *Refer to step 7 for more guidance on which prompt to open.*
 
-6. #### Navigate to your "dervet" folder.  
-   This is the location of the repository or downloaded folder on your local computer.
+6. #### Navigate to your `dervet` folder.  
+   This is the location of the repository or downloaded folder on your local computer. We refer to this location as the
+    "root directory"
 
 7. #### Create Python environment  
     We give the user 2 paths to create a python environment for python 3.6.10. 
@@ -122,13 +129,13 @@ Are you a Beta Tester? Have an old graphical interface installed on your compute
 the `beta` version. We assume you installed the code previously with the "Happy Path" -- which assumes you installed 
 DER-VET on you local `C:\` drive.
 
-1. #### Delete all folders in `C:\DERVET` expect `C:\DERVET\DervetBackEnd`
+1. #### Delete all folders in `C:\DERVET` except `C:\DERVET\DervetBackEnd`
 
-2. #### Clone/download this repository onto your local computer.  
-    Place this new `dervet` folder in `C:\DERVET\DervetBackEnd`, thus placing the existing one.
+2. #### Clone/download this repository onto your local computer as `dervet`.  
+    Place this new `dervet` folder in `C:\DERVET\DervetBackEnd`, thus replacing the existing one.
 
-3. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer into the root of the dervet folder.
-    The root of the dervet folder in `C:\DERVET\DervetBackEnd\dervet`, which was updated in the previous step.
+3. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer into the root folder as `storagevet`.
+    The root directory is `C:\DERVET\DervetBackEnd\dervet`, which was updated in the previous step.
 
 4. #### Open Anaconda Prompt
 

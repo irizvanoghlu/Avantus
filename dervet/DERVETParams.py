@@ -146,13 +146,13 @@ class ParamsDER(Params):
         """ Based on what the user has indicated as active (and what the user has not), predict whether or not
         the simulation(s) will have trouble solving.
 
-        Returns (bool): True if there is no errors found. False if there is errors found in the errors log.
+        Returns (bool): True if there are errors found. False if there are no errors found in the errors log.
 
         """
         slf = cls.template
-        # TODO: add EVs and other technologies here? -AE
-        other_ders = any([len(slf.CHP), len(slf.CT), len(slf.DieselGenset)])
-        super().bad_active_combo(dervet=True, other_ders=other_ders)
+        other_ders = any([len(slf.CHP), len(slf.CT), len(slf.DieselGenset),
+            len(slf.ElectricVehicle1), len(slf.ElectricVehicle2)])
+        return super().bad_active_combo(dervet=True, other_ders=other_ders)
 
     @classmethod
     def cba_template_struct(cls):

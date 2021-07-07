@@ -129,3 +129,7 @@ class TestSizingWoLoadShedding:
 
 def test_post_facto_calculations_with_user_constraints():
     assert_ran(MP / f"Model_Parameters_Template_issue162{CSV}")
+
+
+def test_post_facto_dg_only():
+    assert_ran(MP / f"Reliability_DG{CSV}")

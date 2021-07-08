@@ -136,3 +136,7 @@ def test_post_facto_calculations_with_user_constraints():
 def test_battery_sizing4reliability_soc_init_small():
     with pytest.raises(ParameterError):
         assert_ran(MP / f"EV_Battery_Sizing_MP{CSV}")
+
+
+def test_post_facto_dg_only():
+    assert_ran(MP / f"Reliability_DG{CSV}")

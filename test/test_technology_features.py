@@ -60,13 +60,16 @@ def test_battery_timeseries_constraints():
 
 
 class TestEVGuiUseCase:
-    """ Tests to ensure the EV Use Case in the GUI funtions properly in DER-VET"""
+    """ Tests to ensure the EV Use Case (Fleet EV) in the GUI funtions properly in DER-VET"""
 
 
     def setup_class(self):
         self.results = run_case(DIR / f"ev_gui_case_study{JSON}")
         self.results_instance = self.results.instances[0]
-        timeseries = self.results_instance.time_series_data
+        self.ts = self.results_instance.time_series_data
+        self.ch = self.ts['ELECTRICVEHICLE2: partially controllable ev fleet Charge (kW)']
+        self.base_load = self.ts['ELECTRICVEHICLE2: partially controllable ev fleet EV Fleet Baseline Load']
+        self.max_load_ctrl = 0.5
 
 
     def test_services_are_active(self):
@@ -79,3 +82,11 @@ class TestEVGuiUseCase:
 
     def test_rts_billing_periods_count(self):
         assert self.results_instance.service_agg.value_streams['retailTimeShift'].tariff.shape[0] == 10
+
+
+    def test_fleetEV_ch_constraint(self):
+        assert np.all(self.ch <= (self.base_load + 1e-14))
+
+
+    def test_fleetEV_max_load_ctrl_constraint(self):
+        assert np.all(self.ch >= (self.max_load_ctrl * self.base_load) - 1e-14)

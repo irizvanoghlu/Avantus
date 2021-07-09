@@ -1,4 +1,4 @@
-# DER-VET™
+# DER-VET™ 
 
 [DER-VET™](https://der-vet.com) provides a free, publicly accessible, open-source platform for calculating, understanding, and optimizing the value 
 of distributed 
@@ -214,7 +214,7 @@ Please make sure to update tests as appropriate.
 
 This project is licensed under the BSD (3-clause) License - see [LICENSE.txt](./LICENSE.txt).
 
-DER-VET v1.0.0
+DER-VET v1.1.0
 
 Copyright © 2021 Electric Power Research Institute, Inc. All Rights Reserved.
 

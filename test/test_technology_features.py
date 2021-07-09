@@ -59,12 +59,9 @@ def test_battery_timeseries_constraints():
     assert np.all(timeseries['BATTERY: battery Charge (kW)'] <= charge_constraint)
 
 
-def test_ev_gui_use_case_runs():
-    results = assert_ran(DIR / f"ev_gui_case_study{JSON}")
+class TestEVGuiUseCase:
+    """ Tests to ensure the EV Use Case in the GUI funtions properly in DER-VET"""
 
-
-class TestEV:
-    """ EV model"""
 
     def setup_class(self):
         self.results = run_case(DIR / f"ev_gui_case_study{JSON}")
@@ -76,9 +73,9 @@ class TestEV:
         assert_usecase_considered_services(self.results, ['DCM', 'retailTimeShift'])
 
 
-    def test_dcm_billing_periods_count():
+    def test_dcm_billing_periods_count(self):
         assert self.results_instance.service_agg.value_streams['DCM'].tariff.shape[0] == 4
 
 
-    def test_rts_billing_periods_count():
+    def test_rts_billing_periods_count(self):
         assert self.results_instance.service_agg.value_streams['retailTimeShift'].tariff.shape[0] == 10

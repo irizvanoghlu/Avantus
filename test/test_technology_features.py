@@ -58,3 +58,8 @@ def test_battery_timeseries_constraints():
     assert np.all(timeseries['BATTERY: battery Discharge (kW)'] <= discharge_constraint)
     assert np.all(timeseries['BATTERY: battery Charge (kW)'] <= charge_constraint)
 
+
+def test_ev_gui_use_case_runs():
+    results = assert_ran(DIR / f"ev_gui_case_study{JSON}")
+    #case_results = results.instances[0]
+    #timeseries = case_results.time_series_data

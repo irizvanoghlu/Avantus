@@ -61,5 +61,24 @@ def test_battery_timeseries_constraints():
 
 def test_ev_gui_use_case_runs():
     results = assert_ran(DIR / f"ev_gui_case_study{JSON}")
-    #case_results = results.instances[0]
-    #timeseries = case_results.time_series_data
+
+
+class TestEV:
+    """ EV model"""
+
+    def setup_class(self):
+        self.results = run_case(DIR / f"ev_gui_case_study{JSON}")
+        self.results_instance = self.results.instances[0]
+        timeseries = self.results_instance.time_series_data
+
+
+    def test_services_are_active(self):
+        assert_usecase_considered_services(self.results, ['DCM', 'retailTimeShift'])
+
+
+    def test_dcm_billing_periods_count():
+        assert self.results_instance.service_agg.value_streams['DCM'].tariff.shape[0] == 4
+
+
+    def test_rts_billing_periods_count():
+        assert self.results_instance.service_agg.value_streams['retailTimeShift'].tariff.shape[0] == 10

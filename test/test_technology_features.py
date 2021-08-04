@@ -40,6 +40,7 @@ would like the tests to run on.
 import pytest
 from pathlib import Path
 import numpy as np
+import numpy.testing as npt
 from test.TestingLib import *
 
 
@@ -85,8 +86,10 @@ class TestEVGuiUseCase:
 
 
     def test_fleetEV_ch_constraint(self):
-        assert np.all(self.ch <= (self.base_load + 1e-14))
+        # base_load >= ch
+        npt.assert_approx_equal(min(self.base_load / self.ch), 1, significant=15)
 
 
     def test_fleetEV_max_load_ctrl_constraint(self):
-        assert np.all(self.ch >= (self.max_load_ctrl * self.base_load) - 1e-14)
+        # ch >= base_load * 0.5
+        npt.assert_approx_equal(max(self.ch / (self.max_load_ctrl * self.base_load)), 2, significant=15)

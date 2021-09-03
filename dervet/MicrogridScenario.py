@@ -187,6 +187,13 @@ class MicrogridScenario(Scenario):
                     TellUser.error(f"Reliability target must be more than {self.dt} hour in this "
                                    f"implementation")
                     raise ParameterError('See dervet.log for more information.')
+                for der_inst in der_lst:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target==0:
+                        TellUser.error(f"SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage")
+                        raise ParameterError('See dervet.log for more information.')
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<100:
+                        TellUser.warning('Initial SOC when outage starts is not 100%, it will oversize DER ratings')
+
             else:
                 self.check_opt_sizing_conditions()
 
@@ -285,10 +292,6 @@ class MicrogridScenario(Scenario):
             **kwargs: allows child classes to pass in additional arguments to set_up_optimization
 
         """
-        # calculate and check that system requirement set by value streams can be met
-        self.system_requirements = self.service_agg.identify_system_requirements(self.poi.der_list,
-                                                                                 self.opt_years,
-                                                                                 self.frequency)
         alpha = 1
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value

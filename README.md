@@ -188,7 +188,7 @@ pip install -e ./dervet
 
 We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available,
 see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository.
-This is version 1.1.1
+This is version 1.1.2
 
 ## Authors
 

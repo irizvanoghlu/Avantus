@@ -62,7 +62,7 @@ Battery,1,p_start_ch,0,$,float,"[0, p_start_ch)",,None,Startup cost to start cha
 Battery,1,p_start_dis,0,$,float,"[0, p_start_dis)",,None,Startup cost to start discharging,.,no,
 Battery,1,daily_cycle_limit,0,,float,,,None,Limit on the daily total discharge and ene throughput,.,no,
 Battery,1,hp,0,,float,,,None,,.,no,
-Battery,1,macrs_term,3,,float,"{3,5,7,10,15,20,25,27.5,39}",,None,modified accelerated cost recovery system (MACRS) depreciation term,.,no,
+Battery,1,macrs_term,3,,float,"{3,5,7,10,15,20}",,None,modified accelerated cost recovery system (MACRS) depreciation term,.,no,
 Battery,1,expected_lifetime,14,years,int,,,None,The estimated number of years this DER is expected to be operational,.,no,
 Battery,1,replaceable,0,y/n,bool,"{0,1}",,None,T or F to indicate whether this DER is replaceable or not at its end of life,.,no,
 Battery,1,decommissioning_cost,0,$,float,,,None,The cost to decommission this DER when it has reached it's expected lifetime's end,.,no,

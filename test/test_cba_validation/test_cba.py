@@ -27,7 +27,7 @@ Copyright (c) 2021, Electric Power Research Institute
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-""" 
+"""
 This file tests features of the CBA module. All tests should pass.
 
 The tests in this file can be run with .
@@ -88,8 +88,8 @@ class TestEvaluateBatteryICECostsToZero:
         assert np.all(fixed_om == 0)
 
     def test_ice_fuel(self):
-        # fixed OM costs are 0
-        fuel = self.actual_proforma.loc[:, 'ICE: ice gen Diesel Fuel Costs'].values
+        # fuel costs are 0
+        fuel = self.actual_proforma.loc[:, 'ICE: ice gen Fuel Costs'].values
         assert np.all(fuel == 0)
 
 
@@ -303,13 +303,13 @@ def xtest_ecc_zero_out():
 
 
 def xtest_ecc_shorter_actual_lifetime():
-    """ Test ECC calculations when batteries degradation module results in a 
+    """ Test ECC calculations when batteries degradation module results in a
         shorter lifetime than user given"""    # TODO
     assert_ran(r" ", )
 
 
 def xtest_ecc_long_actual_lifetime():
-    """ Test ECC calculations when batteries degradation module results in a 
+    """ Test ECC calculations when batteries degradation module results in a
         longer lifetime than user given"""    # TODO
     assert_ran(r" ", )
 

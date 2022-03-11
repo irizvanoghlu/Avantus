@@ -51,20 +51,30 @@ class MicrogridPOI(POI):
         if self.is_sizing_optimization:
             self.error_checks_on_sizing()
 
+        self.active_load_dump = params['active_load_dump']
         # add thermal site load time series
+        # NOTE: these loads can come from different technologies
+        #       but there is only a single one of each (they appear in the input time series)
+        self.site_cooling_load = None
+        self.site_steam_load = None
+        self.site_hotwater_load = None
+        self.has_thermal_load = False
         for der in self.active_ders:
             try:
                 self.site_steam_load = der.site_steam_load
+                self.has_thermal_load = True
             except AttributeError:
-                self.site_steam_load = None
+                pass
             try:
                 self.site_hotwater_load = der.site_hotwater_load
+                self.has_thermal_load = True
             except AttributeError:
-                self.site_hotwater_load = None
+                pass
             try:
                 self.site_cooling_load = der.site_cooling_load
+                self.has_thermal_load = True
             except AttributeError:
-                self.site_cooling_load = None
+                pass
 
     def check_if_sizing_ders(self):
         """ This method will iterate through the initialized DER instances and return a logical OR
@@ -181,32 +191,39 @@ class MicrogridPOI(POI):
                 load_sum += der_inst.get_charge(mask)
                 # total_soe += der_instance.get_state_of_energy(mask)
 
+            if der_inst.tag in ['Chiller', 'Boiler']:
+                # if these technologies are electric, they add to load_sum,
+                # if not, get_charge() will return zeroes
+                load_sum += der_inst.get_charge(mask)
+
             # thermal power recovered: hot (steam/hotwater) and cold
-            if der_inst.is_hot:
-                if self.site_steam_load is None and self.site_hotwater_load is None:
-                    TellUser.warning('A heat source technology is active ' +
-                                     f'({der_inst.unique_tech_id()}), but you have set the ' +
-                                     f'scenario parameter incl_thermal_load to False. Any ' +
-                                     f'thermal load will be ignored.')
-                else:
-                    if self.site_steam_load is not None:
-                        TellUser.debug(f'adding heat (steam) recovered from this DER: ' +
-                                       f'{der_inst.unique_tech_id()}')
-                        agg_steam_heating_power += der_inst.get_steam_recovered(mask)
-                    if self.site_hotwater_load is not None:
-                        TellUser.debug(f'adding heat (hotwater) recovered from this DER: ' +
-                                       f'{der_inst.unique_tech_id()}')
-                        agg_hotwater_heating_power += der_inst.get_hotwater_recovered(mask)
-            if der_inst.is_cold:
-                if self.site_cooling_load is None:
-                    TellUser.warning(f'A cold source technology is active ' +
-                                     f'({der_inst.unique_tech_id()}), but you have set the ' +
-                                     f'scenario parameter incl_thermal_load to False. Any ' +
-                                     f'thermal load will be ignored.')
-                else:
-                    TellUser.debug(f'adding cold recovered from this DER: ' +
-                                   f'{der_inst.unique_tech_id()}')
-                    agg_thermal_cooling_power += der_inst.get_cold_recovered(mask)
+            #if der_inst.is_hot:
+            if der_inst.tag in ['CHP', 'Boiler']:
+                TellUser.debug(f'adding heat (steam) generated from this DER: ' +
+                                f'{der_inst.unique_tech_id()}')
+                agg_steam_heating_power += der_inst.get_steam_generated(mask)
+                TellUser.debug(f'adding heat (hotwater) generated from this DER: ' +
+                                f'{der_inst.unique_tech_id()}')
+                agg_hotwater_heating_power += der_inst.get_hotwater_generated(mask)
+            #if der_inst.is_cold:
+            if der_inst.tag == 'Chiller':
+                TellUser.debug(f'adding cold generated from this DER: ' +
+                                f'{der_inst.unique_tech_id()}')
+                agg_thermal_cooling_power += der_inst.get_cold_generated(mask)
+
+        ##NOTE: these print statements disclose info for get_state_of_system Results
+        #print('\nget_state_of_system Result:')
+        #print(f'load_sum ({load_sum.size}): {load_sum.value}')
+        #print(f'var_gen_sum ({var_gen_sum.size}): {var_gen_sum.value}')
+        #print(f'gen_sum ({gen_sum.size}): {gen_sum.value}')
+        #print(f'tot_net_ess ({tot_net_ess.size}): {tot_net_ess.value}')
+        #print(f'total_soe ({total_soe.size}): {total_soe.value}')
+        #print(f'agg_power_flows_in ({agg_power_flows_in.size}): {agg_power_flows_in.value}')
+        #print(f'agg_power_flows_out ({agg_power_flows_out.size}): {agg_power_flows_out.value}')
+        #print(f'agg_steam_heating_power ({agg_steam_heating_power.size}): {agg_steam_heating_power.value}')
+        #print(f'agg_hotwater_heating_power ({agg_hotwater_heating_power.size}): {agg_hotwater_heating_power.value}')
+        #print(f'agg_thermal_cooling_power ({agg_thermal_cooling_power.size}): {agg_thermal_cooling_power.value}')
+        #print()
 
         return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, \
             agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, \
@@ -241,19 +258,51 @@ class MicrogridPOI(POI):
                                                                        steam_in, hotwater_in,
                                                                        cold_in, annuity_scalar)
 
+        agg_heat_consumed_by_chillers = cvx.Parameter(value=np.zeros(sum(mask)), shape=sum(mask), name='HeatUsedByChillersZero')
+
+        # print parameters for each DER
+        for der_instance in self.active_ders:
+            ##NOTE: these print statements are helpful for understanding technologies
+            #print()
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'tech_type = ', str(der_instance.technology_type)))
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'being_sized = ', str(der_instance.being_sized())))
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'is_hot = ', str(der_instance.is_hot)))
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'is_cold = ', str(der_instance.is_cold)))
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'is_electric = ', str(der_instance.is_electric)))
+            #print('{}: {:14} {:>5}'.format(der_instance.name, 'is_fuel = ', str(der_instance.is_fuel)))
+
+            # aggregate heat consumed by each chiller that is powered by heat
+            if der_instance.tag == 'Chiller':
+                agg_heat_consumed_by_chillers += der_instance.get_heat_consumed(mask)
+
+        ##NOTE: these print statements disclose info for these function arguments
+        #print('\nopt_size: ', sum(mask))
+        #print(f'power_in:\n  {power_in.size}\n  {power_in.name()}\n  {power_in.value}')
+        #print(f'power_out:\n  {power_out.size}\n  {power_out.name()}\n  {power_out.value}')
+        #print(f'steam_in:\n  {steam_in.size}\n  {steam_in.name()}\n  {steam_in.value}')
+        #print(f'hotwater_in:\n  {hotwater_in.size}\n  {hotwater_in.name()}\n  {hotwater_in.value}')
+        #print(f'cold_in:\n  {cold_in.size}\n  {cold_in.name()}\n  {cold_in.value}')
+        #print
+
         # thermal power balance constraints
         if self.site_steam_load is not None:
             if steam_in.variables():
                 TellUser.debug('adding steam thermal power balance constraint')
-                constraint_list += [cvx.NonPos(-steam_in + self.site_steam_load)]
+                constraint_list += [cvx.NonPos(-1 * steam_in + self.site_steam_load[mask])]
         if self.site_hotwater_load is not None:
             if hotwater_in.variables():
                 TellUser.debug('adding hot water thermal power balance constraint')
-                constraint_list += [cvx.NonPos(-hotwater_in + self.site_hotwater_load)]
+                constraint_list += [cvx.NonPos(-1 * hotwater_in + agg_heat_consumed_by_chillers + self.site_hotwater_load[mask])]
+                # NOTE:
+                # if a chiller is powered by heat, it will consume heat in the form of hotwater.
+                # this additional hot water must be generated by a technology that can produce heat (Boiler, CHP)
+                # the new term aggregates cold_in converted to heat, using cop.
+                # it adds cold_in from each chiller to a cvx object that is initialized with all zeros (as HeatUsedByChillersZero)
+
         if self.site_cooling_load is not None:
             if cold_in.variables():
                 TellUser.debug('adding thermal cooling power balance constraint')
-                constraint_list += [cvx.NonPos(-cold_in + self.site_cooling_load)]
+                constraint_list += [cvx.NonPos(-1 * cold_in + self.site_cooling_load[mask])]
 
         return obj_expression, constraint_list
 
@@ -282,6 +331,20 @@ class MicrogridPOI(POI):
         results.loc[:, 'Total Storage Power (kW)'] = 0
         results.loc[:, 'Aggregated State of Energy (kWh)'] = 0
 
+        # thermal loads and initialize thermal generation totals
+        if self.site_cooling_load is not None:
+            results['THERMAL LOAD:' + ' Site Cooling Thermal Load (kW)'] = self.site_cooling_load
+            results.loc[:, 'Total Thermal Cooling Generation (kW)'] = 0
+            results.loc[:, 'Total Thermal Cooling Load (kW)'] = self.site_cooling_load
+        if self.site_hotwater_load is not None:
+            results['THERMAL LOAD:' + ' Site Hot Water Thermal Load (kW)'] = self.site_hotwater_load
+            results.loc[:, 'Total Thermal Hot Water Generation (kW)'] = 0
+            results.loc[:, 'Total Thermal Hot Water Load (kW)'] = self.site_hotwater_load
+        if self.site_steam_load is not None:
+            results['THERMAL LOAD:' + ' Site Steam Thermal Load (kW)'] = self.site_steam_load
+            results.loc[:, 'Total Thermal Steam Generation (kW)'] = 0
+            results.loc[:, 'Total Thermal Steam Load (kW)'] = self.site_steam_load
+
         for der in self.der_list:
             report_df = der.timeseries_report()
             results = pd.concat([report_df, results], axis=1)
@@ -309,6 +372,33 @@ class MicrogridPOI(POI):
                     if der.tag == 'ElectricVehicle1':
                         results.loc[:, 'Aggregated State of Energy (kWh)'] += \
                             results[f'{der.unique_tech_id()} State of Energy (kWh)']
+                if der.tag == 'Chiller' and der.is_hot:
+                    # an absorption chiller increases the total thermal hot water load
+                    # by its generation (Cooling) divided by its COP
+                    results.loc[:, 'Total Thermal Hot Water Load (kW)'] += \
+                        results[f'{der.unique_tech_id()} Cooling Generation (kW)'] / der.cop
+                if der.tag == 'Chiller' and der.is_electric:
+                    # an electric chiller adds to total electrical load
+                    # by its generation (Cooling) divided by its COP
+                    results.loc[:, 'Total Load (kW)'] += \
+                        results[f'{der.unique_tech_id()} Cooling Generation (kW)'] / der.cop
+                if der.tag == 'Boiler' and der.is_electric:
+                    # an electric boiler adds to total electrical load
+                    # by its generation (Hot Water + Steam) divided by its COP
+                    results.loc[:, 'Total Load (kW)'] += \
+                        ( results[f'{der.unique_tech_id()} Hot Water Generation (kW)'] + \
+                        results[f'{der.unique_tech_id()} Steam Generation (kW)'] ) / der.cop
+                #if der.is_hot:
+                if der.tag in ['CHP', 'Boiler']:
+                    # thermal heating generation
+                    results.loc[:, 'Total Thermal Hot Water Generation (kW)'] += \
+                        results[f'{der.unique_tech_id()} Hot Water Generation (kW)']
+                    results.loc[:, 'Total Thermal Steam Generation (kW)'] += \
+                        results[f'{der.unique_tech_id()} Steam Generation (kW)']
+                if der.is_cold:
+                    # thermal cooling generation
+                    results.loc[:, 'Total Thermal Cooling Generation (kW)'] += \
+                        results[f'{der.unique_tech_id()} Cooling Generation (kW)']
             report = der.monthly_report()
             monthly_data = pd.concat([monthly_data, report], axis=1, sort=False)
         # assumes the orginal net load only does not contain the Storage system
@@ -316,8 +406,25 @@ class MicrogridPOI(POI):
         if np.all(results['Total Load (kW)'] == results['Total Original Load (kW)']):
             # Drop Total Original Load
             results.drop('Total Original Load (kW)', axis=1, inplace=True)
-        # net load is the load see at the POI
+        # net load is the load seen at the POI
         results.loc[:, 'Net Load (kW)'] = \
             results.loc[:, 'Total Load (kW)'] - results.loc[:, 'Total Generation (kW)'] - \
             results.loc[:, 'Total Storage Power (kW)']
+        # load dump is the excess generation that is wasted
+        #     for cases where we are applying a POI constraint,
+        #     this is where (net load + max_export) is negative, otherwise it's all zeroes
+        if self.active_load_dump:
+            if self.apply_poi_constraints:
+                results.loc[:, 'Load Dump (kW)'] = (results.loc[:, 'Net Load (kW)'] + self.max_export) * -1
+                results.loc[:, 'Load Dump (kW)'].where(results.loc[:, 'Load Dump (kW)'] > 0, 0, inplace=True)
+            else:
+                results.loc[:, 'Load Dump (kW)'] = results.loc[:, 'Net Load (kW)'] * 0
+                TellUser.warning('With a Load Dump activated and Scenario--apply_interconnection_constraints OFF, the Load Dump will be all zeroes.')
+        # net thermal loads
+        for thermal_load in ['Hot Water', 'Steam', 'Cooling']:
+            if f'Total Thermal {thermal_load} Load (kW)' in results.columns:
+                results.loc[:, f'Net Thermal {thermal_load} Load (kW)'] = \
+                    results.loc[:, f'Total Thermal {thermal_load} Load (kW)'] - \
+                    results.loc[:, f'Total Thermal {thermal_load} Generation (kW)']
+
         return results, monthly_data

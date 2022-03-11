@@ -48,10 +48,12 @@ class DERExtension:
         """
 
         """
+        TellUser.debug(f"Initializing {__name__}")
         # try to look for DERVET specific user inputs that are shared by all DERs
-        self.nsr_response_time = params['nsr_response_time']
-        self.sr_response_time = params['sr_response_time']
         self.startup_time = params['startup_time']  # startup time, default value of 0, units in minutes
+        # tech that do not participate in market services may not require these parameters
+        self.nsr_response_time = params.get('nsr_response_time', 0) # Chiller/Boiler do not have this
+        self.sr_response_time = params.get('sr_response_time', 0)
 
         # CBA terms shared by all DERs
         self.macrs = params.get('macrs_term')
@@ -139,13 +141,13 @@ class DERExtension:
         if ccost is not None:
             self.capital_cost_function[0] = ccost
 
-        ccost_kw = input_dict.get('ccost_kw')
-        if ccost_kw is not None:
-            self.capital_cost_function[1] = ccost_kw
+        ccost_kW = input_dict.get('ccost_kW')
+        if ccost_kW is not None:
+            self.capital_cost_function[1] = ccost_kW
 
-        ccost_kwh = input_dict.get('ccost_kwh')
-        if ccost_kwh is not None:
-            self.capital_cost_function[2] = ccost_kwh
+        ccost_kWh = input_dict.get('ccost_kWh')
+        if ccost_kWh is not None:
+            self.capital_cost_function[2] = ccost_kWh
 
     def update_price_signals(self, id_str, monthly_data=None, time_series_data=None):
         """ Updates attributes related to price signals with new price signals that are saved in

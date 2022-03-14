@@ -62,6 +62,7 @@ class Load(DER):
             params (dict): Dict of parameters for initialization
         """
         TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'ThermalLoad'
         # create generic technology object
         super().__init__(params)
         self.technology_type = 'ThermalLoad'

@@ -96,7 +96,7 @@ def test_default_pv_active():
 
 def test_default_controllableload_active():
     temp_mp = modify_mp('ControllableLoad')
-    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/controllableLoad_001.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='ControllableLoad')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/controllableload_001.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='ControllableLoad')
     setup_default_case(temp_mp)
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)
@@ -104,7 +104,7 @@ def test_default_controllableload_active():
 def test_default_caes_active():
     temp_mp = modify_mp('CAES')
     setup_default_case(temp_mp)
-    #run_default_case(temp_mp)  # CAES is broken in DERVET
+    run_default_case(temp_mp)
     remove_temp_files(temp_mp)
 
 def test_default_ev1_active():
@@ -121,21 +121,21 @@ def test_default_ev2_active():
 
 def test_default_chp_active():
     temp_mp = modify_mp('CHP')
-    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_noCoolingLoad.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='CHP')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_nocoolingload.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='CHP')
     setup_default_case(temp_mp)
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)
 
 def test_default_chiller_active():
     temp_mp = modify_mp('Chiller')
-    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_noHeatingLoads.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='Chiller')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_noheatingloads.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='Chiller')
     setup_default_case(temp_mp)
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)
 
 def test_default_boiler_active():
     temp_mp = modify_mp('Boiler')
-    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_noCoolingLoad.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='Boiler')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/thermal_001_nocoolingload.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='Boiler')
     setup_default_case(temp_mp)
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)

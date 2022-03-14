@@ -49,6 +49,8 @@ class DieselGenset(ICE):
         Args:
             params (dict): Dict of parameters for initialization
         """
+        TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'DieselGenset'
         # base class is ICE
         super().__init__(params)
         self.tag = 'DieselGenset'

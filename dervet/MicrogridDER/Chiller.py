@@ -70,6 +70,7 @@ class Chiller(DER, DERExtension, ContinuousSizing):
             params (dict): Dict of parameters for initialization
         """
         TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'Chiller'
         # create generic technology object
         DER.__init__(self, params)
         DERExtension.__init__(self, params)

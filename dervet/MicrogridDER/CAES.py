@@ -78,3 +78,5 @@ class CAES(CAESTech.CAES, ESSSizing):
         costs = super().objective_function(mask, annuity_scalar)
         if self.being_sized():
             costs.update({self.name + 'capex': self.get_capex()})
+
+        return costs

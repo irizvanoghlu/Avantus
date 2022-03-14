@@ -386,6 +386,7 @@ class TestUseCase3EssSizing4Reliability:
                              MAX_PERCENT_ERROR)
 
 
+#FIXME
 @pytest.mark.slow
 class TestUseCase3EssSizing4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned A - FR + DA + UserConstraints, BAT fixed size with PF
@@ -431,6 +432,7 @@ class TestUseCase3EssPvSizing4Reliability:
                              MAX_PERCENT_ERROR)
 
 
+#FIXME
 @pytest.mark.slow
 class TestUseCase3EssPv4DaFrUserConstraintsUnplannedOutage:
     """ Part 2 of Usecase 3 Unplanned B - FR + DA + UserConstraints, BAT + PV fixed size with PF

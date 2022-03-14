@@ -52,6 +52,7 @@ class PV(IntermittentResourceSizing):
             params (dict): Dict of parameters
         """
         TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'PV'
         super().__init__(params)
 
         self.tag = 'PV'

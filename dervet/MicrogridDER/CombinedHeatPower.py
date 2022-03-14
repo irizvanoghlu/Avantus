@@ -51,6 +51,7 @@ class CHP(CT):
             params (dict): Dict of parameters for initialization
         """
         TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'CHP'
         # base class is CT
         super().__init__(params)
 

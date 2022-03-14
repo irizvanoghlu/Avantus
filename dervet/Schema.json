@@ -527,42 +527,6 @@
                         "type": "float",
                         "unit": "%"
                     },
-                    "user_ch_rated_max": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
-                    "user_ch_rated_min": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
-                    "user_dis_rated_max": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
-                    "user_dis_rated_min": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
-                    "user_ene_rated_max": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
-                    "user_ene_rated_min": {
-                        "cba": "n",
-                        "min": "0.0",
-                        "type": "float",
-                        "unit": "kW"
-                    },
                     "fuel_type": {
                         "cba": "n",
                         "allowed_values": "liquid|gas|other",

@@ -44,6 +44,7 @@ class DiscreteSizing:
     """
 
     def __init__(self, params):
+        TellUser.debug(f"Initializing {__name__}")
         self.n_min = params['n_min']  # generators
         self.n_max = params['n_max']  # generators
         if self.being_sized():

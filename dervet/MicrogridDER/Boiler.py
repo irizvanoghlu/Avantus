@@ -69,6 +69,7 @@ class Boiler(DER, ContinuousSizing, DERExtension):
             params (dict): Dict of parameters for initialization
         """
         TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'Boiler'
         # create generic technology object
         DER.__init__(self, params)
         ContinuousSizing.__init__(self, params)

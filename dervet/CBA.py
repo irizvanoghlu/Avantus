@@ -272,6 +272,7 @@ class CostBenefitAnalysis(Financial):
             der_id = der_inst.id
             evaluation_inputs = self.ders_values.get(der_tag, {}).get(der_id)
             if der_inst.is_fuel:
+                # FIXME: I don't think this comes into play anymore with a project-wide fuel price- AE
                 # merge in possible fuel price evaluation
                 evaluation_inputs.update(self.Finance)
             if evaluation_inputs:

@@ -2445,6 +2445,15 @@
             ".": {
                 "active": "yes",
                 "keys": {
+                    "activate_electricity_load_dump": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "bool"
+                    },
                     "apply_interconnection_constraints": {
                         "opt_value": "0",
                         "sensitivity": {
@@ -2495,15 +2504,6 @@
                         "type": "Period"
                     },
                     "incl_site_load": {
-                        "opt_value": "0",
-                        "sensitivity": {
-                            "active": "no",
-                            "coupled": "None",
-                            "value": "nan"
-                        },
-                        "type": "bool"
-                    },
-                    "incl_thermal_load": {
                         "opt_value": "0",
                         "sensitivity": {
                             "active": "no",

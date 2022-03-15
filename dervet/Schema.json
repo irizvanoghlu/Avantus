@@ -144,7 +144,7 @@
                     },
                     "macrs_term": {
                         "cba": "n",
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "type": "float"
                     },
                     "name": {
@@ -456,7 +456,7 @@
                     },
                     "macrs_term": {
                         "cba": "n",
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "type": "float"
                     },
                     "construction_year": {
@@ -569,7 +569,7 @@
                         "unit": "minutes"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -821,7 +821,7 @@
                         "unit": "minutes"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -1075,7 +1075,7 @@
                         "type": "string"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -1283,7 +1283,7 @@
                         "unit": "$/year"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -1402,7 +1402,7 @@
                         "unit": "$/kWh"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -1929,7 +1929,7 @@
                         "type": "string"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },
@@ -2182,7 +2182,7 @@
                         "type": "string"
                     },
                     "macrs_term": {
-                        "allowed_values": "3|5|7|10|15|20|25|27.5|39",
+                        "allowed_values": "3|5|7|10|15|20",
                         "cba": "n",
                         "type": "float"
                     },

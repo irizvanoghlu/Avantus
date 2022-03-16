@@ -17,12 +17,12 @@ before_script:
 pytest:
   stage: test
   script:
-    - pip install setuptools==53.0.0
+    #- pip install setuptools==53.0.0
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - file ./storagevet/storagevet/Scenario.py
     - pip install -e ./storagevet
-    - python -m pytest test --import-mode=importlib
+    - python -m pytest test #--import-mode=importlib
   tags:
     - 'docker'
   only:

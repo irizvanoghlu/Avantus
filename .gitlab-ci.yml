@@ -2,15 +2,9 @@ image: python:3.7
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 stages:
   - test
-
-cache:
-  paths:
-    - .cache/pip
-    - dervet-venv/
 
 before_script:
   - echo "... pulling submodule ..."

@@ -2,16 +2,22 @@ image: python:3.7
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 stages:
   - test
+
+cache:
+  paths:
+    - .cache/pip
+    - dervet-venv/
 
 before_script:
   - echo "... pulling submodule ..."
   - echo "... Checking runner specifications ..."
   - apt-get update -q -y
   - pip install virtualenv
-  - pip uninstall pytest
+  #- pip uninstall pytest
   - virtualenv dervet-venv
   - source dervet-venv/bin/activate
 

@@ -17,6 +17,7 @@ before_script:
 pytest:
   stage: test
   script:
+    - pip install setuptools==53.0.0
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - file ./storagevet/storagevet/Scenario.py

@@ -15,6 +15,7 @@ stages:
 before_script:
   - echo "... pulling submodule ..."
   - echo "... Checking runner specifications ..."
+  - uname
   - apt-get update -q -y
   - pip install virtualenv
   #- pip uninstall pytest
@@ -31,7 +32,9 @@ pytest:
     - pip install -e ./storagevet
     - pwd
     - pip list
-    - python -m pytest test --import-mode=importlib
+    - python -V
+    - python run_DERVET.py Model_Parameters_Template_DER.csv -v
+    - python -m pytest test
   tags:
     - 'docker'
   only:

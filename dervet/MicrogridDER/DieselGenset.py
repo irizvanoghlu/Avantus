@@ -36,6 +36,7 @@ import cvxpy as cvx
 from .ICE import ICE
 import numpy as np
 from storagevet.Technology.DistributedEnergyResource import DER
+from storagevet.ErrorHandling import *
 
 
 class DieselGenset(ICE):

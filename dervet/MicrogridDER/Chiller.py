@@ -169,6 +169,12 @@ class Chiller(DER, DERExtension, ContinuousSizing):
     def get_cold_generated(self, mask):
         return self.variables_dict['cold']
 
+    def thermal_generation_capacity(self):
+        """
+        Returns: the maximum thermal discharge that can be attained
+        """
+        return self.rated_power * self.n
+
     def objective_function(self, mask, annuity_scalar=1):
         costs = super().objective_function(mask, annuity_scalar)
         costs.update(self.sizing_objective())
@@ -259,7 +265,7 @@ class Chiller(DER, DERExtension, ContinuousSizing):
 #    def replacement_cost(self):
 #        """ Returns: the cost of replacing this DER
 #        """
-#        return np.dot(self.replacement_cost_function, [self.n, self.discharge_capacity(True)])
+#        return np.dot(self.replacement_cost_function, [self.n, self.thermal_generation_capacity(True)])
 
 #    def max_p_schedule_down(self):
 #        # TODO -- is this needed in a thermal technology ?
@@ -273,7 +279,7 @@ class Chiller(DER, DERExtension, ContinuousSizing):
     def get_capex(self, **kwargs):
         """ Returns the capex of a given technology
         """
-        return np.dot(self.capital_cost_function, [self.n, self.discharge_capacity()])
+        return np.dot(self.capital_cost_function, [self.n, self.thermal_generation_capacity()])
 
     def timeseries_report(self):
         tech_id = self.unique_tech_id()

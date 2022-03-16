@@ -10,8 +10,8 @@ before_script:
   - echo "... pulling submodule ..."
   - echo "... Checking runner specifications ..."
   - apt-get update -q -y
-  - pip uninstall pytest
   - pip install virtualenv
+  - pip uninstall pytest
   - virtualenv dervet-venv
   - source dervet-venv/bin/activate
 

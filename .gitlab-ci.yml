@@ -2,15 +2,15 @@ image: python:3.7
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
-#    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 stages:
   - test
 
-#cache:
-#  paths:
-#    - .cache/pip
-#    - dervet-venv/
+cache:
+  paths:
+    - .cache/pip
+    - dervet-venv/
 
 before_script:
   - echo "... pulling submodule ..."
@@ -29,11 +29,10 @@ pytest:
     - pip install -r requirements-dev.txt
     - file ./storagevet/storagevet/Scenario.py
     - pip install -e ./storagevet
-    - pip list
     - python -V
-    - python run_DERVET.py Model_Parameters_Template_DER.csv -v
-    #- python -m pytest test
-    - python -m pytest test/test_thermal_technologies test/test_default_model_parameters.py
+    #- pip list
+    #- python run_DERVET.py Model_Parameters_Template_DER.csv -v
+    - python -m pytest test
   tags:
     - 'docker'
   only:

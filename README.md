@@ -58,7 +58,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     "root directory"
 
 7. #### Create Python environment
-    We give the user 2 routes to create a python environment for python 3.6.10.
+    We give the user 2 routes to create a python environment for python 3.7
    >Most Windows users have success with the Conda route.
 
     Each route results in a siloed python environment, but with different properties.
@@ -71,12 +71,12 @@ Follow these steps to run DER-VET through your command line on your local comput
 
     Enter the following command:
     ```
-    conda create -n dervet-venv python=3.6.10
+    conda create -n dervet-venv python=3.7
     ```
-    >The python version is specified, meaning conda does not have to be associated with a python 3.6.10.
+    >The python version is specified, meaning conda does not have to be associated with a python 3.7.
 
     **Pip Route**
-    If you have Python 3.6.10 installed directly on your computer, then we recommend trying this route.
+    If you have Python 3.7 installed directly on your computer, then we recommend trying this route.
 
     >This route lets you to open the prompt of your choice in step 5.
 
@@ -85,9 +85,9 @@ Follow these steps to run DER-VET through your command line on your local comput
     pip install virtualenv
     virtualenv dervet-venv
     ```
-    >The `pip` should be associated to the **python 3.6.10 installation**
+    >The `pip` should be associated to the **python 3.7 installation**
 
-8. #### Activate Python 3.6 environment
+8. #### Activate Python 3.7 environment
     **Conda Route**
     Enter the following command into anaconda prompt:
     ```
@@ -113,6 +113,7 @@ Follow these steps to run DER-VET through your command line on your local comput
 
     Then enter the following commands in anaconda prompt:
     ```
+    pip install setuptools==57.5.0
     conda install -c conda-forge --file requirements.txt
     pip install -r requirements-dev.txt
     pip install -e ./storagevet
@@ -121,6 +122,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     **Pip Route**
     Enter the following commands into the open prompt:
     ```
+    pip install setuptools==57.5.0
     pip install -r requirements.txt
     pip install -r requirements-dev.txt
     pip install -e ./storagevet
@@ -142,7 +144,7 @@ DER-VET on you local `C:\` drive.
 
 4. #### Open Anaconda Prompt
 
-5. #### Activate Python 3.6 environment
+5. #### Activate Python 3.7 environment
     ```
     conda activate "C:\DERVET\DervetBackEnd\"
     cd C:\DERVET\DervetBackEnd\dervet
@@ -150,6 +152,7 @@ DER-VET on you local `C:\` drive.
 
 6. #### Update project dependencies
     ```
+    pip install setuptools==57.5.0
     conda install -c conda-forge --file requirements.txt
     pip install -r requirements-dev.txt
     pip install -e ./storagevet

@@ -18,7 +18,6 @@ before_script:
   - uname
   - apt-get update -q -y
   - pip install virtualenv
-  #- pip uninstall pytest
   - virtualenv dervet-venv
   - source dervet-venv/bin/activate
 
@@ -33,7 +32,8 @@ pytest:
     - pip list
     - python -V
     - python run_DERVET.py Model_Parameters_Template_DER.csv -v
-    - python -m pytest test
+    #- python -m pytest test
+    - python -m pytest test/test_thermal_technologies test/test_default_model_parameters.py
   tags:
     - 'docker'
   only:

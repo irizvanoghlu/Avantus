@@ -25,12 +25,10 @@ before_script:
 pytest:
   stage: test
   script:
-    - pip install setuptools==53.0.0
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - file ./storagevet/storagevet/Scenario.py
     - pip install -e ./storagevet
-    - pwd
     - pip list
     - python -V
     - python run_DERVET.py Model_Parameters_Template_DER.csv -v

@@ -1,3 +1,4 @@
+setuptools==53.0.0
 cvxopt==1.2.5
 cvxpy==1.0.25
 cycler==0.10.0

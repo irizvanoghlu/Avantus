@@ -1,5 +1,5 @@
 cvxopt==1.2.5
-cvxpy==1.0.25
+cvxpy==1.0.31
 cycler==0.10.0
 dill==0.3.2
 ecos==2.0.7.post1

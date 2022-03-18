@@ -1,4 +1,4 @@
-image: python:3.6
+image: python:3.7
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -15,6 +15,7 @@ cache:
 before_script:
   - echo "... pulling submodule ..."
   - echo "... Checking runner specifications ..."
+  - uname
   - apt-get update -q -y
   - pip install virtualenv
   - virtualenv dervet-venv
@@ -23,11 +24,15 @@ before_script:
 pytest:
   stage: test
   script:
+    - pip install setuptools==57.5.0
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - file ./storagevet/storagevet/Scenario.py
     - pip install -e ./storagevet
-    - python -m pytest test --import-mode=importlib
+    - python -V
+    #- pip list
+    #- python run_DERVET.py Model_Parameters_Template_DER.csv -v
+    - python -m pytest test
   tags:
     - 'docker'
   only:

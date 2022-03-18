@@ -44,12 +44,12 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='dervet',
-      version='1.1.2',
+      version='1.2.0',
       description='',
       url='der-vet.com',
       long_description=README,
-      author='Halley Nathwani',
-      author_email='hnathwani@epri.com',
+      author='Andrew Etringer',
+      author_email='aetringer@epri.com',
       license='EPRI',
       classifiers=[
               "License :: EPRI License",

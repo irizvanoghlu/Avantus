@@ -191,7 +191,7 @@ pip install -e ./dervet
 
 We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available,
 see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository.
-This is version 1.1.2
+This is version 1.2.0
 
 ## Authors
 
@@ -218,9 +218,9 @@ Please make sure to update tests as appropriate.
 
 This project is licensed under the BSD (3-clause) License - see [LICENSE.txt](./LICENSE.txt).
 
-DER-VET v1.1.2
+DER-VET v1.2.0
 
-Copyright © 2021 Electric Power Research Institute, Inc. All Rights Reserved.
+Copyright © 2022 Electric Power Research Institute, Inc. All Rights Reserved.
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright

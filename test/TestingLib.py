@@ -228,7 +228,7 @@ def compare_lcpc_results(results, frozen_lcpc_location: str, error_bound: float)
 
         test_value = test_df.loc[time_step]['Load Coverage Probability (%)']
         actual_value = actual_df.loc[time_step]['Load Coverage Probability (%)']
-        if test_value is not 'nan' and actual_value is not 'nan':
+        if test_value != 'nan' and actual_value != 'nan':
             error_message = f'ValueError in [{time_step}]\nExpected: {actual_value}\nGot: {test_value}'
 
             assert_within_error_bound(actual_value, test_value, error_bound, error_message)

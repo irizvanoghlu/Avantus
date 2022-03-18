@@ -5,6 +5,29 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2021-09-10 to 2022-03-22
+### Added
+- pytests to ensure that the default model parameter CSV file runs when input into run_DERVET.py
+- pytests to ensure that with each technology active along with a battery, the default model parameter CSV runs
+- adds required rows for all technologies in the default model parameter csv
+- adds a new scenario tag input to allow/disallow an electric load_dump
+- a copy of the model parameters input CSV is now copied to the Results folder for each run
+- adds thermal technologies: CHP, Boiler, and Chiller
+  - a Chiller can serve a cooling load only, and can be powered by electricity, natural gas, or heat
+  - a Boiler can serve a heating load (hot water and/or steam), and can be powered by electricity or natural gas
+  - a CHP can serve a heating load (hot water and/or steam), and an electrical load
+  - an active thermal technology requires the appropriate thermal input time series data
+
+### Changed
+- re-structures how fuel costs are handled (see storagevet CHANGELOG)
+- force use of the GLPK_MI solver when a project has an active thermal technology
+
+### Removed
+- remove incl_thermal_load boolean from model parameter inputs
+
+### Fixed
+- disallow sizing of CAES since it has not been validated
+
 ## [1.1.2] - 2021-08-04 to 2021-09-09
 ### Changed
 - Changed the expected type to float for yearly_degrade battery input

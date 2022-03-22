@@ -1,4 +1,4 @@
-image: python:3.7
+image: python:3.6
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -24,11 +24,11 @@ before_script:
 pytest:
   stage: test
   script:
-    - pip install setuptools==57.5.0
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - file ./storagevet/storagevet/Scenario.py
+    - pip install numpy_financial==1.0.0
     - pip install -e ./storagevet
+    - file ./storagevet/storagevet/Scenario.py
     - python -V
     #- pip list
     #- python run_DERVET.py Model_Parameters_Template_DER.csv -v

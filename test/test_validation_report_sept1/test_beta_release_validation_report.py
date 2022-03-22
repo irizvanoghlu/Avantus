@@ -283,7 +283,7 @@ class TestUseCase3Ess4DaFrUserConstraintsPlannedOutage:
         self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es")
 
-    def FIXMEtest_proforma_results_are_expected(self):
+    def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
                                  MAX_PERCENT_ERROR, opt_years)
@@ -316,7 +316,7 @@ class TestUseCase3EssPv4DaFrUserConstraintsPlannedOutage:
         self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es+pv")
 
-    def FIXMEtest_proforma_results_are_expected(self):
+    def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
                                  MAX_PERCENT_ERROR, opt_years)
@@ -353,7 +353,7 @@ class TestUseCase3EssPvIce4DaFrUserConstraintsPlannedOutage:
         self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase3/planned/step2/es+pv+dg")
 
-    def FIXMEtest_proforma_results_are_expected(self):
+    def test_proforma_results_are_expected(self):
         opt_years = self.results.instances[0].opt_years
         compare_proforma_results(self.results,
                                  self.validated_folder / "pro_formauc3.csv",

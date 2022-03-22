@@ -170,7 +170,10 @@ def compare_proforma_results(results, frozen_proforma_location: str, error_bound
                              opt_years=None):
     assert_file_exists(results, 'pro_forma')
     test_proforma_df = results.proforma_df()
-    expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+    try:
+        expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+    except ValueError:
+        expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
     for yr_indx, values_series in expected_df.iterrows():
         try:
             actual_indx = pd.Period(yr_indx)

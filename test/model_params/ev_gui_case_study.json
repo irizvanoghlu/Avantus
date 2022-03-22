@@ -7,7 +7,7 @@
       }
     },
     "Battery": {
-      "09443ed1-6014-41b9-9b86-9d2565a7c1e7": {
+      "1": {
         "active": "yes",
         "keys": {
           "OMexpenses": {
@@ -74,7 +74,7 @@
             "type": "Period"
           },
           "cycle_life_filename": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/inputs/cycle_09443ed1-6014-41b9-9b86-9d2565a7c1e7.csv",
+            "opt_value": "./data/battery_cycle_life.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -528,7 +528,7 @@
       }
     },
     "ElectricVehicle2": {
-      "078764b2-3b72-4246-a355-3833a526f7f4": {
+      "1": {
         "active": "yes",
         "keys": {
           "ccost": {
@@ -719,7 +719,7 @@
             "type": "int"
           },
           "customer_tariff_filename": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/inputs/tariff.csv",
+            "opt_value": "./test/datasets/sce_tou-8_2020.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -818,7 +818,7 @@
             "type": "float"
           },
           "yearly_data_filename": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/inputs/yearly.csv",
+            "opt_value": "./data/yearly_data.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -866,10 +866,10 @@
     },
     "Results": {
       "": {
-        "active": "yes",
+        "active": "no",
         "keys": {
           "dir_absolute_path": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/results",
+            "opt_value": "enter absolute path here",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -878,7 +878,7 @@
             "type": "string"
           },
           "errors_log_path": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/results",
+            "opt_value": "Enter absolute path here  (include the folder name you want the file to be contained inside)",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -1072,7 +1072,7 @@
             "type": "float"
           },
           "monthly_data_filename": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/inputs/monthly.csv",
+            "opt_value": "./test/datasets/monthly_data_2021.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -1126,7 +1126,7 @@
             "type": "Period"
           },
           "time_series_filename": {
-            "opt_value": "/Users/paet001/Downloads/test/EV Battery Sizing/DER-VET_20220321092154/inputs/timeseries.csv",
+            "opt_value": "./test/datasets/ev_timeseries.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",

@@ -45,6 +45,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     | Windows 10   | Windows 10 |
 
    **On Mac**
+
     Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
 
 5. #### Open Anaconda Prompt
@@ -67,6 +68,7 @@ Follow these steps to run DER-VET through your command line on your local comput
    > **You will need to activate the python environment to run the model, always.**
 
     **Conda Route - Recommended route for Windows OS**
+
     This route requires you to open Anaconda Prompt in step 5.
 
     Enter the following command:
@@ -76,6 +78,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     >The python version is specified, meaning conda does not have to be associated with a python 3.8.13.
 
     **Pip Route**
+
     If you have Python 3.8.13 installed directly on your computer, then we recommend trying this route.
 
     >This route lets you to open the prompt of your choice in step 5.
@@ -89,13 +92,16 @@ Follow these steps to run DER-VET through your command line on your local comput
 
 8. #### Activate Python 3.8.13 environment
     **Conda Route**
+
     Enter the following command into anaconda prompt:
     ```
     conda activate dervet-venv
     ```
 
     **Pip Route**
+
     Enter the corresponding command into the open prompt:
+
     *On Linux/Mac*
     ```
     source dervet-venv/bin/activate
@@ -107,6 +113,7 @@ Follow these steps to run DER-VET through your command line on your local comput
 
 9. #### Install project dependencies
     **Conda Route**
+
     Enter the following commands in anaconda prompt:
     ```
     pip install setuptools==52.0.0
@@ -116,6 +123,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     ```
 
     **Pip Route**
+
     Enter the following commands into the open prompt:
     ```
     pip install setuptools==52.0.0
@@ -185,6 +193,18 @@ Open terminal or command prompt from your project root, and input the following 
 ```
 pip install -e ./dervet
 ```
+
+## Migrating DER-VET GUI project.json files
+
+We have created a new folder titled "migrations" that is in the root "dervet" folder.
+In this folder, we have provided a command-line Python script which will convert an existing version 1.1 DER-VET GUI project.json file into a version 1.2 DER-VET GUI project.json file. This script should be used with Python 3.2 or greater.
+
+To view the usage statement for this script, open terminal or command prompt from your project root, and input the following command:
+```
+python migrations/migrate_project_dervet_GUI.py -h
+```
+
+The script accepts a single positional argument: the name of a folder which must contain a "project.json" file
 
 ## Versioning
 

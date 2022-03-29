@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='run_DERVET.py',
                                      description='The Electric Power Research Institute\'s energy storage system ' +
                                                  'analysis, dispatch, modelling, optimization, and valuation tool' +
-                                                 '. Should be used with Python 3.7',
+                                                 '. Should be used with Python 3.8',
                                      epilog='Copyright 2022. Electric Power Research Institute (EPRI). ' +
                                             'All Rights Reserved.')
     parser.add_argument('parameters_filename', type=str,

@@ -5,8 +5,10 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.0] - 2021-09-10 to 2022-03-22
+## [1.2.0] - 2021-09-10 to 2022-03-30
 ### Added
+- added a migrations/migrate_project_DERVET_GUI.py script
+  - this will transform a project exported from the GUI v1.1.2 into GUI v1.2.0
 - pytests to ensure that the default model parameter CSV file runs when input into run_DERVET.py
 - pytests to ensure that with each technology active along with a battery, the default model parameter CSV runs
 - adds required rows for all technologies in the default model parameter csv
@@ -19,8 +21,12 @@ The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/)
   - an active thermal technology requires the appropriate thermal input time series data
 
 ### Changed
+- upgrade supported/recommended Python version to 3.8.13
+  - Python package requirements have been updated
+  - Update installation instructions: Python environment creation, conda-route, pip-route
 - re-structures how fuel costs are handled (see storagevet CHANGELOG)
 - force use of the GLPK_MI solver when a project has an active thermal technology
+- limit MACRS term to no greater than 20
 
 ### Removed
 - remove incl_thermal_load boolean from model parameter inputs

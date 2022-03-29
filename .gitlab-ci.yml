@@ -1,37 +1,31 @@
-image: python:3.6
+image: continuumio/miniconda3
 
 variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
   - test
-
-cache:
-  paths:
-    - .cache/pip
-    - dervet-venv/
 
 before_script:
   - echo "... pulling submodule ..."
   - echo "... Checking runner specifications ..."
   - uname
-  - apt-get update -q -y
-  - pip install virtualenv
-  - virtualenv dervet-venv
-  - source dervet-venv/bin/activate
+  - conda create -n venv python=3.8.13
+  - conda init bash
+  - source ~/.bashrc
+  - conda activate venv
 
 pytest:
   stage: test
   script:
-    - pip install -r requirements.txt
-    - pip install -r requirements-dev.txt
+    - pip install setuptools==52.0.0
+    - conda install conda-forge::blas=*=openblas --file requirements.txt --file requirements-dev.txt
     - pip install numpy_financial==1.0.0
     - pip install -e ./storagevet
-    - file ./storagevet/storagevet/Scenario.py
     - python -V
-    #- pip list
-    #- python run_DERVET.py Model_Parameters_Template_DER.csv -v
+    - pip list
+    - python run_DERVET.py -h
+    - python run_DERVET.py Model_Parameters_Template_DER.csv -v
     - python -m pytest test
   tags:
     - 'docker'

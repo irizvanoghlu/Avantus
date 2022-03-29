@@ -55,6 +55,5 @@ setup(name='dervet',
               "License :: EPRI License",
               "Programming Language :: Python"
       ],
-      # python_requires="==3.6",
       packages=find_packages(),
       zip_safe=False)

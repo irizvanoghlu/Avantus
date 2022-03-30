@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -40,6 +40,8 @@ from dervet.MicrogridDER.PV import PV
 from dervet.MicrogridDER.ICE import ICE
 from dervet.MicrogridDER.DieselGenset import DieselGenset
 from dervet.MicrogridDER.CombustionTurbine import CT
+from dervet.MicrogridDER.Chiller import Chiller
+from dervet.MicrogridDER.Boiler import Boiler
 from dervet.MicrogridDER.CombinedHeatPower import CHP
 from dervet.MicrogridDER.LoadControllable import ControllableLoad
 from dervet.MicrogridDER.ElectricVehicles import ElectricVehicle1, ElectricVehicle2
@@ -74,6 +76,8 @@ class MicrogridScenario(Scenario):
         'PV': PV,
         'ICE': ICE,
         'DieselGenset': DieselGenset,
+        'Chiller': Chiller,
+        'Boiler': Boiler,
         'CT': CT,
         'CHP': CHP,
         'Load': ControllableLoad,
@@ -111,6 +115,8 @@ class MicrogridScenario(Scenario):
             'ElectricVehicle1': input_tree.ElectricVehicle1,
             'ElectricVehicle2': input_tree.ElectricVehicle2,
             'DieselGenset': input_tree.DieselGenset,
+            'Chiller': input_tree.Chiller,
+            'Boiler': input_tree.Boiler,
             'CT': input_tree.CT,
             'CHP': input_tree.CHP,
         })
@@ -137,6 +143,11 @@ class MicrogridScenario(Scenario):
         der_lst = self.poi.der_list
         self.cost_benefit_analysis = CostBenefitAnalysis(self.finance_inputs, self.start_year,
                                                          self.end_year)
+
+        # add fuel_cost to active DERs that can consume fuel
+        for der in der_lst:
+            der.set_fuel_cost(self.cost_benefit_analysis.get_fuel_cost)
+
         # set the project end year
         self.end_year = self.cost_benefit_analysis.find_end_year(der_lst)
         if self.end_year.year == 0:
@@ -319,7 +330,25 @@ class MicrogridScenario(Scenario):
             if not len(constraints) and not len(functions.values()):
                 TellUser.info(f"Optimization window #{opt_period} does not have any constraints or objectives to minimize -- SKIPPING...")
                 continue
-            cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints)
+
+#            #NOTE: these print statements reveal the final constraints and costs for debugging
+#            print(f'\nFinal constraints ({len(constraints)}):')
+#
+#            #NOTE: more detail on constraints
+#            for i, c in enumerate(constraints):
+#                print(f'constraint {i}: {c.name()}')
+#                print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
+#                #print('  parameters:')
+#                #for p in c.parameters():
+#                #    print(f'    {p.name()} = {p.value}')
+#                print()
+#
+#            print('\n'.join([k.name() for k in constraints]))
+#            print(f'\ncosts ({len(functions)}):')
+#            print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
+#            print()
+
+            cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints, force_glpk_mi=self.poi.has_thermal_load)
             self.save_optimization_results(opt_period, sub_index, cvx_problem, obj_expressions, cvx_error_msg)
 
     def set_up_optimization(self, opt_window_num, annuity_scalar=1, ignore_der_costs=False):

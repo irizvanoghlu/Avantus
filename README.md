@@ -45,6 +45,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     | Windows 10   | Windows 10 |
 
    **On Mac**
+
     Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
 
 5. #### Open Anaconda Prompt
@@ -58,7 +59,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     "root directory"
 
 7. #### Create Python environment
-    We give the user 2 routes to create a python environment for python 3.6.10.
+    We give the user 2 routes to create a python environment for python 3.8.13
    >Most Windows users have success with the Conda route.
 
     Each route results in a siloed python environment, but with different properties.
@@ -67,16 +68,18 @@ Follow these steps to run DER-VET through your command line on your local comput
    > **You will need to activate the python environment to run the model, always.**
 
     **Conda Route - Recommended route for Windows OS**
+
     This route requires you to open Anaconda Prompt in step 5.
 
     Enter the following command:
     ```
-    conda create -n dervet-venv python=3.6.10
+    conda create -n dervet-venv python=3.8.13
     ```
-    >The python version is specified, meaning conda does not have to be associated with a python 3.6.10.
+    >The python version is specified, meaning conda does not have to be associated with a python 3.8.13.
 
     **Pip Route**
-    If you have Python 3.6.10 installed directly on your computer, then we recommend trying this route.
+
+    If you have Python 3.8.13 installed directly on your computer, then we recommend trying this route.
 
     >This route lets you to open the prompt of your choice in step 5.
 
@@ -85,17 +88,20 @@ Follow these steps to run DER-VET through your command line on your local comput
     pip install virtualenv
     virtualenv dervet-venv
     ```
-    >The `pip` should be associated to the **python 3.6.10 installation**
+    >The `pip` should be associated to the **python 3.8.13 installation**
 
-8. #### Activate Python 3.6 environment
+8. #### Activate Python 3.8.13 environment
     **Conda Route**
+
     Enter the following command into anaconda prompt:
     ```
     conda activate dervet-venv
     ```
 
     **Pip Route**
+
     Enter the corresponding command into the open prompt:
+
     *On Linux/Mac*
     ```
     source dervet-venv/bin/activate
@@ -107,22 +113,22 @@ Follow these steps to run DER-VET through your command line on your local comput
 
 9. #### Install project dependencies
     **Conda Route**
-    Open "./requirements.txt" with a text editor. This file can be found in the root directory.
 
-    Delete the line with "scipy" in it. Save the file.
-
-    Then enter the following commands in anaconda prompt:
+    Enter the following commands in anaconda prompt:
     ```
-    conda install -c conda-forge --file requirements.txt
-    pip install -r requirements-dev.txt
+    pip install setuptools==52.0.0
+    conda install conda-forge::blas=*=openblas --file requirements.txt --file requirements-dev.txt
+    pip install numpy_financial==1.0.0
     pip install -e ./storagevet
     ```
 
     **Pip Route**
+
     Enter the following commands into the open prompt:
     ```
-    pip install -r requirements.txt
-    pip install -r requirements-dev.txt
+    pip install setuptools==52.0.0
+    pip install -r requirements.txt -r requirements-dev.txt
+    pip install numpy_financial==1.0.0
     pip install -e ./storagevet
     ```
 
@@ -142,7 +148,7 @@ DER-VET on you local `C:\` drive.
 
 4. #### Open Anaconda Prompt
 
-5. #### Activate Python 3.6 environment
+5. #### Activate Python 3.8.13 environment
     ```
     conda activate "C:\DERVET\DervetBackEnd\"
     cd C:\DERVET\DervetBackEnd\dervet
@@ -150,8 +156,9 @@ DER-VET on you local `C:\` drive.
 
 6. #### Update project dependencies
     ```
-    conda install -c conda-forge --file requirements.txt
-    pip install -r requirements-dev.txt
+    pip install setuptools==52.0.0
+    conda install conda-forge::blas=*=openblas --file requirements.txt --file requirements-dev.txt
+    pip install numpy_financial==1.0.0
     pip install -e ./storagevet
     ```
 
@@ -187,11 +194,23 @@ Open terminal or command prompt from your project root, and input the following 
 pip install -e ./dervet
 ```
 
+## Migrating DER-VET GUI project.json files
+
+We have created a new folder titled "migrations" that is in the root "dervet" folder.
+In this folder, we have provided a command-line Python script which will convert an existing version 1.1 DER-VET GUI project.json file into a version 1.2 DER-VET GUI project.json file. This script should be used with Python 3.2 or greater.
+
+To view the usage statement for this script, open terminal or command prompt from your project root, and input the following command:
+```
+python migrations/migrate_project_dervet_GUI.py -h
+```
+
+The script accepts a single positional argument: the name of a folder which must contain a "project.json" file
+
 ## Versioning
 
 We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available,
 see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository.
-This is version 1.1.2
+This is version 1.2.0
 
 ## Authors
 
@@ -219,9 +238,9 @@ Please make sure to update tests as appropriate.
 
 This project is licensed under the BSD (3-clause) License - see [LICENSE.txt](./LICENSE.txt).
 
-DER-VET v1.1.2
+DER-VET v1.2.0
 
-Copyright © 2021 Electric Power Research Institute, Inc. All Rights Reserved.
+Copyright © 2022 Electric Power Research Institute, Inc. All Rights Reserved.
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright

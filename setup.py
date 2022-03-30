@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -44,17 +44,16 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='dervet',
-      version='1.1.2',
+      version='1.2.0',
       description='',
       url='der-vet.com',
       long_description=README,
-      author='Halley Nathwani',
-      author_email='hnathwani@epri.com',
+      author='Andrew Etringer',
+      author_email='aetringer@epri.com',
       license='EPRI',
       classifiers=[
               "License :: EPRI License",
               "Programming Language :: Python"
       ],
-      # python_requires="==3.6",
       packages=find_packages(),
       zip_safe=False)

@@ -28,7 +28,7 @@
             },
             "type": "float"
           },
-          "ccost_kw": {
+          "ccost_kW": {
             "opt_value": "800",
             "sensitivity": {
               "active": "no",
@@ -37,7 +37,7 @@
             },
             "type": "float"
           },
-          "ccost_kwh": {
+          "ccost_kWh": {
             "opt_value": "200",
             "sensitivity": {
               "active": "no",
@@ -74,7 +74,7 @@
             "type": "Period"
           },
           "cycle_life_filename": {
-            "opt_value": ".\\data\\battery_cycle_life.csv",
+            "opt_value": "./data/battery_cycle_life.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -476,7 +476,7 @@
               "coupled": "None",
               "value": "nan"
             },
-            "type": "int"
+            "type": "float"
           }
         }
       }
@@ -719,7 +719,7 @@
             "type": "int"
           },
           "customer_tariff_filename": {
-            "opt_value": ".\\test\\datasets\\sce_tou-8_2020.csv",
+            "opt_value": "./test/datasets/sce_tou-8_2020.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -746,6 +746,33 @@
             "type": "bool"
           },
           "federal_tax_rate": {
+            "opt_value": "0",
+            "sensitivity": {
+              "active": "no",
+              "coupled": "None",
+              "value": "nan"
+            },
+            "type": "float"
+          },
+          "fuel_price_gas": {
+            "opt_value": "0",
+            "sensitivity": {
+              "active": "no",
+              "coupled": "None",
+              "value": "nan"
+            },
+            "type": "float"
+          },
+          "fuel_price_liquid": {
+            "opt_value": "0",
+            "sensitivity": {
+              "active": "no",
+              "coupled": "None",
+              "value": "nan"
+            },
+            "type": "float"
+          },
+          "fuel_price_other": {
             "opt_value": "0",
             "sensitivity": {
               "active": "no",
@@ -791,7 +818,7 @@
             "type": "float"
           },
           "yearly_data_filename": {
-            "opt_value": ".\\data\\yearly_data.csv",
+            "opt_value": "./data/yearly_data.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -891,6 +918,15 @@
       "": {
         "active": "yes",
         "keys": {
+          "activate_electricity_load_dump": {
+            "opt_value": "0",
+            "sensitivity": {
+              "active": "no",
+              "coupled": "None",
+              "value": "nan"
+            },
+            "type": "bool"
+          },
           "apply_interconnection_constraints": {
             "opt_value": "0",
             "sensitivity": {
@@ -1036,7 +1072,7 @@
             "type": "float"
           },
           "monthly_data_filename": {
-            "opt_value": ".\\test\\datasets\\monthly_data_2021.csv",
+            "opt_value": "./test/datasets/monthly_data_2021.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",
@@ -1090,7 +1126,7 @@
             "type": "Period"
           },
           "time_series_filename": {
-            "opt_value": ".\\test\\datasets\\ev_timeseries.csv",
+            "opt_value": "./test/datasets/ev_timeseries.csv",
             "sensitivity": {
               "active": "no",
               "coupled": "None",

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -58,6 +58,7 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
             params (dict): Dict of parameters
         """
         TellUser.debug(f"Initializing ElectricVehicle1")
+        self.tag = 'ElectricVehicle1'
         # create generic technology object
         DER.__init__(self, params)
         ContinuousSizing.__init__(self, params)
@@ -388,6 +389,7 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
             params (dict): Dict of parameters
         """
         TellUser.debug(f"Initializing ElectricVehicle2")
+        self.tag = 'ElectricVehicle2'
         # create generic technology object
         DER.__init__(self, params)
         ContinuousSizing.__init__(self, params)

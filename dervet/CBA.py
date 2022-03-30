@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -35,6 +35,7 @@ This Python class contains methods and attributes vital for completing financial
 
 from storagevet.Finances import Financial
 import numpy as np
+import numpy_financial as npf
 import copy
 import pandas as pd
 from storagevet.ErrorHandling import *
@@ -209,7 +210,7 @@ class CostBenefitAnalysis(Financial):
         while yr_index > 0:
             dollar_per_year[yr_index - 1] = dollar_per_year[yr_index] * (1 / (1 + self.inflation_rate))
             yr_index -= 1
-        lifetime_npv_alpha = np.npv(self.npv_discount_rate, [0] + dollar_per_year)
+        lifetime_npv_alpha = npf.npv(self.npv_discount_rate, [0] + dollar_per_year)
         return lifetime_npv_alpha
 
     def calculate(self, technologies, value_streams, results, opt_years):
@@ -271,7 +272,11 @@ class CostBenefitAnalysis(Financial):
             der_tag = der_inst.tag
             der_id = der_inst.id
             evaluation_inputs = self.ders_values.get(der_tag, {}).get(der_id)
-            if evaluation_inputs is not None:
+            if der_inst.is_fuel:
+                # FIXME: I don't think this comes into play anymore with a project-wide fuel price- AE
+                # merge in possible fuel price evaluation
+                evaluation_inputs.update(self.Finance)
+            if evaluation_inputs:
                 der_inst.update_for_evaluation(evaluation_inputs)
 
     @staticmethod
@@ -504,7 +509,7 @@ class CostBenefitAnalysis(Financial):
         Returns: internal rate of return
 
         """
-        return np.irr(proforma['Yearly Net Value'].values)
+        return npf.irr(proforma['Yearly Net Value'].values)
 
     @staticmethod
     def benefit_cost_ratio(cost_benefit):

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -90,6 +90,6 @@ class ICE(InternalCombustionEngine.ICE, RotatingGeneratorSizing):
         """
         super().update_for_evaluation(input_dict)
 
-        fuel_cost = input_dict.get('fuel_cost')
+        fuel_cost = input_dict.get(f'fuel_price_{self.fuel_type}')
         if fuel_cost is not None:
             self.fuel_cost = fuel_cost

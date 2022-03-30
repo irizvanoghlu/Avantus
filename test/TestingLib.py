@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -30,11 +30,26 @@ Copyright (c) 2021, Electric Power Research Institute
 from dervet.DERVET import DERVET
 import os
 import pandas as pd
+from pathlib import Path
 
+def _checkThatFileExists(f, name='Unlabeled', raise_exception_on_fail=True, write_msg_to_terminal=True):
+    path_file = Path(f)
+    if write_msg_to_terminal:
+        msg = f'\n{name} file:\n  {path_file.resolve()}'
+        print(msg)
+    if not path_file.is_file():
+        if raise_exception_on_fail:
+            raise FileNotFoundError(f'\n\nFAIL: Your specified {name} file does not exist:\n{path_file.resolve()}\n')
+        else:
+            print(f'\n\nFAIL: Your specified {name} file does not exist:\n{path_file.resolve()}\n')
+            return None
+    return path_file
 
 def run_case(model_param_location: str):
     print(f"Testing {model_param_location}...")
-    case = DERVET(model_param_location)
+    # first make sure the model_param file exists
+    model_param_file = _checkThatFileExists(Path(model_param_location), 'Model Parameter Input File')
+    case = DERVET(model_param_file)
     results = case.solve()
     print(results.dir_abs_path)
     return results
@@ -42,7 +57,9 @@ def run_case(model_param_location: str):
 
 def check_initialization(model_param_location: str):
     print(f"Testing {model_param_location}...")
-    case = DERVET(model_param_location)
+    # first make sure the model_param file exists
+    model_param_file = _checkThatFileExists(Path(model_param_location), 'Model Parameter Input File')
+    case = DERVET(model_param_file)
     return case
 
 
@@ -85,12 +102,78 @@ def assert_usecase_considered_services(results, services: list):
     print(set(value_stream_keys))
     assert set(services) == set(value_stream_keys)
 
+def assert_timeseries_columns_exist(ts, items: list):
+    timeseries_columns = ts.columns
+    assert set(items).issubset(timeseries_columns)
+
+def assert_timeseries_columns_do_not_exist(ts, items: list):
+    timeseries_columns = ts.columns
+    assert not set(items).intersection(timeseries_columns)
+
+def assert_timeseries_columns_are_all_zeroes(ts, items: list):
+    ts_subset = ts[items]
+    max_tf = ts_subset.max().between(-1e-5, 1e-5)
+    min_tf = ts_subset.min().between(-1e-5, 1e-5)
+    print(max_tf, min_tf)
+    assert all(max_tf) & all(min_tf)
+
+def assert_timeseries_columns_have_positive_values(ts, items: list):
+    ts_subset = ts[items]
+    max_tf = ts_subset.max().gt(1e-5)
+    assert all(max_tf)
+
+def assert_timeseries_columns_have_negative_values(ts, items: list):
+    ts_subset = ts[items]
+    min_tf = ts_subset.min().gt(1e-5)
+    assert all(min_tf)
+
+def assert_timeseries_columns_equal(ts, col1: str, col2: str):
+    # across all times
+    ts_diff = ts[col1] - ts[col2]
+    assert ts_diff.abs().max() < 1e-5
+
+def assert_timeseries_columns_not_equal(ts, col1: str, col2: str):
+    # across all times
+    ts_diff = ts[col1] - ts[col2]
+    assert ts_diff.abs().max() > 1e-5
+
+def assert_timeseries_col1_ge_col2(ts, col1: str, col2: str):
+    # across all times
+    ts_diff = ts[col1] - ts[col2]
+    assert all(ts_diff.ge(-1e-5))
+
+def assert_npv_columns_are_zero(npv, items: list):
+    # npv only has one row
+    npv_subset = npv[items]
+    tf = npv_subset.max().between(-1e-5, 1e-5)
+    assert all(tf)
+
+def assert_npv_columns_are_negative(npv, items: list):
+    # npv only has one row; negative represents a cost
+    npv_subset = npv[items]
+    tf = npv_subset.max().lt(0)
+    assert all(tf)
+
+def assert_pro_forma_columns_are_all_zeroes(pf, items: list):
+    pf_subset = pf[items]
+    max_tf = pf_subset.max().between(-1e-5, 1e-5)
+    min_tf = pf_subset.min().between(-1e-5, 1e-5)
+    assert all(max_tf) & all(min_tf)
+
+def assert_pro_forma_columns_are_all_negative(pf, items: list):
+    pf_subset = pf[items]
+    max_tf = pf_subset.max().lt(0)
+    min_tf = pf_subset.min().lt(0)
+    assert all(max_tf) & all(min_tf)
 
 def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float,
                              opt_years=None):
     assert_file_exists(results, 'pro_forma')
     test_proforma_df = results.proforma_df()
-    expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+    try:
+        expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+    except ValueError:
+        expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
     for yr_indx, values_series in expected_df.iterrows():
         try:
             actual_indx = pd.Period(yr_indx)
@@ -148,7 +231,7 @@ def compare_lcpc_results(results, frozen_lcpc_location: str, error_bound: float)
 
         test_value = test_df.loc[time_step]['Load Coverage Probability (%)']
         actual_value = actual_df.loc[time_step]['Load Coverage Probability (%)']
-        if test_value is not 'nan' and actual_value is not 'nan':
+        if test_value != 'nan' and actual_value != 'nan':
             error_message = f'ValueError in [{time_step}]\nExpected: {actual_value}\nGot: {test_value}'
 
             assert_within_error_bound(actual_value, test_value, error_bound, error_message)

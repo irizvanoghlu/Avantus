@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -36,6 +36,7 @@ import cvxpy as cvx
 from .ICE import ICE
 import numpy as np
 from storagevet.Technology.DistributedEnergyResource import DER
+from storagevet.ErrorHandling import *
 
 
 class DieselGenset(ICE):
@@ -49,6 +50,8 @@ class DieselGenset(ICE):
         Args:
             params (dict): Dict of parameters for initialization
         """
+        TellUser.debug(f"Initializing {__name__}")
+        self.tag = 'DieselGenset'
         # base class is ICE
         super().__init__(params)
         self.tag = 'DieselGenset'

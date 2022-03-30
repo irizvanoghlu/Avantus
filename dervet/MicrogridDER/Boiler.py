@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -40,7 +40,6 @@ A Boiler cannot serve a cooling load, nor an electric load.
 """
 
 __author__ = 'Andrew Etringer'
-__copyright__ = 'Copyright 2022. Electric Power Research Institute (EPRI). All Rights Reserved.'
 __license__ = 'EPRI'
 __maintainer__ = ['Andrew Etringer']
 __email__ = ['aetringer@epri.com']

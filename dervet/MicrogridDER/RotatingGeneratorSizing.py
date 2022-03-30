@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -58,7 +58,7 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
         self.max_rated_power = params['max_rated_capacity']
         self.min_rated_power = params['min_rated_capacity']
         if not self.rated_power:
-            self.rated_power = cvx.Variable(integer=True, name=f'{self.name}rating')
+            self.rated_power = cvx.Variable(integer=True, name=f'{self.name} rating')
             self.size_constraints += [cvx.NonPos(-self.rated_power)]
             if self.min_rated_power:
                 self.size_constraints += [cvx.NonPos(self.min_rated_power - self.rated_power)]
@@ -184,12 +184,8 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
             self.variable_om = variable_cost
 
         fixed_om_cost = input_dict.get('fixed_om_cost')
-        if variable_cost is not None:
+        if fixed_om_cost is not None:
             self.fixed_om = fixed_om_cost
-
-        ccost_kw = input_dict.get('ccost_kW')
-        if ccost_kw is not None:
-            self.capital_cost_function[1] = ccost_kw
 
     def sizing_error(self):
         """

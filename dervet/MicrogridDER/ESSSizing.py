@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021, Electric Power Research Institute
+Copyright (c) 2022, Electric Power Research Institute
 
  All rights reserved.
 
@@ -329,8 +329,10 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             'Capital Cost ($/kWh)': self.capital_cost_function[2]}
         if sizing_results['Duration (hours)'] > 24:
             TellUser.warning(f'The duration of {self.name} is greater than 24 hours!')
+
         if self.tag == 'CAES':
-            return
+            # NOTE: CAES sizing is not allowed in DERVET currently
+            return sizing_results
 
         # warn about tight sizing margins
         if self.is_energy_sizing():
@@ -384,7 +386,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         variable_om = input_dict.get('OMexpenses')
         if variable_om is not None:
-            self.variable_om = variable_om * 100
+            self.variable_om = variable_om * 1e-3
 
         if self.incl_startup:
             p_start_ch = input_dict.get('p_start_ch')
@@ -402,6 +404,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         """
         if self.tag == 'CAES':
+            TellUser.error(f'{self.unique_tech_id()} is being sized, but the code does not support this action currently.')
             return True
         if self.is_power_sizing() and self.incl_binary:
             TellUser.error(f'{self.unique_tech_id()} is being sized and binary is turned on. You will get a DCP error.')

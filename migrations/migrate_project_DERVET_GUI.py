@@ -158,14 +158,9 @@ def convert(v1):
                 pointer["cycleLifeCurve"] = pointer["associatedInputs"][0]["dataRows"]
                 remove_field("associatedInputs", pointer)
 
-                pointer["ccost_kWh"] = pointer["ccost_kwh"]
-                remove_field("ccost_kwh", pointer)
-                pointer["ccost_kW"] = pointer["ccost_kw"]
-                remove_field("ccost_kw", pointer)
-
             if coll == "technologySpecsICE" or coll == "technologySpecsDieselGen":
                 remove_field("fuelCost", pointer)
-                pointer["fuelType"] = None;
+                pointer["fuelType"] = "fuel_type must be selected";
 
     def mod_timeseries(field, dct):
         dct[field] = dct[field]["data"]
@@ -193,7 +188,7 @@ def convert(v1):
 
     # Add new Scenario field
     result["activate_electricity_load_dump"] = None
-    
+
     # add a schema version
     result['schemaVersion'] = SCHEMA_VERSION
 

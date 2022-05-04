@@ -5,6 +5,10 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.1] - 2022-03-31 to 2022-05-04
+### Added
+- adds warning message to ignore the duration_max parameter when not sizing a battery
+
 ## [1.2.0] - 2021-09-10 to 2022-03-30
 ### Added
 - added a migrations/migrate_project_DERVET_GUI.py script

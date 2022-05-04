@@ -64,7 +64,11 @@ class Battery(BatteryTech.Battery, ESSSizing):
         self.actual_time_to_replacement = None  # set by degredation module
 
         if self.user_duration:
-            self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
+            if self.being_sized():
+                self.size_constraints += [cvx.NonPos(self.ene_max_rated - self.user_duration*self.dis_max_rated)]
+            else:
+                TellUser.warning(f"Ignoring {self.tag}-{self.name} energy storage size duration maximum (duration_max={self.user_duration}) because you are not having DER-VET size the battery. Set it to 0 to abstain from applying.")
+
 
     def initialize_degradation_module(self, opt_agg):
         """

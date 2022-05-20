@@ -34,7 +34,7 @@ This Python script is used to convert a DER-VET GUI Project file
 from version 1 (used in GUI v1.1) to version 2 (used in GUI v1.2)
 """
 
-import copy, os, json, argparse
+import copy, os, json, argparse, sys
 from pathlib import Path
 
 PROJECT_FILENAME = 'project.json'
@@ -112,7 +112,10 @@ def _checkThatFileExists(f, name='Unlabeled', raise_exception_on_fail=False, wri
 
 def dict_from_json_file(filepath: str) -> dict:
     with open(filepath) as f:
-        dct = json.load(f)
+        try:
+            dct = json.load(f)
+        except Exception as e:
+            sys.exit(f'\nFAIL: The {PROJECT_FILENAME} file has one or more formatting errors that need to be resolved.\n      JSON Error: {e}\n')
     return dct
 
 def dict_to_json_file(filepath: str, dct: dict):
@@ -196,6 +199,8 @@ def convert(v1):
 
 def main(v1_filepath):
     v1 = dict_from_json_file(v1_filepath)
+    if v1.get('schemaVersion') == SCHEMA_VERSION:
+        sys.exit('\nNOTHING WAS DONE: This project is already compatible with DER-VET GUI version 1.2\n')
     v2 = convert(v1)
     v2_filepath = make_v2_filepath(v1_filepath)
     dict_to_json_file(v2_filepath, v2)

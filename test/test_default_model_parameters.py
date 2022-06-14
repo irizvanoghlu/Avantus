@@ -54,6 +54,11 @@ TEMP_MP = DIR / f'temp_model_parameters'
 def setup_default_case(test_file):
     case = check_initialization(f'{test_file}{CSV}')
 
+#def infeasible_error(test_file):
+#    # following should fail
+#    with pytest.raises(SolverError):
+#        results_instance = assert_ran(f'{test_file}{CSV}')
+
 def run_default_case(test_file):
     results_instance = assert_ran(f'{test_file}{CSV}')
 
@@ -140,3 +145,27 @@ def test_default_boiler_active():
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)
 
+def test_default_incl_ts_discharge_limits():
+    temp_mp = modify_mp('Battery', key='incl_ts_discharge_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_charge_limits():
+    temp_mp = modify_mp('Battery', key='incl_ts_charge_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_energy_limits():
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def xtest_default_incl_ts_energy_limits_infeasible():
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value', mp_out_tag='energy')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_limits_infeasible.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='energy')
+    setup_default_case(temp_mp)
+    infeasible_error(temp_mp)
+    remove_temp_files(temp_mp)

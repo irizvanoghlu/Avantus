@@ -58,16 +58,16 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         ContinuousSizing.__init__(self, params)
         self.incl_energy_limits = params.get('incl_ts_energy_limits', False)
         if self.incl_energy_limits:
-            self.limit_energy_max = params['ts_energy_max'].fillna(self.ene_max_rated)
-            self.limit_energy_min = params['ts_energy_min'].fillna(0)
+            self.limit_energy_max = params['ts_energy_max']
+            self.limit_energy_min = params['ts_energy_min']
         self.incl_charge_limits = params.get('incl_ts_charge_limits', False)
         if self.incl_charge_limits:
-            self.limit_charge_max = params['ts_charge_max'].fillna(self.ch_max_rated)
-            self.limit_charge_min = params['ts_charge_min'].fillna(self.ch_min_rated)
+            self.limit_charge_max = params['ts_charge_max']
+            self.limit_charge_min = params['ts_charge_min']
         self.incl_discharge_limits = params.get('incl_ts_discharge_limits', False)
         if self.incl_discharge_limits:
-            self.limit_discharge_max = params['ts_discharge_max'].fillna(self.dis_max_rated)
-            self.limit_discharge_min = params['ts_discharge_min'].fillna(self.dis_min_rated)
+            self.limit_discharge_max = params['ts_discharge_max']
+            self.limit_discharge_min = params['ts_discharge_min']
         if self.tag == 'CAES':
             # note that CAES sizing is not allowed bc it has not been validated -HN
             # TODO CAES + a warning if the user tries to size it

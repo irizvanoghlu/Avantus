@@ -17,7 +17,7 @@ Scenario,.,verbose_opt,0,y/n,bool,"{0,1}",,None,optimization feedback flag,.,no,
 Scenario,.,binary,0,y/n,bool,"{0,1}",,None,Should the optimization use binary variables to prevent concurrent charge and discharge? This should be 1 usually,.,no,.,.,
 Scenario,.,slack,0,y/n,bool,"{0,1}",,None,Should the optimization use soft constraints (more robust but longer run time),.,no,.,.,
 Scenario,.,ownership,customer,,string,"{customer,utility,3rd party}",,None,who owns the assests,.,no,utility,n,
-Scenario,.,location,customer,,string,"{generation,transmission,distrubution,customer}",,None,the domain in which the assets are located,.,no,.,.,
+Scenario,.,location,customer,,string,"{generation,transmission,distribution,customer}",,None,the domain in which the assets are located,.,no,.,.,
 Scenario,.,kappa_ene_max,100000,,float,<0,,None,penalty on relaxing maximum energy,.,no,.,.,unused
 Scenario,.,kappa_ene_min,100000,,float,<0,,None,penalty on relaxing minimum energy,.,no,.,.,unused
 Scenario,.,kappa_dis_max,100000,,float,<0,,None,penalty on relaxing maximum charging,.,no,.,.,unused

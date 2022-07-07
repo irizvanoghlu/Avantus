@@ -210,7 +210,7 @@ The script accepts a single positional argument: the name of a folder which must
 
 We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available,
 see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository.
-This is version 1.2.1
+This is version 1.2.2
 
 ## Authors
 

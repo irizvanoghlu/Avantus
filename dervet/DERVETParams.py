@@ -773,9 +773,9 @@ class ParamsDER(Params):
         if unit == 'kWh':
             # perform the following checks on the values in the timeseries
             if ts_max.min() < 0:
-                self.req_all_positive(ts_max.values, ts_max_name)
+                self.req_all_non_negative(ts_max.values, ts_max_name)
             if ts_min.min() < 0:
-                self.req_all_positive(ts_min.values, ts_min_name)
+                self.req_all_non_negative(ts_min.values, ts_min_name)
 
         inputs_dct.update({f'ts_{measurement.lower()}_max': ts_max,
                            f'ts_{measurement.lower()}_min': ts_min})

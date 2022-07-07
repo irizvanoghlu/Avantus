@@ -722,10 +722,10 @@ class ParamsDER(Params):
                     fill_min_value = 0
                 elif measurement.lower() == 'charge':
                     fill_max_value = inputs_dct.get('ch_max_rated')
-                    fill_min_value = inputs_dct.get('ch_min_rated')
+                    fill_min_value = 0
                 elif measurement.lower() == 'discharge':
                     fill_max_value = inputs_dct.get('dis_max_rated')
-                    fill_min_value = inputs_dct.get('dis_min_rated')
+                    fill_min_value = 0
                 if ts_max is None:
                     ts_max = empty_ts.copy()
                     ts_max.name = ts_max_name

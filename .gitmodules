@@ -1,2 +1,3 @@
 [submodule "StorageVET"]
 	path = StorageVET
+	url = https://github.com/epri-dev/StorageVET.git

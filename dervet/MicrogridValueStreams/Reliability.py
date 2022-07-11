@@ -343,9 +343,8 @@ class Reliability(ValueStream):
         if not self.post_facto_only and self.min_soe_df is not None:
             for der_instance in der_lst:
                 if der_instance.technology_type == 'Energy Storage System':
-                    # add the power and energy constraints to ensure enough
-                    # energy and power in the ESS for the next x hours there
-                    # will be 2 constraints: one for power, one for energy
+                    # add an energy constraint to ensure enough
+                    # energy in the ESS for the next x hours
                     soe_array = self.min_soe_df['soe']
                     self.system_requirements = [
                         Requirement('energy', 'min', self.name, soe_array)

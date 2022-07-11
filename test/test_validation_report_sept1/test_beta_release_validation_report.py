@@ -132,6 +132,21 @@ class TestUseCase2EssSizing4Reliability:
         compare_size_results(self.results, self.validated_folder / "sizeuc3_es_step1.csv", .1)
 
 
+class TestUseCase2EssSizing4ReliabilityRTS:
+    """ Part 1b of Usecase 2A - 1ESS - size for just reliability with RTS"""
+    # this includes an optimization service (RTS) to properly test that the minimum energy requirement
+    # is getting applied as a constraint (check_lcpc does this)
+    def setup_class(self):
+        self.mp_name = TEST_DIR / USECASE2 / "Model_Parameters_Template_Usecase3_Planned_ES_RTS.csv"
+        self.results = run_case(self.mp_name)
+
+    def test_lcpc_exists(self):
+        assert_file_exists(self.results, 'load_coverage_prob')
+
+    def test_lcpc_meets_target(self):
+        check_lcpc(self.results, self.mp_name)
+
+
 class TestUseCase2Ess4BtmUserConstraints:
     """ Part 2 of Usecase 2A - 1 ESS - given size , bill reduction and user constraint with PF
     reliability"""

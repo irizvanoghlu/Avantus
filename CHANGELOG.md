@@ -5,6 +5,28 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.2] - 2022-05-05 to 2022-07-07
+### Added
+- pytests for small tweaks to the default model parameters CSV
+  - create instances of infeasibility with bad data in the input time series
+  - setting ts-limit booleans ON should not fail
+### Changed
+- improved handling of input time series data
+  - new method: get_single_series()
+  - introduce more specific error classes: TimeseriesDataError and TimeseriesMissingError
+  - better error and warning messaging and readability
+- sets all min and max battery constraint values to empty in the default input time series
+- adds column: LF Price ($/kW) to default time series
+- improvements to the migration script
+  - when the input is already v1.2, exit with a clear message
+  - have better error messages for poorly formatted json inputs
+### Fixed
+- the broken reliability service, when post_facto_only is OFF, has been fixed
+  - Adds back the SysEneMinReq constraint
+  - NOTE: this was mistakenly removed in a commit from August 2021
+  - adds a pytest to ensure that when an optimization loop is run, with Reliability active,
+    the first X hours in the load_coverage_prob.csv file are 1 meaning 100 percent covered
+
 ## [1.2.1] - 2022-03-31 to 2022-05-04
 ### Added
 - adds warning message to ignore the duration_max parameter when not sizing a battery

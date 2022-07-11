@@ -54,6 +54,18 @@ TEMP_MP = DIR / f'temp_model_parameters'
 def setup_default_case(test_file):
     case = check_initialization(f'{test_file}{CSV}')
 
+def infeasible_error(test_file):
+    with pytest.raises(SolverInfeasibleError):
+        results_instance = assert_ran(f'{test_file}{CSV}')
+
+def timeseries_missing_error(test_file):
+    with pytest.raises(TimeseriesMissingError):
+        results_instance = assert_ran(f'{test_file}{CSV}')
+
+def timeseries_data_error(test_file):
+    with pytest.raises(TimeseriesDataError):
+        results_instance = assert_ran(f'{test_file}{CSV}')
+
 def run_default_case(test_file):
     results_instance = assert_ran(f'{test_file}{CSV}')
 
@@ -140,3 +152,75 @@ def test_default_boiler_active():
     run_default_case(temp_mp)
     remove_temp_files(temp_mp)
 
+def test_default_incl_ts_discharge_limits():
+    # turn on boolean to include ts limits
+    temp_mp = modify_mp('Battery', key='incl_ts_discharge_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_charge_limits():
+    # turn on boolean to include ts limits
+    temp_mp = modify_mp('Battery', key='incl_ts_charge_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_energy_limits():
+    # turn on boolean to include ts limits
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_limits_off():
+    # with incl_ts_*_limits all off, the max and min columns in the time series will be ignored, and this will run just fine
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_limits_infeasible.csv', column='Optimization Value')
+    setup_default_case(temp_mp)
+    run_default_case(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_discharge_limits_infeasible():
+    # should fail with SolverInfeasibleError
+    temp_mp = modify_mp('Battery', key='incl_ts_discharge_limits', value=1, column='Optimization Value', mp_out_tag='discharge')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_limits_infeasible.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='discharge')
+    setup_default_case(temp_mp)
+    infeasible_error(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_charge_limits_infeasible():
+    # should fail with SolverInfeasibleError
+    temp_mp = modify_mp('Battery', key='incl_ts_charge_limits', value=1, column='Optimization Value', mp_out_tag='charge')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_limits_infeasible.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='charge')
+    setup_default_case(temp_mp)
+    infeasible_error(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_energy_limits_infeasible():
+    # should fail with SolverInfeasibleError
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value', mp_out_tag='energy')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_limits_infeasible.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='energy')
+    setup_default_case(temp_mp)
+    infeasible_error(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_energy_limits_missing_ts_columns():
+    # should fail with TimeseriesMissingError
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value', mp_out_tag='energy')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_energy_limits_missing_ts_columns.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='energy')
+    timeseries_missing_error(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_energy_limits_bad_ts_data():
+    # should fail with TimeseriesDataError
+    temp_mp = modify_mp('Battery', key='incl_ts_energy_limits', value=1, column='Optimization Value', mp_out_tag='energy')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_energy_limits_bad_ts_data.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='energy')
+    timeseries_data_error(temp_mp)
+    remove_temp_files(temp_mp)
+
+def test_default_incl_ts_charge_limits_bad_ts_data():
+    # should fail with TimeseriesDataError
+    temp_mp = modify_mp('Battery', key='incl_ts_charge_limits', value=1, column='Optimization Value', mp_out_tag='charge')
+    temp_mp = modify_mp('Scenario', key='time_series_filename', value='./test/datasets/default_incl_ts_charge_limits_bad_ts_data.csv', column='Optimization Value', mp_in=temp_mp, mp_out_tag='charge')
+    timeseries_data_error(temp_mp)
+    remove_temp_files(temp_mp)

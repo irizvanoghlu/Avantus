@@ -539,6 +539,7 @@ class ParamsDER(Params):
             return False
 
         time_series = self.Scenario['time_series']
+        time_series_nan_count = self.Scenario['time_series_nan_count']
         dt = self.Scenario['dt']
         binary = self.Scenario['binary']
 
@@ -576,29 +577,25 @@ class ParamsDER(Params):
                     self.record_input_error('Error: User battery min energy requirement is greater than max energy requirement.')
             # check if user wants to include timeseries constraints -> grab data
             if battery_inputs['incl_ts_energy_limits']:
-                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Energy', 'kWh', time_series)
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Energy', 'kWh', time_series, time_series_nan_count)
             if battery_inputs['incl_ts_charge_limits']:
-                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Charge', 'kW', time_series)
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Charge', 'kW', time_series, time_series_nan_count)
             if battery_inputs['incl_ts_discharge_limits']:
-                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Discharge', 'kW', time_series)
+                self.load_ts_limits(id_str, battery_inputs, 'Battery', 'Discharge', 'kW', time_series, time_series_nan_count)
 
         for id_str, caes_inputs in self.CAES.items():
             # check if user wants to include timeseries constraints -> grab data
             if caes_inputs['incl_ts_energy_limits']:
-                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Energy', 'kWh', time_series)
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Energy', 'kWh', time_series, time_series_nan_count)
             if caes_inputs['incl_ts_charge_limits']:
-                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Charge', 'kW', time_series)
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Charge', 'kW', time_series, time_series_nan_count)
             if caes_inputs['incl_ts_discharge_limits']:
-                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Discharge', 'kW', time_series)
+                self.load_ts_limits(id_str, caes_inputs, 'CAES', 'Discharge', 'kW', time_series, time_series_nan_count)
 
         for id_str, load_inputs in self.ControllableLoad.items():
             # check to make sure data was included
             col_name = "Site Load (kW)"
-            error_msg = f"Missing '{col_name}/{id_str}' from timeseries " \
-                        f"input. Please include a site load."
-            load_value = self.grab_column(time_series, col_name, error_msg,
-                                          id_str)
-            load_inputs['site_load'] = load_value
+            load_inputs['site_load'] = self.get_single_series(time_series, col_name, time_series_nan_count, 'Site Load', id_str=id_str)
             load_inputs.update({'dt': dt,
                                 'growth': self.Scenario['def_growth']})
 
@@ -615,11 +612,7 @@ class ParamsDER(Params):
             ev_input.update({'binary': binary,
                              'dt': dt})
             names_list.append(ev_input['name'])
-            try:
-                ev_input.update({'EV_baseline': time_series.loc[:, f'EV fleet/{id_str}'],
-                                 'dt': dt})
-            except KeyError:
-                self.record_input_error(f"Missing 'EV fleet/{id_str}' from timeseries input. Please include EV load.")
+            ev_input.update({'EV_baseline': self.get_single_series(time_series, f'EV fleet/{id_str}', time_series_nan_count, 'EV Load')})
 
         if len(self.CHP):
             for id_str, chp_inputs in self.CHP.items():
@@ -627,14 +620,11 @@ class ParamsDER(Params):
                 # add time series, monthly data, and any scenario case parameters to CHP parameter dictionary
                 # TODO: we allow for multiple CHPs to be defined -- and if there were -- then they all would share the same data.
                 #       Is this correct? --HN; yes --AE
-                try:
-                    chp_inputs.update({'site_steam_load': KW_PER_MMBTU_HR * time_series.loc[:, 'Site Steam Thermal Load (MMBtu/hr)']})
-                except KeyError:
-                    pass
-                try:
-                    chp_inputs.update({'site_hotwater_load': KW_PER_MMBTU_HR * time_series.loc[:, 'Site Hot Water Thermal Load (MMBtu/hr)']})
-                except KeyError:
-                    pass
+                chp_inputs.update({'site_steam_load':
+                    self.get_single_series(time_series, 'Site Steam Thermal Load (MMBtu/hr)', time_series_nan_count, bypass_key_error=True, unit_conversion=KW_PER_MMBTU_HR)})
+                chp_inputs.update({'site_hotwater_load':
+                    self.get_single_series(time_series, 'Site Hot Water Thermal Load (MMBtu/hr)', time_series_nan_count, bypass_key_error=True, unit_conversion=KW_PER_MMBTU_HR)})
+
                 # report error when thermal load has neither steam nor hotwater components
                 if chp_inputs.get('site_steam_load') is None and chp_inputs.get('site_hotwater_load') is None:
                     self.record_input_error("CHP is missing required site heating load time series input data. 'Site Steam Thermal Load (MMBtu/hr)' and/or 'Site Hot Water Thermal Load (MMBtu/hr)' must exist as time series data inputs.")
@@ -663,10 +653,8 @@ class ParamsDER(Params):
             for id_str, chiller_input in self.Chiller.items():
                 chiller_input.update({'dt': dt})
                 # add time series to Chiller parameter dictionary
-                try:
-                    chiller_input.update({'site_cooling_load': KW_PER_TON * time_series.loc[:, 'Site Cooling Thermal Load (tons)']})
-                except KeyError:
-                    pass
+                chiller_input.update({'site_cooling_load':
+                    self.get_single_series(time_series, 'Site Cooling Thermal Load (tons)', time_series_nan_count, bypass_key_error=True, unit_conversion=KW_PER_TON)})
                 # report error when thermal load does not have a cooling load
                 if chiller_input.get('site_cooling_load') is None:
                     self.record_input_error("Chiller is missing a site cooling load ('Site Cooling Thermal Load (tons)' from timeseries data input")
@@ -686,14 +674,10 @@ class ParamsDER(Params):
                 # add time series, monthly data, and any scenario case parameters to boiler parameter dictionary
                 # TODO: we allow for multiple boilers to be defined -- and if there were -- then they all would share the same data.
                 #       Is this correct? --HN; yes --AE
-                try:
-                    boiler_inputs.update({'site_steam_load': KW_PER_MMBTU_HR * time_series.loc[:, 'Site Steam Thermal Load (MMBtu/hr)']})
-                except KeyError:
-                    pass
-                try:
-                    boiler_inputs.update({'site_hotwater_load': KW_PER_MMBTU_HR * time_series.loc[:, 'Site Hot Water Thermal Load (MMBtu/hr)']})
-                except KeyError:
-                    pass
+                boiler_inputs.update({'site_steam_load':
+                    self.get_single_series(time_series, 'Site Steam Thermal Load (MMBtu/hr)', time_series_nan_count, bypass_key_error=True, unit_conversion=KW_PER_MMBTU_HR)})
+                boiler_inputs.update({'site_hotwater_load':
+                    self.get_single_series(time_series, 'Site Hot Water Thermal Load (MMBtu/hr)', time_series_nan_count, bypass_key_error=True, unit_conversion=KW_PER_MMBTU_HR)})
                 # report error when thermal load has neither steam nor hotwater components
                 if boiler_inputs.get('site_steam_load') is None and boiler_inputs.get('site_hotwater_load') is None:
                     self.record_input_error("Boiler is missing required site heating load time series input data. 'Site Steam Thermal Load (MMBtu/hr)' and/or 'Site Hot Water Thermal Load (MMBtu/hr)' must exist as time series data inputs.")
@@ -720,49 +704,92 @@ class ParamsDER(Params):
 
         super().load_technology(names_list)
 
-    def load_ts_limits(self, id_str, inputs_dct, tag, measurement, unit, time_series):
-        input_cols = [f'{tag}: {measurement} Max ({unit})/{id_str}', f'{tag}: {measurement} Min ({unit})/{id_str}']
-        ts_max = time_series.get(input_cols[0])
-        ts_min = time_series.get(input_cols[1])
+    def load_ts_limits(self, id_str, inputs_dct, tag, measurement, unit, time_series, time_series_nan_count):
+        # check for inconsistencies in timeseries limit columns and values
+
+        def fill_ts_limits(ts_max, ts_min, inputs_dct, measurement, ts_max_name, ts_min_name):
+            # fill in empty/nan values, from ts_max and ts_min, with model parameter scalars here
+            # if ts is None, then create it and fill it as appropriate
+            # report details of fills in log file
+            if inputs_dct.get(f'incl_ts_{measurement.lower()}_limits'):
+                # create a timeseries with all NaN values using a copy of the first time series available
+                empty_ts = next(item for item in [ts_max, ts_min] if item is not None).copy()
+                empty_ts.iloc[:] = np.nan
+                # determine the fill value; use the required model parameter scalar
+                fill_max_value, fill_min_value = None, None
+                if measurement.lower() == 'energy':
+                    fill_max_value = inputs_dct.get('ene_max_rated')
+                    fill_min_value = 0
+                elif measurement.lower() == 'charge':
+                    fill_max_value = inputs_dct.get('ch_max_rated')
+                    fill_min_value = 0
+                elif measurement.lower() == 'discharge':
+                    fill_max_value = inputs_dct.get('dis_max_rated')
+                    fill_min_value = 0
+                if ts_max is None:
+                    ts_max = empty_ts.copy()
+                    ts_max.name = ts_max_name
+                if ts_min is None:
+                    ts_min = empty_ts.copy()
+                    ts_min.name = ts_min_name
+                # fill all missing values with the scalar, if necessary, and report on it in the log
+                ts_max_nan_count = time_series_nan_count.get(ts_max_name, len(ts_max))
+                ts_min_nan_count = time_series_nan_count.get(ts_min_name, len(ts_min))
+                if ts_max_nan_count != 0:
+                    ts_max.fillna(fill_max_value, inplace=True)
+                    TellUser.warning(f"We have filled in {ts_max_nan_count} empty/NaN value(s) from "
+                                     f"'{ts_max_name}' with the value: {fill_max_value}")
+                if ts_min_nan_count != 0:
+                    ts_min.fillna(fill_min_value, inplace=True)
+                    TellUser.warning(f"We have filled in {ts_min_nan_count} empty/NaN value(s) from "
+                                     f"'{ts_min_name}' with the value: {fill_min_value}")
+            # return 2 series
+            return ts_max, ts_min
+
+        ts_max_name = f'{tag}: {measurement} Max ({unit})/{id_str}'
+        ts_min_name = f'{tag}: {measurement} Min ({unit})/{id_str}'
+        ts_max = self.get_single_series(time_series, ts_max_name, time_series_nan_count, bypass_key_error=True, allow_nans=True)
+        ts_min = self.get_single_series(time_series, ts_min_name, time_series_nan_count, bypass_key_error=True, allow_nans=True)
         if ts_max is None and ts_min is None:
-            self.record_input_error(f"Missing '{tag}: {measurement} Min ({unit})/{id_str}' or '{tag}: {measurement} Max ({unit})/{id_str}' " +
+            # disallow both ts_max and ts_min to be None; at least one must exist to continue
+            self.record_timeseries_missing_error(f"'{ts_max_name}' or '{ts_min_name}' is missing " +
                                     "from timeseries input. User indicated one needs to be applied. " +
-                                    "Please include or turn incl_ts_energy_limits off.")
+                                    f"Please include or turn incl_ts_{measurement.lower()}_limits off.")
+            return None
+
+        # fill in empty/nan values, from ts_max and ts_min, with model parameter scalars here
+        ts_max, ts_min = fill_ts_limits(ts_max, ts_min, inputs_dct, measurement, ts_max_name, ts_min_name)
+
         if unit == 'kW':
-            # preform the following checks on the values in the timeseries
+            # perform the following checks on the values in the timeseries
             if ts_max.max() * ts_max.min() < 0:
                 # then the max and min are not both positive or both negative -- so error
-                self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be all positive or all negative. " +
+                self.record_timeseries_data_error(f"'{ts_max_name}' should be all positive or all negative. " +
                                         "Please fix and rerun.")
             if ts_min.max() * ts_min.min() < 0:
                 # then the max and min are not both positive or both negative -- so error
-                self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be all positive or all negative. " +
+                self.record_timeseries_data_error(f"'{ts_min_name}' should be all positive or all negative. " +
                                         "Please fix and rerun.")
         if unit == 'kWh':
-            # preform the following checks on the values in the timeseries
-            if ts_max.max() < 0:
-                self.record_input_error(f"'{tag}: {measurement} Max ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
-            if ts_min.max() < 0:
-                self.record_input_error(f"'{tag}: {measurement} Min ({unit})/{id_str}' should be greater than 0. Please fix and rerun.")
+            # perform the following checks on the values in the timeseries
+            if ts_max.min() < 0:
+                self.req_all_non_negative(ts_max.values, ts_max_name)
+            if ts_min.min() < 0:
+                self.req_all_non_negative(ts_min.values, ts_min_name)
 
         inputs_dct.update({f'ts_{measurement.lower()}_max': ts_max,
                            f'ts_{measurement.lower()}_min': ts_min})
 
-    def grab_column(self, df, column_name, error, id_str=None):
-        """ Handles all getting of data
-
-        Args:
-            column_name (str):
-            df (DataFrame):
-            id_str (str):
-            error (str): error message if not found
-
-        Returns: A Series of data
-
-        """
+    def get_single_series(self, time_series, column_name, nan_count, description=None, bypass_key_error=False, allow_nans=False, id_str='', unit_conversion=None):
+        # build on existing method in storagevet
+        # add id_str to column_name if one is present
         if id_str != '':
             column_name = f"{column_name}/{id_str}"
-        return super(ParamsDER, self).grab_column(df, column_name, error)
+        single_ts = super(ParamsDER, self).get_single_series(time_series, column_name, nan_count, description=description, bypass_key_error=bypass_key_error, allow_nans=allow_nans)
+        # perform a unit conversion on all values if called for
+        if single_ts is not None and unit_conversion is not None:
+            single_ts = single_ts * unit_conversion
+        return single_ts
 
     @classmethod
     def read_referenced_data(cls):

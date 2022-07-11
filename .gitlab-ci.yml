@@ -29,5 +29,5 @@ pytest:
     - python -m pytest test
   tags:
     - 'docker'
-  only:
-    - merge_requests
+  #only:
+  #  - merge_requests

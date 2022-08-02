@@ -202,7 +202,7 @@ class MicrogridScenario(Scenario):
                     if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target==0:
                         TellUser.error(f"SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage")
                         raise ParameterError('See dervet.log for more information.')
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<100:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<1:
                         TellUser.warning('Initial SOC when outage starts is not 100%, it will oversize DER ratings')
 
             else:
@@ -334,10 +334,10 @@ class MicrogridScenario(Scenario):
                 TellUser.info(f"Optimization window #{opt_period} does not have any constraints or objectives to minimize -- SKIPPING...")
                 continue
 
-#            #NOTE: these print statements reveal the final constraints and costs for debugging
+            #NOTE: these print statements reveal the final constraints and costs for debugging
 #            print(f'\nFinal constraints ({len(constraints)}):')
-#
-#            #NOTE: more detail on constraints
+
+            #NOTE: more detail on constraints
 #            for i, c in enumerate(constraints):
 #                print(f'constraint {i}: {c.name()}')
 #                print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
@@ -345,11 +345,13 @@ class MicrogridScenario(Scenario):
 #                #for p in c.parameters():
 #                #    print(f'    {p.name()} = {p.value}')
 #                print()
-#
-#            print('\n'.join([k.name() for k in constraints]))
-#            print(f'\ncosts ({len(functions)}):')
-#            print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
-#            print()
+
+            print(f'\nconstraints ({len(constraints)}):')
+            print('\n'.join([f'{i}: {c}' for i, c in enumerate(constraints)]))
+            #print('\n'.join([k.name() for k in constraints]))
+            print(f'\ncosts ({len(functions)}):')
+            print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
+            print()
 
             cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints, force_glpk_mi=self.poi.has_thermal_load)
             self.save_optimization_results(opt_period, sub_index, cvx_problem, obj_expressions, cvx_error_msg)

@@ -135,11 +135,16 @@ def test_post_facto_calculations_with_user_constraints():
 
 def test_post_facto_calculations_with_user_constraints_error():
     with pytest.raises(ArithmeticError):
+        # captures this error:
+        # System requirements are not possible at these times
+        # the input-ts has very high values of POI min export and POI min import on the first day
         assert_ran(MP / f"Model_Parameters_Template_issue162_error{CSV}")
 
 
 def test_battery_sizing4reliability_soc_init_small():
     with pytest.raises(ParameterError):
+        # captures this error:
+        # SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage
         assert_ran(MP / f"EV_Battery_Sizing_MP{CSV}")
 
 

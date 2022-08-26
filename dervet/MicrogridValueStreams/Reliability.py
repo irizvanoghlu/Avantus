@@ -172,18 +172,23 @@ class Reliability(ValueStream):
         # Find the top n analysis indices that we are going to size our DER mix
         # for.
         analysis_indices = indices[:top_n_outages].values
+#        analysis_indices = np.append(analysis_indices, np.arange(analysis_indices[0],analysis_indices[0]+24))
         print(f'top n ({top_n_outages}) outages we will size for: {analysis_indices}')
-        print('critical load from these top {top_n_outages}:')
-        for i in indices.values[:10]: print(self.requirement[i])
+        print(f'critical loads (rolling sum across {self.coverage_dt} hours) for these top {top_n_outages} outages:')
+        for i in indices.values[:top_n_outages]: print(self.requirement[i])
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_fail_ind >= 0:
             # FIXME: this next line below always prints--what does it mean?
-            TellUser.debug(f"Sizing - first failure index: {first_fail_ind}")
+            #TellUser.debug(f"Sizing - first failure index: {first_fail_ind}")
+            if first_fail_ind == 0:
+                TellUser.debug(f"Sizing for Outages - with only these top {top_n_outages}")
+            else:
+                TellUser.debug(f"Sizing for Outages (again) - with an additional first failure index: {first_fail_ind}")
             der_list = self.size_for_outages(opt_index, analysis_indices,
                                              der_list)
             # print out size results as we go
-            print('\nSizing Results:')
+            print('\nOptimal Sizing Results:')
             for der in der_list:
                 if der.technology_type == 'Energy Storage System':
                     if der.being_sized():
@@ -251,6 +256,9 @@ class Reliability(ValueStream):
                                                            check_at_a_time)
                 start += check_at_a_time
                 print(start, first_fail_ind, '---\n')
+            # FIXME: if this is a non-unique index, break out of the method with an error
+            # also break if the number of indices becomes too large
+            # However, this avoids getting at the root cause of the underlying issue
             analysis_indices = np.append(analysis_indices, first_fail_ind)
             print(analysis_indices)
 
@@ -264,16 +272,18 @@ class Reliability(ValueStream):
 
         # check if there is ES in the der_list before determing the min SOE
         # profile
+        #exit('exiting script here!')
         for der_inst in der_list:
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated <= 0:
                 print(f'ES ene_max_rated = {der_inst.ene_max_rated} so we cannot determine a min SOE profile')
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated > 0:
                 print('determining the min SOE profile')
-                # This is a faster method to find approximate min SOE
+                ## This is a faster method to find approximate min SOE
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
-                # This is a slower method to find optimal min SOE
-                # der_list = reliability_mod.min_soe_opt(opt_index, der_list)
+                ## This is a slower method to find optimal min SOE
+                #der_list = self.min_soe_opt(opt_index, der_list)
+                ####der_list = reliability_mod.min_soe_opt(opt_index, der_list)
 
         return der_list
 
@@ -292,11 +302,12 @@ class Reliability(ValueStream):
 
         consts = []
         cost_funcs = sum([der_instance.get_capex() for der_instance in der_list])
+        # FIXME: use self.coverage_dt here ?
         outage_length = int(self.outage_duration / self.dt)
 
         mask = pd.Series(index=opt_index)
         for outage_ind in outage_start_indices:
-            print(f'outage_ind: {outage_ind}')
+#            print(f'outage_ind: {outage_ind}')
             mask.iloc[:] = False
             mask.iloc[outage_ind: (outage_ind + outage_length)] = True
             # set up variables
@@ -323,12 +334,16 @@ class Reliability(ValueStream):
                 critical_load = critical_load * (self.load_shed_data[0:outage_length].values / 100)
 
             critical_load_arr = cvx.Parameter(value=critical_load,
-                                              shape=outage_length)
+                                              shape=outage_length,
+                                              name='critical-load')
             consts_added += [
                 cvx.NonPos(tot_net_ess + (-1) * gen_sum + critical_load_arr)
             ]
             print(f'  constraints added ({len(consts_added)}):')
-            print('\n'.join([f'    {i}: {c}' for i, c in enumerate(consts_added)]))
+            for i, c in enumerate(consts_added):
+                print(f'    {i}: {c}')
+                print(f"       variables--------------- {', '.join([j.name() for j in c.variables()])}")
+#            print('\n'.join([f'    {i}: {c}' for i, c in enumerate(consts_added)]))
             print()
             consts += consts_added
 
@@ -497,23 +512,24 @@ class Reliability(ValueStream):
                                            self.max_outage_duration / self.dt,
                                            **ess_properties)
 
+        # longest_outage is the largest outage that can be covered
         longest_outage = len(soe_profile)
-        print(f'longest_outage: {longest_outage}')
+#        print(f'longest_outage: {longest_outage}')
         # base case 2: longest outage is less than the outage duration target
         if longest_outage < self.outage_duration / self.dt:
             if longest_outage == 0:
                 # note: skip over when soe_profile is empty
-                print(f'  (skip--bc 2) {start_indx} soe_profile is empty')
+                #print(f'  (skip--bc 2) {start_indx} soe_profile is empty')
                 pass
             elif longest_outage < (len(self.critical_load) - start_indx):
-                print(f'  (bc 2) returning: {start_indx}')
+                print(f'  (bc 2) longest possible outage ({longest_outage}) does not provide the necessary coverage ({self.coverage_dt})... returning: {start_indx}')
                 return start_indx
         # base case 3: break recursion when you get to this (like a limit to
         # the resursion)
         if (start_indx + 1) % stop_at == 0:
             print(f'  (bc 3) {start_indx} recursion-break, returning: {start_indx + 1}')
             return start_indx + 1
-        print(f'...moving on to next outage: {start_indx + 1}')
+        #print(f'...moving on to next outage index: {start_indx + 1}')
         # else, go on to test the next outage_init (increase index returned
         return self.find_first_uncovered(generation, total_pv_max,
                                          total_pv_vari, largest_gamma,
@@ -661,16 +677,23 @@ class Reliability(ValueStream):
         data_length = len(opt_index)
         for month in opt_index.month.unique():
 
+            print(month)
             outage_mask = month == opt_index.month
             consts = []
 
             min_soc = {}
-            ana_ind = [a for a in range(data_length) if outage_mask[a] is True]
+            #ana_ind = [a for a in range(data_length) if outage_mask[a] is True]
+            ana_ind = [i for i, k in enumerate(outage_mask) if k]
             outage_mask = pd.Series(index=opt_index)
+            print(ana_ind)
             for outage_ind in ana_ind:
                 outage_end_ind = outage_ind + self.outage_duration
+                if outage_end_ind > data_length:
+                    continue
+#                print(outage_ind, outage_end_ind)
                 outage_mask.iloc[:] = False
                 outage_mask.iloc[outage_ind:outage_end_ind] = True
+#                print(sum(outage_mask))
                 # set up variables
                 var_gen_sum = cvx.Parameter(
                     value=np.zeros(self.outage_duration),
@@ -720,11 +743,13 @@ class Reliability(ValueStream):
                     crit_load_values[0:remaining_out_duration] = \
                         self.critical_load.loc[outage_mask].values
                     load = cvx.Parameter(value=crit_load_values,
+                                         name='critical-load',
                                          shape=self.outage_duration)
 
                 else:
                     load = cvx.Parameter(
                         value=self.critical_load.loc[outage_mask].values,
+                        name='critical-load',
                         shape=self.outage_duration)
                 consts += [
                     cvx.Zero(net_ess + (-1)*dg_sum + (-1)*var_gen_sum + load)
@@ -733,10 +758,15 @@ class Reliability(ValueStream):
             cost_funcs = sum(min_soc.values())
             obj = cvx.Minimize(cost_funcs)
             prob = cvx.Problem(obj, consts)
+            print(f'\noptimizing (in min_soe_opt())...')
+            print('\n'.join([f'    {i}: {c}' for i, c in enumerate(consts)]))
+            print(f'  total constraints: {len(consts)}')
+            print(f'  cost_func: {cost_funcs.name()}')
             prob.solve(solver=cvx.GLPK_MI)
 
             month_min_soc[month] = min_soc
 
+        month_min_soe_array = None
         for der in der_list:
             if der.technology_type == 'Energy Storage System':
                 # TODO multi ESS
@@ -755,6 +785,7 @@ class Reliability(ValueStream):
                 month_min_soe_array = (
                             np.array(month_min_soc_array) * energy_rating)
 
+        print(month_min_soe_array)
         self.min_soe_df = pd.DataFrame({'soe': month_min_soe_array},
                                        index=opt_index)
         return der_list
@@ -794,6 +825,7 @@ class Reliability(ValueStream):
                                               largest_gamma)
                         der_props['init_soe'] = soe[outage_init]
                         outage_len = self.outage_duration / self.dt
+                        # FIXME: this may need changing
                         soe_outage_profile = \
                             self.simulate_outage(power_req, demand, energy_req,
                                                  outage_len, **der_props)

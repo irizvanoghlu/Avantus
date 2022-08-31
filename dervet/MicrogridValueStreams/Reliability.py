@@ -173,9 +173,9 @@ class Reliability(ValueStream):
         # for.
         analysis_indices = indices[:top_n_outages].values
 #        analysis_indices = np.append(analysis_indices, np.arange(analysis_indices[0],analysis_indices[0]+24))
-        print(f'top n ({top_n_outages}) outages we will size for: {analysis_indices}')
-        print(f'critical loads (rolling sum across {self.coverage_dt} hours) for these top {top_n_outages} outages:')
-        for i in indices.values[:top_n_outages]: print(self.requirement[i])
+        #print(f'top n ({top_n_outages}) outages we will size for: {analysis_indices}')
+        #print(f'critical loads (rolling sum across {self.coverage_dt} hours) for these top {top_n_outages} outages:')
+        #for i in indices.values[:top_n_outages]: print(self.requirement[i])
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_fail_ind >= 0:
@@ -187,51 +187,58 @@ class Reliability(ValueStream):
                 TellUser.debug(f"Sizing for Outages (again) - with an additional first failure index: {first_fail_ind}")
             der_list = self.size_for_outages(opt_index, analysis_indices,
                                              der_list)
+
+            #Fixing the size of Intermittent and Generator source after first optimization run. ES size will be iterated to meet the outage requirement
+            for der_inst in der_list:
+                if der_inst.technology_type == 'Intermittent Resource' or der_inst.technology_type == 'Generator':
+                    if der_inst.being_sized():
+                        der_inst.set_size()
+
             # print out size results as we go
             print('\nOptimal Sizing Results:')
-            for der in der_list:
-                if der.technology_type == 'Energy Storage System':
-                    if der.being_sized():
-                        print('  ES sizing:')
-                        if der.is_energy_sizing():
-                            print('    energy sizing:')
-                            print(f'      ene_max_rated = {der.ene_max_rated.value}')
-                        else:
-                            print('    fixed-size energy:')
-                            print(f'      ene_max_rated = {der.ene_max_rated} *')
-                        if der.is_charge_sizing():
-                            print('    charge sizing:')
-                            print(f'      ch_max_rated = {der.ch_max_rated.value}')
-                            print(f'      ch_min_rated = {der.ch_min_rated} *')
-                        else:
-                            print('    fixed-size charge:')
-                            print(f'      ch_max_rated = {der.ch_max_rated} *')
-                            print(f'      ch_min_rated = {der.ch_min_rated} *')
-                        if der.is_discharge_sizing():
-                            print('    discharge sizing:')
-                            print(f'      dis_max_rated = {der.dis_max_rated.value}')
-                            print(f'      dis_min_rated = {der.dis_min_rated} *')
-                        else:
-                            print('    fixed-size discharge:')
-                            print(f'      dis_max_rated = {der.dis_max_rated} *')
-                            print(f'      dis_min_rated = {der.dis_min_rated} *')
-                elif der.technology_type == 'Intermittent Resource':
-                    if der.being_sized():
-                        print('  PV sizing:')
-                        print(f'    rated_capacity = {der.rated_capacity.value}')
-                        print(f'    inv_max = {der.inv_max.value}')
-                    else:
-                        print('  PV fixed-size:')
-                        print(f'    rated_capacity = {der.rated_capacity} *')
-                        print(f'    inv_max = {der.inv_max} *')
-                elif der.technology_type == 'Generator':
-                    if der.being_sized():
-                        print('  Gen sizing:')
-                        print(f'    rated_power = {der.rated_power.value}')
-                    else:
-                        print('  Gen fixed-size:')
-                        print(f'    rated_power = {der.rated_power} *')
-            print()
+            # for der in der_list:
+            #     if der.technology_type == 'Energy Storage System':
+            #         if der.being_sized():
+            #             print('  ES sizing:')
+            #             if der.is_energy_sizing():
+            #                 print('    energy sizing:')
+            #                 print(f'      ene_max_rated = {der.ene_max_rated.value}')
+            #             else:
+            #                 print('    fixed-size energy:')
+            #                 print(f'      ene_max_rated = {der.ene_max_rated} *')
+            #             if der.is_charge_sizing():
+            #                 print('    charge sizing:')
+            #                 print(f'      ch_max_rated = {der.ch_max_rated.value}')
+            #                 print(f'      ch_min_rated = {der.ch_min_rated} *')
+            #             else:
+            #                 print('    fixed-size charge:')
+            #                 print(f'      ch_max_rated = {der.ch_max_rated} *')
+            #                 print(f'      ch_min_rated = {der.ch_min_rated} *')
+            #             if der.is_discharge_sizing():
+            #                 print('    discharge sizing:')
+            #                 print(f'      dis_max_rated = {der.dis_max_rated.value}')
+            #                 print(f'      dis_min_rated = {der.dis_min_rated} *')
+            #             else:
+            #                 print('    fixed-size discharge:')
+            #                 print(f'      dis_max_rated = {der.dis_max_rated} *')
+            #                 print(f'      dis_min_rated = {der.dis_min_rated} *')
+            #     elif der.technology_type == 'Intermittent Resource':
+            #         if der.being_sized():
+            #             print('  PV sizing:')
+            #             print(f'    rated_capacity = {der.rated_capacity.value}')
+            #             print(f'    inv_max = {der.inv_max.value}')
+            #         else:
+            #             print('  PV fixed-size:')
+            #             print(f'    rated_capacity = {der.rated_capacity} *')
+            #             print(f'    inv_max = {der.inv_max} *')
+            #     elif der.technology_type == 'Generator':
+            #         if der.being_sized():
+            #             print('  Gen sizing:')
+            #             print(f'    rated_power = {der.rated_power.value}')
+            #         else:
+            #             print('  Gen fixed-size:')
+            #             print(f'    rated_power = {der.rated_power} *')
+            # print()
 
             dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
                 self.get_der_mix_properties(der_list, True)
@@ -260,6 +267,15 @@ class Reliability(ValueStream):
             # also break if the number of indices becomes too large
             # However, this avoids getting at the root cause of the underlying issue
             analysis_indices = np.append(analysis_indices, first_fail_ind)
+
+            #Find indices that might have power constraint. This also takes into account the new intermittent and generator source outputs
+            if not self.load_shed:
+                demand_left = np.around(self.critical_load - dg_gen - total_pv_max,
+                                        decimals=5)
+                indices_with_gen = np.argsort(-1 * demand_left)
+            # Add these indices only if there were any first fail in the above outage simulation
+            if first_fail_ind >= 0:
+                analysis_indices = np.append(analysis_indices,indices_with_gen[:top_n_outages].values)
             print(analysis_indices)
 
         for der_inst in der_list:
@@ -386,7 +402,7 @@ class Reliability(ValueStream):
         total_dg_max = 0
         for der_inst in der_list:
             if der_inst.technology_type == 'Intermittent Resource' and \
-                    (not der_inst.being_sized() or not need_solution):
+                    (not der_inst.being_sized()):
                 pv_inst_gen = der_inst.maximum_generation()
                 tot_pv_max += pv_inst_gen
                 tot_pv_vari += pv_inst_gen * der_inst.nu

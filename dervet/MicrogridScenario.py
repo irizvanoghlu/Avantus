@@ -210,6 +210,9 @@ class MicrogridScenario(Scenario):
 
         if self.reliability_sizing:
             der_list = vs_dct['Reliability'].sizing_module(der_lst, self.optimization_levels.index)
+            if der_list is None:
+                TellUser.error(f'Sizing for Reliability is infeasible given the inputs and constraints. Please adjust the parameters and try again.')
+                raise ParameterError('See dervet.log for more information.')
             self.poi.der_list = der_list
             # Resetting sizing flag. It doesn't size for other services.
             self.poi.is_sizing_optimization = False
@@ -221,6 +224,8 @@ class MicrogridScenario(Scenario):
 
         if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined_constraints():
             self.service_agg.value_streams['Reliability'].use_sizing_module_results = True
+            TellUser.info("With only an active Reliability Service, size optimizations are already complete. " +
+                          "No further optimizations will run.")
             self.opt_engine = False
 
     def check_opt_sizing_conditions(self):

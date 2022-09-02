@@ -194,7 +194,11 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             try:
                 max_rated = self.rated_capacity.value
             except AttributeError:
-                max_rated = self.rated_capacity
+                # FIXME: why is this needed?
+                try:
+                    max_rated = self.rated_capacity.item()
+                except AttributeError:
+                    max_rated = self.rated_capacity
             return max_rated
 
     def sizing_summary(self):

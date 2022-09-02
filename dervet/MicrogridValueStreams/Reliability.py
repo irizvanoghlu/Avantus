@@ -276,14 +276,16 @@ class Reliability(ValueStream):
             else:
                 analysis_indices = np.append(analysis_indices, first_fail_ind)
 
-#            #Find indices that might have power constraint. This also takes into account the new intermittent and generator source outputs
-#            if not self.load_shed:
-#                demand_left = np.around(self.critical_load - dg_gen - total_pv_max,
-#                                        decimals=5)
-#                indices_with_gen = np.argsort(-1 * demand_left)
-#            # Add these indices only if there were any first fail in the above outage simulation
-#            if first_fail_ind >= 0:
-#                analysis_indices = np.append(analysis_indices,indices_with_gen[:top_n_outages].values)
+            # Find indices that might have power constraint. This also takes into account
+            #   the new intermittent and generator source outputs
+            if not self.load_shed:
+                demand_left = np.around(self.critical_load - dg_gen - total_pv_max,
+                                        decimals=5)
+                indices_with_gen = np.argsort(-1 * demand_left)
+            # Add these indices only if there were any first fail in the above outage simulation
+            if first_fail_ind >= 0:
+                analysis_indices = np.append(analysis_indices,indices_with_gen[:top_n_outages].values)
+                analysis_indices = np.unique(analysis_indices)
             print(analysis_indices)
             print()
 

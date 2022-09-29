@@ -1,0 +1,53 @@
+2022-09-12 15:04:00,908 - INFO - Started logging...
+2022-09-12 15:04:00,909 - INFO - JSON Model Parameter (/Users/paet001/epri/dervet/reference_cases/EV_Battery_Sizing_v2/DER-VET_20220912150342/inputs/model_parameters.json) was copied to Results (/users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/results/model_parameters.json)
+2022-09-12 15:04:00,944 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/inputs/timeseries.csv
+2022-09-12 15:04:00,947 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/inputs/monthly.csv
+2022-09-12 15:04:00,949 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/inputs/tariff.csv
+2022-09-12 15:04:00,952 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/inputs/yearly.csv
+2022-09-12 15:04:00,955 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/inputs/cycle_b56bc20e-1677-4ee4-9e8f-cf6c17a89fa9.csv
+2022-09-12 15:04:00,955 - INFO - Updating data for Sensitivity Analysis...
+2022-09-12 15:04:00,955 - INFO - Loading case 0...
+2022-09-12 15:04:00,956 - INFO - Data sets are loaded successfully.
+2022-09-12 15:04:00,963 - INFO - Successfully prepared the Scenario
+2022-09-12 15:04:00,963 - INFO - Successfully prepared the Finance
+2022-09-12 15:04:00,964 - INFO - Successfully prepared the Technologies
+2022-09-12 15:04:01,023 - INFO - Successfully prepared the value-stream (services)
+2022-09-12 15:04:01,023 - DEBUG - Successfully prepared the value-streams
+2022-09-12 15:04:01,024 - DEBUG - ScenarioSizing initialized ...
+2022-09-12 15:04:01,024 - INFO - Initializing: Battery-b56bc20e-1677-4ee4-9e8f-cf6c17a89fa9
+2022-09-12 15:04:01,024 - DEBUG - Initializing dervet.MicrogridDER.Battery
+2022-09-12 15:04:01,024 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2022-09-12 15:04:01,024 - DEBUG - Initializing dervet.MicrogridDER.ESSSizing
+2022-09-12 15:04:01,024 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2022-09-12 15:04:01,024 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:04:01,025 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:04:01,025 - WARNING -  Construction year and operation year of es are the same. Do you mean this? Capitol Costs will appear the same year operation costs/benefits will.
+2022-09-12 15:04:01,025 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:04:01,026 - INFO - Initializing: Load-incl_site_load
+2022-09-12 15:04:01,026 - DEBUG - Initializing dervet.MicrogridDER.LoadControllable
+2022-09-12 15:04:01,026 - DEBUG - Initializing storagevet.Technology.Load
+2022-09-12 15:04:01,026 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:04:01,026 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:04:01,026 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:04:01,026 - INFO - Initializing: ElectricVehicle2-02d70649-364a-4834-944c-f5a19bae08b2
+2022-09-12 15:04:01,026 - DEBUG - Initializing ElectricVehicle2
+2022-09-12 15:04:01,026 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:04:01,027 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:04:01,027 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:04:01,027 - WARNING -  Construction year and operation year of partially controllable ev fleet are the same. Do you mean this? Capitol Costs will appear the same year operation costs/benefits will.
+2022-09-12 15:04:01,027 - INFO - Initializing: DCM
+2022-09-12 15:04:01,028 - INFO - Initializing: retailTimeShift
+2022-09-12 15:04:01,028 - DEBUG - Finished adding value streams
+2022-09-12 15:04:01,031 - DEBUG - Adding [] to opt_years
+2022-09-12 15:04:01,039 - INFO - Starting optimization loop
+2022-09-12 15:04:01,041 - INFO - 15:04:01 Running Optimization Problem starting at 2021-01-01 00:00:00 hb
+2022-09-12 15:04:01,162 - DEBUG - time took to make demand charge term: 0.10697102546691895
+2022-09-12 15:04:01,241 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:04:01,242 - DEBUG - glpk_mi solver
+2022-09-12 15:07:03,122 - INFO - Time it takes for solver to finish: 181.8797926902771
+2022-09-12 15:07:03,122 - INFO - Optimization problem was optimal
+2022-09-12 15:07:03,137 - DEBUG - Performing Post Optimization Analysis...
+2022-09-12 15:07:03,236 - DEBUG - Finished post optimization analysis
+2022-09-12 15:07:03,732 - INFO - Results have been saved to: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/results
+2022-09-12 15:07:03,735 - INFO - DER results have been saved to: /users/paet001/epri/dervet/reference_cases/ev_battery_sizing_v2/der-vet_20220912150342/results
+2022-09-12 15:07:03,735 - INFO - DERVET runtime: 182.71128702163696

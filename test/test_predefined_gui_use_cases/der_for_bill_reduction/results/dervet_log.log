@@ -1,0 +1,61 @@
+2022-09-12 15:13:48,417 - INFO - Started logging...
+2022-09-12 15:13:48,418 - INFO - JSON Model Parameter (/Users/paet001/epri/dervet/reference_cases/DER_for_Bill_Reduction_v2/DER-VET_20220912151329/inputs/model_parameters.json) was copied to Results (/users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/results/model_parameters.json)
+2022-09-12 15:13:48,453 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/timeseries.csv
+2022-09-12 15:13:48,456 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/monthly.csv
+2022-09-12 15:13:48,458 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/tariff.csv
+2022-09-12 15:13:48,461 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/yearly.csv
+2022-09-12 15:13:48,463 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/cycle_0cb9f530-06d4-45c3-9927-5c4690888eb0.csv
+2022-09-12 15:13:48,465 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/inputs/load_shed_percentage.csv
+2022-09-12 15:13:48,465 - INFO - Updating data for Sensitivity Analysis...
+2022-09-12 15:13:48,465 - INFO - Loading case 0...
+2022-09-12 15:13:48,466 - INFO - Data sets are loaded successfully.
+2022-09-12 15:13:48,474 - INFO - Successfully prepared the Scenario
+2022-09-12 15:13:48,474 - INFO - Successfully prepared the Finance
+2022-09-12 15:13:48,474 - INFO - Successfully prepared the Technologies
+2022-09-12 15:13:48,534 - INFO - Successfully prepared the value-stream (services)
+2022-09-12 15:13:48,534 - DEBUG - Successfully prepared the value-streams
+2022-09-12 15:13:48,535 - DEBUG - ScenarioSizing initialized ...
+2022-09-12 15:13:48,535 - INFO - Initializing: Battery-0cb9f530-06d4-45c3-9927-5c4690888eb0
+2022-09-12 15:13:48,536 - DEBUG - Initializing dervet.MicrogridDER.Battery
+2022-09-12 15:13:48,536 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2022-09-12 15:13:48,536 - DEBUG - Initializing dervet.MicrogridDER.ESSSizing
+2022-09-12 15:13:48,536 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2022-09-12 15:13:48,536 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:13:48,536 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:13:48,536 - WARNING -  Construction year and operation year of bess 1 are the same. Do you mean this? Capitol Costs will appear the same year operation costs/benefits will.
+2022-09-12 15:13:48,536 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:13:48,537 - INFO - Initializing: PV-4028a405-85a7-4008-bc94-cd900ea0935f
+2022-09-12 15:13:48,537 - DEBUG - Initializing dervet.MicrogridDER.PV
+2022-09-12 15:13:48,537 - DEBUG - Initializing dervet.MicrogridDER.IntermittentResourceSizing
+2022-09-12 15:13:48,537 - DEBUG - Initializing storagevet.Technology.PVSystem
+2022-09-12 15:13:48,537 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:13:48,537 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:13:48,538 - WARNING -  Construction year and operation year of installation 1 are the same. Do you mean this? Capitol Costs will appear the same year operation costs/benefits will.
+2022-09-12 15:13:48,538 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:13:48,538 - INFO - Initializing: Load-incl_site_load
+2022-09-12 15:13:48,538 - DEBUG - Initializing dervet.MicrogridDER.LoadControllable
+2022-09-12 15:13:48,538 - DEBUG - Initializing storagevet.Technology.Load
+2022-09-12 15:13:48,538 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:13:48,538 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:13:48,538 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:13:48,538 - INFO - Initializing: DCM
+2022-09-12 15:13:48,539 - INFO - Initializing: retailTimeShift
+2022-09-12 15:13:48,540 - INFO - Initializing: Reliability
+2022-09-12 15:13:48,541 - DEBUG - Finished adding value streams
+2022-09-12 15:13:48,545 - DEBUG - Adding [] to opt_years
+2022-09-12 15:13:48,554 - INFO - Starting optimization loop
+2022-09-12 15:13:48,556 - INFO - 15:13:48 Running Optimization Problem starting at 2017-01-01 00:00:00 hb
+2022-09-12 15:13:48,636 - DEBUG - time took to make demand charge term: 0.062460899353027344
+2022-09-12 15:13:48,733 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:13:48,734 - DEBUG - glpk_mi solver
+2022-09-12 15:15:20,259 - INFO - Time it takes for solver to finish: 91.52550196647644
+2022-09-12 15:15:20,260 - INFO - Optimization problem was optimal
+2022-09-12 15:15:20,273 - DEBUG - Performing Post Optimization Analysis...
+2022-09-12 15:15:20,381 - INFO - Starting load coverage calculation. This may take a while.
+2022-09-12 15:15:20,381 - INFO - Critical Load Coverage Curve overhead time: 0.0003819465637207031
+2022-09-12 15:15:21,373 - INFO - Critical Load Coverage Curve calculation time: 0.9913339614868164
+2022-09-12 15:15:21,373 - INFO - Finished load coverage calculation.
+2022-09-12 15:15:21,374 - DEBUG - Finished post optimization analysis
+2022-09-12 15:15:21,947 - INFO - Results have been saved to: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/results
+2022-09-12 15:15:21,952 - INFO - DER results have been saved to: /users/paet001/epri/dervet/reference_cases/der_for_bill_reduction_v2/der-vet_20220912151329/results
+2022-09-12 15:15:21,952 - INFO - DERVET runtime: 93.41697001457214

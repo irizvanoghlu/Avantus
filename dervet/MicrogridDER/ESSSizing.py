@@ -159,7 +159,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         """
         if not solution:
-            return self.dis_max_rated
+            return self.ch_max_rated
         else:
             try:
                 ch_max_rated = int(self.ch_max_rated.value)

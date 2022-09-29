@@ -1,0 +1,1864 @@
+2022-09-12 15:16:03,256 - INFO - Started logging...
+2022-09-12 15:16:03,258 - INFO - JSON Model Parameter (/Users/paet001/epri/dervet/reference_cases/CAISO_Market_Case_v2/DER-VET_20220912151550/inputs/model_parameters.json) was copied to Results (/users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/results/model_parameters.json)
+2022-09-12 15:16:03,290 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/inputs/timeseries.csv
+2022-09-12 15:16:03,293 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/inputs/monthly.csv
+2022-09-12 15:16:03,297 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/inputs/tariff.csv
+2022-09-12 15:16:03,300 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/inputs/yearly.csv
+2022-09-12 15:16:03,303 - INFO - Successfully read in: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/inputs/cycle_6df8d64d-cc1a-43ce-83f1-faac14c8eef7.csv
+2022-09-12 15:16:03,303 - INFO - Updating data for Sensitivity Analysis...
+2022-09-12 15:16:03,303 - INFO - Loading case 0...
+2022-09-12 15:16:03,304 - INFO - Data sets are loaded successfully.
+2022-09-12 15:16:03,312 - INFO - Successfully prepared the Scenario
+2022-09-12 15:16:03,312 - INFO - Successfully prepared the Finance
+2022-09-12 15:16:03,312 - INFO - Successfully prepared the Technologies
+2022-09-12 15:16:03,312 - INFO - Successfully prepared the value-stream (services)
+2022-09-12 15:16:03,312 - DEBUG - Successfully prepared the value-streams
+2022-09-12 15:16:03,314 - DEBUG - ScenarioSizing initialized ...
+2022-09-12 15:16:03,314 - INFO - Initializing: Battery-6df8d64d-cc1a-43ce-83f1-faac14c8eef7
+2022-09-12 15:16:03,314 - DEBUG - Initializing dervet.MicrogridDER.Battery
+2022-09-12 15:16:03,314 - DEBUG - Initializing storagevet.Technology.BatteryTech
+2022-09-12 15:16:03,314 - DEBUG - Initializing dervet.MicrogridDER.ESSSizing
+2022-09-12 15:16:03,314 - DEBUG - Initializing storagevet.Technology.EnergyStorage
+2022-09-12 15:16:03,314 - DEBUG - Initializing storagevet.Technology.DistributedEnergyResource
+2022-09-12 15:16:03,314 - DEBUG - Initializing dervet.MicrogridDER.DERExtension
+2022-09-12 15:16:03,315 - DEBUG - Initializing dervet.MicrogridDER.ContinuousSizing
+2022-09-12 15:16:03,315 - INFO - Initializing: DA
+2022-09-12 15:16:03,315 - INFO - Initializing: FR
+2022-09-12 15:16:03,318 - DEBUG - Finished adding value streams
+2022-09-12 15:16:03,320 - DEBUG - Adding [] to opt_years
+2022-09-12 15:16:03,332 - INFO - Starting optimization loop
+2022-09-12 15:16:03,333 - INFO - 15:16:03 Running Optimization Problem starting at 2020-01-01 00:00:00 hb
+2022-09-12 15:16:03,372 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:03,372 - DEBUG - glpk_mi solver
+2022-09-12 15:16:04,122 - INFO - Time it takes for solver to finish: 0.7501158714294434
+2022-09-12 15:16:04,122 - INFO - Optimization problem was optimal
+2022-09-12 15:16:04,130 - INFO - 15:16:04 Running Optimization Problem starting at 2020-01-02 00:00:00 hb
+2022-09-12 15:16:04,167 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:04,168 - DEBUG - glpk_mi solver
+2022-09-12 15:16:04,773 - INFO - Time it takes for solver to finish: 0.6057100296020508
+2022-09-12 15:16:04,774 - INFO - Optimization problem was optimal
+2022-09-12 15:16:04,781 - INFO - 15:16:04 Running Optimization Problem starting at 2020-01-03 00:00:00 hb
+2022-09-12 15:16:04,817 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:04,817 - DEBUG - glpk_mi solver
+2022-09-12 15:16:10,454 - INFO - Time it takes for solver to finish: 5.636163949966431
+2022-09-12 15:16:10,454 - INFO - Optimization problem was optimal
+2022-09-12 15:16:10,462 - INFO - 15:16:10 Running Optimization Problem starting at 2020-01-04 00:00:00 hb
+2022-09-12 15:16:10,502 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:10,502 - DEBUG - glpk_mi solver
+2022-09-12 15:16:12,543 - INFO - Time it takes for solver to finish: 2.040889024734497
+2022-09-12 15:16:12,544 - INFO - Optimization problem was optimal
+2022-09-12 15:16:12,551 - INFO - 15:16:12 Running Optimization Problem starting at 2020-01-05 00:00:00 hb
+2022-09-12 15:16:12,587 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:12,587 - DEBUG - glpk_mi solver
+2022-09-12 15:16:24,015 - INFO - Time it takes for solver to finish: 11.427961826324463
+2022-09-12 15:16:24,016 - INFO - Optimization problem was optimal
+2022-09-12 15:16:24,023 - INFO - 15:16:24 Running Optimization Problem starting at 2020-01-06 00:00:00 hb
+2022-09-12 15:16:24,064 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:24,064 - DEBUG - glpk_mi solver
+2022-09-12 15:16:24,288 - INFO - Time it takes for solver to finish: 0.22370195388793945
+2022-09-12 15:16:24,288 - INFO - Optimization problem was optimal
+2022-09-12 15:16:24,297 - INFO - 15:16:24 Running Optimization Problem starting at 2020-01-07 00:00:00 hb
+2022-09-12 15:16:24,337 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:24,337 - DEBUG - glpk_mi solver
+2022-09-12 15:16:25,399 - INFO - Time it takes for solver to finish: 1.061673879623413
+2022-09-12 15:16:25,399 - INFO - Optimization problem was optimal
+2022-09-12 15:16:25,406 - INFO - 15:16:25 Running Optimization Problem starting at 2020-01-08 00:00:00 hb
+2022-09-12 15:16:25,448 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:25,448 - DEBUG - glpk_mi solver
+2022-09-12 15:16:26,057 - INFO - Time it takes for solver to finish: 0.6084182262420654
+2022-09-12 15:16:26,057 - INFO - Optimization problem was optimal
+2022-09-12 15:16:26,065 - INFO - 15:16:26 Running Optimization Problem starting at 2020-01-09 00:00:00 hb
+2022-09-12 15:16:26,121 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:26,121 - DEBUG - glpk_mi solver
+2022-09-12 15:16:26,621 - INFO - Time it takes for solver to finish: 0.4993438720703125
+2022-09-12 15:16:26,621 - INFO - Optimization problem was optimal
+2022-09-12 15:16:26,629 - INFO - 15:16:26 Running Optimization Problem starting at 2020-01-10 00:00:00 hb
+2022-09-12 15:16:26,670 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:26,670 - DEBUG - glpk_mi solver
+2022-09-12 15:16:27,059 - INFO - Time it takes for solver to finish: 0.3883528709411621
+2022-09-12 15:16:27,059 - INFO - Optimization problem was optimal
+2022-09-12 15:16:27,067 - INFO - 15:16:27 Running Optimization Problem starting at 2020-01-11 00:00:00 hb
+2022-09-12 15:16:27,107 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:27,107 - DEBUG - glpk_mi solver
+2022-09-12 15:16:27,801 - INFO - Time it takes for solver to finish: 0.6942188739776611
+2022-09-12 15:16:27,802 - INFO - Optimization problem was optimal
+2022-09-12 15:16:27,808 - INFO - 15:16:27 Running Optimization Problem starting at 2020-01-12 00:00:00 hb
+2022-09-12 15:16:27,850 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:27,850 - DEBUG - glpk_mi solver
+2022-09-12 15:16:28,358 - INFO - Time it takes for solver to finish: 0.5074849128723145
+2022-09-12 15:16:28,358 - INFO - Optimization problem was optimal
+2022-09-12 15:16:28,366 - INFO - 15:16:28 Running Optimization Problem starting at 2020-01-13 00:00:00 hb
+2022-09-12 15:16:28,406 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:28,406 - DEBUG - glpk_mi solver
+2022-09-12 15:16:28,809 - INFO - Time it takes for solver to finish: 0.402554988861084
+2022-09-12 15:16:28,809 - INFO - Optimization problem was optimal
+2022-09-12 15:16:28,817 - INFO - 15:16:28 Running Optimization Problem starting at 2020-01-14 00:00:00 hb
+2022-09-12 15:16:28,858 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:28,858 - DEBUG - glpk_mi solver
+2022-09-12 15:16:29,207 - INFO - Time it takes for solver to finish: 0.34836602210998535
+2022-09-12 15:16:29,207 - INFO - Optimization problem was optimal
+2022-09-12 15:16:29,215 - INFO - 15:16:29 Running Optimization Problem starting at 2020-01-15 00:00:00 hb
+2022-09-12 15:16:29,257 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:29,257 - DEBUG - glpk_mi solver
+2022-09-12 15:16:29,521 - INFO - Time it takes for solver to finish: 0.2642550468444824
+2022-09-12 15:16:29,522 - INFO - Optimization problem was optimal
+2022-09-12 15:16:29,530 - INFO - 15:16:29 Running Optimization Problem starting at 2020-01-16 00:00:00 hb
+2022-09-12 15:16:29,570 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:29,571 - DEBUG - glpk_mi solver
+2022-09-12 15:16:30,209 - INFO - Time it takes for solver to finish: 0.6386830806732178
+2022-09-12 15:16:30,210 - INFO - Optimization problem was optimal
+2022-09-12 15:16:30,218 - INFO - 15:16:30 Running Optimization Problem starting at 2020-01-17 00:00:00 hb
+2022-09-12 15:16:30,259 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:30,259 - DEBUG - glpk_mi solver
+2022-09-12 15:16:31,096 - INFO - Time it takes for solver to finish: 0.8362362384796143
+2022-09-12 15:16:31,096 - INFO - Optimization problem was optimal
+2022-09-12 15:16:31,103 - INFO - 15:16:31 Running Optimization Problem starting at 2020-01-18 00:00:00 hb
+2022-09-12 15:16:31,143 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:31,143 - DEBUG - glpk_mi solver
+2022-09-12 15:16:31,515 - INFO - Time it takes for solver to finish: 0.37171387672424316
+2022-09-12 15:16:31,515 - INFO - Optimization problem was optimal
+2022-09-12 15:16:31,523 - INFO - 15:16:31 Running Optimization Problem starting at 2020-01-19 00:00:00 hb
+2022-09-12 15:16:31,564 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:31,564 - DEBUG - glpk_mi solver
+2022-09-12 15:16:31,768 - INFO - Time it takes for solver to finish: 0.20368123054504395
+2022-09-12 15:16:31,768 - INFO - Optimization problem was optimal
+2022-09-12 15:16:31,776 - INFO - 15:16:31 Running Optimization Problem starting at 2020-01-20 00:00:00 hb
+2022-09-12 15:16:31,816 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:31,817 - DEBUG - glpk_mi solver
+2022-09-12 15:16:36,952 - INFO - Time it takes for solver to finish: 5.135304927825928
+2022-09-12 15:16:36,952 - INFO - Optimization problem was optimal
+2022-09-12 15:16:36,959 - INFO - 15:16:36 Running Optimization Problem starting at 2020-01-21 00:00:00 hb
+2022-09-12 15:16:37,000 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:37,001 - DEBUG - glpk_mi solver
+2022-09-12 15:16:37,974 - INFO - Time it takes for solver to finish: 0.9734237194061279
+2022-09-12 15:16:37,975 - INFO - Optimization problem was optimal
+2022-09-12 15:16:37,983 - INFO - 15:16:37 Running Optimization Problem starting at 2020-01-22 00:00:00 hb
+2022-09-12 15:16:38,022 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:38,022 - DEBUG - glpk_mi solver
+2022-09-12 15:16:38,325 - INFO - Time it takes for solver to finish: 0.3034658432006836
+2022-09-12 15:16:38,326 - INFO - Optimization problem was optimal
+2022-09-12 15:16:38,333 - INFO - 15:16:38 Running Optimization Problem starting at 2020-01-23 00:00:00 hb
+2022-09-12 15:16:38,374 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:38,374 - DEBUG - glpk_mi solver
+2022-09-12 15:16:38,882 - INFO - Time it takes for solver to finish: 0.507910966873169
+2022-09-12 15:16:38,883 - INFO - Optimization problem was optimal
+2022-09-12 15:16:38,889 - INFO - 15:16:38 Running Optimization Problem starting at 2020-01-24 00:00:00 hb
+2022-09-12 15:16:38,929 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:38,930 - DEBUG - glpk_mi solver
+2022-09-12 15:16:40,163 - INFO - Time it takes for solver to finish: 1.233280897140503
+2022-09-12 15:16:40,164 - INFO - Optimization problem was optimal
+2022-09-12 15:16:40,171 - INFO - 15:16:40 Running Optimization Problem starting at 2020-01-25 00:00:00 hb
+2022-09-12 15:16:40,215 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:40,215 - DEBUG - glpk_mi solver
+2022-09-12 15:16:41,944 - INFO - Time it takes for solver to finish: 1.728621006011963
+2022-09-12 15:16:41,963 - INFO - Optimization problem was optimal
+2022-09-12 15:16:41,976 - INFO - 15:16:41 Running Optimization Problem starting at 2020-01-26 00:00:00 hb
+2022-09-12 15:16:42,016 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:42,016 - DEBUG - glpk_mi solver
+2022-09-12 15:16:42,442 - INFO - Time it takes for solver to finish: 0.42568111419677734
+2022-09-12 15:16:42,442 - INFO - Optimization problem was optimal
+2022-09-12 15:16:42,450 - INFO - 15:16:42 Running Optimization Problem starting at 2020-01-27 00:00:00 hb
+2022-09-12 15:16:42,491 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:42,491 - DEBUG - glpk_mi solver
+2022-09-12 15:16:44,446 - INFO - Time it takes for solver to finish: 1.955005168914795
+2022-09-12 15:16:44,446 - INFO - Optimization problem was optimal
+2022-09-12 15:16:44,454 - INFO - 15:16:44 Running Optimization Problem starting at 2020-01-28 00:00:00 hb
+2022-09-12 15:16:44,497 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:44,497 - DEBUG - glpk_mi solver
+2022-09-12 15:16:45,586 - INFO - Time it takes for solver to finish: 1.0891788005828857
+2022-09-12 15:16:45,587 - INFO - Optimization problem was optimal
+2022-09-12 15:16:45,595 - INFO - 15:16:45 Running Optimization Problem starting at 2020-01-29 00:00:00 hb
+2022-09-12 15:16:45,638 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:45,638 - DEBUG - glpk_mi solver
+2022-09-12 15:16:45,965 - INFO - Time it takes for solver to finish: 0.32689499855041504
+2022-09-12 15:16:45,965 - INFO - Optimization problem was optimal
+2022-09-12 15:16:45,972 - INFO - 15:16:45 Running Optimization Problem starting at 2020-01-30 00:00:00 hb
+2022-09-12 15:16:46,010 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:46,010 - DEBUG - glpk_mi solver
+2022-09-12 15:16:47,679 - INFO - Time it takes for solver to finish: 1.6691830158233643
+2022-09-12 15:16:47,679 - INFO - Optimization problem was optimal
+2022-09-12 15:16:47,686 - INFO - 15:16:47 Running Optimization Problem starting at 2020-01-31 00:00:00 hb
+2022-09-12 15:16:47,723 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:47,723 - DEBUG - glpk_mi solver
+2022-09-12 15:16:48,930 - INFO - Time it takes for solver to finish: 1.2070798873901367
+2022-09-12 15:16:48,931 - INFO - Optimization problem was optimal
+2022-09-12 15:16:48,937 - INFO - 15:16:48 Running Optimization Problem starting at 2020-02-01 00:00:00 hb
+2022-09-12 15:16:48,974 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:48,974 - DEBUG - glpk_mi solver
+2022-09-12 15:16:50,544 - INFO - Time it takes for solver to finish: 1.569688081741333
+2022-09-12 15:16:50,544 - INFO - Optimization problem was optimal
+2022-09-12 15:16:50,552 - INFO - 15:16:50 Running Optimization Problem starting at 2020-02-02 00:00:00 hb
+2022-09-12 15:16:50,591 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:50,591 - DEBUG - glpk_mi solver
+2022-09-12 15:16:52,981 - INFO - Time it takes for solver to finish: 2.3897860050201416
+2022-09-12 15:16:52,981 - INFO - Optimization problem was optimal
+2022-09-12 15:16:52,988 - INFO - 15:16:52 Running Optimization Problem starting at 2020-02-03 00:00:00 hb
+2022-09-12 15:16:53,024 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:53,025 - DEBUG - glpk_mi solver
+2022-09-12 15:16:53,922 - INFO - Time it takes for solver to finish: 0.8973140716552734
+2022-09-12 15:16:53,922 - INFO - Optimization problem was optimal
+2022-09-12 15:16:53,931 - INFO - 15:16:53 Running Optimization Problem starting at 2020-02-04 00:00:00 hb
+2022-09-12 15:16:53,972 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:53,972 - DEBUG - glpk_mi solver
+2022-09-12 15:16:54,391 - INFO - Time it takes for solver to finish: 0.4189121723175049
+2022-09-12 15:16:54,392 - INFO - Optimization problem was optimal
+2022-09-12 15:16:54,400 - INFO - 15:16:54 Running Optimization Problem starting at 2020-02-05 00:00:00 hb
+2022-09-12 15:16:54,442 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:54,443 - DEBUG - glpk_mi solver
+2022-09-12 15:16:54,926 - INFO - Time it takes for solver to finish: 0.48309993743896484
+2022-09-12 15:16:54,926 - INFO - Optimization problem was optimal
+2022-09-12 15:16:54,934 - INFO - 15:16:54 Running Optimization Problem starting at 2020-02-06 00:00:00 hb
+2022-09-12 15:16:54,973 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:54,974 - DEBUG - glpk_mi solver
+2022-09-12 15:16:55,352 - INFO - Time it takes for solver to finish: 0.3786580562591553
+2022-09-12 15:16:55,353 - INFO - Optimization problem was optimal
+2022-09-12 15:16:55,361 - INFO - 15:16:55 Running Optimization Problem starting at 2020-02-07 00:00:00 hb
+2022-09-12 15:16:55,404 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:55,404 - DEBUG - glpk_mi solver
+2022-09-12 15:16:56,831 - INFO - Time it takes for solver to finish: 1.4271612167358398
+2022-09-12 15:16:56,832 - INFO - Optimization problem was optimal
+2022-09-12 15:16:56,839 - INFO - 15:16:56 Running Optimization Problem starting at 2020-02-08 00:00:00 hb
+2022-09-12 15:16:56,880 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:56,880 - DEBUG - glpk_mi solver
+2022-09-12 15:16:58,247 - INFO - Time it takes for solver to finish: 1.3666491508483887
+2022-09-12 15:16:58,247 - INFO - Optimization problem was optimal
+2022-09-12 15:16:58,254 - INFO - 15:16:58 Running Optimization Problem starting at 2020-02-09 00:00:00 hb
+2022-09-12 15:16:58,294 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:16:58,295 - DEBUG - glpk_mi solver
+2022-09-12 15:17:01,168 - INFO - Time it takes for solver to finish: 2.87300181388855
+2022-09-12 15:17:01,168 - INFO - Optimization problem was optimal
+2022-09-12 15:17:01,176 - INFO - 15:17:01 Running Optimization Problem starting at 2020-02-10 00:00:00 hb
+2022-09-12 15:17:01,219 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:01,219 - DEBUG - glpk_mi solver
+2022-09-12 15:17:03,051 - INFO - Time it takes for solver to finish: 1.8315930366516113
+2022-09-12 15:17:03,051 - INFO - Optimization problem was optimal
+2022-09-12 15:17:03,058 - INFO - 15:17:03 Running Optimization Problem starting at 2020-02-11 00:00:00 hb
+2022-09-12 15:17:03,099 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:03,099 - DEBUG - glpk_mi solver
+2022-09-12 15:17:04,352 - INFO - Time it takes for solver to finish: 1.2526679039001465
+2022-09-12 15:17:04,352 - INFO - Optimization problem was optimal
+2022-09-12 15:17:04,359 - INFO - 15:17:04 Running Optimization Problem starting at 2020-02-12 00:00:00 hb
+2022-09-12 15:17:04,396 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:04,397 - DEBUG - glpk_mi solver
+2022-09-12 15:17:05,835 - INFO - Time it takes for solver to finish: 1.4378423690795898
+2022-09-12 15:17:05,835 - INFO - Optimization problem was optimal
+2022-09-12 15:17:05,843 - INFO - 15:17:05 Running Optimization Problem starting at 2020-02-13 00:00:00 hb
+2022-09-12 15:17:05,886 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:05,887 - DEBUG - glpk_mi solver
+2022-09-12 15:17:08,225 - INFO - Time it takes for solver to finish: 2.338204860687256
+2022-09-12 15:17:08,225 - INFO - Optimization problem was optimal
+2022-09-12 15:17:08,233 - INFO - 15:17:08 Running Optimization Problem starting at 2020-02-14 00:00:00 hb
+2022-09-12 15:17:08,273 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:08,273 - DEBUG - glpk_mi solver
+2022-09-12 15:17:12,299 - INFO - Time it takes for solver to finish: 4.025105953216553
+2022-09-12 15:17:12,299 - INFO - Optimization problem was optimal
+2022-09-12 15:17:12,307 - INFO - 15:17:12 Running Optimization Problem starting at 2020-02-15 00:00:00 hb
+2022-09-12 15:17:12,350 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:12,350 - DEBUG - glpk_mi solver
+2022-09-12 15:17:14,194 - INFO - Time it takes for solver to finish: 1.8435721397399902
+2022-09-12 15:17:14,195 - INFO - Optimization problem was optimal
+2022-09-12 15:17:14,201 - INFO - 15:17:14 Running Optimization Problem starting at 2020-02-16 00:00:00 hb
+2022-09-12 15:17:14,238 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:14,238 - DEBUG - glpk_mi solver
+2022-09-12 15:17:15,863 - INFO - Time it takes for solver to finish: 1.6244571208953857
+2022-09-12 15:17:15,863 - INFO - Optimization problem was optimal
+2022-09-12 15:17:15,870 - INFO - 15:17:15 Running Optimization Problem starting at 2020-02-17 00:00:00 hb
+2022-09-12 15:17:15,907 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:15,908 - DEBUG - glpk_mi solver
+2022-09-12 15:17:16,482 - INFO - Time it takes for solver to finish: 0.5738570690155029
+2022-09-12 15:17:16,482 - INFO - Optimization problem was optimal
+2022-09-12 15:17:16,490 - INFO - 15:17:16 Running Optimization Problem starting at 2020-02-18 00:00:00 hb
+2022-09-12 15:17:16,532 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:16,533 - DEBUG - glpk_mi solver
+2022-09-12 15:17:18,318 - INFO - Time it takes for solver to finish: 1.7855010032653809
+2022-09-12 15:17:18,319 - INFO - Optimization problem was optimal
+2022-09-12 15:17:18,326 - INFO - 15:17:18 Running Optimization Problem starting at 2020-02-19 00:00:00 hb
+2022-09-12 15:17:18,369 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:18,369 - DEBUG - glpk_mi solver
+2022-09-12 15:17:24,664 - INFO - Time it takes for solver to finish: 6.2945921421051025
+2022-09-12 15:17:24,665 - INFO - Optimization problem was optimal
+2022-09-12 15:17:24,672 - INFO - 15:17:24 Running Optimization Problem starting at 2020-02-20 00:00:00 hb
+2022-09-12 15:17:24,715 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:24,715 - DEBUG - glpk_mi solver
+2022-09-12 15:17:26,335 - INFO - Time it takes for solver to finish: 1.619507074356079
+2022-09-12 15:17:26,335 - INFO - Optimization problem was optimal
+2022-09-12 15:17:26,342 - INFO - 15:17:26 Running Optimization Problem starting at 2020-02-21 00:00:00 hb
+2022-09-12 15:17:26,383 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:26,383 - DEBUG - glpk_mi solver
+2022-09-12 15:17:27,572 - INFO - Time it takes for solver to finish: 1.1887149810791016
+2022-09-12 15:17:27,573 - INFO - Optimization problem was optimal
+2022-09-12 15:17:27,581 - INFO - 15:17:27 Running Optimization Problem starting at 2020-02-22 00:00:00 hb
+2022-09-12 15:17:27,622 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:27,623 - DEBUG - glpk_mi solver
+2022-09-12 15:17:29,909 - INFO - Time it takes for solver to finish: 2.286316156387329
+2022-09-12 15:17:29,909 - INFO - Optimization problem was optimal
+2022-09-12 15:17:29,916 - INFO - 15:17:29 Running Optimization Problem starting at 2020-02-23 00:00:00 hb
+2022-09-12 15:17:29,953 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:29,960 - DEBUG - glpk_mi solver
+2022-09-12 15:17:30,883 - INFO - Time it takes for solver to finish: 0.9236040115356445
+2022-09-12 15:17:30,884 - INFO - Optimization problem was optimal
+2022-09-12 15:17:30,890 - INFO - 15:17:30 Running Optimization Problem starting at 2020-02-24 00:00:00 hb
+2022-09-12 15:17:30,928 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:30,928 - DEBUG - glpk_mi solver
+2022-09-12 15:17:31,921 - INFO - Time it takes for solver to finish: 0.9931950569152832
+2022-09-12 15:17:31,922 - INFO - Optimization problem was optimal
+2022-09-12 15:17:31,929 - INFO - 15:17:31 Running Optimization Problem starting at 2020-02-25 00:00:00 hb
+2022-09-12 15:17:31,965 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:31,966 - DEBUG - glpk_mi solver
+2022-09-12 15:17:33,601 - INFO - Time it takes for solver to finish: 1.6356239318847656
+2022-09-12 15:17:33,602 - INFO - Optimization problem was optimal
+2022-09-12 15:17:33,608 - INFO - 15:17:33 Running Optimization Problem starting at 2020-02-26 00:00:00 hb
+2022-09-12 15:17:33,645 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:33,646 - DEBUG - glpk_mi solver
+2022-09-12 15:17:34,308 - INFO - Time it takes for solver to finish: 0.6623201370239258
+2022-09-12 15:17:34,308 - INFO - Optimization problem was optimal
+2022-09-12 15:17:34,316 - INFO - 15:17:34 Running Optimization Problem starting at 2020-02-27 00:00:00 hb
+2022-09-12 15:17:34,356 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:34,356 - DEBUG - glpk_mi solver
+2022-09-12 15:17:35,181 - INFO - Time it takes for solver to finish: 0.8248491287231445
+2022-09-12 15:17:35,181 - INFO - Optimization problem was optimal
+2022-09-12 15:17:35,188 - INFO - 15:17:35 Running Optimization Problem starting at 2020-02-28 00:00:00 hb
+2022-09-12 15:17:35,231 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:35,231 - DEBUG - glpk_mi solver
+2022-09-12 15:17:35,938 - INFO - Time it takes for solver to finish: 0.7071750164031982
+2022-09-12 15:17:35,939 - INFO - Optimization problem was optimal
+2022-09-12 15:17:35,948 - INFO - 15:17:35 Running Optimization Problem starting at 2020-02-29 00:00:00 hb
+2022-09-12 15:17:36,010 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:36,011 - DEBUG - glpk_mi solver
+2022-09-12 15:17:37,006 - INFO - Time it takes for solver to finish: 0.9951879978179932
+2022-09-12 15:17:37,006 - INFO - Optimization problem was optimal
+2022-09-12 15:17:37,015 - INFO - 15:17:37 Running Optimization Problem starting at 2020-03-01 00:00:00 hb
+2022-09-12 15:17:37,067 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:37,067 - DEBUG - glpk_mi solver
+2022-09-12 15:17:37,782 - INFO - Time it takes for solver to finish: 0.7150022983551025
+2022-09-12 15:17:37,782 - INFO - Optimization problem was optimal
+2022-09-12 15:17:37,789 - INFO - 15:17:37 Running Optimization Problem starting at 2020-03-02 00:00:00 hb
+2022-09-12 15:17:37,825 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:37,825 - DEBUG - glpk_mi solver
+2022-09-12 15:17:37,935 - INFO - Time it takes for solver to finish: 0.10987305641174316
+2022-09-12 15:17:37,936 - INFO - Optimization problem was optimal
+2022-09-12 15:17:37,942 - INFO - 15:17:37 Running Optimization Problem starting at 2020-03-03 00:00:00 hb
+2022-09-12 15:17:37,978 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:37,979 - DEBUG - glpk_mi solver
+2022-09-12 15:17:38,142 - INFO - Time it takes for solver to finish: 0.16337108612060547
+2022-09-12 15:17:38,143 - INFO - Optimization problem was optimal
+2022-09-12 15:17:38,149 - INFO - 15:17:38 Running Optimization Problem starting at 2020-03-04 00:00:00 hb
+2022-09-12 15:17:38,185 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:38,186 - DEBUG - glpk_mi solver
+2022-09-12 15:17:38,451 - INFO - Time it takes for solver to finish: 0.26499104499816895
+2022-09-12 15:17:38,451 - INFO - Optimization problem was optimal
+2022-09-12 15:17:38,458 - INFO - 15:17:38 Running Optimization Problem starting at 2020-03-05 00:00:00 hb
+2022-09-12 15:17:38,497 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:38,497 - DEBUG - glpk_mi solver
+2022-09-12 15:17:38,664 - INFO - Time it takes for solver to finish: 0.16637802124023438
+2022-09-12 15:17:38,664 - INFO - Optimization problem was optimal
+2022-09-12 15:17:38,671 - INFO - 15:17:38 Running Optimization Problem starting at 2020-03-06 00:00:00 hb
+2022-09-12 15:17:38,708 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:38,708 - DEBUG - glpk_mi solver
+2022-09-12 15:17:38,984 - INFO - Time it takes for solver to finish: 0.2760128974914551
+2022-09-12 15:17:38,985 - INFO - Optimization problem was optimal
+2022-09-12 15:17:38,991 - INFO - 15:17:38 Running Optimization Problem starting at 2020-03-07 00:00:00 hb
+2022-09-12 15:17:39,028 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:39,028 - DEBUG - glpk_mi solver
+2022-09-12 15:17:39,780 - INFO - Time it takes for solver to finish: 0.7510890960693359
+2022-09-12 15:17:39,780 - INFO - Optimization problem was optimal
+2022-09-12 15:17:39,786 - INFO - 15:17:39 Running Optimization Problem starting at 2020-03-08 00:00:00 hb
+2022-09-12 15:17:39,822 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:39,822 - DEBUG - glpk_mi solver
+2022-09-12 15:17:40,232 - INFO - Time it takes for solver to finish: 0.4096500873565674
+2022-09-12 15:17:40,233 - INFO - Optimization problem was optimal
+2022-09-12 15:17:40,240 - INFO - 15:17:40 Running Optimization Problem starting at 2020-03-09 00:00:00 hb
+2022-09-12 15:17:40,277 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:40,278 - DEBUG - glpk_mi solver
+2022-09-12 15:17:40,789 - INFO - Time it takes for solver to finish: 0.5113551616668701
+2022-09-12 15:17:40,789 - INFO - Optimization problem was optimal
+2022-09-12 15:17:40,796 - INFO - 15:17:40 Running Optimization Problem starting at 2020-03-10 00:00:00 hb
+2022-09-12 15:17:40,833 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:40,833 - DEBUG - glpk_mi solver
+2022-09-12 15:17:41,039 - INFO - Time it takes for solver to finish: 0.20598316192626953
+2022-09-12 15:17:41,040 - INFO - Optimization problem was optimal
+2022-09-12 15:17:41,046 - INFO - 15:17:41 Running Optimization Problem starting at 2020-03-11 00:00:00 hb
+2022-09-12 15:17:41,082 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:41,083 - DEBUG - glpk_mi solver
+2022-09-12 15:17:41,347 - INFO - Time it takes for solver to finish: 0.2645258903503418
+2022-09-12 15:17:41,348 - INFO - Optimization problem was optimal
+2022-09-12 15:17:41,354 - INFO - 15:17:41 Running Optimization Problem starting at 2020-03-12 00:00:00 hb
+2022-09-12 15:17:41,391 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:41,392 - DEBUG - glpk_mi solver
+2022-09-12 15:17:41,639 - INFO - Time it takes for solver to finish: 0.24751877784729004
+2022-09-12 15:17:41,640 - INFO - Optimization problem was optimal
+2022-09-12 15:17:41,647 - INFO - 15:17:41 Running Optimization Problem starting at 2020-03-13 00:00:00 hb
+2022-09-12 15:17:41,686 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:41,687 - DEBUG - glpk_mi solver
+2022-09-12 15:17:41,847 - INFO - Time it takes for solver to finish: 0.15992498397827148
+2022-09-12 15:17:41,847 - INFO - Optimization problem was optimal
+2022-09-12 15:17:41,853 - INFO - 15:17:41 Running Optimization Problem starting at 2020-03-14 00:00:00 hb
+2022-09-12 15:17:41,890 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:41,890 - DEBUG - glpk_mi solver
+2022-09-12 15:17:42,251 - INFO - Time it takes for solver to finish: 0.36090087890625
+2022-09-12 15:17:42,252 - INFO - Optimization problem was optimal
+2022-09-12 15:17:42,258 - INFO - 15:17:42 Running Optimization Problem starting at 2020-03-15 00:00:00 hb
+2022-09-12 15:17:42,295 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:42,296 - DEBUG - glpk_mi solver
+2022-09-12 15:17:42,697 - INFO - Time it takes for solver to finish: 0.4014129638671875
+2022-09-12 15:17:42,697 - INFO - Optimization problem was optimal
+2022-09-12 15:17:42,704 - INFO - 15:17:42 Running Optimization Problem starting at 2020-03-16 00:00:00 hb
+2022-09-12 15:17:42,743 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:42,743 - DEBUG - glpk_mi solver
+2022-09-12 15:17:43,410 - INFO - Time it takes for solver to finish: 0.6670100688934326
+2022-09-12 15:17:43,410 - INFO - Optimization problem was optimal
+2022-09-12 15:17:43,417 - INFO - 15:17:43 Running Optimization Problem starting at 2020-03-17 00:00:00 hb
+2022-09-12 15:17:43,456 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:43,457 - DEBUG - glpk_mi solver
+2022-09-12 15:17:43,936 - INFO - Time it takes for solver to finish: 0.47904157638549805
+2022-09-12 15:17:43,936 - INFO - Optimization problem was optimal
+2022-09-12 15:17:43,944 - INFO - 15:17:43 Running Optimization Problem starting at 2020-03-18 00:00:00 hb
+2022-09-12 15:17:43,985 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:43,986 - DEBUG - glpk_mi solver
+2022-09-12 15:17:44,424 - INFO - Time it takes for solver to finish: 0.4383711814880371
+2022-09-12 15:17:44,425 - INFO - Optimization problem was optimal
+2022-09-12 15:17:44,432 - INFO - 15:17:44 Running Optimization Problem starting at 2020-03-19 00:00:00 hb
+2022-09-12 15:17:44,471 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:44,471 - DEBUG - glpk_mi solver
+2022-09-12 15:17:45,136 - INFO - Time it takes for solver to finish: 0.664384126663208
+2022-09-12 15:17:45,136 - INFO - Optimization problem was optimal
+2022-09-12 15:17:45,143 - INFO - 15:17:45 Running Optimization Problem starting at 2020-03-20 00:00:00 hb
+2022-09-12 15:17:45,182 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:45,182 - DEBUG - glpk_mi solver
+2022-09-12 15:17:45,897 - INFO - Time it takes for solver to finish: 0.7148590087890625
+2022-09-12 15:17:45,897 - INFO - Optimization problem was optimal
+2022-09-12 15:17:45,904 - INFO - 15:17:45 Running Optimization Problem starting at 2020-03-21 00:00:00 hb
+2022-09-12 15:17:45,944 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:45,962 - DEBUG - glpk_mi solver
+2022-09-12 15:17:46,783 - INFO - Time it takes for solver to finish: 0.8207108974456787
+2022-09-12 15:17:46,783 - INFO - Optimization problem was optimal
+2022-09-12 15:17:46,790 - INFO - 15:17:46 Running Optimization Problem starting at 2020-03-22 00:00:00 hb
+2022-09-12 15:17:46,829 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:46,829 - DEBUG - glpk_mi solver
+2022-09-12 15:17:47,152 - INFO - Time it takes for solver to finish: 0.32266902923583984
+2022-09-12 15:17:47,152 - INFO - Optimization problem was optimal
+2022-09-12 15:17:47,159 - INFO - 15:17:47 Running Optimization Problem starting at 2020-03-23 00:00:00 hb
+2022-09-12 15:17:47,195 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:47,196 - DEBUG - glpk_mi solver
+2022-09-12 15:17:47,935 - INFO - Time it takes for solver to finish: 0.7392759323120117
+2022-09-12 15:17:47,935 - INFO - Optimization problem was optimal
+2022-09-12 15:17:47,942 - INFO - 15:17:47 Running Optimization Problem starting at 2020-03-24 00:00:00 hb
+2022-09-12 15:17:47,985 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:47,985 - DEBUG - glpk_mi solver
+2022-09-12 15:17:48,458 - INFO - Time it takes for solver to finish: 0.4726221561431885
+2022-09-12 15:17:48,458 - INFO - Optimization problem was optimal
+2022-09-12 15:17:48,466 - INFO - 15:17:48 Running Optimization Problem starting at 2020-03-25 00:00:00 hb
+2022-09-12 15:17:48,505 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:48,505 - DEBUG - glpk_mi solver
+2022-09-12 15:17:48,845 - INFO - Time it takes for solver to finish: 0.339245080947876
+2022-09-12 15:17:48,845 - INFO - Optimization problem was optimal
+2022-09-12 15:17:48,852 - INFO - 15:17:48 Running Optimization Problem starting at 2020-03-26 00:00:00 hb
+2022-09-12 15:17:48,888 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:48,888 - DEBUG - glpk_mi solver
+2022-09-12 15:17:49,188 - INFO - Time it takes for solver to finish: 0.2994678020477295
+2022-09-12 15:17:49,188 - INFO - Optimization problem was optimal
+2022-09-12 15:17:49,195 - INFO - 15:17:49 Running Optimization Problem starting at 2020-03-27 00:00:00 hb
+2022-09-12 15:17:49,232 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:49,232 - DEBUG - glpk_mi solver
+2022-09-12 15:17:49,898 - INFO - Time it takes for solver to finish: 0.6656169891357422
+2022-09-12 15:17:49,898 - INFO - Optimization problem was optimal
+2022-09-12 15:17:49,905 - INFO - 15:17:49 Running Optimization Problem starting at 2020-03-28 00:00:00 hb
+2022-09-12 15:17:49,943 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:49,943 - DEBUG - glpk_mi solver
+2022-09-12 15:17:50,796 - INFO - Time it takes for solver to finish: 0.8528776168823242
+2022-09-12 15:17:50,797 - INFO - Optimization problem was optimal
+2022-09-12 15:17:50,804 - INFO - 15:17:50 Running Optimization Problem starting at 2020-03-29 00:00:00 hb
+2022-09-12 15:17:50,840 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:50,840 - DEBUG - glpk_mi solver
+2022-09-12 15:17:51,879 - INFO - Time it takes for solver to finish: 1.0388638973236084
+2022-09-12 15:17:51,880 - INFO - Optimization problem was optimal
+2022-09-12 15:17:51,886 - INFO - 15:17:51 Running Optimization Problem starting at 2020-03-30 00:00:00 hb
+2022-09-12 15:17:51,923 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:51,923 - DEBUG - glpk_mi solver
+2022-09-12 15:17:52,485 - INFO - Time it takes for solver to finish: 0.5619678497314453
+2022-09-12 15:17:52,486 - INFO - Optimization problem was optimal
+2022-09-12 15:17:52,492 - INFO - 15:17:52 Running Optimization Problem starting at 2020-03-31 00:00:00 hb
+2022-09-12 15:17:52,530 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:52,530 - DEBUG - glpk_mi solver
+2022-09-12 15:17:56,431 - INFO - Time it takes for solver to finish: 3.901036024093628
+2022-09-12 15:17:56,431 - INFO - Optimization problem was optimal
+2022-09-12 15:17:56,439 - INFO - 15:17:56 Running Optimization Problem starting at 2020-04-01 00:00:00 hb
+2022-09-12 15:17:56,492 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:56,492 - DEBUG - glpk_mi solver
+2022-09-12 15:17:56,692 - INFO - Time it takes for solver to finish: 0.19939088821411133
+2022-09-12 15:17:56,692 - INFO - Optimization problem was optimal
+2022-09-12 15:17:56,699 - INFO - 15:17:56 Running Optimization Problem starting at 2020-04-02 00:00:00 hb
+2022-09-12 15:17:56,736 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:56,736 - DEBUG - glpk_mi solver
+2022-09-12 15:17:57,525 - INFO - Time it takes for solver to finish: 0.7896757125854492
+2022-09-12 15:17:57,526 - INFO - Optimization problem was optimal
+2022-09-12 15:17:57,533 - INFO - 15:17:57 Running Optimization Problem starting at 2020-04-03 00:00:00 hb
+2022-09-12 15:17:57,571 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:57,571 - DEBUG - glpk_mi solver
+2022-09-12 15:17:58,370 - INFO - Time it takes for solver to finish: 0.7989919185638428
+2022-09-12 15:17:58,371 - INFO - Optimization problem was optimal
+2022-09-12 15:17:58,378 - INFO - 15:17:58 Running Optimization Problem starting at 2020-04-04 00:00:00 hb
+2022-09-12 15:17:58,419 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:58,420 - DEBUG - glpk_mi solver
+2022-09-12 15:17:58,766 - INFO - Time it takes for solver to finish: 0.3463578224182129
+2022-09-12 15:17:58,767 - INFO - Optimization problem was optimal
+2022-09-12 15:17:58,773 - INFO - 15:17:58 Running Optimization Problem starting at 2020-04-05 00:00:00 hb
+2022-09-12 15:17:58,812 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:58,812 - DEBUG - glpk_mi solver
+2022-09-12 15:17:59,290 - INFO - Time it takes for solver to finish: 0.47741174697875977
+2022-09-12 15:17:59,290 - INFO - Optimization problem was optimal
+2022-09-12 15:17:59,298 - INFO - 15:17:59 Running Optimization Problem starting at 2020-04-06 00:00:00 hb
+2022-09-12 15:17:59,336 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:17:59,336 - DEBUG - glpk_mi solver
+2022-09-12 15:18:00,583 - INFO - Time it takes for solver to finish: 1.2466449737548828
+2022-09-12 15:18:00,583 - INFO - Optimization problem was optimal
+2022-09-12 15:18:00,590 - INFO - 15:18:00 Running Optimization Problem starting at 2020-04-07 00:00:00 hb
+2022-09-12 15:18:00,629 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:00,629 - DEBUG - glpk_mi solver
+2022-09-12 15:18:00,880 - INFO - Time it takes for solver to finish: 0.25089216232299805
+2022-09-12 15:18:00,881 - INFO - Optimization problem was optimal
+2022-09-12 15:18:00,887 - INFO - 15:18:00 Running Optimization Problem starting at 2020-04-08 00:00:00 hb
+2022-09-12 15:18:00,924 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:00,924 - DEBUG - glpk_mi solver
+2022-09-12 15:18:01,690 - INFO - Time it takes for solver to finish: 0.765507698059082
+2022-09-12 15:18:01,690 - INFO - Optimization problem was optimal
+2022-09-12 15:18:01,697 - INFO - 15:18:01 Running Optimization Problem starting at 2020-04-09 00:00:00 hb
+2022-09-12 15:18:01,734 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:01,734 - DEBUG - glpk_mi solver
+2022-09-12 15:18:03,382 - INFO - Time it takes for solver to finish: 1.6482503414154053
+2022-09-12 15:18:03,383 - INFO - Optimization problem was optimal
+2022-09-12 15:18:03,389 - INFO - 15:18:03 Running Optimization Problem starting at 2020-04-10 00:00:00 hb
+2022-09-12 15:18:03,427 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:03,427 - DEBUG - glpk_mi solver
+2022-09-12 15:18:06,192 - INFO - Time it takes for solver to finish: 2.7648298740386963
+2022-09-12 15:18:06,193 - INFO - Optimization problem was optimal
+2022-09-12 15:18:06,200 - INFO - 15:18:06 Running Optimization Problem starting at 2020-04-11 00:00:00 hb
+2022-09-12 15:18:06,236 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:06,237 - DEBUG - glpk_mi solver
+2022-09-12 15:18:10,268 - INFO - Time it takes for solver to finish: 4.031225919723511
+2022-09-12 15:18:10,268 - INFO - Optimization problem was optimal
+2022-09-12 15:18:10,275 - INFO - 15:18:10 Running Optimization Problem starting at 2020-04-12 00:00:00 hb
+2022-09-12 15:18:10,311 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:10,311 - DEBUG - glpk_mi solver
+2022-09-12 15:18:12,215 - INFO - Time it takes for solver to finish: 1.9037981033325195
+2022-09-12 15:18:12,216 - INFO - Optimization problem was optimal
+2022-09-12 15:18:12,222 - INFO - 15:18:12 Running Optimization Problem starting at 2020-04-13 00:00:00 hb
+2022-09-12 15:18:12,259 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:12,259 - DEBUG - glpk_mi solver
+2022-09-12 15:18:14,297 - INFO - Time it takes for solver to finish: 2.0378918647766113
+2022-09-12 15:18:14,298 - INFO - Optimization problem was optimal
+2022-09-12 15:18:14,304 - INFO - 15:18:14 Running Optimization Problem starting at 2020-04-14 00:00:00 hb
+2022-09-12 15:18:14,342 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:14,342 - DEBUG - glpk_mi solver
+2022-09-12 15:18:15,798 - INFO - Time it takes for solver to finish: 1.4557278156280518
+2022-09-12 15:18:15,798 - INFO - Optimization problem was optimal
+2022-09-12 15:18:15,805 - INFO - 15:18:15 Running Optimization Problem starting at 2020-04-15 00:00:00 hb
+2022-09-12 15:18:15,841 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:15,841 - DEBUG - glpk_mi solver
+2022-09-12 15:18:19,739 - INFO - Time it takes for solver to finish: 3.8976240158081055
+2022-09-12 15:18:19,740 - INFO - Optimization problem was optimal
+2022-09-12 15:18:19,746 - INFO - 15:18:19 Running Optimization Problem starting at 2020-04-16 00:00:00 hb
+2022-09-12 15:18:19,783 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:19,783 - DEBUG - glpk_mi solver
+2022-09-12 15:18:19,852 - INFO - Time it takes for solver to finish: 0.06939697265625
+2022-09-12 15:18:19,853 - INFO - Optimization problem was optimal
+2022-09-12 15:18:19,859 - INFO - 15:18:19 Running Optimization Problem starting at 2020-04-17 00:00:00 hb
+2022-09-12 15:18:19,896 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:19,896 - DEBUG - glpk_mi solver
+2022-09-12 15:18:20,430 - INFO - Time it takes for solver to finish: 0.5339508056640625
+2022-09-12 15:18:20,430 - INFO - Optimization problem was optimal
+2022-09-12 15:18:20,437 - INFO - 15:18:20 Running Optimization Problem starting at 2020-04-18 00:00:00 hb
+2022-09-12 15:18:20,477 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:20,478 - DEBUG - glpk_mi solver
+2022-09-12 15:18:21,060 - INFO - Time it takes for solver to finish: 0.5824780464172363
+2022-09-12 15:18:21,061 - INFO - Optimization problem was optimal
+2022-09-12 15:18:21,069 - INFO - 15:18:21 Running Optimization Problem starting at 2020-04-19 00:00:00 hb
+2022-09-12 15:18:21,106 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:21,106 - DEBUG - glpk_mi solver
+2022-09-12 15:18:21,789 - INFO - Time it takes for solver to finish: 0.6827600002288818
+2022-09-12 15:18:21,790 - INFO - Optimization problem was optimal
+2022-09-12 15:18:21,797 - INFO - 15:18:21 Running Optimization Problem starting at 2020-04-20 00:00:00 hb
+2022-09-12 15:18:21,833 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:21,833 - DEBUG - glpk_mi solver
+2022-09-12 15:18:22,911 - INFO - Time it takes for solver to finish: 1.077923059463501
+2022-09-12 15:18:22,911 - INFO - Optimization problem was optimal
+2022-09-12 15:18:22,918 - INFO - 15:18:22 Running Optimization Problem starting at 2020-04-21 00:00:00 hb
+2022-09-12 15:18:22,954 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:22,954 - DEBUG - glpk_mi solver
+2022-09-12 15:18:23,254 - INFO - Time it takes for solver to finish: 0.29976511001586914
+2022-09-12 15:18:23,255 - INFO - Optimization problem was optimal
+2022-09-12 15:18:23,262 - INFO - 15:18:23 Running Optimization Problem starting at 2020-04-22 00:00:00 hb
+2022-09-12 15:18:23,299 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:23,299 - DEBUG - glpk_mi solver
+2022-09-12 15:18:23,983 - INFO - Time it takes for solver to finish: 0.6839160919189453
+2022-09-12 15:18:23,983 - INFO - Optimization problem was optimal
+2022-09-12 15:18:23,990 - INFO - 15:18:23 Running Optimization Problem starting at 2020-04-23 00:00:00 hb
+2022-09-12 15:18:24,026 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:24,026 - DEBUG - glpk_mi solver
+2022-09-12 15:18:25,479 - INFO - Time it takes for solver to finish: 1.4530532360076904
+2022-09-12 15:18:25,480 - INFO - Optimization problem was optimal
+2022-09-12 15:18:25,487 - INFO - 15:18:25 Running Optimization Problem starting at 2020-04-24 00:00:00 hb
+2022-09-12 15:18:25,524 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:25,524 - DEBUG - glpk_mi solver
+2022-09-12 15:18:25,644 - INFO - Time it takes for solver to finish: 0.1194460391998291
+2022-09-12 15:18:25,644 - INFO - Optimization problem was optimal
+2022-09-12 15:18:25,651 - INFO - 15:18:25 Running Optimization Problem starting at 2020-04-25 00:00:00 hb
+2022-09-12 15:18:25,687 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:25,688 - DEBUG - glpk_mi solver
+2022-09-12 15:18:26,089 - INFO - Time it takes for solver to finish: 0.4017219543457031
+2022-09-12 15:18:26,090 - INFO - Optimization problem was optimal
+2022-09-12 15:18:26,097 - INFO - 15:18:26 Running Optimization Problem starting at 2020-04-26 00:00:00 hb
+2022-09-12 15:18:26,134 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:26,134 - DEBUG - glpk_mi solver
+2022-09-12 15:18:26,405 - INFO - Time it takes for solver to finish: 0.27112293243408203
+2022-09-12 15:18:26,405 - INFO - Optimization problem was optimal
+2022-09-12 15:18:26,412 - INFO - 15:18:26 Running Optimization Problem starting at 2020-04-27 00:00:00 hb
+2022-09-12 15:18:26,452 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:26,452 - DEBUG - glpk_mi solver
+2022-09-12 15:18:26,667 - INFO - Time it takes for solver to finish: 0.21463489532470703
+2022-09-12 15:18:26,667 - INFO - Optimization problem was optimal
+2022-09-12 15:18:26,674 - INFO - 15:18:26 Running Optimization Problem starting at 2020-04-28 00:00:00 hb
+2022-09-12 15:18:26,712 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:26,712 - DEBUG - glpk_mi solver
+2022-09-12 15:18:26,771 - INFO - Time it takes for solver to finish: 0.0592348575592041
+2022-09-12 15:18:26,772 - INFO - Optimization problem was optimal
+2022-09-12 15:18:26,778 - INFO - 15:18:26 Running Optimization Problem starting at 2020-04-29 00:00:00 hb
+2022-09-12 15:18:26,816 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:26,816 - DEBUG - glpk_mi solver
+2022-09-12 15:18:27,067 - INFO - Time it takes for solver to finish: 0.2510511875152588
+2022-09-12 15:18:27,068 - INFO - Optimization problem was optimal
+2022-09-12 15:18:27,075 - INFO - 15:18:27 Running Optimization Problem starting at 2020-04-30 00:00:00 hb
+2022-09-12 15:18:27,113 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:27,113 - DEBUG - glpk_mi solver
+2022-09-12 15:18:27,396 - INFO - Time it takes for solver to finish: 0.2824540138244629
+2022-09-12 15:18:27,396 - INFO - Optimization problem was optimal
+2022-09-12 15:18:27,402 - INFO - 15:18:27 Running Optimization Problem starting at 2020-05-01 00:00:00 hb
+2022-09-12 15:18:27,441 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:27,441 - DEBUG - glpk_mi solver
+2022-09-12 15:18:27,644 - INFO - Time it takes for solver to finish: 0.20278477668762207
+2022-09-12 15:18:27,645 - INFO - Optimization problem was optimal
+2022-09-12 15:18:27,652 - INFO - 15:18:27 Running Optimization Problem starting at 2020-05-02 00:00:00 hb
+2022-09-12 15:18:27,688 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:27,688 - DEBUG - glpk_mi solver
+2022-09-12 15:18:28,101 - INFO - Time it takes for solver to finish: 0.413189172744751
+2022-09-12 15:18:28,101 - INFO - Optimization problem was optimal
+2022-09-12 15:18:28,108 - INFO - 15:18:28 Running Optimization Problem starting at 2020-05-03 00:00:00 hb
+2022-09-12 15:18:28,145 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:28,145 - DEBUG - glpk_mi solver
+2022-09-12 15:18:28,227 - INFO - Time it takes for solver to finish: 0.08154702186584473
+2022-09-12 15:18:28,227 - INFO - Optimization problem was optimal
+2022-09-12 15:18:28,234 - INFO - 15:18:28 Running Optimization Problem starting at 2020-05-04 00:00:00 hb
+2022-09-12 15:18:28,285 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:28,285 - DEBUG - glpk_mi solver
+2022-09-12 15:18:30,408 - INFO - Time it takes for solver to finish: 2.123075008392334
+2022-09-12 15:18:30,408 - INFO - Optimization problem was optimal
+2022-09-12 15:18:30,415 - INFO - 15:18:30 Running Optimization Problem starting at 2020-05-05 00:00:00 hb
+2022-09-12 15:18:30,455 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:30,455 - DEBUG - glpk_mi solver
+2022-09-12 15:18:31,175 - INFO - Time it takes for solver to finish: 0.7197310924530029
+2022-09-12 15:18:31,175 - INFO - Optimization problem was optimal
+2022-09-12 15:18:31,183 - INFO - 15:18:31 Running Optimization Problem starting at 2020-05-06 00:00:00 hb
+2022-09-12 15:18:31,219 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:31,219 - DEBUG - glpk_mi solver
+2022-09-12 15:18:31,626 - INFO - Time it takes for solver to finish: 0.40694093704223633
+2022-09-12 15:18:31,626 - INFO - Optimization problem was optimal
+2022-09-12 15:18:31,633 - INFO - 15:18:31 Running Optimization Problem starting at 2020-05-07 00:00:00 hb
+2022-09-12 15:18:31,670 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:31,670 - DEBUG - glpk_mi solver
+2022-09-12 15:18:32,509 - INFO - Time it takes for solver to finish: 0.8385391235351562
+2022-09-12 15:18:32,509 - INFO - Optimization problem was optimal
+2022-09-12 15:18:32,518 - INFO - 15:18:32 Running Optimization Problem starting at 2020-05-08 00:00:00 hb
+2022-09-12 15:18:32,559 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:32,559 - DEBUG - glpk_mi solver
+2022-09-12 15:18:33,113 - INFO - Time it takes for solver to finish: 0.5539181232452393
+2022-09-12 15:18:33,114 - INFO - Optimization problem was optimal
+2022-09-12 15:18:33,121 - INFO - 15:18:33 Running Optimization Problem starting at 2020-05-09 00:00:00 hb
+2022-09-12 15:18:33,161 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:33,161 - DEBUG - glpk_mi solver
+2022-09-12 15:18:33,297 - INFO - Time it takes for solver to finish: 0.1354539394378662
+2022-09-12 15:18:33,297 - INFO - Optimization problem was optimal
+2022-09-12 15:18:33,306 - INFO - 15:18:33 Running Optimization Problem starting at 2020-05-10 00:00:00 hb
+2022-09-12 15:18:33,347 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:33,348 - DEBUG - glpk_mi solver
+2022-09-12 15:18:34,115 - INFO - Time it takes for solver to finish: 0.767139196395874
+2022-09-12 15:18:34,115 - INFO - Optimization problem was optimal
+2022-09-12 15:18:34,122 - INFO - 15:18:34 Running Optimization Problem starting at 2020-05-11 00:00:00 hb
+2022-09-12 15:18:34,159 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:34,160 - DEBUG - glpk_mi solver
+2022-09-12 15:18:34,272 - INFO - Time it takes for solver to finish: 0.11193990707397461
+2022-09-12 15:18:34,272 - INFO - Optimization problem was optimal
+2022-09-12 15:18:34,279 - INFO - 15:18:34 Running Optimization Problem starting at 2020-05-12 00:00:00 hb
+2022-09-12 15:18:34,316 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:34,316 - DEBUG - glpk_mi solver
+2022-09-12 15:18:35,983 - INFO - Time it takes for solver to finish: 1.666299819946289
+2022-09-12 15:18:35,983 - INFO - Optimization problem was optimal
+2022-09-12 15:18:35,991 - INFO - 15:18:35 Running Optimization Problem starting at 2020-05-13 00:00:00 hb
+2022-09-12 15:18:36,030 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:36,030 - DEBUG - glpk_mi solver
+2022-09-12 15:18:36,543 - INFO - Time it takes for solver to finish: 0.5132579803466797
+2022-09-12 15:18:36,544 - INFO - Optimization problem was optimal
+2022-09-12 15:18:36,551 - INFO - 15:18:36 Running Optimization Problem starting at 2020-05-14 00:00:00 hb
+2022-09-12 15:18:36,588 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:36,588 - DEBUG - glpk_mi solver
+2022-09-12 15:18:36,928 - INFO - Time it takes for solver to finish: 0.3396270275115967
+2022-09-12 15:18:36,928 - INFO - Optimization problem was optimal
+2022-09-12 15:18:36,935 - INFO - 15:18:36 Running Optimization Problem starting at 2020-05-15 00:00:00 hb
+2022-09-12 15:18:36,972 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:36,972 - DEBUG - glpk_mi solver
+2022-09-12 15:18:37,300 - INFO - Time it takes for solver to finish: 0.3278801441192627
+2022-09-12 15:18:37,300 - INFO - Optimization problem was optimal
+2022-09-12 15:18:37,307 - INFO - 15:18:37 Running Optimization Problem starting at 2020-05-16 00:00:00 hb
+2022-09-12 15:18:37,346 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:37,346 - DEBUG - glpk_mi solver
+2022-09-12 15:18:37,468 - INFO - Time it takes for solver to finish: 0.1216428279876709
+2022-09-12 15:18:37,469 - INFO - Optimization problem was optimal
+2022-09-12 15:18:37,475 - INFO - 15:18:37 Running Optimization Problem starting at 2020-05-17 00:00:00 hb
+2022-09-12 15:18:37,512 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:37,513 - DEBUG - glpk_mi solver
+2022-09-12 15:18:37,611 - INFO - Time it takes for solver to finish: 0.09870409965515137
+2022-09-12 15:18:37,612 - INFO - Optimization problem was optimal
+2022-09-12 15:18:37,618 - INFO - 15:18:37 Running Optimization Problem starting at 2020-05-18 00:00:00 hb
+2022-09-12 15:18:37,656 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:37,656 - DEBUG - glpk_mi solver
+2022-09-12 15:18:37,931 - INFO - Time it takes for solver to finish: 0.27530694007873535
+2022-09-12 15:18:37,932 - INFO - Optimization problem was optimal
+2022-09-12 15:18:37,938 - INFO - 15:18:37 Running Optimization Problem starting at 2020-05-19 00:00:00 hb
+2022-09-12 15:18:37,975 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:37,975 - DEBUG - glpk_mi solver
+2022-09-12 15:18:43,741 - INFO - Time it takes for solver to finish: 5.7656776905059814
+2022-09-12 15:18:43,741 - INFO - Optimization problem was optimal
+2022-09-12 15:18:43,748 - INFO - 15:18:43 Running Optimization Problem starting at 2020-05-20 00:00:00 hb
+2022-09-12 15:18:43,785 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:43,785 - DEBUG - glpk_mi solver
+2022-09-12 15:18:44,089 - INFO - Time it takes for solver to finish: 0.30314064025878906
+2022-09-12 15:18:44,089 - INFO - Optimization problem was optimal
+2022-09-12 15:18:44,095 - INFO - 15:18:44 Running Optimization Problem starting at 2020-05-21 00:00:00 hb
+2022-09-12 15:18:44,132 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:44,133 - DEBUG - glpk_mi solver
+2022-09-12 15:18:44,543 - INFO - Time it takes for solver to finish: 0.4104330539703369
+2022-09-12 15:18:44,543 - INFO - Optimization problem was optimal
+2022-09-12 15:18:44,551 - INFO - 15:18:44 Running Optimization Problem starting at 2020-05-22 00:00:00 hb
+2022-09-12 15:18:44,588 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:44,588 - DEBUG - glpk_mi solver
+2022-09-12 15:18:44,696 - INFO - Time it takes for solver to finish: 0.10779905319213867
+2022-09-12 15:18:44,696 - INFO - Optimization problem was optimal
+2022-09-12 15:18:44,704 - INFO - 15:18:44 Running Optimization Problem starting at 2020-05-23 00:00:00 hb
+2022-09-12 15:18:44,741 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:44,742 - DEBUG - glpk_mi solver
+2022-09-12 15:18:45,054 - INFO - Time it takes for solver to finish: 0.3126840591430664
+2022-09-12 15:18:45,066 - INFO - Optimization problem was optimal
+2022-09-12 15:18:45,076 - INFO - 15:18:45 Running Optimization Problem starting at 2020-05-24 00:00:00 hb
+2022-09-12 15:18:45,132 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:45,133 - DEBUG - glpk_mi solver
+2022-09-12 15:18:45,266 - INFO - Time it takes for solver to finish: 0.13279390335083008
+2022-09-12 15:18:45,266 - INFO - Optimization problem was optimal
+2022-09-12 15:18:45,273 - INFO - 15:18:45 Running Optimization Problem starting at 2020-05-25 00:00:00 hb
+2022-09-12 15:18:45,309 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:45,309 - DEBUG - glpk_mi solver
+2022-09-12 15:18:45,481 - INFO - Time it takes for solver to finish: 0.17134404182434082
+2022-09-12 15:18:45,481 - INFO - Optimization problem was optimal
+2022-09-12 15:18:45,490 - INFO - 15:18:45 Running Optimization Problem starting at 2020-05-26 00:00:00 hb
+2022-09-12 15:18:45,533 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:45,533 - DEBUG - glpk_mi solver
+2022-09-12 15:18:45,797 - INFO - Time it takes for solver to finish: 0.2639131546020508
+2022-09-12 15:18:45,797 - INFO - Optimization problem was optimal
+2022-09-12 15:18:45,804 - INFO - 15:18:45 Running Optimization Problem starting at 2020-05-27 00:00:00 hb
+2022-09-12 15:18:45,844 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:45,844 - DEBUG - glpk_mi solver
+2022-09-12 15:18:46,005 - INFO - Time it takes for solver to finish: 0.16090011596679688
+2022-09-12 15:18:46,006 - INFO - Optimization problem was optimal
+2022-09-12 15:18:46,013 - INFO - 15:18:46 Running Optimization Problem starting at 2020-05-28 00:00:00 hb
+2022-09-12 15:18:46,052 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:46,052 - DEBUG - glpk_mi solver
+2022-09-12 15:18:46,194 - INFO - Time it takes for solver to finish: 0.1422100067138672
+2022-09-12 15:18:46,195 - INFO - Optimization problem was optimal
+2022-09-12 15:18:46,201 - INFO - 15:18:46 Running Optimization Problem starting at 2020-05-29 00:00:00 hb
+2022-09-12 15:18:46,239 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:46,256 - DEBUG - glpk_mi solver
+2022-09-12 15:18:47,145 - INFO - Time it takes for solver to finish: 0.8892049789428711
+2022-09-12 15:18:47,146 - INFO - Optimization problem was optimal
+2022-09-12 15:18:47,153 - INFO - 15:18:47 Running Optimization Problem starting at 2020-05-30 00:00:00 hb
+2022-09-12 15:18:47,189 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:47,189 - DEBUG - glpk_mi solver
+2022-09-12 15:18:47,493 - INFO - Time it takes for solver to finish: 0.3039560317993164
+2022-09-12 15:18:47,494 - INFO - Optimization problem was optimal
+2022-09-12 15:18:47,501 - INFO - 15:18:47 Running Optimization Problem starting at 2020-05-31 00:00:00 hb
+2022-09-12 15:18:47,542 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:47,543 - DEBUG - glpk_mi solver
+2022-09-12 15:18:48,290 - INFO - Time it takes for solver to finish: 0.7475829124450684
+2022-09-12 15:18:48,291 - INFO - Optimization problem was optimal
+2022-09-12 15:18:48,298 - INFO - 15:18:48 Running Optimization Problem starting at 2020-06-01 00:00:00 hb
+2022-09-12 15:18:48,335 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:48,336 - DEBUG - glpk_mi solver
+2022-09-12 15:18:48,634 - INFO - Time it takes for solver to finish: 0.2988128662109375
+2022-09-12 15:18:48,635 - INFO - Optimization problem was optimal
+2022-09-12 15:18:48,642 - INFO - 15:18:48 Running Optimization Problem starting at 2020-06-02 00:00:00 hb
+2022-09-12 15:18:48,679 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:48,679 - DEBUG - glpk_mi solver
+2022-09-12 15:18:48,886 - INFO - Time it takes for solver to finish: 0.20701169967651367
+2022-09-12 15:18:48,887 - INFO - Optimization problem was optimal
+2022-09-12 15:18:48,893 - INFO - 15:18:48 Running Optimization Problem starting at 2020-06-03 00:00:00 hb
+2022-09-12 15:18:48,933 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:48,933 - DEBUG - glpk_mi solver
+2022-09-12 15:18:49,127 - INFO - Time it takes for solver to finish: 0.19352293014526367
+2022-09-12 15:18:49,127 - INFO - Optimization problem was optimal
+2022-09-12 15:18:49,134 - INFO - 15:18:49 Running Optimization Problem starting at 2020-06-04 00:00:00 hb
+2022-09-12 15:18:49,170 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:49,171 - DEBUG - glpk_mi solver
+2022-09-12 15:18:49,259 - INFO - Time it takes for solver to finish: 0.08808398246765137
+2022-09-12 15:18:49,259 - INFO - Optimization problem was optimal
+2022-09-12 15:18:49,266 - INFO - 15:18:49 Running Optimization Problem starting at 2020-06-05 00:00:00 hb
+2022-09-12 15:18:49,303 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:49,303 - DEBUG - glpk_mi solver
+2022-09-12 15:18:49,576 - INFO - Time it takes for solver to finish: 0.27204418182373047
+2022-09-12 15:18:49,576 - INFO - Optimization problem was optimal
+2022-09-12 15:18:49,583 - INFO - 15:18:49 Running Optimization Problem starting at 2020-06-06 00:00:00 hb
+2022-09-12 15:18:49,620 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:49,620 - DEBUG - glpk_mi solver
+2022-09-12 15:18:49,870 - INFO - Time it takes for solver to finish: 0.24940228462219238
+2022-09-12 15:18:49,870 - INFO - Optimization problem was optimal
+2022-09-12 15:18:49,877 - INFO - 15:18:49 Running Optimization Problem starting at 2020-06-07 00:00:00 hb
+2022-09-12 15:18:49,914 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:49,914 - DEBUG - glpk_mi solver
+2022-09-12 15:18:50,015 - INFO - Time it takes for solver to finish: 0.10065889358520508
+2022-09-12 15:18:50,016 - INFO - Optimization problem was optimal
+2022-09-12 15:18:50,022 - INFO - 15:18:50 Running Optimization Problem starting at 2020-06-08 00:00:00 hb
+2022-09-12 15:18:50,059 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:50,059 - DEBUG - glpk_mi solver
+2022-09-12 15:18:50,164 - INFO - Time it takes for solver to finish: 0.10454607009887695
+2022-09-12 15:18:50,164 - INFO - Optimization problem was optimal
+2022-09-12 15:18:50,170 - INFO - 15:18:50 Running Optimization Problem starting at 2020-06-09 00:00:00 hb
+2022-09-12 15:18:50,207 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:50,207 - DEBUG - glpk_mi solver
+2022-09-12 15:18:50,436 - INFO - Time it takes for solver to finish: 0.22898006439208984
+2022-09-12 15:18:50,437 - INFO - Optimization problem was optimal
+2022-09-12 15:18:50,446 - INFO - 15:18:50 Running Optimization Problem starting at 2020-06-10 00:00:00 hb
+2022-09-12 15:18:50,485 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:50,486 - DEBUG - glpk_mi solver
+2022-09-12 15:18:50,834 - INFO - Time it takes for solver to finish: 0.3484361171722412
+2022-09-12 15:18:50,835 - INFO - Optimization problem was optimal
+2022-09-12 15:18:50,842 - INFO - 15:18:50 Running Optimization Problem starting at 2020-06-11 00:00:00 hb
+2022-09-12 15:18:50,879 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:50,880 - DEBUG - glpk_mi solver
+2022-09-12 15:18:51,198 - INFO - Time it takes for solver to finish: 0.31824302673339844
+2022-09-12 15:18:51,198 - INFO - Optimization problem was optimal
+2022-09-12 15:18:51,205 - INFO - 15:18:51 Running Optimization Problem starting at 2020-06-12 00:00:00 hb
+2022-09-12 15:18:51,243 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:51,243 - DEBUG - glpk_mi solver
+2022-09-12 15:18:51,471 - INFO - Time it takes for solver to finish: 0.22757911682128906
+2022-09-12 15:18:51,471 - INFO - Optimization problem was optimal
+2022-09-12 15:18:51,478 - INFO - 15:18:51 Running Optimization Problem starting at 2020-06-13 00:00:00 hb
+2022-09-12 15:18:51,517 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:51,517 - DEBUG - glpk_mi solver
+2022-09-12 15:18:53,452 - INFO - Time it takes for solver to finish: 1.9351401329040527
+2022-09-12 15:18:53,453 - INFO - Optimization problem was optimal
+2022-09-12 15:18:53,460 - INFO - 15:18:53 Running Optimization Problem starting at 2020-06-14 00:00:00 hb
+2022-09-12 15:18:53,500 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:53,501 - DEBUG - glpk_mi solver
+2022-09-12 15:18:54,100 - INFO - Time it takes for solver to finish: 0.5995810031890869
+2022-09-12 15:18:54,101 - INFO - Optimization problem was optimal
+2022-09-12 15:18:54,107 - INFO - 15:18:54 Running Optimization Problem starting at 2020-06-15 00:00:00 hb
+2022-09-12 15:18:54,149 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:54,150 - DEBUG - glpk_mi solver
+2022-09-12 15:18:54,244 - INFO - Time it takes for solver to finish: 0.09400510787963867
+2022-09-12 15:18:54,244 - INFO - Optimization problem was optimal
+2022-09-12 15:18:54,251 - INFO - 15:18:54 Running Optimization Problem starting at 2020-06-16 00:00:00 hb
+2022-09-12 15:18:54,290 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:54,290 - DEBUG - glpk_mi solver
+2022-09-12 15:18:54,560 - INFO - Time it takes for solver to finish: 0.26998472213745117
+2022-09-12 15:18:54,560 - INFO - Optimization problem was optimal
+2022-09-12 15:18:54,568 - INFO - 15:18:54 Running Optimization Problem starting at 2020-06-17 00:00:00 hb
+2022-09-12 15:18:54,605 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:54,605 - DEBUG - glpk_mi solver
+2022-09-12 15:18:55,294 - INFO - Time it takes for solver to finish: 0.6893429756164551
+2022-09-12 15:18:55,295 - INFO - Optimization problem was optimal
+2022-09-12 15:18:55,302 - INFO - 15:18:55 Running Optimization Problem starting at 2020-06-18 00:00:00 hb
+2022-09-12 15:18:55,340 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:55,340 - DEBUG - glpk_mi solver
+2022-09-12 15:18:55,429 - INFO - Time it takes for solver to finish: 0.08869695663452148
+2022-09-12 15:18:55,429 - INFO - Optimization problem was optimal
+2022-09-12 15:18:55,436 - INFO - 15:18:55 Running Optimization Problem starting at 2020-06-19 00:00:00 hb
+2022-09-12 15:18:55,475 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:55,475 - DEBUG - glpk_mi solver
+2022-09-12 15:18:55,530 - INFO - Time it takes for solver to finish: 0.05492591857910156
+2022-09-12 15:18:55,531 - INFO - Optimization problem was optimal
+2022-09-12 15:18:55,538 - INFO - 15:18:55 Running Optimization Problem starting at 2020-06-20 00:00:00 hb
+2022-09-12 15:18:55,575 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:55,575 - DEBUG - glpk_mi solver
+2022-09-12 15:18:57,622 - INFO - Time it takes for solver to finish: 2.0462160110473633
+2022-09-12 15:18:57,622 - INFO - Optimization problem was optimal
+2022-09-12 15:18:57,629 - INFO - 15:18:57 Running Optimization Problem starting at 2020-06-21 00:00:00 hb
+2022-09-12 15:18:57,666 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:57,666 - DEBUG - glpk_mi solver
+2022-09-12 15:18:57,777 - INFO - Time it takes for solver to finish: 0.11113810539245605
+2022-09-12 15:18:57,778 - INFO - Optimization problem was optimal
+2022-09-12 15:18:57,785 - INFO - 15:18:57 Running Optimization Problem starting at 2020-06-22 00:00:00 hb
+2022-09-12 15:18:57,821 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:57,821 - DEBUG - glpk_mi solver
+2022-09-12 15:18:58,082 - INFO - Time it takes for solver to finish: 0.26041221618652344
+2022-09-12 15:18:58,082 - INFO - Optimization problem was optimal
+2022-09-12 15:18:58,089 - INFO - 15:18:58 Running Optimization Problem starting at 2020-06-23 00:00:00 hb
+2022-09-12 15:18:58,125 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:58,125 - DEBUG - glpk_mi solver
+2022-09-12 15:18:58,468 - INFO - Time it takes for solver to finish: 0.34334516525268555
+2022-09-12 15:18:58,469 - INFO - Optimization problem was optimal
+2022-09-12 15:18:58,476 - INFO - 15:18:58 Running Optimization Problem starting at 2020-06-24 00:00:00 hb
+2022-09-12 15:18:58,515 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:58,515 - DEBUG - glpk_mi solver
+2022-09-12 15:18:58,800 - INFO - Time it takes for solver to finish: 0.2846200466156006
+2022-09-12 15:18:58,800 - INFO - Optimization problem was optimal
+2022-09-12 15:18:58,807 - INFO - 15:18:58 Running Optimization Problem starting at 2020-06-25 00:00:00 hb
+2022-09-12 15:18:58,843 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:58,844 - DEBUG - glpk_mi solver
+2022-09-12 15:18:58,957 - INFO - Time it takes for solver to finish: 0.1136329174041748
+2022-09-12 15:18:58,976 - INFO - Optimization problem was optimal
+2022-09-12 15:18:58,988 - INFO - 15:18:58 Running Optimization Problem starting at 2020-06-26 00:00:00 hb
+2022-09-12 15:18:59,027 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:59,028 - DEBUG - glpk_mi solver
+2022-09-12 15:18:59,378 - INFO - Time it takes for solver to finish: 0.3503570556640625
+2022-09-12 15:18:59,379 - INFO - Optimization problem was optimal
+2022-09-12 15:18:59,386 - INFO - 15:18:59 Running Optimization Problem starting at 2020-06-27 00:00:00 hb
+2022-09-12 15:18:59,426 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:59,426 - DEBUG - glpk_mi solver
+2022-09-12 15:18:59,598 - INFO - Time it takes for solver to finish: 0.17201995849609375
+2022-09-12 15:18:59,599 - INFO - Optimization problem was optimal
+2022-09-12 15:18:59,605 - INFO - 15:18:59 Running Optimization Problem starting at 2020-06-28 00:00:00 hb
+2022-09-12 15:18:59,641 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:18:59,641 - DEBUG - glpk_mi solver
+2022-09-12 15:19:01,008 - INFO - Time it takes for solver to finish: 1.3670189380645752
+2022-09-12 15:19:01,009 - INFO - Optimization problem was optimal
+2022-09-12 15:19:01,018 - INFO - 15:19:01 Running Optimization Problem starting at 2020-06-29 00:00:00 hb
+2022-09-12 15:19:01,058 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:01,058 - DEBUG - glpk_mi solver
+2022-09-12 15:19:01,326 - INFO - Time it takes for solver to finish: 0.2675948143005371
+2022-09-12 15:19:01,326 - INFO - Optimization problem was optimal
+2022-09-12 15:19:01,333 - INFO - 15:19:01 Running Optimization Problem starting at 2020-06-30 00:00:00 hb
+2022-09-12 15:19:01,373 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:01,373 - DEBUG - glpk_mi solver
+2022-09-12 15:19:01,439 - INFO - Time it takes for solver to finish: 0.06596517562866211
+2022-09-12 15:19:01,440 - INFO - Optimization problem was optimal
+2022-09-12 15:19:01,448 - INFO - 15:19:01 Running Optimization Problem starting at 2020-07-01 00:00:00 hb
+2022-09-12 15:19:01,488 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:01,488 - DEBUG - glpk_mi solver
+2022-09-12 15:19:01,564 - INFO - Time it takes for solver to finish: 0.0762181282043457
+2022-09-12 15:19:01,565 - INFO - Optimization problem was optimal
+2022-09-12 15:19:01,573 - INFO - 15:19:01 Running Optimization Problem starting at 2020-07-02 00:00:00 hb
+2022-09-12 15:19:01,609 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:01,609 - DEBUG - glpk_mi solver
+2022-09-12 15:19:02,031 - INFO - Time it takes for solver to finish: 0.42160511016845703
+2022-09-12 15:19:02,031 - INFO - Optimization problem was optimal
+2022-09-12 15:19:02,038 - INFO - 15:19:02 Running Optimization Problem starting at 2020-07-03 00:00:00 hb
+2022-09-12 15:19:02,075 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:02,075 - DEBUG - glpk_mi solver
+2022-09-12 15:19:02,851 - INFO - Time it takes for solver to finish: 0.7756009101867676
+2022-09-12 15:19:02,851 - INFO - Optimization problem was optimal
+2022-09-12 15:19:02,858 - INFO - 15:19:02 Running Optimization Problem starting at 2020-07-04 00:00:00 hb
+2022-09-12 15:19:02,894 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:02,895 - DEBUG - glpk_mi solver
+2022-09-12 15:19:03,583 - INFO - Time it takes for solver to finish: 0.6888182163238525
+2022-09-12 15:19:03,584 - INFO - Optimization problem was optimal
+2022-09-12 15:19:03,592 - INFO - 15:19:03 Running Optimization Problem starting at 2020-07-05 00:00:00 hb
+2022-09-12 15:19:03,634 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:03,634 - DEBUG - glpk_mi solver
+2022-09-12 15:19:04,041 - INFO - Time it takes for solver to finish: 0.4067809581756592
+2022-09-12 15:19:04,041 - INFO - Optimization problem was optimal
+2022-09-12 15:19:04,049 - INFO - 15:19:04 Running Optimization Problem starting at 2020-07-06 00:00:00 hb
+2022-09-12 15:19:04,090 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:04,090 - DEBUG - glpk_mi solver
+2022-09-12 15:19:04,498 - INFO - Time it takes for solver to finish: 0.4077901840209961
+2022-09-12 15:19:04,498 - INFO - Optimization problem was optimal
+2022-09-12 15:19:04,506 - INFO - 15:19:04 Running Optimization Problem starting at 2020-07-07 00:00:00 hb
+2022-09-12 15:19:04,543 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:04,543 - DEBUG - glpk_mi solver
+2022-09-12 15:19:05,989 - INFO - Time it takes for solver to finish: 1.44547700881958
+2022-09-12 15:19:05,989 - INFO - Optimization problem was optimal
+2022-09-12 15:19:05,996 - INFO - 15:19:05 Running Optimization Problem starting at 2020-07-08 00:00:00 hb
+2022-09-12 15:19:06,034 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:06,034 - DEBUG - glpk_mi solver
+2022-09-12 15:19:07,390 - INFO - Time it takes for solver to finish: 1.3555750846862793
+2022-09-12 15:19:07,390 - INFO - Optimization problem was optimal
+2022-09-12 15:19:07,397 - INFO - 15:19:07 Running Optimization Problem starting at 2020-07-09 00:00:00 hb
+2022-09-12 15:19:07,434 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:07,434 - DEBUG - glpk_mi solver
+2022-09-12 15:19:08,024 - INFO - Time it takes for solver to finish: 0.5899209976196289
+2022-09-12 15:19:08,024 - INFO - Optimization problem was optimal
+2022-09-12 15:19:08,031 - INFO - 15:19:08 Running Optimization Problem starting at 2020-07-10 00:00:00 hb
+2022-09-12 15:19:08,068 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:08,068 - DEBUG - glpk_mi solver
+2022-09-12 15:19:08,534 - INFO - Time it takes for solver to finish: 0.46580934524536133
+2022-09-12 15:19:08,534 - INFO - Optimization problem was optimal
+2022-09-12 15:19:08,541 - INFO - 15:19:08 Running Optimization Problem starting at 2020-07-11 00:00:00 hb
+2022-09-12 15:19:08,580 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:08,580 - DEBUG - glpk_mi solver
+2022-09-12 15:19:08,789 - INFO - Time it takes for solver to finish: 0.2086789608001709
+2022-09-12 15:19:08,789 - INFO - Optimization problem was optimal
+2022-09-12 15:19:08,796 - INFO - 15:19:08 Running Optimization Problem starting at 2020-07-12 00:00:00 hb
+2022-09-12 15:19:08,832 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:08,833 - DEBUG - glpk_mi solver
+2022-09-12 15:19:09,005 - INFO - Time it takes for solver to finish: 0.17184686660766602
+2022-09-12 15:19:09,005 - INFO - Optimization problem was optimal
+2022-09-12 15:19:09,012 - INFO - 15:19:09 Running Optimization Problem starting at 2020-07-13 00:00:00 hb
+2022-09-12 15:19:09,049 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:09,049 - DEBUG - glpk_mi solver
+2022-09-12 15:19:09,150 - INFO - Time it takes for solver to finish: 0.10090327262878418
+2022-09-12 15:19:09,150 - INFO - Optimization problem was optimal
+2022-09-12 15:19:09,157 - INFO - 15:19:09 Running Optimization Problem starting at 2020-07-14 00:00:00 hb
+2022-09-12 15:19:09,194 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:09,194 - DEBUG - glpk_mi solver
+2022-09-12 15:19:09,831 - INFO - Time it takes for solver to finish: 0.6368906497955322
+2022-09-12 15:19:09,831 - INFO - Optimization problem was optimal
+2022-09-12 15:19:09,838 - INFO - 15:19:09 Running Optimization Problem starting at 2020-07-15 00:00:00 hb
+2022-09-12 15:19:09,876 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:09,876 - DEBUG - glpk_mi solver
+2022-09-12 15:19:10,247 - INFO - Time it takes for solver to finish: 0.3714628219604492
+2022-09-12 15:19:10,248 - INFO - Optimization problem was optimal
+2022-09-12 15:19:10,255 - INFO - 15:19:10 Running Optimization Problem starting at 2020-07-16 00:00:00 hb
+2022-09-12 15:19:10,292 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:10,292 - DEBUG - glpk_mi solver
+2022-09-12 15:19:11,099 - INFO - Time it takes for solver to finish: 0.8062243461608887
+2022-09-12 15:19:11,099 - INFO - Optimization problem was optimal
+2022-09-12 15:19:11,107 - INFO - 15:19:11 Running Optimization Problem starting at 2020-07-17 00:00:00 hb
+2022-09-12 15:19:11,147 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:11,148 - DEBUG - glpk_mi solver
+2022-09-12 15:19:11,966 - INFO - Time it takes for solver to finish: 0.8187799453735352
+2022-09-12 15:19:11,967 - INFO - Optimization problem was optimal
+2022-09-12 15:19:11,974 - INFO - 15:19:11 Running Optimization Problem starting at 2020-07-18 00:00:00 hb
+2022-09-12 15:19:12,011 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:12,012 - DEBUG - glpk_mi solver
+2022-09-12 15:19:12,651 - INFO - Time it takes for solver to finish: 0.6394960880279541
+2022-09-12 15:19:12,652 - INFO - Optimization problem was optimal
+2022-09-12 15:19:12,658 - INFO - 15:19:12 Running Optimization Problem starting at 2020-07-19 00:00:00 hb
+2022-09-12 15:19:12,694 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:12,695 - DEBUG - glpk_mi solver
+2022-09-12 15:19:13,058 - INFO - Time it takes for solver to finish: 0.36284637451171875
+2022-09-12 15:19:13,058 - INFO - Optimization problem was optimal
+2022-09-12 15:19:13,066 - INFO - 15:19:13 Running Optimization Problem starting at 2020-07-20 00:00:00 hb
+2022-09-12 15:19:13,108 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:13,109 - DEBUG - glpk_mi solver
+2022-09-12 15:19:15,190 - INFO - Time it takes for solver to finish: 2.0814168453216553
+2022-09-12 15:19:15,191 - INFO - Optimization problem was optimal
+2022-09-12 15:19:15,199 - INFO - 15:19:15 Running Optimization Problem starting at 2020-07-21 00:00:00 hb
+2022-09-12 15:19:15,239 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:15,239 - DEBUG - glpk_mi solver
+2022-09-12 15:19:17,855 - INFO - Time it takes for solver to finish: 2.6160099506378174
+2022-09-12 15:19:17,856 - INFO - Optimization problem was optimal
+2022-09-12 15:19:17,863 - INFO - 15:19:17 Running Optimization Problem starting at 2020-07-22 00:00:00 hb
+2022-09-12 15:19:17,900 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:17,900 - DEBUG - glpk_mi solver
+2022-09-12 15:19:18,543 - INFO - Time it takes for solver to finish: 0.6428389549255371
+2022-09-12 15:19:18,543 - INFO - Optimization problem was optimal
+2022-09-12 15:19:18,550 - INFO - 15:19:18 Running Optimization Problem starting at 2020-07-23 00:00:00 hb
+2022-09-12 15:19:18,587 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:18,587 - DEBUG - glpk_mi solver
+2022-09-12 15:19:19,060 - INFO - Time it takes for solver to finish: 0.4730041027069092
+2022-09-12 15:19:19,061 - INFO - Optimization problem was optimal
+2022-09-12 15:19:19,068 - INFO - 15:19:19 Running Optimization Problem starting at 2020-07-24 00:00:00 hb
+2022-09-12 15:19:19,104 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:19,104 - DEBUG - glpk_mi solver
+2022-09-12 15:19:19,507 - INFO - Time it takes for solver to finish: 0.4023439884185791
+2022-09-12 15:19:19,507 - INFO - Optimization problem was optimal
+2022-09-12 15:19:19,516 - INFO - 15:19:19 Running Optimization Problem starting at 2020-07-25 00:00:00 hb
+2022-09-12 15:19:19,555 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:19,556 - DEBUG - glpk_mi solver
+2022-09-12 15:19:19,711 - INFO - Time it takes for solver to finish: 0.15563583374023438
+2022-09-12 15:19:19,712 - INFO - Optimization problem was optimal
+2022-09-12 15:19:19,719 - INFO - 15:19:19 Running Optimization Problem starting at 2020-07-26 00:00:00 hb
+2022-09-12 15:19:19,770 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:19,770 - DEBUG - glpk_mi solver
+2022-09-12 15:19:20,093 - INFO - Time it takes for solver to finish: 0.32276010513305664
+2022-09-12 15:19:20,093 - INFO - Optimization problem was optimal
+2022-09-12 15:19:20,102 - INFO - 15:19:20 Running Optimization Problem starting at 2020-07-27 00:00:00 hb
+2022-09-12 15:19:20,142 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:20,142 - DEBUG - glpk_mi solver
+2022-09-12 15:19:20,483 - INFO - Time it takes for solver to finish: 0.34140920639038086
+2022-09-12 15:19:20,484 - INFO - Optimization problem was optimal
+2022-09-12 15:19:20,491 - INFO - 15:19:20 Running Optimization Problem starting at 2020-07-28 00:00:00 hb
+2022-09-12 15:19:20,529 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:20,529 - DEBUG - glpk_mi solver
+2022-09-12 15:19:20,908 - INFO - Time it takes for solver to finish: 0.37942075729370117
+2022-09-12 15:19:20,909 - INFO - Optimization problem was optimal
+2022-09-12 15:19:20,917 - INFO - 15:19:20 Running Optimization Problem starting at 2020-07-29 00:00:00 hb
+2022-09-12 15:19:20,953 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:20,953 - DEBUG - glpk_mi solver
+2022-09-12 15:19:21,104 - INFO - Time it takes for solver to finish: 0.15117430686950684
+2022-09-12 15:19:21,105 - INFO - Optimization problem was optimal
+2022-09-12 15:19:21,112 - INFO - 15:19:21 Running Optimization Problem starting at 2020-07-30 00:00:00 hb
+2022-09-12 15:19:21,148 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:21,149 - DEBUG - glpk_mi solver
+2022-09-12 15:19:21,340 - INFO - Time it takes for solver to finish: 0.19103407859802246
+2022-09-12 15:19:21,340 - INFO - Optimization problem was optimal
+2022-09-12 15:19:21,347 - INFO - 15:19:21 Running Optimization Problem starting at 2020-07-31 00:00:00 hb
+2022-09-12 15:19:21,384 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:21,384 - DEBUG - glpk_mi solver
+2022-09-12 15:19:21,510 - INFO - Time it takes for solver to finish: 0.1256699562072754
+2022-09-12 15:19:21,511 - INFO - Optimization problem was optimal
+2022-09-12 15:19:21,518 - INFO - 15:19:21 Running Optimization Problem starting at 2020-08-01 00:00:00 hb
+2022-09-12 15:19:21,555 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:21,555 - DEBUG - glpk_mi solver
+2022-09-12 15:19:22,010 - INFO - Time it takes for solver to finish: 0.4545290470123291
+2022-09-12 15:19:22,010 - INFO - Optimization problem was optimal
+2022-09-12 15:19:22,018 - INFO - 15:19:22 Running Optimization Problem starting at 2020-08-02 00:00:00 hb
+2022-09-12 15:19:22,054 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:22,054 - DEBUG - glpk_mi solver
+2022-09-12 15:19:22,997 - INFO - Time it takes for solver to finish: 0.9430830478668213
+2022-09-12 15:19:22,998 - INFO - Optimization problem was optimal
+2022-09-12 15:19:23,005 - INFO - 15:19:23 Running Optimization Problem starting at 2020-08-03 00:00:00 hb
+2022-09-12 15:19:23,041 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:23,042 - DEBUG - glpk_mi solver
+2022-09-12 15:19:25,890 - INFO - Time it takes for solver to finish: 2.8485660552978516
+2022-09-12 15:19:25,891 - INFO - Optimization problem was optimal
+2022-09-12 15:19:25,898 - INFO - 15:19:25 Running Optimization Problem starting at 2020-08-04 00:00:00 hb
+2022-09-12 15:19:25,934 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:25,934 - DEBUG - glpk_mi solver
+2022-09-12 15:19:27,377 - INFO - Time it takes for solver to finish: 1.4422049522399902
+2022-09-12 15:19:27,377 - INFO - Optimization problem was optimal
+2022-09-12 15:19:27,384 - INFO - 15:19:27 Running Optimization Problem starting at 2020-08-05 00:00:00 hb
+2022-09-12 15:19:27,421 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:27,421 - DEBUG - glpk_mi solver
+2022-09-12 15:19:27,854 - INFO - Time it takes for solver to finish: 0.432910680770874
+2022-09-12 15:19:27,855 - INFO - Optimization problem was optimal
+2022-09-12 15:19:27,861 - INFO - 15:19:27 Running Optimization Problem starting at 2020-08-06 00:00:00 hb
+2022-09-12 15:19:27,900 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:27,900 - DEBUG - glpk_mi solver
+2022-09-12 15:19:28,921 - INFO - Time it takes for solver to finish: 1.0211460590362549
+2022-09-12 15:19:28,922 - INFO - Optimization problem was optimal
+2022-09-12 15:19:28,929 - INFO - 15:19:28 Running Optimization Problem starting at 2020-08-07 00:00:00 hb
+2022-09-12 15:19:28,970 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:28,970 - DEBUG - glpk_mi solver
+2022-09-12 15:19:29,746 - INFO - Time it takes for solver to finish: 0.7762699127197266
+2022-09-12 15:19:29,747 - INFO - Optimization problem was optimal
+2022-09-12 15:19:29,754 - INFO - 15:19:29 Running Optimization Problem starting at 2020-08-08 00:00:00 hb
+2022-09-12 15:19:29,789 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:29,790 - DEBUG - glpk_mi solver
+2022-09-12 15:19:30,850 - INFO - Time it takes for solver to finish: 1.0600330829620361
+2022-09-12 15:19:30,850 - INFO - Optimization problem was optimal
+2022-09-12 15:19:30,857 - INFO - 15:19:30 Running Optimization Problem starting at 2020-08-09 00:00:00 hb
+2022-09-12 15:19:30,893 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:30,894 - DEBUG - glpk_mi solver
+2022-09-12 15:19:31,204 - INFO - Time it takes for solver to finish: 0.31032586097717285
+2022-09-12 15:19:31,205 - INFO - Optimization problem was optimal
+2022-09-12 15:19:31,211 - INFO - 15:19:31 Running Optimization Problem starting at 2020-08-10 00:00:00 hb
+2022-09-12 15:19:31,249 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:31,249 - DEBUG - glpk_mi solver
+2022-09-12 15:19:31,917 - INFO - Time it takes for solver to finish: 0.667525053024292
+2022-09-12 15:19:31,917 - INFO - Optimization problem was optimal
+2022-09-12 15:19:31,924 - INFO - 15:19:31 Running Optimization Problem starting at 2020-08-11 00:00:00 hb
+2022-09-12 15:19:31,961 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:31,963 - DEBUG - glpk_mi solver
+2022-09-12 15:19:32,824 - INFO - Time it takes for solver to finish: 0.861534833908081
+2022-09-12 15:19:32,825 - INFO - Optimization problem was optimal
+2022-09-12 15:19:32,832 - INFO - 15:19:32 Running Optimization Problem starting at 2020-08-12 00:00:00 hb
+2022-09-12 15:19:32,868 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:32,868 - DEBUG - glpk_mi solver
+2022-09-12 15:19:33,160 - INFO - Time it takes for solver to finish: 0.2919039726257324
+2022-09-12 15:19:33,160 - INFO - Optimization problem was optimal
+2022-09-12 15:19:33,169 - INFO - 15:19:33 Running Optimization Problem starting at 2020-08-13 00:00:00 hb
+2022-09-12 15:19:33,207 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:33,207 - DEBUG - glpk_mi solver
+2022-09-12 15:19:33,729 - INFO - Time it takes for solver to finish: 0.5216338634490967
+2022-09-12 15:19:33,729 - INFO - Optimization problem was optimal
+2022-09-12 15:19:33,736 - INFO - 15:19:33 Running Optimization Problem starting at 2020-08-14 00:00:00 hb
+2022-09-12 15:19:33,773 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:33,773 - DEBUG - glpk_mi solver
+2022-09-12 15:19:33,835 - INFO - Time it takes for solver to finish: 0.06206393241882324
+2022-09-12 15:19:33,836 - INFO - Optimization problem was optimal
+2022-09-12 15:19:33,843 - INFO - 15:19:33 Running Optimization Problem starting at 2020-08-15 00:00:00 hb
+2022-09-12 15:19:33,879 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:33,879 - DEBUG - glpk_mi solver
+2022-09-12 15:19:33,986 - INFO - Time it takes for solver to finish: 0.10662508010864258
+2022-09-12 15:19:33,986 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,002 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-16 00:00:00 hb
+2022-09-12 15:19:34,075 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,075 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,206 - INFO - Time it takes for solver to finish: 0.1306140422821045
+2022-09-12 15:19:34,206 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,215 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-17 00:00:00 hb
+2022-09-12 15:19:34,257 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,257 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,323 - INFO - Time it takes for solver to finish: 0.06579303741455078
+2022-09-12 15:19:34,324 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,332 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-18 00:00:00 hb
+2022-09-12 15:19:34,373 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,373 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,448 - INFO - Time it takes for solver to finish: 0.07495284080505371
+2022-09-12 15:19:34,449 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,456 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-19 00:00:00 hb
+2022-09-12 15:19:34,494 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,494 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,606 - INFO - Time it takes for solver to finish: 0.11202263832092285
+2022-09-12 15:19:34,607 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,614 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-20 00:00:00 hb
+2022-09-12 15:19:34,651 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,651 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,787 - INFO - Time it takes for solver to finish: 0.1354219913482666
+2022-09-12 15:19:34,787 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,795 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-21 00:00:00 hb
+2022-09-12 15:19:34,833 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:34,833 - DEBUG - glpk_mi solver
+2022-09-12 15:19:34,987 - INFO - Time it takes for solver to finish: 0.15410470962524414
+2022-09-12 15:19:34,988 - INFO - Optimization problem was optimal
+2022-09-12 15:19:34,995 - INFO - 15:19:34 Running Optimization Problem starting at 2020-08-22 00:00:00 hb
+2022-09-12 15:19:35,033 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:35,033 - DEBUG - glpk_mi solver
+2022-09-12 15:19:35,522 - INFO - Time it takes for solver to finish: 0.4886910915374756
+2022-09-12 15:19:35,522 - INFO - Optimization problem was optimal
+2022-09-12 15:19:35,530 - INFO - 15:19:35 Running Optimization Problem starting at 2020-08-23 00:00:00 hb
+2022-09-12 15:19:35,568 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:35,568 - DEBUG - glpk_mi solver
+2022-09-12 15:19:35,973 - INFO - Time it takes for solver to finish: 0.4046621322631836
+2022-09-12 15:19:35,973 - INFO - Optimization problem was optimal
+2022-09-12 15:19:35,982 - INFO - 15:19:35 Running Optimization Problem starting at 2020-08-24 00:00:00 hb
+2022-09-12 15:19:36,024 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:36,024 - DEBUG - glpk_mi solver
+2022-09-12 15:19:36,471 - INFO - Time it takes for solver to finish: 0.44722700119018555
+2022-09-12 15:19:36,472 - INFO - Optimization problem was optimal
+2022-09-12 15:19:36,480 - INFO - 15:19:36 Running Optimization Problem starting at 2020-08-25 00:00:00 hb
+2022-09-12 15:19:36,521 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:36,521 - DEBUG - glpk_mi solver
+2022-09-12 15:19:36,630 - INFO - Time it takes for solver to finish: 0.1086130142211914
+2022-09-12 15:19:36,630 - INFO - Optimization problem was optimal
+2022-09-12 15:19:36,639 - INFO - 15:19:36 Running Optimization Problem starting at 2020-08-26 00:00:00 hb
+2022-09-12 15:19:36,682 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:36,683 - DEBUG - glpk_mi solver
+2022-09-12 15:19:36,924 - INFO - Time it takes for solver to finish: 0.2407839298248291
+2022-09-12 15:19:36,924 - INFO - Optimization problem was optimal
+2022-09-12 15:19:36,932 - INFO - 15:19:36 Running Optimization Problem starting at 2020-08-27 00:00:00 hb
+2022-09-12 15:19:36,973 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:36,973 - DEBUG - glpk_mi solver
+2022-09-12 15:19:37,106 - INFO - Time it takes for solver to finish: 0.13257598876953125
+2022-09-12 15:19:37,106 - INFO - Optimization problem was optimal
+2022-09-12 15:19:37,113 - INFO - 15:19:37 Running Optimization Problem starting at 2020-08-28 00:00:00 hb
+2022-09-12 15:19:37,163 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:37,163 - DEBUG - glpk_mi solver
+2022-09-12 15:19:37,475 - INFO - Time it takes for solver to finish: 0.31217026710510254
+2022-09-12 15:19:37,476 - INFO - Optimization problem was optimal
+2022-09-12 15:19:37,483 - INFO - 15:19:37 Running Optimization Problem starting at 2020-08-29 00:00:00 hb
+2022-09-12 15:19:37,529 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:37,530 - DEBUG - glpk_mi solver
+2022-09-12 15:19:38,293 - INFO - Time it takes for solver to finish: 0.7628800868988037
+2022-09-12 15:19:38,293 - INFO - Optimization problem was optimal
+2022-09-12 15:19:38,300 - INFO - 15:19:38 Running Optimization Problem starting at 2020-08-30 00:00:00 hb
+2022-09-12 15:19:38,337 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:38,337 - DEBUG - glpk_mi solver
+2022-09-12 15:19:38,813 - INFO - Time it takes for solver to finish: 0.47614002227783203
+2022-09-12 15:19:38,814 - INFO - Optimization problem was optimal
+2022-09-12 15:19:38,821 - INFO - 15:19:38 Running Optimization Problem starting at 2020-08-31 00:00:00 hb
+2022-09-12 15:19:38,858 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:38,858 - DEBUG - glpk_mi solver
+2022-09-12 15:19:39,071 - INFO - Time it takes for solver to finish: 0.21264290809631348
+2022-09-12 15:19:39,071 - INFO - Optimization problem was optimal
+2022-09-12 15:19:39,078 - INFO - 15:19:39 Running Optimization Problem starting at 2020-09-01 00:00:00 hb
+2022-09-12 15:19:39,115 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:39,115 - DEBUG - glpk_mi solver
+2022-09-12 15:19:39,306 - INFO - Time it takes for solver to finish: 0.19098591804504395
+2022-09-12 15:19:39,307 - INFO - Optimization problem was optimal
+2022-09-12 15:19:39,314 - INFO - 15:19:39 Running Optimization Problem starting at 2020-09-02 00:00:00 hb
+2022-09-12 15:19:39,351 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:39,351 - DEBUG - glpk_mi solver
+2022-09-12 15:19:39,595 - INFO - Time it takes for solver to finish: 0.24413275718688965
+2022-09-12 15:19:39,596 - INFO - Optimization problem was optimal
+2022-09-12 15:19:39,603 - INFO - 15:19:39 Running Optimization Problem starting at 2020-09-03 00:00:00 hb
+2022-09-12 15:19:39,638 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:39,639 - DEBUG - glpk_mi solver
+2022-09-12 15:19:39,962 - INFO - Time it takes for solver to finish: 0.32375502586364746
+2022-09-12 15:19:39,963 - INFO - Optimization problem was optimal
+2022-09-12 15:19:39,970 - INFO - 15:19:39 Running Optimization Problem starting at 2020-09-04 00:00:00 hb
+2022-09-12 15:19:40,007 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,008 - DEBUG - glpk_mi solver
+2022-09-12 15:19:40,240 - INFO - Time it takes for solver to finish: 0.23232269287109375
+2022-09-12 15:19:40,240 - INFO - Optimization problem was optimal
+2022-09-12 15:19:40,248 - INFO - 15:19:40 Running Optimization Problem starting at 2020-09-05 00:00:00 hb
+2022-09-12 15:19:40,284 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,284 - DEBUG - glpk_mi solver
+2022-09-12 15:19:40,422 - INFO - Time it takes for solver to finish: 0.13823199272155762
+2022-09-12 15:19:40,423 - INFO - Optimization problem was optimal
+2022-09-12 15:19:40,430 - INFO - 15:19:40 Running Optimization Problem starting at 2020-09-06 00:00:00 hb
+2022-09-12 15:19:40,470 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,470 - DEBUG - glpk_mi solver
+2022-09-12 15:19:40,523 - INFO - Time it takes for solver to finish: 0.052410125732421875
+2022-09-12 15:19:40,523 - INFO - Optimization problem was optimal
+2022-09-12 15:19:40,530 - INFO - 15:19:40 Running Optimization Problem starting at 2020-09-07 00:00:00 hb
+2022-09-12 15:19:40,569 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,570 - DEBUG - glpk_mi solver
+2022-09-12 15:19:40,651 - INFO - Time it takes for solver to finish: 0.08195900917053223
+2022-09-12 15:19:40,652 - INFO - Optimization problem was optimal
+2022-09-12 15:19:40,659 - INFO - 15:19:40 Running Optimization Problem starting at 2020-09-08 00:00:00 hb
+2022-09-12 15:19:40,695 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,695 - DEBUG - glpk_mi solver
+2022-09-12 15:19:40,796 - INFO - Time it takes for solver to finish: 0.10077095031738281
+2022-09-12 15:19:40,796 - INFO - Optimization problem was optimal
+2022-09-12 15:19:40,803 - INFO - 15:19:40 Running Optimization Problem starting at 2020-09-09 00:00:00 hb
+2022-09-12 15:19:40,843 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:40,844 - DEBUG - glpk_mi solver
+2022-09-12 15:19:42,077 - INFO - Time it takes for solver to finish: 1.2332689762115479
+2022-09-12 15:19:42,077 - INFO - Optimization problem was optimal
+2022-09-12 15:19:42,085 - INFO - 15:19:42 Running Optimization Problem starting at 2020-09-10 00:00:00 hb
+2022-09-12 15:19:42,121 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:42,121 - DEBUG - glpk_mi solver
+2022-09-12 15:19:42,310 - INFO - Time it takes for solver to finish: 0.18941521644592285
+2022-09-12 15:19:42,311 - INFO - Optimization problem was optimal
+2022-09-12 15:19:42,319 - INFO - 15:19:42 Running Optimization Problem starting at 2020-09-11 00:00:00 hb
+2022-09-12 15:19:42,356 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:42,357 - DEBUG - glpk_mi solver
+2022-09-12 15:19:42,697 - INFO - Time it takes for solver to finish: 0.34041404724121094
+2022-09-12 15:19:42,698 - INFO - Optimization problem was optimal
+2022-09-12 15:19:42,705 - INFO - 15:19:42 Running Optimization Problem starting at 2020-09-12 00:00:00 hb
+2022-09-12 15:19:42,742 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:42,743 - DEBUG - glpk_mi solver
+2022-09-12 15:19:42,935 - INFO - Time it takes for solver to finish: 0.1922750473022461
+2022-09-12 15:19:42,935 - INFO - Optimization problem was optimal
+2022-09-12 15:19:42,942 - INFO - 15:19:42 Running Optimization Problem starting at 2020-09-13 00:00:00 hb
+2022-09-12 15:19:42,979 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:42,979 - DEBUG - glpk_mi solver
+2022-09-12 15:19:44,484 - INFO - Time it takes for solver to finish: 1.5043652057647705
+2022-09-12 15:19:44,484 - INFO - Optimization problem was optimal
+2022-09-12 15:19:44,492 - INFO - 15:19:44 Running Optimization Problem starting at 2020-09-14 00:00:00 hb
+2022-09-12 15:19:44,530 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:44,530 - DEBUG - glpk_mi solver
+2022-09-12 15:19:45,939 - INFO - Time it takes for solver to finish: 1.409332036972046
+2022-09-12 15:19:45,940 - INFO - Optimization problem was optimal
+2022-09-12 15:19:45,947 - INFO - 15:19:45 Running Optimization Problem starting at 2020-09-15 00:00:00 hb
+2022-09-12 15:19:45,984 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:45,985 - DEBUG - glpk_mi solver
+2022-09-12 15:19:46,315 - INFO - Time it takes for solver to finish: 0.32999205589294434
+2022-09-12 15:19:46,315 - INFO - Optimization problem was optimal
+2022-09-12 15:19:46,323 - INFO - 15:19:46 Running Optimization Problem starting at 2020-09-16 00:00:00 hb
+2022-09-12 15:19:46,360 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:46,360 - DEBUG - glpk_mi solver
+2022-09-12 15:19:46,671 - INFO - Time it takes for solver to finish: 0.31124186515808105
+2022-09-12 15:19:46,672 - INFO - Optimization problem was optimal
+2022-09-12 15:19:46,679 - INFO - 15:19:46 Running Optimization Problem starting at 2020-09-17 00:00:00 hb
+2022-09-12 15:19:46,719 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:46,719 - DEBUG - glpk_mi solver
+2022-09-12 15:19:47,527 - INFO - Time it takes for solver to finish: 0.8079240322113037
+2022-09-12 15:19:47,527 - INFO - Optimization problem was optimal
+2022-09-12 15:19:47,535 - INFO - 15:19:47 Running Optimization Problem starting at 2020-09-18 00:00:00 hb
+2022-09-12 15:19:47,577 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:47,577 - DEBUG - glpk_mi solver
+2022-09-12 15:19:47,674 - INFO - Time it takes for solver to finish: 0.0968010425567627
+2022-09-12 15:19:47,674 - INFO - Optimization problem was optimal
+2022-09-12 15:19:47,682 - INFO - 15:19:47 Running Optimization Problem starting at 2020-09-19 00:00:00 hb
+2022-09-12 15:19:47,724 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:47,724 - DEBUG - glpk_mi solver
+2022-09-12 15:19:47,965 - INFO - Time it takes for solver to finish: 0.24070477485656738
+2022-09-12 15:19:47,965 - INFO - Optimization problem was optimal
+2022-09-12 15:19:47,972 - INFO - 15:19:47 Running Optimization Problem starting at 2020-09-20 00:00:00 hb
+2022-09-12 15:19:48,014 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:48,014 - DEBUG - glpk_mi solver
+2022-09-12 15:19:48,553 - INFO - Time it takes for solver to finish: 0.5380439758300781
+2022-09-12 15:19:48,553 - INFO - Optimization problem was optimal
+2022-09-12 15:19:48,560 - INFO - 15:19:48 Running Optimization Problem starting at 2020-09-21 00:00:00 hb
+2022-09-12 15:19:48,597 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:48,597 - DEBUG - glpk_mi solver
+2022-09-12 15:19:50,350 - INFO - Time it takes for solver to finish: 1.7534220218658447
+2022-09-12 15:19:50,351 - INFO - Optimization problem was optimal
+2022-09-12 15:19:50,358 - INFO - 15:19:50 Running Optimization Problem starting at 2020-09-22 00:00:00 hb
+2022-09-12 15:19:50,395 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:50,395 - DEBUG - glpk_mi solver
+2022-09-12 15:19:50,786 - INFO - Time it takes for solver to finish: 0.3915379047393799
+2022-09-12 15:19:50,787 - INFO - Optimization problem was optimal
+2022-09-12 15:19:50,794 - INFO - 15:19:50 Running Optimization Problem starting at 2020-09-23 00:00:00 hb
+2022-09-12 15:19:50,830 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:50,830 - DEBUG - glpk_mi solver
+2022-09-12 15:19:51,225 - INFO - Time it takes for solver to finish: 0.3944060802459717
+2022-09-12 15:19:51,225 - INFO - Optimization problem was optimal
+2022-09-12 15:19:51,233 - INFO - 15:19:51 Running Optimization Problem starting at 2020-09-24 00:00:00 hb
+2022-09-12 15:19:51,274 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:51,274 - DEBUG - glpk_mi solver
+2022-09-12 15:19:51,607 - INFO - Time it takes for solver to finish: 0.33323073387145996
+2022-09-12 15:19:51,608 - INFO - Optimization problem was optimal
+2022-09-12 15:19:51,617 - INFO - 15:19:51 Running Optimization Problem starting at 2020-09-25 00:00:00 hb
+2022-09-12 15:19:51,656 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:51,656 - DEBUG - glpk_mi solver
+2022-09-12 15:19:52,176 - INFO - Time it takes for solver to finish: 0.5195140838623047
+2022-09-12 15:19:52,176 - INFO - Optimization problem was optimal
+2022-09-12 15:19:52,184 - INFO - 15:19:52 Running Optimization Problem starting at 2020-09-26 00:00:00 hb
+2022-09-12 15:19:52,222 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:52,223 - DEBUG - glpk_mi solver
+2022-09-12 15:19:52,503 - INFO - Time it takes for solver to finish: 0.27989816665649414
+2022-09-12 15:19:52,503 - INFO - Optimization problem was optimal
+2022-09-12 15:19:52,510 - INFO - 15:19:52 Running Optimization Problem starting at 2020-09-27 00:00:00 hb
+2022-09-12 15:19:52,551 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:52,551 - DEBUG - glpk_mi solver
+2022-09-12 15:19:52,676 - INFO - Time it takes for solver to finish: 0.12486672401428223
+2022-09-12 15:19:52,676 - INFO - Optimization problem was optimal
+2022-09-12 15:19:52,687 - INFO - 15:19:52 Running Optimization Problem starting at 2020-09-28 00:00:00 hb
+2022-09-12 15:19:52,727 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:52,728 - DEBUG - glpk_mi solver
+2022-09-12 15:19:52,834 - INFO - Time it takes for solver to finish: 0.10615110397338867
+2022-09-12 15:19:52,834 - INFO - Optimization problem was optimal
+2022-09-12 15:19:52,841 - INFO - 15:19:52 Running Optimization Problem starting at 2020-09-29 00:00:00 hb
+2022-09-12 15:19:52,878 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:52,878 - DEBUG - glpk_mi solver
+2022-09-12 15:19:53,010 - INFO - Time it takes for solver to finish: 0.1318359375
+2022-09-12 15:19:53,011 - INFO - Optimization problem was optimal
+2022-09-12 15:19:53,017 - INFO - 15:19:53 Running Optimization Problem starting at 2020-09-30 00:00:00 hb
+2022-09-12 15:19:53,055 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:53,056 - DEBUG - glpk_mi solver
+2022-09-12 15:19:53,159 - INFO - Time it takes for solver to finish: 0.1037130355834961
+2022-09-12 15:19:53,160 - INFO - Optimization problem was optimal
+2022-09-12 15:19:53,169 - INFO - 15:19:53 Running Optimization Problem starting at 2020-10-01 00:00:00 hb
+2022-09-12 15:19:53,206 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:53,206 - DEBUG - glpk_mi solver
+2022-09-12 15:19:53,303 - INFO - Time it takes for solver to finish: 0.09712004661560059
+2022-09-12 15:19:53,304 - INFO - Optimization problem was optimal
+2022-09-12 15:19:53,311 - INFO - 15:19:53 Running Optimization Problem starting at 2020-10-02 00:00:00 hb
+2022-09-12 15:19:53,351 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:53,352 - DEBUG - glpk_mi solver
+2022-09-12 15:19:53,470 - INFO - Time it takes for solver to finish: 0.11829519271850586
+2022-09-12 15:19:53,470 - INFO - Optimization problem was optimal
+2022-09-12 15:19:53,478 - INFO - 15:19:53 Running Optimization Problem starting at 2020-10-03 00:00:00 hb
+2022-09-12 15:19:53,515 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:53,515 - DEBUG - glpk_mi solver
+2022-09-12 15:19:53,907 - INFO - Time it takes for solver to finish: 0.39174604415893555
+2022-09-12 15:19:53,907 - INFO - Optimization problem was optimal
+2022-09-12 15:19:53,915 - INFO - 15:19:53 Running Optimization Problem starting at 2020-10-04 00:00:00 hb
+2022-09-12 15:19:53,953 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:53,962 - DEBUG - glpk_mi solver
+2022-09-12 15:19:54,390 - INFO - Time it takes for solver to finish: 0.42816805839538574
+2022-09-12 15:19:54,390 - INFO - Optimization problem was optimal
+2022-09-12 15:19:54,399 - INFO - 15:19:54 Running Optimization Problem starting at 2020-10-05 00:00:00 hb
+2022-09-12 15:19:54,439 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:54,439 - DEBUG - glpk_mi solver
+2022-09-12 15:19:54,614 - INFO - Time it takes for solver to finish: 0.17467188835144043
+2022-09-12 15:19:54,614 - INFO - Optimization problem was optimal
+2022-09-12 15:19:54,623 - INFO - 15:19:54 Running Optimization Problem starting at 2020-10-06 00:00:00 hb
+2022-09-12 15:19:54,662 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:54,662 - DEBUG - glpk_mi solver
+2022-09-12 15:19:54,883 - INFO - Time it takes for solver to finish: 0.2208261489868164
+2022-09-12 15:19:54,884 - INFO - Optimization problem was optimal
+2022-09-12 15:19:54,891 - INFO - 15:19:54 Running Optimization Problem starting at 2020-10-07 00:00:00 hb
+2022-09-12 15:19:54,931 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:54,931 - DEBUG - glpk_mi solver
+2022-09-12 15:19:55,855 - INFO - Time it takes for solver to finish: 0.9239211082458496
+2022-09-12 15:19:55,856 - INFO - Optimization problem was optimal
+2022-09-12 15:19:55,863 - INFO - 15:19:55 Running Optimization Problem starting at 2020-10-08 00:00:00 hb
+2022-09-12 15:19:55,899 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:55,900 - DEBUG - glpk_mi solver
+2022-09-12 15:19:56,403 - INFO - Time it takes for solver to finish: 0.5031778812408447
+2022-09-12 15:19:56,403 - INFO - Optimization problem was optimal
+2022-09-12 15:19:56,410 - INFO - 15:19:56 Running Optimization Problem starting at 2020-10-09 00:00:00 hb
+2022-09-12 15:19:56,456 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:56,456 - DEBUG - glpk_mi solver
+2022-09-12 15:19:57,358 - INFO - Time it takes for solver to finish: 0.9015259742736816
+2022-09-12 15:19:57,358 - INFO - Optimization problem was optimal
+2022-09-12 15:19:57,366 - INFO - 15:19:57 Running Optimization Problem starting at 2020-10-10 00:00:00 hb
+2022-09-12 15:19:57,406 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:57,406 - DEBUG - glpk_mi solver
+2022-09-12 15:19:58,351 - INFO - Time it takes for solver to finish: 0.9447109699249268
+2022-09-12 15:19:58,351 - INFO - Optimization problem was optimal
+2022-09-12 15:19:58,359 - INFO - 15:19:58 Running Optimization Problem starting at 2020-10-11 00:00:00 hb
+2022-09-12 15:19:58,401 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:58,402 - DEBUG - glpk_mi solver
+2022-09-12 15:19:59,863 - INFO - Time it takes for solver to finish: 1.4610412120819092
+2022-09-12 15:19:59,863 - INFO - Optimization problem was optimal
+2022-09-12 15:19:59,870 - INFO - 15:19:59 Running Optimization Problem starting at 2020-10-12 00:00:00 hb
+2022-09-12 15:19:59,907 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:19:59,907 - DEBUG - glpk_mi solver
+2022-09-12 15:20:00,144 - INFO - Time it takes for solver to finish: 0.23628497123718262
+2022-09-12 15:20:00,144 - INFO - Optimization problem was optimal
+2022-09-12 15:20:00,154 - INFO - 15:20:00 Running Optimization Problem starting at 2020-10-13 00:00:00 hb
+2022-09-12 15:20:00,195 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:00,196 - DEBUG - glpk_mi solver
+2022-09-12 15:20:00,527 - INFO - Time it takes for solver to finish: 0.3317680358886719
+2022-09-12 15:20:00,528 - INFO - Optimization problem was optimal
+2022-09-12 15:20:00,538 - INFO - 15:20:00 Running Optimization Problem starting at 2020-10-14 00:00:00 hb
+2022-09-12 15:20:00,579 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:00,580 - DEBUG - glpk_mi solver
+2022-09-12 15:20:00,684 - INFO - Time it takes for solver to finish: 0.10399198532104492
+2022-09-12 15:20:00,684 - INFO - Optimization problem was optimal
+2022-09-12 15:20:00,692 - INFO - 15:20:00 Running Optimization Problem starting at 2020-10-15 00:00:00 hb
+2022-09-12 15:20:00,732 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:00,732 - DEBUG - glpk_mi solver
+2022-09-12 15:20:01,465 - INFO - Time it takes for solver to finish: 0.7328999042510986
+2022-09-12 15:20:01,466 - INFO - Optimization problem was optimal
+2022-09-12 15:20:01,473 - INFO - 15:20:01 Running Optimization Problem starting at 2020-10-16 00:00:00 hb
+2022-09-12 15:20:01,510 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:01,510 - DEBUG - glpk_mi solver
+2022-09-12 15:20:01,666 - INFO - Time it takes for solver to finish: 0.15541601181030273
+2022-09-12 15:20:01,666 - INFO - Optimization problem was optimal
+2022-09-12 15:20:01,673 - INFO - 15:20:01 Running Optimization Problem starting at 2020-10-17 00:00:00 hb
+2022-09-12 15:20:01,711 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:01,711 - DEBUG - glpk_mi solver
+2022-09-12 15:20:01,988 - INFO - Time it takes for solver to finish: 0.27716779708862305
+2022-09-12 15:20:01,988 - INFO - Optimization problem was optimal
+2022-09-12 15:20:01,996 - INFO - 15:20:01 Running Optimization Problem starting at 2020-10-18 00:00:00 hb
+2022-09-12 15:20:02,033 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:02,033 - DEBUG - glpk_mi solver
+2022-09-12 15:20:02,428 - INFO - Time it takes for solver to finish: 0.39476466178894043
+2022-09-12 15:20:02,428 - INFO - Optimization problem was optimal
+2022-09-12 15:20:02,437 - INFO - 15:20:02 Running Optimization Problem starting at 2020-10-19 00:00:00 hb
+2022-09-12 15:20:02,480 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:02,480 - DEBUG - glpk_mi solver
+2022-09-12 15:20:02,650 - INFO - Time it takes for solver to finish: 0.16960811614990234
+2022-09-12 15:20:02,650 - INFO - Optimization problem was optimal
+2022-09-12 15:20:02,658 - INFO - 15:20:02 Running Optimization Problem starting at 2020-10-20 00:00:00 hb
+2022-09-12 15:20:02,701 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:02,701 - DEBUG - glpk_mi solver
+2022-09-12 15:20:02,894 - INFO - Time it takes for solver to finish: 0.19299101829528809
+2022-09-12 15:20:02,895 - INFO - Optimization problem was optimal
+2022-09-12 15:20:02,903 - INFO - 15:20:02 Running Optimization Problem starting at 2020-10-21 00:00:00 hb
+2022-09-12 15:20:02,942 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:02,964 - DEBUG - glpk_mi solver
+2022-09-12 15:20:03,080 - INFO - Time it takes for solver to finish: 0.115692138671875
+2022-09-12 15:20:03,080 - INFO - Optimization problem was optimal
+2022-09-12 15:20:03,088 - INFO - 15:20:03 Running Optimization Problem starting at 2020-10-22 00:00:00 hb
+2022-09-12 15:20:03,125 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:03,125 - DEBUG - glpk_mi solver
+2022-09-12 15:20:03,292 - INFO - Time it takes for solver to finish: 0.16727018356323242
+2022-09-12 15:20:03,292 - INFO - Optimization problem was optimal
+2022-09-12 15:20:03,300 - INFO - 15:20:03 Running Optimization Problem starting at 2020-10-23 00:00:00 hb
+2022-09-12 15:20:03,337 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:03,337 - DEBUG - glpk_mi solver
+2022-09-12 15:20:03,460 - INFO - Time it takes for solver to finish: 0.12355470657348633
+2022-09-12 15:20:03,461 - INFO - Optimization problem was optimal
+2022-09-12 15:20:03,468 - INFO - 15:20:03 Running Optimization Problem starting at 2020-10-24 00:00:00 hb
+2022-09-12 15:20:03,505 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:03,505 - DEBUG - glpk_mi solver
+2022-09-12 15:20:05,070 - INFO - Time it takes for solver to finish: 1.5647239685058594
+2022-09-12 15:20:05,070 - INFO - Optimization problem was optimal
+2022-09-12 15:20:05,077 - INFO - 15:20:05 Running Optimization Problem starting at 2020-10-25 00:00:00 hb
+2022-09-12 15:20:05,114 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:05,114 - DEBUG - glpk_mi solver
+2022-09-12 15:20:05,709 - INFO - Time it takes for solver to finish: 0.5948991775512695
+2022-09-12 15:20:05,709 - INFO - Optimization problem was optimal
+2022-09-12 15:20:05,717 - INFO - 15:20:05 Running Optimization Problem starting at 2020-10-26 00:00:00 hb
+2022-09-12 15:20:05,754 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:05,754 - DEBUG - glpk_mi solver
+2022-09-12 15:20:06,108 - INFO - Time it takes for solver to finish: 0.3539431095123291
+2022-09-12 15:20:06,109 - INFO - Optimization problem was optimal
+2022-09-12 15:20:06,116 - INFO - 15:20:06 Running Optimization Problem starting at 2020-10-27 00:00:00 hb
+2022-09-12 15:20:06,154 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:06,154 - DEBUG - glpk_mi solver
+2022-09-12 15:20:06,308 - INFO - Time it takes for solver to finish: 0.15381288528442383
+2022-09-12 15:20:06,308 - INFO - Optimization problem was optimal
+2022-09-12 15:20:06,317 - INFO - 15:20:06 Running Optimization Problem starting at 2020-10-28 00:00:00 hb
+2022-09-12 15:20:06,355 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:06,355 - DEBUG - glpk_mi solver
+2022-09-12 15:20:06,757 - INFO - Time it takes for solver to finish: 0.4019050598144531
+2022-09-12 15:20:06,757 - INFO - Optimization problem was optimal
+2022-09-12 15:20:06,765 - INFO - 15:20:06 Running Optimization Problem starting at 2020-10-29 00:00:00 hb
+2022-09-12 15:20:06,805 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:06,805 - DEBUG - glpk_mi solver
+2022-09-12 15:20:07,099 - INFO - Time it takes for solver to finish: 0.29383087158203125
+2022-09-12 15:20:07,099 - INFO - Optimization problem was optimal
+2022-09-12 15:20:07,107 - INFO - 15:20:07 Running Optimization Problem starting at 2020-10-30 00:00:00 hb
+2022-09-12 15:20:07,143 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:07,143 - DEBUG - glpk_mi solver
+2022-09-12 15:20:07,383 - INFO - Time it takes for solver to finish: 0.24052810668945312
+2022-09-12 15:20:07,384 - INFO - Optimization problem was optimal
+2022-09-12 15:20:07,391 - INFO - 15:20:07 Running Optimization Problem starting at 2020-10-31 00:00:00 hb
+2022-09-12 15:20:07,429 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:07,429 - DEBUG - glpk_mi solver
+2022-09-12 15:20:08,171 - INFO - Time it takes for solver to finish: 0.7418191432952881
+2022-09-12 15:20:08,171 - INFO - Optimization problem was optimal
+2022-09-12 15:20:08,180 - INFO - 15:20:08 Running Optimization Problem starting at 2020-11-01 00:00:00 hb
+2022-09-12 15:20:08,218 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:08,218 - DEBUG - glpk_mi solver
+2022-09-12 15:20:08,475 - INFO - Time it takes for solver to finish: 0.25694894790649414
+2022-09-12 15:20:08,475 - INFO - Optimization problem was optimal
+2022-09-12 15:20:08,483 - INFO - 15:20:08 Running Optimization Problem starting at 2020-11-02 00:00:00 hb
+2022-09-12 15:20:08,523 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:08,524 - DEBUG - glpk_mi solver
+2022-09-12 15:20:08,622 - INFO - Time it takes for solver to finish: 0.09797501564025879
+2022-09-12 15:20:08,622 - INFO - Optimization problem was optimal
+2022-09-12 15:20:08,629 - INFO - 15:20:08 Running Optimization Problem starting at 2020-11-03 00:00:00 hb
+2022-09-12 15:20:08,668 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:08,669 - DEBUG - glpk_mi solver
+2022-09-12 15:20:08,857 - INFO - Time it takes for solver to finish: 0.18867087364196777
+2022-09-12 15:20:08,858 - INFO - Optimization problem was optimal
+2022-09-12 15:20:08,865 - INFO - 15:20:08 Running Optimization Problem starting at 2020-11-04 00:00:00 hb
+2022-09-12 15:20:08,901 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:08,901 - DEBUG - glpk_mi solver
+2022-09-12 15:20:09,048 - INFO - Time it takes for solver to finish: 0.14694714546203613
+2022-09-12 15:20:09,049 - INFO - Optimization problem was optimal
+2022-09-12 15:20:09,056 - INFO - 15:20:09 Running Optimization Problem starting at 2020-11-05 00:00:00 hb
+2022-09-12 15:20:09,092 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:09,092 - DEBUG - glpk_mi solver
+2022-09-12 15:20:09,279 - INFO - Time it takes for solver to finish: 0.18714594841003418
+2022-09-12 15:20:09,280 - INFO - Optimization problem was optimal
+2022-09-12 15:20:09,287 - INFO - 15:20:09 Running Optimization Problem starting at 2020-11-06 00:00:00 hb
+2022-09-12 15:20:09,323 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:09,324 - DEBUG - glpk_mi solver
+2022-09-12 15:20:09,885 - INFO - Time it takes for solver to finish: 0.5616989135742188
+2022-09-12 15:20:09,886 - INFO - Optimization problem was optimal
+2022-09-12 15:20:09,893 - INFO - 15:20:09 Running Optimization Problem starting at 2020-11-07 00:00:00 hb
+2022-09-12 15:20:09,929 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:09,930 - DEBUG - glpk_mi solver
+2022-09-12 15:20:10,526 - INFO - Time it takes for solver to finish: 0.5962429046630859
+2022-09-12 15:20:10,526 - INFO - Optimization problem was optimal
+2022-09-12 15:20:10,535 - INFO - 15:20:10 Running Optimization Problem starting at 2020-11-08 00:00:00 hb
+2022-09-12 15:20:10,575 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:10,576 - DEBUG - glpk_mi solver
+2022-09-12 15:20:11,252 - INFO - Time it takes for solver to finish: 0.6767079830169678
+2022-09-12 15:20:11,253 - INFO - Optimization problem was optimal
+2022-09-12 15:20:11,261 - INFO - 15:20:11 Running Optimization Problem starting at 2020-11-09 00:00:00 hb
+2022-09-12 15:20:11,299 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:11,300 - DEBUG - glpk_mi solver
+2022-09-12 15:20:11,484 - INFO - Time it takes for solver to finish: 0.1846787929534912
+2022-09-12 15:20:11,485 - INFO - Optimization problem was optimal
+2022-09-12 15:20:11,493 - INFO - 15:20:11 Running Optimization Problem starting at 2020-11-10 00:00:00 hb
+2022-09-12 15:20:11,532 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:11,533 - DEBUG - glpk_mi solver
+2022-09-12 15:20:11,740 - INFO - Time it takes for solver to finish: 0.2071208953857422
+2022-09-12 15:20:11,740 - INFO - Optimization problem was optimal
+2022-09-12 15:20:11,748 - INFO - 15:20:11 Running Optimization Problem starting at 2020-11-11 00:00:00 hb
+2022-09-12 15:20:11,784 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:11,784 - DEBUG - glpk_mi solver
+2022-09-12 15:20:12,809 - INFO - Time it takes for solver to finish: 1.0249547958374023
+2022-09-12 15:20:12,810 - INFO - Optimization problem was optimal
+2022-09-12 15:20:12,817 - INFO - 15:20:12 Running Optimization Problem starting at 2020-11-12 00:00:00 hb
+2022-09-12 15:20:12,853 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:12,854 - DEBUG - glpk_mi solver
+2022-09-12 15:20:12,993 - INFO - Time it takes for solver to finish: 0.13970398902893066
+2022-09-12 15:20:12,994 - INFO - Optimization problem was optimal
+2022-09-12 15:20:13,001 - INFO - 15:20:13 Running Optimization Problem starting at 2020-11-13 00:00:00 hb
+2022-09-12 15:20:13,040 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:13,040 - DEBUG - glpk_mi solver
+2022-09-12 15:20:13,285 - INFO - Time it takes for solver to finish: 0.24538111686706543
+2022-09-12 15:20:13,286 - INFO - Optimization problem was optimal
+2022-09-12 15:20:13,294 - INFO - 15:20:13 Running Optimization Problem starting at 2020-11-14 00:00:00 hb
+2022-09-12 15:20:13,335 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:13,336 - DEBUG - glpk_mi solver
+2022-09-12 15:20:13,622 - INFO - Time it takes for solver to finish: 0.28609490394592285
+2022-09-12 15:20:13,622 - INFO - Optimization problem was optimal
+2022-09-12 15:20:13,631 - INFO - 15:20:13 Running Optimization Problem starting at 2020-11-15 00:00:00 hb
+2022-09-12 15:20:13,670 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:13,671 - DEBUG - glpk_mi solver
+2022-09-12 15:20:13,938 - INFO - Time it takes for solver to finish: 0.2676670551300049
+2022-09-12 15:20:13,939 - INFO - Optimization problem was optimal
+2022-09-12 15:20:13,946 - INFO - 15:20:13 Running Optimization Problem starting at 2020-11-16 00:00:00 hb
+2022-09-12 15:20:13,983 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:13,984 - DEBUG - glpk_mi solver
+2022-09-12 15:20:14,494 - INFO - Time it takes for solver to finish: 0.5102713108062744
+2022-09-12 15:20:14,494 - INFO - Optimization problem was optimal
+2022-09-12 15:20:14,504 - INFO - 15:20:14 Running Optimization Problem starting at 2020-11-17 00:00:00 hb
+2022-09-12 15:20:14,550 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:14,550 - DEBUG - glpk_mi solver
+2022-09-12 15:20:14,755 - INFO - Time it takes for solver to finish: 0.20447015762329102
+2022-09-12 15:20:14,755 - INFO - Optimization problem was optimal
+2022-09-12 15:20:14,762 - INFO - 15:20:14 Running Optimization Problem starting at 2020-11-18 00:00:00 hb
+2022-09-12 15:20:14,802 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:14,802 - DEBUG - glpk_mi solver
+2022-09-12 15:20:14,966 - INFO - Time it takes for solver to finish: 0.16412115097045898
+2022-09-12 15:20:14,967 - INFO - Optimization problem was optimal
+2022-09-12 15:20:14,974 - INFO - 15:20:14 Running Optimization Problem starting at 2020-11-19 00:00:00 hb
+2022-09-12 15:20:15,026 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:15,026 - DEBUG - glpk_mi solver
+2022-09-12 15:20:15,667 - INFO - Time it takes for solver to finish: 0.640984058380127
+2022-09-12 15:20:15,668 - INFO - Optimization problem was optimal
+2022-09-12 15:20:15,675 - INFO - 15:20:15 Running Optimization Problem starting at 2020-11-20 00:00:00 hb
+2022-09-12 15:20:15,711 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:15,711 - DEBUG - glpk_mi solver
+2022-09-12 15:20:16,272 - INFO - Time it takes for solver to finish: 0.5609147548675537
+2022-09-12 15:20:16,273 - INFO - Optimization problem was optimal
+2022-09-12 15:20:16,280 - INFO - 15:20:16 Running Optimization Problem starting at 2020-11-21 00:00:00 hb
+2022-09-12 15:20:16,316 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:16,317 - DEBUG - glpk_mi solver
+2022-09-12 15:20:17,460 - INFO - Time it takes for solver to finish: 1.143293857574463
+2022-09-12 15:20:17,460 - INFO - Optimization problem was optimal
+2022-09-12 15:20:17,470 - INFO - 15:20:17 Running Optimization Problem starting at 2020-11-22 00:00:00 hb
+2022-09-12 15:20:17,507 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:17,507 - DEBUG - glpk_mi solver
+2022-09-12 15:20:17,960 - INFO - Time it takes for solver to finish: 0.4529740810394287
+2022-09-12 15:20:17,961 - INFO - Optimization problem was optimal
+2022-09-12 15:20:17,970 - INFO - 15:20:17 Running Optimization Problem starting at 2020-11-23 00:00:00 hb
+2022-09-12 15:20:18,009 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:18,009 - DEBUG - glpk_mi solver
+2022-09-12 15:20:18,194 - INFO - Time it takes for solver to finish: 0.1851201057434082
+2022-09-12 15:20:18,195 - INFO - Optimization problem was optimal
+2022-09-12 15:20:18,203 - INFO - 15:20:18 Running Optimization Problem starting at 2020-11-24 00:00:00 hb
+2022-09-12 15:20:18,246 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:18,247 - DEBUG - glpk_mi solver
+2022-09-12 15:20:18,347 - INFO - Time it takes for solver to finish: 0.10062623023986816
+2022-09-12 15:20:18,348 - INFO - Optimization problem was optimal
+2022-09-12 15:20:18,356 - INFO - 15:20:18 Running Optimization Problem starting at 2020-11-25 00:00:00 hb
+2022-09-12 15:20:18,396 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:18,396 - DEBUG - glpk_mi solver
+2022-09-12 15:20:18,816 - INFO - Time it takes for solver to finish: 0.41980481147766113
+2022-09-12 15:20:18,817 - INFO - Optimization problem was optimal
+2022-09-12 15:20:18,824 - INFO - 15:20:18 Running Optimization Problem starting at 2020-11-26 00:00:00 hb
+2022-09-12 15:20:18,860 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:18,860 - DEBUG - glpk_mi solver
+2022-09-12 15:20:19,015 - INFO - Time it takes for solver to finish: 0.15456295013427734
+2022-09-12 15:20:19,015 - INFO - Optimization problem was optimal
+2022-09-12 15:20:19,023 - INFO - 15:20:19 Running Optimization Problem starting at 2020-11-27 00:00:00 hb
+2022-09-12 15:20:19,058 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:19,059 - DEBUG - glpk_mi solver
+2022-09-12 15:20:19,224 - INFO - Time it takes for solver to finish: 0.1656169891357422
+2022-09-12 15:20:19,225 - INFO - Optimization problem was optimal
+2022-09-12 15:20:19,232 - INFO - 15:20:19 Running Optimization Problem starting at 2020-11-28 00:00:00 hb
+2022-09-12 15:20:19,270 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:19,270 - DEBUG - glpk_mi solver
+2022-09-12 15:20:19,630 - INFO - Time it takes for solver to finish: 0.3600022792816162
+2022-09-12 15:20:19,631 - INFO - Optimization problem was optimal
+2022-09-12 15:20:19,639 - INFO - 15:20:19 Running Optimization Problem starting at 2020-11-29 00:00:00 hb
+2022-09-12 15:20:19,680 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:19,680 - DEBUG - glpk_mi solver
+2022-09-12 15:20:20,232 - INFO - Time it takes for solver to finish: 0.5512208938598633
+2022-09-12 15:20:20,232 - INFO - Optimization problem was optimal
+2022-09-12 15:20:20,240 - INFO - 15:20:20 Running Optimization Problem starting at 2020-11-30 00:00:00 hb
+2022-09-12 15:20:20,277 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:20,277 - DEBUG - glpk_mi solver
+2022-09-12 15:20:20,392 - INFO - Time it takes for solver to finish: 0.1147928237915039
+2022-09-12 15:20:20,392 - INFO - Optimization problem was optimal
+2022-09-12 15:20:20,400 - INFO - 15:20:20 Running Optimization Problem starting at 2020-12-01 00:00:00 hb
+2022-09-12 15:20:20,439 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:20,439 - DEBUG - glpk_mi solver
+2022-09-12 15:20:21,649 - INFO - Time it takes for solver to finish: 1.2098429203033447
+2022-09-12 15:20:21,649 - INFO - Optimization problem was optimal
+2022-09-12 15:20:21,657 - INFO - 15:20:21 Running Optimization Problem starting at 2020-12-02 00:00:00 hb
+2022-09-12 15:20:21,694 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:21,694 - DEBUG - glpk_mi solver
+2022-09-12 15:20:21,854 - INFO - Time it takes for solver to finish: 0.1600029468536377
+2022-09-12 15:20:21,855 - INFO - Optimization problem was optimal
+2022-09-12 15:20:21,862 - INFO - 15:20:21 Running Optimization Problem starting at 2020-12-03 00:00:00 hb
+2022-09-12 15:20:21,899 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:21,899 - DEBUG - glpk_mi solver
+2022-09-12 15:20:22,024 - INFO - Time it takes for solver to finish: 0.12514615058898926
+2022-09-12 15:20:22,025 - INFO - Optimization problem was optimal
+2022-09-12 15:20:22,032 - INFO - 15:20:22 Running Optimization Problem starting at 2020-12-04 00:00:00 hb
+2022-09-12 15:20:22,068 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:22,069 - DEBUG - glpk_mi solver
+2022-09-12 15:20:23,012 - INFO - Time it takes for solver to finish: 0.94333815574646
+2022-09-12 15:20:23,013 - INFO - Optimization problem was optimal
+2022-09-12 15:20:23,020 - INFO - 15:20:23 Running Optimization Problem starting at 2020-12-05 00:00:00 hb
+2022-09-12 15:20:23,057 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:23,057 - DEBUG - glpk_mi solver
+2022-09-12 15:20:23,301 - INFO - Time it takes for solver to finish: 0.24437594413757324
+2022-09-12 15:20:23,302 - INFO - Optimization problem was optimal
+2022-09-12 15:20:23,309 - INFO - 15:20:23 Running Optimization Problem starting at 2020-12-06 00:00:00 hb
+2022-09-12 15:20:23,345 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:23,345 - DEBUG - glpk_mi solver
+2022-09-12 15:20:23,825 - INFO - Time it takes for solver to finish: 0.47983884811401367
+2022-09-12 15:20:23,826 - INFO - Optimization problem was optimal
+2022-09-12 15:20:23,833 - INFO - 15:20:23 Running Optimization Problem starting at 2020-12-07 00:00:00 hb
+2022-09-12 15:20:23,870 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:23,870 - DEBUG - glpk_mi solver
+2022-09-12 15:20:24,136 - INFO - Time it takes for solver to finish: 0.26604223251342773
+2022-09-12 15:20:24,136 - INFO - Optimization problem was optimal
+2022-09-12 15:20:24,144 - INFO - 15:20:24 Running Optimization Problem starting at 2020-12-08 00:00:00 hb
+2022-09-12 15:20:24,181 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:24,181 - DEBUG - glpk_mi solver
+2022-09-12 15:20:25,085 - INFO - Time it takes for solver to finish: 0.9043219089508057
+2022-09-12 15:20:25,086 - INFO - Optimization problem was optimal
+2022-09-12 15:20:25,093 - INFO - 15:20:25 Running Optimization Problem starting at 2020-12-09 00:00:00 hb
+2022-09-12 15:20:25,133 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:25,133 - DEBUG - glpk_mi solver
+2022-09-12 15:20:25,337 - INFO - Time it takes for solver to finish: 0.20343685150146484
+2022-09-12 15:20:25,337 - INFO - Optimization problem was optimal
+2022-09-12 15:20:25,344 - INFO - 15:20:25 Running Optimization Problem starting at 2020-12-10 00:00:00 hb
+2022-09-12 15:20:25,380 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:25,380 - DEBUG - glpk_mi solver
+2022-09-12 15:20:26,033 - INFO - Time it takes for solver to finish: 0.6527409553527832
+2022-09-12 15:20:26,034 - INFO - Optimization problem was optimal
+2022-09-12 15:20:26,041 - INFO - 15:20:26 Running Optimization Problem starting at 2020-12-11 00:00:00 hb
+2022-09-12 15:20:26,078 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:26,078 - DEBUG - glpk_mi solver
+2022-09-12 15:20:26,569 - INFO - Time it takes for solver to finish: 0.4905548095703125
+2022-09-12 15:20:26,569 - INFO - Optimization problem was optimal
+2022-09-12 15:20:26,577 - INFO - 15:20:26 Running Optimization Problem starting at 2020-12-12 00:00:00 hb
+2022-09-12 15:20:26,614 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:26,615 - DEBUG - glpk_mi solver
+2022-09-12 15:20:26,799 - INFO - Time it takes for solver to finish: 0.18411874771118164
+2022-09-12 15:20:26,799 - INFO - Optimization problem was optimal
+2022-09-12 15:20:26,807 - INFO - 15:20:26 Running Optimization Problem starting at 2020-12-13 00:00:00 hb
+2022-09-12 15:20:26,846 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:26,846 - DEBUG - glpk_mi solver
+2022-09-12 15:20:27,349 - INFO - Time it takes for solver to finish: 0.5026388168334961
+2022-09-12 15:20:27,349 - INFO - Optimization problem was optimal
+2022-09-12 15:20:27,356 - INFO - 15:20:27 Running Optimization Problem starting at 2020-12-14 00:00:00 hb
+2022-09-12 15:20:27,393 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:27,394 - DEBUG - glpk_mi solver
+2022-09-12 15:20:27,539 - INFO - Time it takes for solver to finish: 0.14548301696777344
+2022-09-12 15:20:27,540 - INFO - Optimization problem was optimal
+2022-09-12 15:20:27,546 - INFO - 15:20:27 Running Optimization Problem starting at 2020-12-15 00:00:00 hb
+2022-09-12 15:20:27,583 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:27,583 - DEBUG - glpk_mi solver
+2022-09-12 15:20:27,741 - INFO - Time it takes for solver to finish: 0.15746307373046875
+2022-09-12 15:20:27,742 - INFO - Optimization problem was optimal
+2022-09-12 15:20:27,751 - INFO - 15:20:27 Running Optimization Problem starting at 2020-12-16 00:00:00 hb
+2022-09-12 15:20:27,793 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:27,793 - DEBUG - glpk_mi solver
+2022-09-12 15:20:27,970 - INFO - Time it takes for solver to finish: 0.1767587661743164
+2022-09-12 15:20:27,971 - INFO - Optimization problem was optimal
+2022-09-12 15:20:27,980 - INFO - 15:20:27 Running Optimization Problem starting at 2020-12-17 00:00:00 hb
+2022-09-12 15:20:28,024 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:28,024 - DEBUG - glpk_mi solver
+2022-09-12 15:20:28,524 - INFO - Time it takes for solver to finish: 0.49972987174987793
+2022-09-12 15:20:28,524 - INFO - Optimization problem was optimal
+2022-09-12 15:20:28,531 - INFO - 15:20:28 Running Optimization Problem starting at 2020-12-18 00:00:00 hb
+2022-09-12 15:20:28,568 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:28,569 - DEBUG - glpk_mi solver
+2022-09-12 15:20:28,661 - INFO - Time it takes for solver to finish: 0.09232902526855469
+2022-09-12 15:20:28,661 - INFO - Optimization problem was optimal
+2022-09-12 15:20:28,669 - INFO - 15:20:28 Running Optimization Problem starting at 2020-12-19 00:00:00 hb
+2022-09-12 15:20:28,706 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:28,706 - DEBUG - glpk_mi solver
+2022-09-12 15:20:29,202 - INFO - Time it takes for solver to finish: 0.49549007415771484
+2022-09-12 15:20:29,202 - INFO - Optimization problem was optimal
+2022-09-12 15:20:29,209 - INFO - 15:20:29 Running Optimization Problem starting at 2020-12-20 00:00:00 hb
+2022-09-12 15:20:29,247 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:29,247 - DEBUG - glpk_mi solver
+2022-09-12 15:20:30,292 - INFO - Time it takes for solver to finish: 1.0447418689727783
+2022-09-12 15:20:30,293 - INFO - Optimization problem was optimal
+2022-09-12 15:20:30,300 - INFO - 15:20:30 Running Optimization Problem starting at 2020-12-21 00:00:00 hb
+2022-09-12 15:20:30,337 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:30,337 - DEBUG - glpk_mi solver
+2022-09-12 15:20:30,482 - INFO - Time it takes for solver to finish: 0.14542412757873535
+2022-09-12 15:20:30,483 - INFO - Optimization problem was optimal
+2022-09-12 15:20:30,490 - INFO - 15:20:30 Running Optimization Problem starting at 2020-12-22 00:00:00 hb
+2022-09-12 15:20:30,541 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:30,541 - DEBUG - glpk_mi solver
+2022-09-12 15:20:32,962 - INFO - Time it takes for solver to finish: 2.4202897548675537
+2022-09-12 15:20:32,962 - INFO - Optimization problem was optimal
+2022-09-12 15:20:32,969 - INFO - 15:20:32 Running Optimization Problem starting at 2020-12-23 00:00:00 hb
+2022-09-12 15:20:33,006 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:33,006 - DEBUG - glpk_mi solver
+2022-09-12 15:20:33,118 - INFO - Time it takes for solver to finish: 0.11208987236022949
+2022-09-12 15:20:33,119 - INFO - Optimization problem was optimal
+2022-09-12 15:20:33,126 - INFO - 15:20:33 Running Optimization Problem starting at 2020-12-24 00:00:00 hb
+2022-09-12 15:20:33,162 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:33,162 - DEBUG - glpk_mi solver
+2022-09-12 15:20:33,464 - INFO - Time it takes for solver to finish: 0.3012721538543701
+2022-09-12 15:20:33,464 - INFO - Optimization problem was optimal
+2022-09-12 15:20:33,472 - INFO - 15:20:33 Running Optimization Problem starting at 2020-12-25 00:00:00 hb
+2022-09-12 15:20:33,509 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:33,509 - DEBUG - glpk_mi solver
+2022-09-12 15:20:33,702 - INFO - Time it takes for solver to finish: 0.19355201721191406
+2022-09-12 15:20:33,703 - INFO - Optimization problem was optimal
+2022-09-12 15:20:33,710 - INFO - 15:20:33 Running Optimization Problem starting at 2020-12-26 00:00:00 hb
+2022-09-12 15:20:33,747 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:33,748 - DEBUG - glpk_mi solver
+2022-09-12 15:20:33,867 - INFO - Time it takes for solver to finish: 0.11890697479248047
+2022-09-12 15:20:33,867 - INFO - Optimization problem was optimal
+2022-09-12 15:20:33,874 - INFO - 15:20:33 Running Optimization Problem starting at 2020-12-27 00:00:00 hb
+2022-09-12 15:20:33,911 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:33,911 - DEBUG - glpk_mi solver
+2022-09-12 15:20:37,487 - INFO - Time it takes for solver to finish: 3.5756301879882812
+2022-09-12 15:20:37,487 - INFO - Optimization problem was optimal
+2022-09-12 15:20:37,495 - INFO - 15:20:37 Running Optimization Problem starting at 2020-12-28 00:00:00 hb
+2022-09-12 15:20:37,533 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:37,533 - DEBUG - glpk_mi solver
+2022-09-12 15:20:37,831 - INFO - Time it takes for solver to finish: 0.29828667640686035
+2022-09-12 15:20:37,832 - INFO - Optimization problem was optimal
+2022-09-12 15:20:37,839 - INFO - 15:20:37 Running Optimization Problem starting at 2020-12-29 00:00:00 hb
+2022-09-12 15:20:37,877 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:37,878 - DEBUG - glpk_mi solver
+2022-09-12 15:20:38,306 - INFO - Time it takes for solver to finish: 0.42858290672302246
+2022-09-12 15:20:38,307 - INFO - Optimization problem was optimal
+2022-09-12 15:20:38,314 - INFO - 15:20:38 Running Optimization Problem starting at 2020-12-30 00:00:00 hb
+2022-09-12 15:20:38,352 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:38,352 - DEBUG - glpk_mi solver
+2022-09-12 15:20:39,159 - INFO - Time it takes for solver to finish: 0.8072619438171387
+2022-09-12 15:20:39,160 - INFO - Optimization problem was optimal
+2022-09-12 15:20:39,169 - INFO - 15:20:39 Running Optimization Problem starting at 2020-12-31 00:00:00 hb
+2022-09-12 15:20:39,210 - INFO - Finished setting up the problem. Solving now.
+2022-09-12 15:20:39,210 - DEBUG - glpk_mi solver
+2022-09-12 15:20:39,967 - INFO - Time it takes for solver to finish: 0.7562828063964844
+2022-09-12 15:20:39,967 - INFO - Optimization problem was optimal
+2022-09-12 15:20:39,975 - DEBUG - Performing Post Optimization Analysis...
+2022-09-12 15:20:40,059 - DEBUG - Finished post optimization analysis
+2022-09-12 15:20:40,381 - INFO - Results have been saved to: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/results
+2022-09-12 15:20:40,385 - INFO - DER results have been saved to: /users/paet001/epri/dervet/reference_cases/caiso_market_case_v2/der-vet_20220912151550/results
+2022-09-12 15:20:40,385 - INFO - DERVET runtime: 277.07221817970276

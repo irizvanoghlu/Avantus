@@ -902,7 +902,7 @@ class Reliability(ValueStream):
         if no_storage_case==False:
             # save the state of charge
             if self.use_user_const:
-                aggregate_soe = results_df.loc[:, 'Aggregate Energy Min (kWh)']
+                aggregate_soe = results_df.loc[:, 'User Constraints Aggregate Energy Min (kWh)']
             elif not self.use_soc_init:
                 if self.use_sizing_module_results:
                     aggregate_soe = results_df.loc[:, 'Reliability Min State of Energy (kWh)']

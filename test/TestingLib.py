@@ -203,6 +203,8 @@ def compare_proforma_results(results, frozen_proforma_location: str, error_bound
             actual_indx = yr_indx
         assert actual_indx in actual_proforma_df.index, f'{actual_indx} not in test proforma index'
         for col_indx in values_series.index:
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       proforma file are ignored)
             print(col_indx)
             assert col_indx in actual_proforma_df.columns, f'{col_indx} not in test proforma columns'
             error_message = f'ValueError in Proforma [{yr_indx}, {col_indx}]\n'
@@ -227,6 +229,8 @@ def compare_npv_results(results, frozen_npv_location: str, error_bound: float,
             actual_indx = yr_indx
         assert actual_indx in actual_npv_df.index, f'{actual_indx} not in test npv index'
         for col_indx in values_series.index:
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       npv file are ignored)
             print(col_indx)
             assert col_indx in actual_npv_df.columns, f'{col_indx} not in test npv columns'
             error_message = f'ValueError in NPV [{yr_indx}, {col_indx}]\n'
@@ -262,6 +266,8 @@ def compare_size_results(results, frozen_size_location: str, error_bound: float)
     for der_name in expected_df.index:
         print(f'\nDER SIZING: {der_name}\n')
         for col in expected_df.columns:
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       size results file are ignored)
             print(col)
             actual_value = actual_df.loc[der_name, col]
             expected_value = expected_df.loc[der_name, col]

@@ -227,9 +227,19 @@ class MicrogridScenario(Scenario):
         """ Throws an error if any DER is being sized under assumptions that will not
         result in a solution within a reasonable amount of time.
         Called IFF we are preforming an optimization based sizing analysis.
+        Also throws warnings where appropriate.
 
         """
+        # begin with no error
         error = False
+        # warn if there are negative energy prices (in DA.price time series)
+        try:
+            if np.min(self.service_agg.value_streams['DA'].price) < 0:
+                TellUser.warning('Performing optimal sizing with negative DA energy prices may ' +
+                                'result in impossible operational results. Consider turning ' +
+                                'off optimal sizing or using energy prices that are non-negative.')
+        except KeyError:
+            pass
         # make sure the optimization horizon is the whole year
         if self.n != 'year':
             TellUser.error('Trying to size without setting the optimization window to \'year\'')

@@ -93,8 +93,9 @@ class CostBenefitAnalysis(Financial):
         }
 
     def find_end_year(self, der_list):
-        """ This method looks at the analysis horizon mode and sets up the CBA class
-        for the indicated mode
+        """ This method looks at the analysis horizon mode and sets up the CBA class end_year
+        for the indicated mode. NOTE: size optimization is disallowed when the horizon_mode
+        is set to 2 or 3. A failure occurs with a message in the log in such cases.
 
         Args:
             der_list (list): list of DERs initialized with user values
@@ -103,20 +104,20 @@ class CostBenefitAnalysis(Financial):
 
         """
         project_start_year = self.start_year
-        user_given_end_year = self.end_year
-        # (1) User-defined (this should continue to be default)
-        if self.horizon_mode == 1:
-            self.end_year = user_given_end_year
+        model_parameter_error_has_occurred = False
+        # (1) User-defined (the end_year stays what it is)
         # (2) Auto-calculate based on shortest equipment lifetime. (No size optimization)
         if self.horizon_mode == 2:
             shortest_lifetime = 1000  # no technology should last 1000 years -- so this is safe to hardcode
             for der_instance in der_list:
                 shortest_lifetime = min(der_instance.expected_lifetime, shortest_lifetime)
                 if der_instance.being_sized():
-                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on shortest equipment lifetime', DER-VET will not size any DERs " +
-                                   f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
-                    self.end_year = pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==2
-            self.end_year = project_start_year + shortest_lifetime-1
+                    TellUser.error(f"Model Parameter analysis_horizon_mode == {self.horizon_mode} " +
+                                   "(Auto-calculate based on shortest equipment lifetime), DER-VET cannot " +
+                                   "size any DERs when this horizon mode is selected. " +
+                                   f"'{der_instance.name}' is being sized. Please resolve and rerun.")
+                    model_parameter_error_has_occurred = True
+            self.end_year = project_start_year + shortest_lifetime - 1
         # (3) Auto-calculate based on longest equipment lifetime. (No size optimization)
         if self.horizon_mode == 3:
             longest_lifetime = 0
@@ -124,10 +125,16 @@ class CostBenefitAnalysis(Financial):
                 if der_instance.technology_type != 'Load':
                     longest_lifetime = max(der_instance.expected_lifetime, longest_lifetime)
                 if der_instance.being_sized():
-                    TellUser.error("Analysis horizon mode == 'Auto-calculate based on longest equipment lifetime', DER-VET will not size any DERs " +
-                                   f"when this horizon mode is selected. {der_instance.name} is being sized. Please resolve and rerun.")
-                    self.end_year = pd.Period(year=0, freq='y')  # cannot preform size optimization with mode==3
-            self.end_year = project_start_year + longest_lifetime-1
+                    TellUser.error(f"Model Parameter analysis_horizon_mode == {self.horizon_mode} " +
+                                   "(Auto-calculate based on longest equipment lifetime), DER-VET cannot " +
+                                   "size any DERs when this horizon mode is selected. " +
+                                   f"'{der_instance.name}' is being sized. Please resolve and rerun.")
+                    model_parameter_error_has_occurred = True
+            self.end_year = project_start_year + longest_lifetime - 1
+        if model_parameter_error_has_occurred:
+            raise ModelParameterError("Error occurred while trying to determine the end of the analysis." +
+                            " Please check the error_log.log in your results folder for more " +
+                            "information.")
         return self.end_year
 
     def ecc_checks(self, der_list, service_dict):

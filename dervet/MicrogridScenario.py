@@ -150,11 +150,6 @@ class MicrogridScenario(Scenario):
 
         # set the project end year
         self.end_year = self.cost_benefit_analysis.find_end_year(der_lst)
-        if self.end_year.year == 0:
-            # some type error was recorded. throw error and exit
-            raise Exception("Error occurred while trying to determine the end of the analysis." +
-                            " Please check the error_log.log in your results folder for more " +
-                            "information.")
         # if economic carrying cost, check for value conflicts in CBA and scenario
         if self.cost_benefit_analysis.ecc_mode:
             self.cost_benefit_analysis.ecc_checks(der_lst, self.service_agg.value_streams)

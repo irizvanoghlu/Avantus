@@ -214,13 +214,13 @@ class TestShortestLifetime:
 
 # mode==2 + a DER is being sized
 def test_shortest_lifetime_sizing_error():
-    with pytest.raises(Exception):
+    with pytest.raises(ModelParameterError):
         run_case(DIR / "shortest_lifetime_sizing_error.csv", )
 
 
 # mode==3 + a DER is being sized
 def test_longest_lifetime_sizing_error():
-    with pytest.raises(Exception):
+    with pytest.raises(ModelParameterError):
         run_case(DIR / "longest_lifetime_sizing_error.csv", )
 
 

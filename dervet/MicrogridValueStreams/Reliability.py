@@ -191,12 +191,6 @@ class Reliability(ValueStream):
             der_list = self.size_for_outages(opt_index, analysis_indices,
                                              der_list)
 
-            #Fixing the size of Intermittent and Generator source after first optimization run. ES size will be iterated to meet the outage requirement
-            for der_inst in der_list:
-                if der_inst.technology_type == 'Intermittent Resource' or der_inst.technology_type == 'Generator':
-                    if der_inst.being_sized():
-                        der_inst.set_size()
-
             # print out size results as we go
             print('\nOptimal Sizing Results:')
             for der in der_list:
@@ -228,9 +222,8 @@ class Reliability(ValueStream):
                 elif der.technology_type == 'Intermittent Resource':
                     if der.being_sized():
                         print('  PV sizing:')
-                        #print(f'    rated_capacity = {der.rated_capacity.value}')
-                        print(f'    rated_capacity = {der.rated_capacity}')
-                        print(f'    inv_max = {der.inv_max}')
+                        print(f'    rated_capacity = {der.rated_capacity.value}')
+                        print(f'    inv_max = {der.inv_max.value}')
                     else:
                         print('  PV fixed-size:')
                         print(f'    rated_capacity = {der.rated_capacity} *')
@@ -238,12 +231,19 @@ class Reliability(ValueStream):
                 elif der.technology_type == 'Generator':
                     if der.being_sized():
                         print('  Gen sizing:')
-                        #print(f'    rated_power = {der.rated_power.value}')
-                        print(f'    rated_power = {der.rated_power}')
+                        print(f'    rated_power = {der.rated_power.value}')
                     else:
                         print('  Gen fixed-size:')
                         print(f'    rated_power = {der.rated_power} *')
             print()
+
+            #Fixing the size of Intermittent and Generator source after first optimization run.
+            #   ES size will be iterated to meet the outage requirement
+            for der_inst in der_list:
+                if der_inst.technology_type == 'Intermittent Resource' or der_inst.technology_type == 'Generator':
+                   if der_inst.being_sized():
+                        print(f'fixing the size of: {der_inst.name}')
+                        der_inst.set_size()
 
             dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
                 self.get_der_mix_properties(der_list, True)
@@ -494,6 +494,42 @@ class Reliability(ValueStream):
         except KeyError:
             first_data = array.values[0]
         return first_data
+
+    def find_first_uncovered2(self, generation, total_pv_max, total_pv_vari,
+                             largest_gamma, ess_properties=None, soe=None,
+                             start_indx=0, stop_at=600):
+        """ THis function will return the first outage that is not covered with
+         the given DERs
+
+        Args:
+            generation:
+            total_pv_max:
+            total_pv_vari:
+            largest_gamma:
+            ess_properties (dict): dictionary that describes the physical
+                properties of the ess in the analysis includes 'charge max',
+                'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
+            soe (list, None): if ESSs are active, then this is an array
+                indicating the soe at the start of the outage
+            start_indx (int): start index, idetifies the index of the start of
+                the outage we are going to simulate
+            stop_at (int): when the start_index is divisible by this number,
+                stop recursion
+
+        Returns: index of the first outage that cannot be covered by the DER
+            sizes, or -1 if none is found
+
+        """
+        # base case 1: outage_init is beyond range of critical load
+        if start_indx >= (len(self.critical_load)):
+            print(f'  (bc 1) {start_indx} returning: -1')
+            return -1
+        print(start_indx)
+        # attempt to perform an optimization at each timestep, given the known sizes of everything
+        # if the optimization fails, then we return the failed index so that it can get
+        #   used in the actual size optimization step
+        # this method does not simulate an outage
+
 
     def find_first_uncovered(self, generation, total_pv_max, total_pv_vari,
                              largest_gamma, ess_properties=None, soe=None,

@@ -241,8 +241,8 @@ class MicrogridScenario(Scenario):
             error = True
         # any wholesale markets active?
         if self.service_agg.is_whole_sale_market():
-            TellUser.warning('trying to size the power of the battery to maximize profits in ' +
-                             'wholesale markets. We will not run analysis power capacity is not ' +
+            TellUser.warning('trying to size the power of a DER to maximize profits in ' +
+                             'wholesale markets. We will not run analysis if power capacity is not ' +
                              'limited by the DERs or through market participation constraints.')
             # check that at least one: (1) (2) is false
             # 1) if all wholesale markets has a max defined
@@ -260,9 +260,9 @@ class MicrogridScenario(Scenario):
                            'calculations. Please turn off post_facto_only or stop sizing')
             error = True
         # check if binary will create a DCP error based on formulation
-        if self.poi.is_dcp_error(self.incl_binary):
-            TellUser.error('trying to size power and use binary formulation results in ' +
-                           'nonlinear models')
+        if self.poi.is_dervet_power_sizing() and self.incl_binary:
+            TellUser.error('trying to size power while using the binary formulation results in ' +
+                           'nonlinear models.')
             error = True
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is " +

@@ -139,22 +139,16 @@ class MicrogridPOI(POI):
             ess_inst.dis_max_rated = min_power
             ess_inst.ene_max_rated = min_energy
 
-    def is_dcp_error(self, is_binary_formulation):
-        """ If trying to sizing power of batteries (or other DERs) AND using the binary formulation
-         (of ESS) our linear model will not be linear anymore
-
-        Args:
-            is_binary_formulation (bool):
+    def is_dervet_power_sizing(self):
+        """ Is DERVET trying to size the power of any DER?
 
         Returns: a boolean
 
         """
-        solve_for_size = False
         for der_instance in self.der_list:
-            if der_instance.tag == 'Battery':
-                solve_for_size = solve_for_size or \
-                                 (der_instance.is_power_sizing() and is_binary_formulation)
-        return solve_for_size
+            if der_instance.is_power_sizing():
+                return True
+        return False
 
     def get_state_of_system(self, mask):
         """ POI method to measure the state of POI depending on available types of DERs. used in

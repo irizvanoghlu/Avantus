@@ -163,6 +163,7 @@ class Reliability(ValueStream):
         der_list = copy.deepcopy(der_lst)
 
         top_n_outages = 10
+        diurnal_period_hours = 96
         data_size = len(opt_index)
         first_fail_ind = 0
 
@@ -171,12 +172,24 @@ class Reliability(ValueStream):
 
         # Find the top n analysis indices that we are going to size our DER mix for
         analysis_indices = indices[:top_n_outages].values
-        # Add an entire day of indexes to analysis_indices to capture a full day and night of PV generation
-        # FIXME: account for when the first index is too close to the start or end
-        #   to capture the full 24 hour period (we don't want it go out of bounds)
-        analysis_indices = np.append(analysis_indices, np.arange(analysis_indices[0],analysis_indices[0]+24))
+        # Add at least an entire day of indexes to analysis_indices to capture a full day and night of PV generation
+        # Center this on the top outage index
+        # to do this, make sure to set diurnal_period_hours to at least 24 hours
+        outage_length = int(self.coverage_dt)
+        data_max_index = data_size - outage_length
+        diurnal_index_start = analysis_indices[0] - int(diurnal_period_hours / 2)
+        diurnal_index_end = analysis_indices[0] + int(diurnal_period_hours / 2)
+        if diurnal_index_start < 0:
+            diurnal_index_start = 0
+            diurnal_index_end = diurnal_period_hours
+        if diurnal_index_end > data_max_index:
+            diurnal_index_start = data_max_index - diurnal_period_hours
+            diurnal_index_end = data_max_index
+        analysis_indices = np.append(analysis_indices, np.arange(diurnal_index_start, diurnal_index_end))
         # discard any repeating indices
         analysis_indices = np.unique(analysis_indices)
+        # discard any out of range indices
+        analysis_indices = analysis_indices[ (analysis_indices >= 0) & (analysis_indices <= data_max_index) ]
 
         # report on outage indices and corresponding critical loads in log file
         TellUser.info(f'Reliability Sizing: outage indices DERVET will size for: {analysis_indices}')
@@ -237,13 +250,15 @@ class Reliability(ValueStream):
                         print(f'    rated_power = {der.rated_power} *')
             print()
 
-            #Fixing the size of Intermittent and Generator source after first optimization run.
+            # Fix the size of Intermittent and Generator DERs after first optimization run.
             #   ES size will be iterated to meet the outage requirement
+            ders_now_have_fixed_sizes = False
             for der_inst in der_list:
                 if der_inst.technology_type == 'Intermittent Resource' or der_inst.technology_type == 'Generator':
                    if der_inst.being_sized():
                         print(f'fixing the size of: {der_inst.name}')
                         der_inst.set_size()
+                        ders_now_have_fixed_sizes = True
 
             dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
                 self.get_der_mix_properties(der_list, True)
@@ -269,8 +284,9 @@ class Reliability(ValueStream):
                 start += check_at_a_time
                 print(start, first_fail_ind, '---\n')
             # if this is a non-unique index, break out of the method with an error
+            #   (this avoids an infinite repeating loop)
             # also break if the number of indices becomes too large
-            #   However, this avoids getting at the root cause of the underlying issue
+            # However, this avoids getting at the root cause of the underlying issue
             if first_fail_ind in analysis_indices or analysis_indices.size > 1e4:
                 return None
             else:
@@ -283,8 +299,9 @@ class Reliability(ValueStream):
                                         decimals=5)
                 indices_with_gen = np.argsort(-1 * demand_left)
             # Add these indices only if there were any first fail in the above outage simulation
-            if first_fail_ind >= 0:
-                analysis_indices = np.append(analysis_indices,indices_with_gen[:top_n_outages].values)
+            # NOTE: we force another optimization run if any DERs had their sizes fixed
+            if first_fail_ind >= 0 or ders_now_have_fixed_sizes:
+                analysis_indices = np.append(analysis_indices, indices_with_gen[:top_n_outages].values)
                 analysis_indices = np.unique(analysis_indices)
             print(analysis_indices)
             print()

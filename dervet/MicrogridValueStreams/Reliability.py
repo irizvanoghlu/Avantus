@@ -967,7 +967,7 @@ class Reliability(ValueStream):
                                 int(length / self.dt):].sum()
             total_possible_scenarios = len(self.critical_load) - (
                         length / self.dt) + 1
-            percentage = scenarios_covered / total_possible_scenarios
+            percentage = (scenarios_covered / total_possible_scenarios) * 1e2
             load_coverage_prob.append(percentage)
             length += self.dt
 

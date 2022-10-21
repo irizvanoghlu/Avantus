@@ -194,10 +194,10 @@ class MicrogridScenario(Scenario):
                                    f"implementation")
                     raise ParameterError('See dervet.log for more information.')
                 for der_inst in der_lst:
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target==0:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target == 0:
                         TellUser.error(f"SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage")
                         raise ParameterError('See dervet.log for more information.')
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<100:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target < 1:
                         TellUser.warning('Initial SOC when outage starts is not 100%, it will oversize DER ratings')
 
             else:

@@ -34,7 +34,7 @@ The tests in this file can be run with .
 
 """
 import pytest
-from test.TestingLib import assert_ran, run_case
+from test.TestingLib import assert_ran, run_case, check_initialization
 from storagevet.ErrorHandling import *
 import numpy as np
 
@@ -223,6 +223,9 @@ def test_longest_lifetime_sizing_error():
     with pytest.raises(ModelParameterError):
         run_case(DIR / "longest_lifetime_sizing_error.csv", )
 
+def test_powersizing_with_binary_error():
+    with pytest.raises(ParameterError):
+        run_case(DIR / "powersizing_binary_error.csv" )
 
 """
 End of life cost tests

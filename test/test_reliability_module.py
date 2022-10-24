@@ -65,6 +65,10 @@ class TestLoadShedding:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
+
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
                                  MAX_PERCENT_ERROR)
@@ -84,6 +88,10 @@ class TestWoLoadShedding:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
+
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
                                  MAX_PERCENT_ERROR)
@@ -102,6 +110,10 @@ class TestSizingLoadShedding:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
+
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
                                  MAX_PERCENT_ERROR)
@@ -119,6 +131,10 @@ class TestSizingWoLoadShedding:
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
+
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
 
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",

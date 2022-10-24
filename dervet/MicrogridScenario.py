@@ -150,11 +150,6 @@ class MicrogridScenario(Scenario):
 
         # set the project end year
         self.end_year = self.cost_benefit_analysis.find_end_year(der_lst)
-        if self.end_year.year == 0:
-            # some type error was recorded. throw error and exit
-            raise Exception("Error occurred while trying to determine the end of the analysis." +
-                            " Please check the error_log.log in your results folder for more " +
-                            "information.")
         # if economic carrying cost, check for value conflicts in CBA and scenario
         if self.cost_benefit_analysis.ecc_mode:
             self.cost_benefit_analysis.ecc_checks(der_lst, self.service_agg.value_streams)
@@ -199,10 +194,10 @@ class MicrogridScenario(Scenario):
                                    f"implementation")
                     raise ParameterError('See dervet.log for more information.')
                 for der_inst in der_lst:
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target==0:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target == 0:
                         TellUser.error(f"SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage")
                         raise ParameterError('See dervet.log for more information.')
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<1:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target < 1:
                         TellUser.warning('Initial SOC when outage starts is not 100%, it will oversize DER ratings')
 
             else:
@@ -232,17 +227,27 @@ class MicrogridScenario(Scenario):
         """ Throws an error if any DER is being sized under assumptions that will not
         result in a solution within a reasonable amount of time.
         Called IFF we are preforming an optimization based sizing analysis.
+        Also throws warnings where appropriate.
 
         """
+        # begin with no error
         error = False
+        # warn if there are negative energy prices (in DA.price time series)
+        try:
+            if np.min(self.service_agg.value_streams['DA'].price) < 0:
+                TellUser.warning('Performing optimal sizing with negative DA energy prices may ' +
+                                'result in impossible operational results. Consider turning ' +
+                                'off optimal sizing or using energy prices that are non-negative.')
+        except KeyError:
+            pass
         # make sure the optimization horizon is the whole year
         if self.n != 'year':
             TellUser.error('Trying to size without setting the optimization window to \'year\'')
             error = True
         # any wholesale markets active?
         if self.service_agg.is_whole_sale_market():
-            TellUser.warning('trying to size the power of the battery to maximize profits in ' +
-                             'wholesale markets. We will not run analysis power capacity is not ' +
+            TellUser.warning('trying to size the power of a DER to maximize profits in ' +
+                             'wholesale markets. We will not run analysis if power capacity is not ' +
                              'limited by the DERs or through market participation constraints.')
             # check that at least one: (1) (2) is false
             # 1) if all wholesale markets has a max defined
@@ -260,9 +265,9 @@ class MicrogridScenario(Scenario):
                            'calculations. Please turn off post_facto_only or stop sizing')
             error = True
         # check if binary will create a DCP error based on formulation
-        if self.poi.is_dcp_error(self.incl_binary):
-            TellUser.error('trying to size power and use binary formulation results in ' +
-                           'nonlinear models')
+        if self.poi.is_dervet_power_sizing() and self.incl_binary:
+            TellUser.error('trying to size power while using the binary formulation results in ' +
+                           'nonlinear models.')
             error = True
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is " +

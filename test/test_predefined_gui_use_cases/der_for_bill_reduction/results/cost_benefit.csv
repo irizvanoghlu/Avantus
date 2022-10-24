@@ -1,0 +1,16 @@
+,Cost ($),Benefit ($)
+Lifetime Present Value,5510150.596874952,5678022.778264511
+Avoided Demand Charge,0.0,2106429.779537434
+Avoided Energy Charge,0.0,3571592.9987270776
+BATTERY: bess 1 Capital Cost,3622500.0,0.0
+BATTERY: bess 1 Decommissioning Cost,0.0,0.0
+BATTERY: bess 1 Fixed O&M Cost,227650.59687495284,0.0
+BATTERY: bess 1 Salvage Value,0.0,0.0
+BATTERY: bess 1 Variable O&M Cost,0.0,0.0
+Federal Tax Burden,0.0,0.0
+Overall Tax Burden,0.0,0.0
+PV: installation 1 Capital Cost,1660000.0,0.0
+PV: installation 1 Decommissioning Cost,0.0,0.0
+PV: installation 1 Fixed O&M Cost,0.0,0.0
+PV: installation 1 Salvage Value,0.0,0.0
+State Tax Burden,0.0,0.0

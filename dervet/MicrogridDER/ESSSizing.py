@@ -320,9 +320,9 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             'Energy Rating (kWh)': self.energy_capacity(solution=True),
             'Charge Rating (kW)': self.charge_capacity(solution=True),
             'Discharge Rating (kW)': self.discharge_capacity(solution=True),
-            'Round Trip Efficiency (%)': self.rte,
-            'Lower Limit on SOC (%)': self.llsoc,
-            'Upper Limit on SOC (%)': self.ulsoc,
+            'Round Trip Efficiency (%)': self.rte * 1e2,
+            'Lower Limit on SOC (%)': self.llsoc * 1e2,
+            'Upper Limit on SOC (%)': self.ulsoc * 1e2,
             'Duration (hours)': self.calculate_duration(),
             'Capital Cost ($)': self.capital_cost_function[0],
             'Capital Cost ($/kW)': self.capital_cost_function[1],
@@ -407,8 +407,8 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             TellUser.error(f'{self.unique_tech_id()} is being sized, but the code does not support this action currently.')
             return True
         if self.is_power_sizing() and self.incl_binary:
-            TellUser.error(f'{self.unique_tech_id()} is being sized and binary is turned on. You will get a DCP error.')
-            return True
+            # NOTE: this is a warning here; downstream it becomes an error in a POI check
+            TellUser.warning(f'{self.unique_tech_id()} is being power-sized and binary is turned on. You will get a DCP error.')
         if self.user_ch_rated_min > self.user_ch_rated_max:
             TellUser.error(f'{self.unique_tech_id()} min charge power requirement is greater than max charge power requirement.')
             return True

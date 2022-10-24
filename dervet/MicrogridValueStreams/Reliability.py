@@ -1084,7 +1084,7 @@ class Reliability(ValueStream):
         if no_storage_case==False:
             # save the state of charge
             if self.use_user_const:
-                aggregate_soe = results_df.loc[:, 'Aggregate Energy Min (kWh)']
+                aggregate_soe = results_df.loc[:, 'User Constraints Aggregate Energy Min (kWh)']
             elif not self.use_soc_init:
                 if self.use_sizing_module_results:
                     try:
@@ -1152,7 +1152,7 @@ class Reliability(ValueStream):
                                 int(length / self.dt):].sum()
             total_possible_scenarios = len(self.critical_load) - (
                         length / self.dt) + 1
-            percentage = scenarios_covered / total_possible_scenarios
+            percentage = (scenarios_covered / total_possible_scenarios) * 1e2
             load_coverage_prob.append(percentage)
             length += self.dt
 

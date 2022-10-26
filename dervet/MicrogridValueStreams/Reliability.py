@@ -201,8 +201,7 @@ class Reliability(ValueStream):
         while first_fail_ind >= 0:
             if first_fail_ind != 0:
                 TellUser.debug(f"Sizing for Outages (again) - with an additional first failure index: {first_fail_ind}")
-            der_list = self.size_for_outages(opt_index, analysis_indices,
-                                             der_list)
+            der_list = self.size_for_outages(opt_index, analysis_indices, der_list)
 
             # print out size results as we go
             print('\nOptimal Sizing Results:')
@@ -254,7 +253,7 @@ class Reliability(ValueStream):
             #   ES size will be iterated to meet the outage requirement
             ders_now_have_fixed_sizes = False
             for der_inst in der_list:
-                if der_inst.technology_type == 'Intermittent Resource' or der_inst.technology_type == 'Generator':
+                if der_inst.technology_type in ['Intermittent Resource', 'Generator']:
                    if der_inst.being_sized():
                         print(f'fixing the size of: {der_inst.name}')
                         der_inst.set_size()
@@ -283,28 +282,29 @@ class Reliability(ValueStream):
                                                            check_at_a_time)
                 start += check_at_a_time
                 print(start, first_fail_ind, '---\n')
+
             # if this is a non-unique index, break out of the method with an error
             #   (this avoids an infinite repeating loop)
-            # also break if the number of indices becomes too large
-            # However, this avoids getting at the root cause of the underlying issue
-            if first_fail_ind in analysis_indices or analysis_indices.size > 1e4:
+            # also break if the number of indices becomes too large (> 2000)
+            #   (this will take too long to optimize)
+            # However, these avoid getting at the root cause of the underlying issue
+            if first_fail_ind in analysis_indices or analysis_indices.size > 2e3:
                 return None
-            else:
-                analysis_indices = np.append(analysis_indices, first_fail_ind)
+            elif first_fail_ind == -1 and ders_now_have_fixed_sizes:
+                # we force another optimization run if any DERs had their sizes fixed
+                first_fail_ind = analysis_indices[0]
+            # add the failure index to the list of analysis indexes
+            analysis_indices = np.append(analysis_indices, first_fail_ind)
 
             # Find indices that might have power constraint. This also takes into account
             #   the new intermittent and generator source outputs
-            if not self.load_shed:
-                demand_left = np.around(self.critical_load - dg_gen - total_pv_max,
-                                        decimals=5)
-                indices_with_gen = np.argsort(-1 * demand_left)
             # Add these indices only if there were any first fail in the above outage simulation
-            # NOTE: we force another optimization run if any DERs had their sizes fixed
-            if first_fail_ind >= 0 or ders_now_have_fixed_sizes:
+            if first_fail_ind >= 0 and not self.load_shed:
+                demand_left = np.around(self.critical_load - dg_gen - total_pv_max, decimals=5)
+                indices_with_gen = np.argsort(-1 * demand_left)
                 analysis_indices = np.append(analysis_indices, indices_with_gen[:top_n_outages].values)
-                analysis_indices = np.unique(analysis_indices)
-            print(analysis_indices)
-            print()
+            analysis_indices = np.unique(analysis_indices)
+            print(len(analysis_indices))
 
         for der_inst in der_list:
             if der_inst.being_sized():
@@ -314,7 +314,7 @@ class Reliability(ValueStream):
                 print(f'NOT Sizing: {der_inst.name}')
             for k, v in der_inst.sizing_summary().items(): print(f'    {k}: {v}')
 
-        # check if there is ES in the der_list before determing the min SOE profile
+        # check if there is ES in the der_list before determining the min SOE profile
         for der_inst in der_list:
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated <= 0:
                 print(f'ES ene_max_rated = {der_inst.ene_max_rated} so we cannot determine a min SOE profile')

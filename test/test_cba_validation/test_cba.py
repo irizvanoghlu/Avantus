@@ -134,7 +134,7 @@ class TestLongestLifetimeNoReplacement:
         self.actual_proforma = run_results.proforma_df()
 
     def xtest_decommissing_cost(self):
-        #  decomissioning costs show up on the last year the equipment is expect to last
+        #  decommissioning costs show up on the last year the equipment is expect to last
         pass
 
     def xtest_replacement_cost(self):
@@ -161,7 +161,7 @@ class TestLongestLifetimeReplacements:
         self.actual_proforma = run_results.proforma_df()
 
     def xtest_decommissing_cost(self):
-        #  all decomissioning costs should be on the last year
+        #  all decommissioning costs should be on the last year
         pass
 
     def xtest_replacement_cost(self):
@@ -185,7 +185,7 @@ class TestShortestLifetime:
         self.actual_proforma_replacements = run_results.proforma_df()
 
     def xtest_decommissing_cost_no_replacements(self):
-        #  all decomissioning costs should be on the last year
+        #  all decommissioning costs should be on the last year
         pass
 
     def xtest_replacement_cost_no_replacements(self):
@@ -197,7 +197,7 @@ class TestShortestLifetime:
         pass
 
     def xtest_decommissing_cost_replacements(self):
-        #  all decomissioning costs should be on the last year
+        #  all decommissioning costs should be on the last year
         pass
 
     def xtest_replacement_cost_replacements(self):
@@ -267,7 +267,7 @@ def xtest_carrying_cost_replacable():
     This test will check for :
         1) proforma is length of lifetime + 1
         2) no replacement costs
-        3) decomissioning cost should be on the last year
+        3) decommissioning cost should be on the last year
         4) capital cost column should be replaced with economic carrying
             capacity
         5) in proforma, economic carrying capacity column should have a value
@@ -283,7 +283,7 @@ def xtest_carrying_cost_not_replacable():
     This test will check for :
         1) proforma is length of lifetime + 1
         2) replacement costs
-        3) decomissioning cost should be on the last year
+        3) decommissioning cost should be on the last year
         4) capital cost column should be replaced with economic carrying
             capacity
         6) taxes dont appear in proforma

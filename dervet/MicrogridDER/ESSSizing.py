@@ -148,7 +148,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         else:
             try:
                 dis_max_rated = int(self.dis_max_rated.value)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 dis_max_rated = self.dis_max_rated
             return dis_max_rated
 
@@ -163,7 +163,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         else:
             try:
                 ch_max_rated = int(self.ch_max_rated.value)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 ch_max_rated = self.ch_max_rated
             return ch_max_rated
 
@@ -407,8 +407,8 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             TellUser.error(f'{self.unique_tech_id()} is being sized, but the code does not support this action currently.')
             return True
         if self.is_power_sizing() and self.incl_binary:
-            # NOTE: this is a warning here; downstream it becomes an error in a POI check
-            TellUser.warning(f'{self.unique_tech_id()} is being power-sized and binary is turned on. You will get a DCP error.')
+            TellUser.error(f'{self.unique_tech_id()} is being power-sized and binary is turned on. You will get a DCP error.')
+            return True
         if self.user_ch_rated_min > self.user_ch_rated_max:
             TellUser.error(f'{self.unique_tech_id()} min charge power requirement is greater than max charge power requirement.')
             return True

@@ -76,6 +76,11 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             if self.max_rated_capacity:
                 self.size_constraints += [cvx.NonPos(self.rated_capacity - self.max_rated_capacity)]
 
+        self.unset_rated_capacity = None
+        self.unset_inv_max = None
+        self.unset_size_constraints = None
+        self.was_sized = False
+
     def get_discharge(self, mask):
         """ The effective discharge of this DER
         Args:
@@ -159,13 +164,31 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
                 pass
         return PV_gen
 
-    def set_size(self):
+    def set_size(self, **kwargs):
         """ Save value of size variables of DERs
 
         """
+        # set these unset_ values to fall back on (if unset_size() is called)
+        self.unset_rated_capacity = self.rated_capacity
+        self.unset_inv_max = self.inv_max
+        self.unset_size_constraints = self.size_constraints
+        print(f'rated_capacity was: {self.rated_capacity}')
         self.rated_capacity = self.get_rated_capacity(solution=True)
         self.inv_max = self.inv_rated_capacity(sizing=True)
         self.size_constraints = []
+        print(f'  --> rated_capacity is now: {self.rated_capacity}')
+        self.was_sized = True
+
+    def unset_size(self):
+        """ Return size variables back to what they were before sizing
+            Can only be used after set_size() is called
+        """
+        if self.was_sized:
+            print(f'unsetting size: {self.name}')
+            self.rated_capacity = self.unset_rated_capacity
+            self.inv_max = self.unset_inv_max
+            self.size_constraints = self.unset_size_constraints
+            self.was_sized = False
 
     def inv_rated_capacity(self, sizing=False):
         """

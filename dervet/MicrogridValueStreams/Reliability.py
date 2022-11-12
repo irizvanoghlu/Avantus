@@ -163,7 +163,7 @@ class Reliability(ValueStream):
         der_list = copy.deepcopy(der_lst)
 
         top_n_outages = 10
-        diurnal_period_hours = 96
+        diurnal_period_hours = 72
         data_size = len(opt_index)
         first_fail_ind = 0
 
@@ -172,9 +172,9 @@ class Reliability(ValueStream):
 
         # Find the top n analysis indices that we are going to size our DER mix for
         analysis_indices = indices[:top_n_outages].values
-        # Add at least an entire day of indexes to analysis_indices to capture a full day and night of PV generation
+        # Add at least an entire day of indexes to analysis_indices
+        #   to capture a full day and night of PV generation
         # Center this on the top outage index
-        # to do this, make sure to set diurnal_period_hours to at least 24 hours
         outage_length = int(self.coverage_dt)
         data_max_index = data_size - outage_length
         diurnal_index_start = analysis_indices[0] - int(diurnal_period_hours / 2)
@@ -192,10 +192,11 @@ class Reliability(ValueStream):
         analysis_indices = analysis_indices[ (analysis_indices >= 0) & (analysis_indices <= data_max_index) ]
 
         # report on outage indices and corresponding critical loads in log file
-        TellUser.info(f'Reliability Sizing: outage indices DERVET will size for: {analysis_indices}')
+        #TellUser.debug(f'Reliability Sizing: outage indices DERVET will size for: {analysis_indices}')
         critical_load_requirements = ['{:.1f}'.format(self.requirement[i]) for i in analysis_indices]
-        TellUser.info(f'Reliability Sizing: critical loads (rolling sum across {self.coverage_dt} hours) for these indices: ' +
-                      f'{critical_load_requirements}')
+        #TellUser.debug(f'Reliability Sizing: critical loads (rolling sum across {self.coverage_dt} hours) for these indices: ' +
+        #              f'{critical_load_requirements}')
+        TellUser.info(f'Reliability Sizing: maximum critical load (rolling sum): {max(list(map(float, critical_load_requirements)))}')
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_fail_ind >= 0:
@@ -251,13 +252,16 @@ class Reliability(ValueStream):
 
             # Fix the size of Intermittent and Generator DERs after first optimization run.
             #   ES size will be iterated to meet the outage requirement
-            ders_now_have_fixed_sizes = False
+            #ders_now_have_fixed_sizes = False
             for der_inst in der_list:
+                print(f'{der_inst.technology_type}: being sized ? {der_inst.being_sized()}')
                 if der_inst.technology_type in ['Intermittent Resource', 'Generator']:
-                   if der_inst.being_sized():
+                    if der_inst.being_sized():
                         print(f'fixing the size of: {der_inst.name}')
                         der_inst.set_size()
-                        ders_now_have_fixed_sizes = True
+                        #ders_now_have_fixed_sizes = True
+                print(f'{der_inst.technology_type}: being sized ? {der_inst.being_sized()}')
+            #print(f'ders_now_have_fixed_sizes = {ders_now_have_fixed_sizes}')
 
             dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
                 self.get_der_mix_properties(der_list, True)
@@ -288,12 +292,15 @@ class Reliability(ValueStream):
             # also break if the number of indices becomes too large (> 2000)
             #   (this will take too long to optimize)
             # However, these avoid getting at the root cause of the underlying issue
+            # NOTE: returning None creates a code error
             if first_fail_ind in analysis_indices or analysis_indices.size > 2e3:
                 return None
-            elif first_fail_ind == -1 and ders_now_have_fixed_sizes:
-                # we force another optimization run if any DERs had their sizes fixed
-                first_fail_ind = analysis_indices[0]
+#            elif first_fail_ind == -1 and ders_now_have_fixed_sizes:
+#                print('forcing another optimization run')
+#                # we force another optimization run if any DERs had their sizes fixed
+#                first_fail_ind = analysis_indices[0]
             # add the failure index to the list of analysis indexes
+            print(len(analysis_indices))
             analysis_indices = np.append(analysis_indices, first_fail_ind)
 
             # Find indices that might have power constraint. This also takes into account
@@ -306,12 +313,19 @@ class Reliability(ValueStream):
             analysis_indices = np.unique(analysis_indices)
             print(len(analysis_indices))
 
+            # unset generator and intermittent DERs that were previously sized
+            for der_inst in der_list:
+                if der_inst.technology_type in ['Intermittent Resource', 'Generator']:
+                    der_inst.unset_size()
+
         for der_inst in der_list:
+            # FIXME: always set_size() here?
             if der_inst.being_sized():
                 print(f'Sizing: {der_inst.name}')
                 der_inst.set_size()
             else:
                 print(f'NOT Sizing: {der_inst.name}')
+                der_inst.set_size()
             for k, v in der_inst.sizing_summary().items(): print(f'    {k}: {v}')
 
         # check if there is ES in the der_list before determining the min SOE profile
@@ -323,7 +337,7 @@ class Reliability(ValueStream):
                 ## This is a faster method to find approximate min SOE
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
-                ## This is a slower method to find optimal min SOE
+                ## This is a slower method to find optimal min SOE (it's not fully developed)
                 #der_list = self.min_soe_opt(opt_index, der_list)
                 ####der_list = reliability_mod.min_soe_opt(opt_index, der_list)
 
@@ -393,8 +407,18 @@ class Reliability(ValueStream):
         prob = cvx.Problem(obj, consts)
         print(f'\noptimizing...')
         print(f'  total constraints: {len(consts)}')
-        print(f'  cost_func: {cost_funcs.name()}')
+        try:
+            print(f'  cost_func: {cost_funcs.name()}')
+        except AttributeError:
+            print(f'  cost_func: {cost_funcs}')
+
         prob.solve(solver=cvx.GLPK_MI)
+
+        # check here for infeasible
+        if prob.status != 'optimal':
+            TellUser.error(f'The solution was {prob.status} in the reliability sizing module.')
+        else:
+            TellUser.info(f'An {prob.status} solution was achieved in the reliability sizing module.')
 
         return der_list
 

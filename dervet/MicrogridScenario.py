@@ -156,7 +156,8 @@ class MicrogridScenario(Scenario):
         # update opt_years based on this new end_year
         add_analysis_years = \
             self.cost_benefit_analysis.get_years_before_and_after_failures(self.end_year, der_lst)
-        TellUser.debug(f"Adding {add_analysis_years} to opt_years")
+        if len(add_analysis_years) > 0:
+            TellUser.debug(f"Adding {add_analysis_years} to opt_years")
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)
@@ -205,6 +206,9 @@ class MicrogridScenario(Scenario):
 
         if self.reliability_sizing:
             der_list = vs_dct['Reliability'].sizing_module(der_lst, self.optimization_levels.index)
+            if der_list is None:
+                TellUser.error(f'Sizing for Reliability is infeasible given the inputs and constraints. Please adjust the parameters and try again.')
+                raise ParameterError('See dervet.log for more information.')
             self.poi.der_list = der_list
             # Resetting sizing flag. It doesn't size for other services.
             self.poi.is_sizing_optimization = False
@@ -216,6 +220,8 @@ class MicrogridScenario(Scenario):
 
         if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined_constraints():
             self.service_agg.value_streams['Reliability'].use_sizing_module_results = True
+            TellUser.info("With only an active Reliability Service, size optimizations are already complete. " +
+                          "No further optimizations will run.")
             self.opt_engine = False
 
     def check_opt_sizing_conditions(self):
@@ -339,22 +345,24 @@ class MicrogridScenario(Scenario):
                 TellUser.info(f"Optimization window #{opt_period} does not have any constraints or objectives to minimize -- SKIPPING...")
                 continue
 
-#            #NOTE: these print statements reveal the final constraints and costs for debugging
-#            print(f'\nFinal constraints ({len(constraints)}):')
-#
-#            #NOTE: more detail on constraints
-#            for i, c in enumerate(constraints):
-#                print(f'constraint {i}: {c.name()}')
-#                print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
-#                #print('  parameters:')
-#                #for p in c.parameters():
-#                #    print(f'    {p.name()} = {p.value}')
-#                print()
-#
-#            print('\n'.join([k.name() for k in constraints]))
-#            print(f'\ncosts ({len(functions)}):')
-#            print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
-#            print()
+            ##NOTE: these print statements reveal the final constraints and costs for debugging
+            #print(f'\nFinal constraints ({len(constraints)}):')
+
+            ##NOTE: more detail on constraints
+            #for i, c in enumerate(constraints):
+            #    print(f'constraint {i}: {c.name()}')
+            #    print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
+            #    #print('  parameters:')
+            #    #for p in c.parameters():
+            #    #    print(f'    {p.name()} = {p.value}')
+            #    print()
+
+            #print(f'\nconstraints ({len(constraints)}):')
+            #print('\n'.join([f'{i}: {c}' for i, c in enumerate(constraints)]))
+            ##print('\n'.join([k.name() for k in constraints]))
+            #print(f'\ncosts ({len(functions)}):')
+            #print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
+            #print()
 
             cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints, force_glpk_mi=self.poi.has_thermal_load)
             self.save_optimization_results(opt_period, sub_index, cvx_problem, obj_expressions, cvx_error_msg)

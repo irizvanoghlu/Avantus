@@ -166,9 +166,13 @@ class Reliability(ValueStream):
         diurnal_period_hours = 72
         data_size = len(opt_index)
         first_fail_ind = 0
+        diurnal_period_coverage = int(diurnal_period_hours / self.dt)
 
         # Sort the outages by max demand that is unserved
         indices = np.argsort(-1 * self.requirement)
+
+        # if indices grow larger than this value, break out of DERVET
+        max_period_coverage = 5 * diurnal_period_coverage
 
         # Find the top n analysis indices that we are going to size our DER mix for
         analysis_indices = indices[:top_n_outages].values
@@ -177,13 +181,13 @@ class Reliability(ValueStream):
         # Center this on the top outage index
         outage_length = int(self.coverage_dt)
         data_max_index = data_size - outage_length
-        diurnal_index_start = analysis_indices[0] - int(diurnal_period_hours / 2)
-        diurnal_index_end = analysis_indices[0] + int(diurnal_period_hours / 2)
+        diurnal_index_start = analysis_indices[0] - int(diurnal_period_coverage / 2)
+        diurnal_index_end = analysis_indices[0] + int(diurnal_period_coverage / 2)
         if diurnal_index_start < 0:
             diurnal_index_start = 0
-            diurnal_index_end = diurnal_period_hours
+            diurnal_index_end = diurnal_period_coverage
         if diurnal_index_end > data_max_index:
-            diurnal_index_start = data_max_index - diurnal_period_hours
+            diurnal_index_start = data_max_index - diurnal_period_coverage
             diurnal_index_end = data_max_index
         analysis_indices = np.append(analysis_indices, np.arange(diurnal_index_start, diurnal_index_end))
         # discard any repeating indices
@@ -196,7 +200,7 @@ class Reliability(ValueStream):
         critical_load_requirements = ['{:.1f}'.format(self.requirement[i]) for i in analysis_indices]
         #TellUser.debug(f'Reliability Sizing: critical loads (rolling sum across {self.coverage_dt} hours) for these indices: ' +
         #              f'{critical_load_requirements}')
-        TellUser.info(f'Reliability Sizing: maximum critical load ({int(self.outage_duration)}-hour rolling sum): {max(list(map(float, critical_load_requirements)))}')
+        TellUser.info(f'Reliability Sizing: maximum critical load ({int(self.outage_duration)}-hour rolling sum): {max(list(map(float, critical_load_requirements)))} across {len(analysis_indices)} indexes')
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_fail_ind >= 0:
@@ -238,11 +242,11 @@ class Reliability(ValueStream):
 
             # if this is a non-unique index, break out of the method with an error
             #   (this avoids an infinite repeating loop)
-            # also break if the number of indices becomes too large (> 2000)
+            # also break if the number of indices becomes too large
             #   (this will take too long to optimize)
             # However, these avoid getting at the root cause of the underlying issue
             # NOTE: returning None creates a code error
-            if first_fail_ind in analysis_indices or analysis_indices.size > 2e3:
+            if first_fail_ind in analysis_indices or analysis_indices.size > max_period_coverage:
                 return None
             # add the failure index to the list of analysis indexes
             #print(len(analysis_indices))
@@ -265,8 +269,10 @@ class Reliability(ValueStream):
 
         for der_inst in der_list:
             if der_inst.being_sized():
-                TellUser.info(f'Sizing: {der_inst.name}')
+                TellUser.info(f'DERVET Sizing: {der_inst.name}')
                 der_inst.set_size()
+            else:
+                TellUser.info(f'Fixed Size: {der_inst.name}')
             for k, v in der_inst.sizing_summary().items(): TellUser.info(f'    {k}: {v}')
 
         # check if there is ES in the der_list before determining the min SOE profile

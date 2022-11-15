@@ -49,6 +49,7 @@ class MicrogridPOI(POI):
         super().__init__(params, technology_inputs_map, technology_class_map)
         self.is_sizing_optimization = self.check_if_sizing_ders()
         if self.is_sizing_optimization:
+            self.log_sizing_info()
             self.error_checks_on_sizing()
 
         self.active_load_dump = params['active_load_dump']
@@ -99,6 +100,17 @@ class MicrogridPOI(POI):
         year = indx.year[0]
         active_ders = [der_inst for der_inst in self.der_list if der_inst.operational(year)]
         self.active_ders = active_ders
+
+    def log_sizing_info(self):
+        for der in self.der_list:
+            if der.being_sized():
+                if der.technology_type == 'Energy Storage System':
+                    if der.is_power_sizing():
+                        TellUser.info(f'DER-VET will size for power: {der.technology_type} -- {der.name}')
+                    if der.is_energy_sizing():
+                        TellUser.info(f'DER-VET will size for energy: {der.technology_type} -- {der.name}')
+                else:
+                    TellUser.info(f'DER-VET will size for power: {der.technology_type} -- {der.name}')
 
     def error_checks_on_sizing(self):
         # perform error checks on DERs that are being sized

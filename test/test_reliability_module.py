@@ -53,7 +53,7 @@ Load shedding TESTS
 """
 
 
-MAX_PERCENT_ERROR = 3
+MAX_PERCENT_ERROR = 1e-5
 
 
 class TestLoadShedding:

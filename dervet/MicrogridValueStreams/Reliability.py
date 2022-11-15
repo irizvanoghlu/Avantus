@@ -196,7 +196,7 @@ class Reliability(ValueStream):
         critical_load_requirements = ['{:.1f}'.format(self.requirement[i]) for i in analysis_indices]
         #TellUser.debug(f'Reliability Sizing: critical loads (rolling sum across {self.coverage_dt} hours) for these indices: ' +
         #              f'{critical_load_requirements}')
-        TellUser.info(f'Reliability Sizing: maximum critical load (rolling sum): {max(list(map(float, critical_load_requirements)))}')
+        TellUser.info(f'Reliability Sizing: maximum critical load ({int(self.outage_duration)}-hour rolling sum): {max(list(map(float, critical_load_requirements)))}')
 
         # stop looping when find first uncovered == -1 (got through entire opt
         while first_fail_ind >= 0:
@@ -204,64 +204,13 @@ class Reliability(ValueStream):
                 TellUser.debug(f"Sizing for Outages (again) - with an additional first failure index: {first_fail_ind}")
             der_list = self.size_for_outages(opt_index, analysis_indices, der_list)
 
-            # print out size results as we go
-            print('\nOptimal Sizing Results:')
-            for der in der_list:
-                if der.technology_type == 'Energy Storage System':
-                    if der.being_sized():
-                        print('  ES sizing:')
-                        if der.is_energy_sizing():
-                            print('    energy sizing:')
-                            print(f'      ene_max_rated = {der.ene_max_rated.value}')
-                        else:
-                            print('    fixed-size energy:')
-                            print(f'      ene_max_rated = {der.ene_max_rated} *')
-                        if der.is_charge_sizing():
-                            print('    charge sizing:')
-                            print(f'      ch_max_rated = {der.ch_max_rated.value}')
-                            print(f'      ch_min_rated = {der.ch_min_rated} *')
-                        else:
-                            print('    fixed-size charge:')
-                            print(f'      ch_max_rated = {der.ch_max_rated} *')
-                            print(f'      ch_min_rated = {der.ch_min_rated} *')
-                        if der.is_discharge_sizing():
-                            print('    discharge sizing:')
-                            print(f'      dis_max_rated = {der.dis_max_rated.value}')
-                            print(f'      dis_min_rated = {der.dis_min_rated} *')
-                        else:
-                            print('    fixed-size discharge:')
-                            print(f'      dis_max_rated = {der.dis_max_rated} *')
-                            print(f'      dis_min_rated = {der.dis_min_rated} *')
-                elif der.technology_type == 'Intermittent Resource':
-                    if der.being_sized():
-                        print('  PV sizing:')
-                        print(f'    rated_capacity = {der.rated_capacity.value}')
-                        print(f'    inv_max = {der.inv_max.value}')
-                    else:
-                        print('  PV fixed-size:')
-                        print(f'    rated_capacity = {der.rated_capacity} *')
-                        print(f'    inv_max = {der.inv_max} *')
-                elif der.technology_type == 'Generator':
-                    if der.being_sized():
-                        print('  Gen sizing:')
-                        print(f'    rated_power = {der.rated_power.value}')
-                    else:
-                        print('  Gen fixed-size:')
-                        print(f'    rated_power = {der.rated_power} *')
-            print()
-
             # Fix the size of Intermittent and Generator DERs after first optimization run.
             #   ES size will be iterated to meet the outage requirement
-            #ders_now_have_fixed_sizes = False
             for der_inst in der_list:
-                print(f'{der_inst.technology_type}: being sized ? {der_inst.being_sized()}')
+                #print(f'{der_inst.technology_type}: being sized ? {der_inst.being_sized()}')
                 if der_inst.technology_type in ['Intermittent Resource', 'Generator']:
                     if der_inst.being_sized():
-                        print(f'fixing the size of: {der_inst.name}')
                         der_inst.set_size()
-                        #ders_now_have_fixed_sizes = True
-                print(f'{der_inst.technology_type}: being sized ? {der_inst.being_sized()}')
-            #print(f'ders_now_have_fixed_sizes = {ders_now_have_fixed_sizes}')
 
             dg_gen, total_pv_max, der_props, total_pv_vari, largest_gamma = \
                 self.get_der_mix_properties(der_list, True)
@@ -285,7 +234,7 @@ class Reliability(ValueStream):
                                                            start,
                                                            check_at_a_time)
                 start += check_at_a_time
-                print(start, first_fail_ind, '---\n')
+                #print(start, first_fail_ind, '---\n')
 
             # if this is a non-unique index, break out of the method with an error
             #   (this avoids an infinite repeating loop)
@@ -295,12 +244,8 @@ class Reliability(ValueStream):
             # NOTE: returning None creates a code error
             if first_fail_ind in analysis_indices or analysis_indices.size > 2e3:
                 return None
-#            elif first_fail_ind == -1 and ders_now_have_fixed_sizes:
-#                print('forcing another optimization run')
-#                # we force another optimization run if any DERs had their sizes fixed
-#                first_fail_ind = analysis_indices[0]
             # add the failure index to the list of analysis indexes
-            print(len(analysis_indices))
+            #print(len(analysis_indices))
             analysis_indices = np.append(analysis_indices, first_fail_ind)
 
             # Find indices that might have power constraint. This also takes into account
@@ -311,7 +256,7 @@ class Reliability(ValueStream):
                 indices_with_gen = np.argsort(-1 * demand_left)
                 analysis_indices = np.append(analysis_indices, indices_with_gen[:top_n_outages].values)
             analysis_indices = np.unique(analysis_indices)
-            print(len(analysis_indices))
+            #print(len(analysis_indices))
 
             # unset generator and intermittent DERs that were previously sized
             for der_inst in der_list:
@@ -319,21 +264,17 @@ class Reliability(ValueStream):
                     der_inst.unset_size()
 
         for der_inst in der_list:
-            # FIXME: always set_size() here?
             if der_inst.being_sized():
-                print(f'Sizing: {der_inst.name}')
+                TellUser.info(f'Sizing: {der_inst.name}')
                 der_inst.set_size()
-            else:
-                print(f'NOT Sizing: {der_inst.name}')
-                der_inst.set_size()
-            for k, v in der_inst.sizing_summary().items(): print(f'    {k}: {v}')
+            for k, v in der_inst.sizing_summary().items(): TellUser.info(f'    {k}: {v}')
 
         # check if there is ES in the der_list before determining the min SOE profile
         for der_inst in der_list:
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated <= 0:
-                print(f'ES ene_max_rated = {der_inst.ene_max_rated} so we cannot determine a min SOE profile')
+                TellUser.debug(f'ES ene_max_rated = {der_inst.ene_max_rated} so we cannot determine a min SOE profile')
             if der_inst.technology_type == 'Energy Storage System' and der_inst.ene_max_rated > 0:
-                print('determining the min SOE profile')
+                TellUser.debug('determining the min SOE profile')
                 ## This is a faster method to find approximate min SOE
                 der_list = self.min_soe_iterative(opt_index, der_list)
 
@@ -395,28 +336,35 @@ class Reliability(ValueStream):
             ]
             consts += consts_added
 
-        print()
-        print(f'  constraints added ({len(consts_added)}) (just from the last outage index):')
-        for i, c in enumerate(consts_added):
-            print(f'    {i}: {c}')
-            if c.size != 1:
-                print(f"       variables--------------- {', '.join([j.name() for j in c.variables()])}")
-#            print('\n'.join([f'    {i}: {c}' for i, c in enumerate(consts_added)]))
+        ## print constraints
+        #print()
+        #print(f'  constraints added ({len(consts_added)}) (just from the last outage index):')
+        #for i, c in enumerate(consts_added):
+        #    print(f'    {i}: {c}')
+        #    if c.size != 1:
+        #        print(f"       variables--------------- {', '.join([j.name() for j in c.variables()])}")
+        ##      print('\n'.join([f'    {i}: {c}' for i, c in enumerate(consts_added)]))
 
         obj = cvx.Minimize(cost_funcs)
         prob = cvx.Problem(obj, consts)
-        print(f'\noptimizing...')
-        print(f'  total constraints: {len(consts)}')
+        TellUser.info(f'Optimizing...  total constraints: {len(consts)}')
+        #try:
+        #    print(f'  cost_func: {cost_funcs.name()}')
+        #except AttributeError:
+        #    print(f'  cost_func: {cost_funcs}')
+
         try:
-            print(f'  cost_func: {cost_funcs.name()}')
-        except AttributeError:
-            print(f'  cost_func: {cost_funcs}')
+            prob.solve(solver=cvx.GLPK_MI)
+        except Exception as e:
+            # record any error in the log file
+            TellUser.error(f'An error occurred in cvxpy while trying to solve an optimization problem:\n  {e}')
+            if 'DCP' in str(e):
+                TellUser.error('Try turning the binary parameter off.')
 
-        prob.solve(solver=cvx.GLPK_MI)
-
-        # check here for infeasible
+        # check here for non-optimal solution, and raise exception if so
         if prob.status != 'optimal':
             TellUser.error(f'The solution was {prob.status} in the reliability sizing module.')
+            raise ParameterError('Please check the error log for more information.')
         else:
             TellUser.info(f'An {prob.status} solution was achieved in the reliability sizing module.')
 
@@ -536,42 +484,6 @@ class Reliability(ValueStream):
             first_data = array.values[0]
         return first_data
 
-    def find_first_uncovered2(self, generation, total_pv_max, total_pv_vari,
-                             largest_gamma, ess_properties=None, soe=None,
-                             start_indx=0, stop_at=600):
-        """ THis function will return the first outage that is not covered with
-         the given DERs
-
-        Args:
-            generation:
-            total_pv_max:
-            total_pv_vari:
-            largest_gamma:
-            ess_properties (dict): dictionary that describes the physical
-                properties of the ess in the analysis includes 'charge max',
-                'discharge max, 'operation SOE min', 'operation SOE max', 'rte'
-            soe (list, None): if ESSs are active, then this is an array
-                indicating the soe at the start of the outage
-            start_indx (int): start index, idetifies the index of the start of
-                the outage we are going to simulate
-            stop_at (int): when the start_index is divisible by this number,
-                stop recursion
-
-        Returns: index of the first outage that cannot be covered by the DER
-            sizes, or -1 if none is found
-
-        """
-        # base case 1: outage_init is beyond range of critical load
-        if start_indx >= (len(self.critical_load)):
-            print(f'  (bc 1) {start_indx} returning: -1')
-            return -1
-        print(start_indx)
-        # attempt to perform an optimization at each timestep, given the known sizes of everything
-        # if the optimization fails, then we return the failed index so that it can get
-        #   used in the actual size optimization step
-        # this method does not simulate an outage
-
-
     def find_first_uncovered(self, generation, total_pv_max, total_pv_vari,
                              largest_gamma, ess_properties=None, soe=None,
                              start_indx=0, stop_at=600):
@@ -599,7 +511,7 @@ class Reliability(ValueStream):
         """
         # base case 1: outage_init is beyond range of critical load
         if start_indx >= (len(self.critical_load)):
-            print(f'  (bc 1) {start_indx} returning: -1')
+            #print(f'  (bc 1) {start_indx} returning: -1')
             return -1
         # find longest possible outage
 
@@ -622,12 +534,12 @@ class Reliability(ValueStream):
                 #print(f'  (skip--bc 2) {start_indx} soe_profile is empty')
                 pass
             elif longest_outage < (len(self.critical_load) - start_indx):
-                print(f'  (bc 2) longest possible outage ({longest_outage}) does not provide the necessary coverage ({self.coverage_dt})... returning: {start_indx}')
+                #print(f'  (bc 2) longest possible outage ({longest_outage}) does not provide the necessary coverage ({self.coverage_dt})... returning: {start_indx}')
                 return start_indx
         # base case 3: break recursion when you get to this (like a limit to
         # the resursion)
         if (start_indx + 1) % stop_at == 0:
-            print(f'  (bc 3) {start_indx} recursion-break, returning: {start_indx + 1}')
+            #print(f'  (bc 3) {start_indx} recursion-break, returning: {start_indx + 1}')
             return start_indx + 1
         # else, go on to test the next outage_init (increase index returned
         return self.find_first_uncovered(generation, total_pv_max,

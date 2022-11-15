@@ -406,9 +406,6 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         if self.tag == 'CAES':
             TellUser.error(f'{self.unique_tech_id()} is being sized, but the code does not support this action currently.')
             return True
-        if self.is_power_sizing() and self.incl_binary:
-            TellUser.error(f'{self.unique_tech_id()} is being power-sized and binary is turned on. You will get a DCP error.')
-            return True
         if self.user_ch_rated_min > self.user_ch_rated_max:
             TellUser.error(f'{self.unique_tech_id()} min charge power requirement is greater than max charge power requirement.')
             return True

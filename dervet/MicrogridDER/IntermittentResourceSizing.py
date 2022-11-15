@@ -172,11 +172,9 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
         self.unset_rated_capacity = self.rated_capacity
         self.unset_inv_max = self.inv_max
         self.unset_size_constraints = self.size_constraints
-        print(f'rated_capacity was: {self.rated_capacity}')
         self.rated_capacity = self.get_rated_capacity(solution=True)
         self.inv_max = self.inv_rated_capacity(sizing=True)
         self.size_constraints = []
-        print(f'  --> rated_capacity is now: {self.rated_capacity}')
         self.was_sized = True
 
     def unset_size(self):
@@ -184,7 +182,6 @@ class IntermittentResourceSizing(PVSystem.PV, DERExtension, ContinuousSizing):
             Can only be used after set_size() is called
         """
         if self.was_sized:
-            print(f'unsetting size: {self.name}')
             self.rated_capacity = self.unset_rated_capacity
             self.inv_max = self.unset_inv_max
             self.size_constraints = self.unset_size_constraints

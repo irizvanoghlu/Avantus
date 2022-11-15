@@ -161,10 +161,8 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
         # set these unset_ values to fall back on (if unset_size() is called)
         self.unset_rated_power = self.rated_power
         self.unset_size_constraints = self.size_constraints
-        print(f'rated_power was: {self.rated_power}')
         self.rated_power = self.name_plate_capacity(True)
         self.size_constraints = []
-        print(f'  --> rated_power is now: {self.rated_power}')
         self.was_sized = True
 
     def unset_size(self):
@@ -172,7 +170,6 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
             Can only be used after set_size() is called
         """
         if self.was_sized:
-            print(f'unsetting size: {self.name}')
             self.rated_power = self.unset_rated_power
             self.size_constraints = self.unset_size_constraints
             self.was_sized = False

@@ -177,6 +177,7 @@ class MicrogridPOI(POI):
             aggregation of generation from variable resources
             aggregation of generation from other sources
             total net power from ESSs
+            net power from dispatchable DERs (not Intermittent Resources, and not Load)
             total state of energy stored in the system
             aggregation of all the power flows into the POI
             aggregation of all the power flows out if the POI
@@ -186,8 +187,9 @@ class MicrogridPOI(POI):
             aggregation of thermal cooling power (cold recovered)
         """
         # get values from storagevet/poi method
-        load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, \
-            agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, \
+        load_sum, var_gen_sum, gen_sum, tot_net_ess, der_dispatch_net_power, \
+            total_soe, agg_power_flows_in, agg_power_flows_out, \
+            agg_steam_heating_power, agg_hotwater_heating_power, \
             agg_thermal_cooling_power = super().get_state_of_system(mask)
 
         # dervet-specific
@@ -196,6 +198,11 @@ class MicrogridPOI(POI):
             if der_inst.technology_type == 'Electric Vehicle':
                 load_sum += der_inst.get_charge(mask)
                 # total_soe += der_instance.get_state_of_energy(mask)
+
+            # add to der_dispatch_net_power
+            if der_inst.technology_type in ['Electric Vehicle', 'Thermal'] or \
+                der_inst.tag in ['ControllableLoad']:
+                der_dispatch_net_power += der_inst.get_net_power(mask)
 
             if der_inst.tag in ['Chiller', 'Boiler']:
                 # if these technologies are electric, they add to load_sum,
@@ -219,21 +226,22 @@ class MicrogridPOI(POI):
 
         ##NOTE: these print statements disclose info for get_state_of_system Results
         #print('\nget_state_of_system Result:')
-        #print(f'load_sum ({load_sum.size}): {load_sum.value}')
-        #print(f'var_gen_sum ({var_gen_sum.size}): {var_gen_sum.value}')
-        #print(f'gen_sum ({gen_sum.size}): {gen_sum.value}')
-        #print(f'tot_net_ess ({tot_net_ess.size}): {tot_net_ess.value}')
-        #print(f'total_soe ({total_soe.size}): {total_soe.value}')
-        #print(f'agg_power_flows_in ({agg_power_flows_in.size}): {agg_power_flows_in.value}')
-        #print(f'agg_power_flows_out ({agg_power_flows_out.size}): {agg_power_flows_out.value}')
-        #print(f'agg_steam_heating_power ({agg_steam_heating_power.size}): {agg_steam_heating_power.value}')
-        #print(f'agg_hotwater_heating_power ({agg_hotwater_heating_power.size}): {agg_hotwater_heating_power.value}')
-        #print(f'agg_thermal_cooling_power ({agg_thermal_cooling_power.size}): {agg_thermal_cooling_power.value}')
+        #print(f'load_sum                   ({load_sum})')
+        #print(f'var_gen_sum                ({var_gen_sum})')
+        #print(f'gen_sum                    ({gen_sum})')
+        #print(f'tot_net_ess                ({tot_net_ess})')
+        #print(f'der_dispatch_net_power     ({der_dispatch_net_power})')
+        #print(f'total_soe                  ({total_soe})')
+        #print(f'agg_power_flows_in         ({agg_power_flows_in})')
+        #print(f'agg_power_flows_out        ({agg_power_flows_out})')
+        #print(f'agg_steam_heating_power    ({agg_steam_heating_power})')
+        #print(f'agg_hotwater_heating_power ({agg_hotwater_heating_power})')
+        #print(f'agg_thermal_cooling_power  ({agg_thermal_cooling_power})')
         #print()
 
-        return load_sum, var_gen_sum, gen_sum, tot_net_ess, total_soe, agg_power_flows_in, \
-            agg_power_flows_out, agg_steam_heating_power, agg_hotwater_heating_power, \
-            agg_thermal_cooling_power
+        return load_sum, var_gen_sum, gen_sum, tot_net_ess, der_dispatch_net_power, total_soe, \
+            agg_power_flows_in, agg_power_flows_out, \
+            agg_steam_heating_power, agg_hotwater_heating_power, agg_thermal_cooling_power
 
     def optimization_problem(self, mask, power_in, power_out, steam_in, hotwater_in, cold_in,
                              annuity_scalar=1):

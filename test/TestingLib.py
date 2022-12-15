@@ -30,7 +30,15 @@ Copyright (c) 2022, Electric Power Research Institute
 from dervet.DERVET import DERVET
 import os
 import pandas as pd
+import numpy as np
 from pathlib import Path
+
+DIR = Path("./")
+JSON = '.json'
+CSV = '.csv'
+
+DEFAULT_MP = DIR / f'Model_Parameters_Template_DER'
+TEMP_MP = DIR / f'temp_model_parameters'
 
 def _checkThatFileExists(f, name='Unlabeled', raise_exception_on_fail=True, write_msg_to_terminal=True):
     path_file = Path(f)
@@ -83,10 +91,13 @@ def assert_file_does_not_exist(model_results, results_file_name: str):
             assert os.path.isfile(check_for_file) == False, f'{results_file_name} found at {check_for_file} but no file was expected'
 
 def assert_within_error_bound(expected_value: float, actual_value: float, error_bound: float, error_message: str):
+    if error_bound < 0:
+        raise Exception(f'Testing Fail: the specified error_bound ({error_bound}) must be a positive number')
     diff = abs(expected_value-actual_value)
     if not diff:
+        # the difference in values is zero
         return
-    assert diff/expected_value <= error_bound/100, error_message + f'Test value: {actual_value}   Should be in range: ({expected_value+(expected_value*(error_bound/100))},{expected_value-(expected_value*(error_bound/100))}) \n'
+    assert diff/abs(expected_value) <= error_bound/100, f'Test value: {actual_value}   Should be in range: ({expected_value+(expected_value*(error_bound/100))},{expected_value-(expected_value*(error_bound/100))}). {error_message}'
 
 
 ##########################################
@@ -186,14 +197,19 @@ def assert_expected_number_of_results_files(results, number_of_expected_results_
     number_of_actual_results_files = len([k for k in results_files_generator_object])
     assert number_of_actual_results_files == number_of_expected_results_files, f'{number_of_actual_results_files} files found in results folder, but expecting {number_of_expected_results_files}'
 
-def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float,
-                             opt_years=None):
-    assert_file_exists(results, 'pro_forma') # assert that pro_forma.csv file exists
-    actual_proforma_df = results.proforma_df()
-    try:
-        expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
-    except ValueError:
-        expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
+def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float, opt_years=None):
+    if isinstance(results, pd.DataFrame):
+        actual_proforma_df = frozen_proforma_location
+    else:
+        assert_file_exists(results, 'pro_forma') # assert that pro_forma.csv file exists
+        actual_proforma_df = results.proforma_df()
+    if isinstance(frozen_proforma_location, pd.DataFrame):
+        expected_df = frozen_proforma_location
+    else:
+        try:
+            expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+        except ValueError:
+            expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
     for yr_indx, values_series in expected_df.iterrows():
         print(f'\nPROFORMA YEAR: {yr_indx}\n')
         try:
@@ -212,14 +228,19 @@ def compare_proforma_results(results, frozen_proforma_location: str, error_bound
             print(expected_df.loc[yr_indx, col_indx], actual_proforma_df.loc[actual_indx, col_indx])
             assert_within_error_bound(expected_df.loc[yr_indx, col_indx], actual_proforma_df.loc[actual_indx, col_indx], error_bound, error_message)
 
-def compare_npv_results(results, frozen_npv_location: str, error_bound: float,
-                             opt_years=None):
-    assert_file_exists(results, 'npv')  # assert that npv.csv file exists
-    actual_npv_df = results.instances[0].cost_benefit_analysis.npv
-    try:
-        expected_df = pd.read_csv(frozen_npv_location, index_col='Unnamed: 0')
-    except ValueError:
-        expected_df = pd.read_csv(frozen_npv_location, index_col='Year')
+def compare_npv_results(results, frozen_npv_location: str, error_bound: float, opt_years=None):
+    if isinstance(results, pd.DataFrame):
+        actual_npv_df = results
+    else:
+        assert_file_exists(results, 'npv')  # assert that npv.csv file exists
+        actual_npv_df = results.instances[0].cost_benefit_analysis.npv
+    if isinstance(frozen_npv_location, pd.DataFrame):
+        expected_df = frozen_npv_location
+    else:
+        try:
+            expected_df = pd.read_csv(frozen_npv_location, index_col='Unnamed: 0')
+        except ValueError:
+            expected_df = pd.read_csv(frozen_npv_location, index_col='Year')
     for yr_indx, values_series in expected_df.iterrows():
         print(f'\n{yr_indx}:\n')
         try:
@@ -297,3 +318,24 @@ def compare_lcpc_results(results, frozen_lcpc_location: str, error_bound: float)
             error_message = f'ValueError in [{time_step}]\nExpected: {expected_value}\nGot: {actual_value}'
 
             assert_within_error_bound(expected_value, actual_value, error_bound, error_message)
+
+
+def modify_mp(tag, key='name', value='yes', column='Active', mp_in=DEFAULT_MP, mp_out_tag=None):
+    # read in default MP, modify it, write it to a temp file
+    mp = pd.read_csv(f'{mp_in}{CSV}')
+    indexes = (mp.Tag == tag) & (mp.Key == key)
+    indexes = indexes[indexes].index.values
+    if len(indexes) != 1:
+        raise Exception(f'a unique row from the default model parameters cannot be determined (tag: {tag}, key: {key}')
+    mp_cell = (indexes[0], column)
+    mp.loc[mp_cell] = value
+    if mp_out_tag is None:
+        tempfile_name = f'{TEMP_MP}--{tag}'
+    else:
+        tempfile_name = f'{TEMP_MP}--{mp_out_tag}'
+    mp.to_csv(f'{tempfile_name}{CSV}', index=False)
+    return tempfile_name
+
+def remove_temp_files(temp_mp):
+    Path(f'{temp_mp}{CSV}').unlink()
+    Path(f'{temp_mp}{JSON}').unlink()

@@ -41,10 +41,7 @@ import pytest
 from pathlib import Path
 from test.TestingLib import *
 
-
 DIR = Path("./test/test_storagevet_features/model_params")
-JSON = '.json'
-CSV = '.csv'
 
 
 def test_da_month():
@@ -121,3 +118,100 @@ def test_da_dr_month():
 
 def test_da_dr_month1():
     assert_ran_with_services(DIR / f'016-DA_DRdayof_battery_month{CSV}', ['DA', 'DR'])
+
+
+class TestDayAheadDemandResponse:
+    """ Day Ahead Demand Response program model"""
+
+    def setup_class(self):
+        self.results = run_case(DIR / f'015-DA_DRdayahead_battery_month{CSV}')
+        self.results_instance = self.results.instances[0]
+        timeseries = self.results_instance.time_series_data
+        self.discharge_constraint = timeseries.loc[:, "DR Discharge Min (kW)"]
+        self.battery_discharge = timeseries.loc[:, 'BATTERY: 2mw-5hr Discharge (kW)']
+        self.battery_charge = timeseries.loc[:, 'BATTERY: 2mw-5hr Charge (kW)']
+
+    def test_services_were_part_of_problem(self):
+        assert_usecase_considered_services(self.results, ['DA', 'DR'])
+
+    def test_qualifying_commitment_calculation(self):
+        dr_obj = self.results_instance.service_agg.value_streams['DR']
+        assert np.all(dr_obj.qc[dr_obj.qc.index.month.isin([6,7,9])] == 10) and np.all(dr_obj.qc[dr_obj.qc.index.month==8] == 20)
+
+    def test_number_of_events(self):  # num of events == 10  length of event == 4  dt == 1
+        active_constraint_indx = self.discharge_constraint[self.discharge_constraint != 0].index
+        assert len(active_constraint_indx) == 10 * 4 * 1
+
+    def test_expected_discharge1(self):
+        dr_events = self.discharge_constraint[self.discharge_constraint != 0]
+        assert np.all(dr_events[dr_events.index.month.isin([6,7,9])] == 10)
+
+    def test_expected_discharge2(self):
+        dr_events = self.discharge_constraint[self.discharge_constraint != 0]
+        assert np.all(dr_events[dr_events.index.month == 8] == 20)
+
+    def test_no_events_occured_in_non_active_months(self):
+        assert np.all(self.discharge_constraint[~self.discharge_constraint.index.month.isin([6,7,8,9])] == 0)
+
+    def test_discharge_constraint_is_met(self):
+        assert np.all((self.battery_discharge - self.battery_charge) >= self.discharge_constraint)
+
+class TestDayOfDemandResponse:
+    """ Day Ahead Demand Response program model"""
+
+    def setup_class(self):
+        self.results = run_case(DIR / f'016-DA_DRdayof_battery_month{CSV}')
+        self.results_instance = self.results.instances[0]
+        self.timeseries = self.results_instance.time_series_data
+        self.discharge_constraint = self.timeseries.loc[:, "DR Possible Event (y/n)"]
+
+    def test_services_were_part_of_problem(self):
+        assert_usecase_considered_services(self.results, ['DA', 'DR'])
+
+    def test_qualifying_energy_calculation(self):
+        dr_obj = self.results_instance.service_agg.value_streams['DR']
+        assert np.all(dr_obj.qe[dr_obj.qe.index.month.isin([6,7,9])] == 40) and np.all(dr_obj.qe[dr_obj.qe.index.month == 8] == 80)
+
+    def test_events_might_occur_when_expected(self):  # active months = 6,7,8,9  active hours = (11 he,14 he) not on weekends
+        active_constraint_indx = self.discharge_constraint[self.discharge_constraint].index
+        assert np.all(active_constraint_indx.month.isin([6,7,8,9]) & active_constraint_indx.hour.isin([10,11,12,13,14]) & (active_constraint_indx.weekday < 5))
+
+    def test_enough_energy_at_start_of_potential_event1(self):  # length of event == 4  last potential start == 14-4=10
+        battery_state_of_energy = self.timeseries.loc[:, "BATTERY: 2mw-5hr State of Energy (kWh)"]
+        soe_start = battery_state_of_energy[(self.discharge_constraint.values) & (self.discharge_constraint.index.hour == 10)]
+        assert np.all(soe_start[soe_start.index.month.isin([6,7,9])] >= 40)
+
+    def test_enough_energy_at_start_of_potential_event2(self):  # length of event == 4  last potential start == 14-4=10
+        battery_state_of_energy = self.timeseries.loc[:, "BATTERY: 2mw-5hr State of Energy (kWh)"]
+        soe_start = battery_state_of_energy[(self.discharge_constraint.values) & (self.discharge_constraint.index.hour == 10)]
+        assert np.all(soe_start[soe_start.index.month == 8] >= 80)
+
+class TestEnergyConstraints:
+    """ Multiple System Constraints on Energy: Backup Energy (a Monthyl Min Constraint)
+            and User Constraints on Energy (Min and Max)
+    """
+
+    def setup_class(self):
+        self.results = run_case(DIR / f'055-DA_Battery_Backup_User{CSV}')
+        self.results_instance = self.results.instances[0]
+        timeseries = self.results_instance.time_series_data
+        self.backup = timeseries.loc[:, "Backup Energy Reserved (kWh)"]
+        self.soe = timeseries.loc[:, 'BATTERY: ess1 State of Energy (kWh)']
+        self.agg_soe = timeseries.loc[:, 'Aggregated State of Energy (kWh)']
+        self.user_energy_max = timeseries.loc[:, 'User Constraints Aggregate Energy Max (kWh)']
+        self.user_energy_min = timeseries.loc[:, 'User Constraints Aggregate Energy Min (kWh)']
+
+    def test_services_were_part_of_problem(self):
+        assert_usecase_considered_services(self.results, ['DA', 'Backup', 'User'])
+
+    def test_max_energy_constraint_is_met(self):
+        assert np.all(self.soe <= self.user_energy_max)
+        assert np.all(self.agg_soe <= self.user_energy_max)
+
+    def test_min_energy_constraint_is_met(self):
+        assert np.all(self.soe >= self.user_energy_min)
+        assert np.all(self.agg_soe >= self.user_energy_min)
+
+    def test_backup_energy_constraint_is_met(self):
+        assert np.all(self.soe >= self.backup)
+        assert np.all(self.agg_soe >= self.backup)

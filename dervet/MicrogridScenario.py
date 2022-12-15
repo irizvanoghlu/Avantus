@@ -314,9 +314,14 @@ class MicrogridScenario(Scenario):
             **kwargs: allows child classes to pass in additional arguments to set_up_optimization
 
         """
+        # NOTE: system_requirements may already exist via run.fill_and_drop_data()
+        # but we need to run it again after a possible Reliability Sizing occurs
+        # can we just reset it to an empty dict here, to avoid redundancies?
+        #self.system_requirements = {}
         self.system_requirements = self.service_agg.identify_system_requirements(self.poi.der_list,
                                                                                   self.opt_years,
                                                                                   self.frequency)
+
         alpha = 1
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value
@@ -347,17 +352,6 @@ class MicrogridScenario(Scenario):
 
             ##NOTE: these print statements reveal the final constraints and costs for debugging
             #print(f'\nFinal constraints ({len(constraints)}):')
-
-            ##NOTE: more detail on constraints
-            #for i, c in enumerate(constraints):
-            #    print(f'constraint {i}: {c.name()}')
-            #    print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
-            #    #print('  parameters:')
-            #    #for p in c.parameters():
-            #    #    print(f'    {p.name()} = {p.value}')
-            #    print()
-
-            #print(f'\nconstraints ({len(constraints)}):')
             #print('\n'.join([f'{i}: {c}' for i, c in enumerate(constraints)]))
             ##print('\n'.join([k.name() for k in constraints]))
             #print(f'\ncosts ({len(functions)}):')

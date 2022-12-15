@@ -185,7 +185,7 @@ class ParamsDER(Params):
             'ElectricVehicle2': cls.read_and_validate_evaluation('ElectricVehicle2'),
             'Chiller': cls.read_and_validate_evaluation('Chiller'),
             'Boiler': cls.read_and_validate_evaluation('Boiler'),
-            # 'ControllableLoad': cls.read_and_validate_evaluation('ControllableLoad')
+            'ControllableLoad': cls.read_and_validate_evaluation('ControllableLoad')
         }
 
         # create dictionary for CBA values for all services (from data files)

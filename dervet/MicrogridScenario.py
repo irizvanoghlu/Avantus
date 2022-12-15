@@ -81,6 +81,7 @@ class MicrogridScenario(Scenario):
         'CT': CT,
         'CHP': CHP,
         'Load': ControllableLoad,
+        'ControllableLoad': ControllableLoad,
         'ElectricVehicle1': ElectricVehicle1,
         'ElectricVehicle2': ElectricVehicle2,
     }
@@ -119,7 +120,7 @@ class MicrogridScenario(Scenario):
             'Boiler': input_tree.Boiler,
             'CT': input_tree.CT,
             'CHP': input_tree.CHP,
-            'Load': input_tree.ControllableLoad
+            'ControllableLoad': input_tree.ControllableLoad
         })
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
         # flags to indicate which module dervet should go to

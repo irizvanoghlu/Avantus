@@ -150,7 +150,7 @@ def test_post_facto_calculations_with_user_constraints():
 
 
 def test_post_facto_calculations_with_user_constraints_error():
-    with pytest.raises(ArithmeticError):
+    with pytest.raises(SystemRequirementsError):
         # captures this error:
         # System requirements are not possible at these times
         # the input-ts has very high values of POI min export and POI min import on the first day

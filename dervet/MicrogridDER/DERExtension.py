@@ -336,13 +336,18 @@ class DERExtension:
         tax_schedule = depreciation_schedules[macrs_yr]
         start_taxing = max(self.construction_year + 1, start_year)
         # extend/cut tax schedule to match length of project
-        project_length = len(tax_info.loc[start_taxing:, macrs_name])
+        try:
+            project_length = len(tax_info.loc[start_taxing:, macrs_name])
+        except KeyError:
+            # catch cases where tax_info has a CAPEX Year, but not the start_taxing year
+            project_length = 0
         if len(tax_schedule) < project_length:
             tax_schedule = tax_schedule + list(np.zeros(project_length - len(tax_schedule)))
         else:
             tax_schedule = tax_schedule[:project_length]
         depreciation = np.multiply(tax_schedule, -capex / 100)
-        tax_info.loc[start_taxing:, macrs_name] = depreciation
+        if project_length != 0:
+            tax_info.loc[start_taxing:, macrs_name] = depreciation
         # ADD CAPEX BACK TO YEARLY NET
         if start_taxing == start_year:
             tax_info.loc["CAPEX Year", disregard_name] = capex

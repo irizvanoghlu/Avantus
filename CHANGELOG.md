@@ -5,6 +5,36 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.3] - 2022-12-16
+### Fixed
+- improvements to the Reliability Sizing module
+  - define a minimum 72-hour continuous window for infeasibility checking to capture day and night
+  - fix the size of non-ESS DERs first and then iterate on ESS sizing
+  - adds a new sizing method that will unset the size for iterating through the reliability sizing
+  - allow reliability sizing for sub-hourly timesteps
+- better error messaging when an infeasibility is encountered (avoid infinite loop)
+- when a size optimization warning occurs due to the horizon-mode being 2 or 3,
+    also have the code fail with a useful error message (this part was previously ignored)
+- all output values labeled in percent should range from 0 to 100
+- remove triple equals sign from line in the requirements file
+- allow om_cost to end up in the proforma output CSV file for technologies
+- allow decommissioning-costs to be negative for all technologies
+- bypass check on valid project start and end year when analysis-horizon-mode is not set to 1
+- fix the Controllable Load technology class so that is will recognize its input parameters
+### Added
+- pytests for GUI pre-defined use cases
+  - test number of results files, proforma values, npv values, and load-coverage-probability values
+- pytests that mimic new storagevet tests, for testing with run_dervet
+- add dervet sizing information to log file
+- make the testing library methods more robust, easier to use, and aligned more with storagevet tests
+- include a second call to calculate_system_requirements for dervet, after reliability sizing occurs
+- have dervet-only technologies (EVs, thermal, ControllableLoad) add to der-dispatch-net-power
+- add 4 standard input parameters to Controllable Load technology
+### Changed
+- when optimally sizing, include Warning if there are negative DA energy prices input
+- clean up the Warnings and Error reporting on the binary parameter and a DCP error
+- change the default ts_constraints parameters to 0 for all services
+
 ## [1.2.2] - 2022-05-05 to 2022-07-07
 ### Added
 - pytests for small tweaks to the default model parameters CSV

@@ -47,8 +47,8 @@ USECASE1 = Path("./Model_params/Usecase1")
 class TestUseCase1EssSizing4Btm:
     """ 1ESS sizing - BTM with PF reliability calculations"""
     def setup_class(self):
-        self.mp_name = "Model_Parameters_Template_Usecase1_UnPlanned_ES.csv"
-        self.results = run_case(TEST_DIR / USECASE1 / self.mp_name)
+        self.mp_name = TEST_DIR / USECASE1 / "Model_Parameters_Template_Usecase1_UnPlanned_ES.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase1/es")
 
     def test_lcpc_exists(self):
@@ -59,18 +59,18 @@ class TestUseCase1EssSizing4Btm:
 
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
-                                 MAX_PERCENT_ERROR+2)
+                                 1e-5)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
-                             MAX_PERCENT_ERROR-1)
+                             1e-5)
 
 
 class TestUseCase1EssSizingPv4Btm:
     """ 1ESS sizing, 1PV fixed - BTM with PF reliability calculations"""
     def setup_class(self):
-        self.mp_name = "Model_Parameters_Template_Usecase1_UnPlanned_ES+PV.csv"
-        self.results = run_case(TEST_DIR / USECASE1 / self.mp_name)
+        self.mp_name = TEST_DIR / USECASE1 / "Model_Parameters_Template_Usecase1_UnPlanned_ES+PV.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase1/es+pv")
 
     def test_lcpc_exists(self):
@@ -81,19 +81,19 @@ class TestUseCase1EssSizingPv4Btm:
 
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_formauc3.csv",
-                                 MAX_PERCENT_ERROR+1)
+                                 1e-5)
 
     def test_size_results_are_expected(self):
         compare_size_results(self.results, self.validated_folder / "sizeuc3.csv",
-                             MAX_PERCENT_ERROR-1)
+                             1e-5)
 
 
 class TestUseCase1EssPvIce4UserConstraints:
     """ Part 2 of Usecase 1C - 1ESS fixed, 1PV fixed, 1ICE fixed - user constraints with PF
     reliability calculations"""
     def setup_class(self):
-        mp_name = "Model_Parameters_Template_Usecase1_UnPlanned_ES+PV+DG_step2.csv"
-        self.results = run_case(TEST_DIR / USECASE1 / mp_name)
+        self.mp_name = TEST_DIR / USECASE1 / "Model_Parameters_Template_Usecase1_UnPlanned_ES+PV+DG_step2.csv"
+        self.results = run_case(self.mp_name)
         self.validated_folder = TEST_DIR / Path("./Results/Usecase1/es+pv+dg_step2")
 
     def test_lcpc_exists(self):

@@ -148,7 +148,7 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         else:
             try:
                 dis_max_rated = int(self.dis_max_rated.value)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 dis_max_rated = self.dis_max_rated
             return dis_max_rated
 
@@ -159,11 +159,11 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
 
         """
         if not solution:
-            return self.dis_max_rated
+            return self.ch_max_rated
         else:
             try:
                 ch_max_rated = int(self.ch_max_rated.value)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 ch_max_rated = self.ch_max_rated
             return ch_max_rated
 
@@ -320,9 +320,9 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
             'Energy Rating (kWh)': self.energy_capacity(solution=True),
             'Charge Rating (kW)': self.charge_capacity(solution=True),
             'Discharge Rating (kW)': self.discharge_capacity(solution=True),
-            'Round Trip Efficiency (%)': self.rte,
-            'Lower Limit on SOC (%)': self.llsoc,
-            'Upper Limit on SOC (%)': self.ulsoc,
+            'Round Trip Efficiency (%)': self.rte * 1e2,
+            'Lower Limit on SOC (%)': self.llsoc * 1e2,
+            'Upper Limit on SOC (%)': self.ulsoc * 1e2,
             'Duration (hours)': self.calculate_duration(),
             'Capital Cost ($)': self.capital_cost_function[0],
             'Capital Cost ($/kW)': self.capital_cost_function[1],
@@ -405,9 +405,6 @@ class ESSSizing(EnergyStorage, DERExtension, ContinuousSizing):
         """
         if self.tag == 'CAES':
             TellUser.error(f'{self.unique_tech_id()} is being sized, but the code does not support this action currently.')
-            return True
-        if self.is_power_sizing() and self.incl_binary:
-            TellUser.error(f'{self.unique_tech_id()} is being sized and binary is turned on. You will get a DCP error.')
             return True
         if self.user_ch_rated_min > self.user_ch_rated_max:
             TellUser.error(f'{self.unique_tech_id()} min charge power requirement is greater than max charge power requirement.')

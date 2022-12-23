@@ -53,7 +53,7 @@ Load shedding TESTS
 """
 
 
-MAX_PERCENT_ERROR = 3
+MAX_PERCENT_ERROR = 1e-5
 
 
 class TestLoadShedding:
@@ -64,6 +64,10 @@ class TestLoadShedding:
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
+
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
 
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
@@ -84,6 +88,10 @@ class TestWoLoadShedding:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
+
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
                                  MAX_PERCENT_ERROR)
@@ -101,6 +109,10 @@ class TestSizingLoadShedding:
 
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
+
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
 
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
@@ -120,6 +132,10 @@ class TestSizingWoLoadShedding:
     def test_lcpc_exists(self):
         assert_file_exists(self.results, 'load_coverage_prob')
 
+    def test_lcpc_results_are_expected(self):
+        compare_lcpc_results(self.results, self.validated_folder / "load_coverage_prob_2mw_5hr.csv",
+                                 MAX_PERCENT_ERROR)
+
     def test_proforma_results_are_expected(self):
         compare_proforma_results(self.results, self.validated_folder / "pro_forma_2mw_5hr.csv",
                                  MAX_PERCENT_ERROR)
@@ -134,12 +150,17 @@ def test_post_facto_calculations_with_user_constraints():
 
 
 def test_post_facto_calculations_with_user_constraints_error():
-    with pytest.raises(ArithmeticError):
+    with pytest.raises(SystemRequirementsError):
+        # captures this error:
+        # System requirements are not possible at these times
+        # the input-ts has very high values of POI min export and POI min import on the first day
         assert_ran(MP / f"Model_Parameters_Template_issue162_error{CSV}")
 
 
 def test_battery_sizing4reliability_soc_init_small():
     with pytest.raises(ParameterError):
+        # captures this error:
+        # SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage
         assert_ran(MP / f"EV_Battery_Sizing_MP{CSV}")
 
 

@@ -30,7 +30,15 @@ Copyright (c) 2022, Electric Power Research Institute
 from dervet.DERVET import DERVET
 import os
 import pandas as pd
+import numpy as np
 from pathlib import Path
+
+DIR = Path("./")
+JSON = '.json'
+CSV = '.csv'
+
+DEFAULT_MP = DIR / f'Model_Parameters_Template_DER'
+TEMP_MP = DIR / f'temp_model_parameters'
 
 def _checkThatFileExists(f, name='Unlabeled', raise_exception_on_fail=True, write_msg_to_terminal=True):
     path_file = Path(f)
@@ -66,18 +74,30 @@ def check_initialization(model_param_location: str):
 def assert_file_exists(model_results, results_file_name='timeseries_results'):
     if model_results.sensitivity_df.empty:
         check_for_file = model_results.dir_abs_path / f'{results_file_name}{model_results.csv_label}.csv'
+        print(check_for_file)
         assert os.path.isfile(check_for_file), f'No {results_file_name} found at {check_for_file}'
     else:
         for index in model_results.instances.keys():
             check_for_file = model_results.dir_abs_path / str(index) / f'{results_file_name}{model_results.csv_label}.csv'
             assert os.path.isfile(check_for_file), f'No {results_file_name} found at {check_for_file}'
 
+def assert_file_does_not_exist(model_results, results_file_name: str):
+    if model_results.sensitivity_df.empty:
+        check_for_file = model_results.dir_abs_path / f'{results_file_name}{model_results.csv_label}.csv'
+        assert os.path.isfile(check_for_file) == False, f'{results_file_name} found at {check_for_file}, but no file was expected'
+    else:
+        for index in model_results.instances.keys():
+            check_for_file = model_results.dir_abs_path / str(index) / f'{results_file_name}{model_results.csv_label}.csv'
+            assert os.path.isfile(check_for_file) == False, f'{results_file_name} found at {check_for_file} but no file was expected'
 
-def assert_within_error_bound(actual: float, test_value: float, error_bound: float, error_message: str):
-    diff = abs(actual-test_value)
+def assert_within_error_bound(expected_value: float, actual_value: float, error_bound: float, error_message: str):
+    if error_bound < 0:
+        raise Exception(f'Testing Fail: the specified error_bound ({error_bound}) must be a positive number')
+    diff = abs(expected_value-actual_value)
     if not diff:
+        # the difference in values is zero
         return
-    assert diff/actual <= error_bound/100, error_message + f'Test value: {test_value}   Should be in range: ({actual+(actual*(error_bound/100))},{actual-(actual*(error_bound/100))}) \n'
+    assert diff/abs(expected_value) <= error_bound/100, f'Test value: {actual_value}   Should be in range: ({expected_value+(expected_value*(error_bound/100))},{expected_value-(expected_value*(error_bound/100))}). {error_message}'
 
 
 ##########################################
@@ -85,13 +105,13 @@ def assert_within_error_bound(actual: float, test_value: float, error_bound: flo
 
 def assert_ran(model_param_location: str):
     results = run_case(model_param_location)
-    assert_file_exists(results)
+    assert_file_exists(results) # assert that timeseries_results.csv file exists
     return results
 
 
 def assert_ran_with_services(model_param_location: str, services: list):
     results = run_case(model_param_location)
-    assert_file_exists(results)
+    assert_file_exists(results) # assert that timeseries_results.csv file exists
     value_stream_keys = results.instances[0].service_agg.value_streams.keys()
     print(set(value_stream_keys))
     assert set(services) == set(value_stream_keys)
@@ -142,6 +162,10 @@ def assert_timeseries_col1_ge_col2(ts, col1: str, col2: str):
     ts_diff = ts[col1] - ts[col2]
     assert all(ts_diff.ge(-1e-5))
 
+def assert_expected_number_of_timeseries_columns(ts, number_of_expected_timeseries_columns: int):
+    number_of_actual_timeseries_columns = len(ts.columns)
+    assert number_of_actual_timeseries_columns == number_of_expected_timeseries_columns, f'{number_of_actual_timeseries_columns} columns found in the timeseries results file, but expecting {number_of_expected_timeseries_columns}'
+
 def assert_npv_columns_are_zero(npv, items: list):
     # npv only has one row
     npv_subset = npv[items]
@@ -166,72 +190,152 @@ def assert_pro_forma_columns_are_all_negative(pf, items: list):
     min_tf = pf_subset.min().lt(0)
     assert all(max_tf) & all(min_tf)
 
-def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float,
-                             opt_years=None):
-    assert_file_exists(results, 'pro_forma')
-    test_proforma_df = results.proforma_df()
-    try:
-        expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
-    except ValueError:
-        expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
+def assert_expected_number_of_results_files(results, number_of_expected_results_files: int):
+    # NOTE: with a .csv model parameters input, there are two model parameter files output to results
+    #       with a .json model parameters input, there is one model parameter file output to results
+    results_files_generator_object = results.dir_abs_path.glob('*')
+    number_of_actual_results_files = len([k for k in results_files_generator_object])
+    assert number_of_actual_results_files == number_of_expected_results_files, f'{number_of_actual_results_files} files found in results folder, but expecting {number_of_expected_results_files}'
+
+def compare_proforma_results(results, frozen_proforma_location: str, error_bound: float, opt_years=None):
+    if isinstance(results, pd.DataFrame):
+        actual_proforma_df = frozen_proforma_location
+    else:
+        assert_file_exists(results, 'pro_forma') # assert that pro_forma.csv file exists
+        actual_proforma_df = results.proforma_df()
+    if isinstance(frozen_proforma_location, pd.DataFrame):
+        expected_df = frozen_proforma_location
+    else:
+        try:
+            expected_df = pd.read_csv(frozen_proforma_location, index_col='Unnamed: 0')
+        except ValueError:
+            expected_df = pd.read_csv(frozen_proforma_location, index_col='Year')
     for yr_indx, values_series in expected_df.iterrows():
+        print(f'\nPROFORMA YEAR: {yr_indx}\n')
         try:
             actual_indx = pd.Period(yr_indx)
             if opt_years is not None and actual_indx.year not in opt_years:
                 continue
         except ValueError:
             actual_indx = yr_indx
-        # print(actual_indx)
-        assert actual_indx in test_proforma_df.index, f'{actual_indx} not in test proforma index'
+        assert actual_indx in actual_proforma_df.index, f'{actual_indx} not in test proforma index'
         for col_indx in values_series.index:
-            assert col_indx in test_proforma_df.columns, f'{col_indx} not in test proforma columns'
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       proforma file are ignored)
+            print(col_indx)
+            assert col_indx in actual_proforma_df.columns, f'{col_indx} not in test proforma columns'
             error_message = f'ValueError in Proforma [{yr_indx}, {col_indx}]\n'
-            assert_within_error_bound(expected_df.loc[yr_indx, col_indx], test_proforma_df.loc[actual_indx, col_indx], error_bound, error_message)
+            print(expected_df.loc[yr_indx, col_indx], actual_proforma_df.loc[actual_indx, col_indx])
+            assert_within_error_bound(expected_df.loc[yr_indx, col_indx], actual_proforma_df.loc[actual_indx, col_indx], error_bound, error_message)
 
+def compare_npv_results(results, frozen_npv_location: str, error_bound: float, opt_years=None):
+    if isinstance(results, pd.DataFrame):
+        actual_npv_df = results
+    else:
+        assert_file_exists(results, 'npv')  # assert that npv.csv file exists
+        actual_npv_df = results.instances[0].cost_benefit_analysis.npv
+    if isinstance(frozen_npv_location, pd.DataFrame):
+        expected_df = frozen_npv_location
+    else:
+        try:
+            expected_df = pd.read_csv(frozen_npv_location, index_col='Unnamed: 0')
+        except ValueError:
+            expected_df = pd.read_csv(frozen_npv_location, index_col='Year')
+    for yr_indx, values_series in expected_df.iterrows():
+        print(f'\n{yr_indx}:\n')
+        try:
+            actual_indx = pd.Period(yr_indx)
+            if opt_years is not None and actual_indx.year not in opt_years:
+                continue
+        except ValueError:
+            actual_indx = yr_indx
+        assert actual_indx in actual_npv_df.index, f'{actual_indx} not in test npv index'
+        for col_indx in values_series.index:
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       npv file are ignored)
+            print(col_indx)
+            assert col_indx in actual_npv_df.columns, f'{col_indx} not in test npv columns'
+            error_message = f'ValueError in NPV [{yr_indx}, {col_indx}]\n'
+            print(expected_df.loc[yr_indx, col_indx], actual_npv_df.loc[actual_indx, col_indx])
+            assert_within_error_bound(expected_df.loc[yr_indx, col_indx], actual_npv_df.loc[actual_indx, col_indx], error_bound, error_message)
 
-def check_lcpc(results, test_model_param_location: str):
-    # asset file exists
-    assert_file_exists(results, 'load_coverage_prob')
-    test_lcpc_pd = results.instances[0].drill_down_dict['load_coverage_prob']
-    # get max # of hours that value of lcpc is 1
-    test_covered_hrs = sum(test_lcpc_pd['Load Coverage Probability (%)'] == 1)
+def check_lcpc(results, test_model_param_location, expected_target_hours=None):
+    # this test compares the covered hours from the internal results data (drill_down)
+    #   with what is expected given the target hours from the model parameters file
+    actual_lcpc_pd = results.instances[0].drill_down_dict['load_coverage_prob']
+    # get max # of hours that value of lcpc is 100
+    actual_covered_hrs = sum(actual_lcpc_pd['Load Coverage Probability (%)'] == 100)
     # get target hours
-    case_mp_pd = pd.read_csv(test_model_param_location)
-    try:
-        target_covered_hours = case_mp_pd.loc[(case_mp_pd['Tag'] == 'Reliability') & (case_mp_pd['Key'] == 'target'), 'Value']
-    except KeyError:
-        target_covered_hours = case_mp_pd.loc[(case_mp_pd['Tag'] == 'Reliability') & (case_mp_pd['Key'] == 'target'), 'Optimization Value']
-    target_covered_hours = int(target_covered_hours.values[0])
-    assert target_covered_hours <= test_covered_hrs, f'Hours covered: {test_covered_hrs}\nExpected: {target_covered_hours}'
+    if expected_target_hours is None:
+        # when expected_target_hours is None, get the value from model parameters csv
+        case_mp_pd = pd.read_csv(test_model_param_location)
+        try:
+            target_covered_hours = case_mp_pd.loc[(case_mp_pd['Tag'] == 'Reliability') & (case_mp_pd['Key'] == 'target'), 'Value']
+        except KeyError:
+            target_covered_hours = case_mp_pd.loc[(case_mp_pd['Tag'] == 'Reliability') & (case_mp_pd['Key'] == 'target'), 'Optimization Value']
+        target_covered_hours = int(target_covered_hours.values[0])
+    else:
+        target_covered_hours = int(expected_target_hours)
+    print(actual_covered_hrs, target_covered_hours)
+    assert target_covered_hours <= actual_covered_hrs, f'Hours covered: {actual_covered_hrs}\nExpected: {target_covered_hours}'
 
 
 def compare_size_results(results, frozen_size_location: str, error_bound: float):
-    assert_file_exists(results, 'size')  # assert that results exists
-    test_df = results.instances[0].sizing_df
+    assert_file_exists(results, 'size')  # assert that size.csv file exists
+    actual_df = results.instances[0].sizing_df
     try:
-        test_df.set_index("DER", inplace=True)
+        actual_df.set_index("DER", inplace=True)
     except KeyError:
         pass
-    actual_df = pd.read_csv(frozen_size_location, index_col='DER')
-    for der_name in actual_df.index:
-        for col in actual_df.columns:
-            test_value = test_df.loc[der_name, col]
+    expected_df = pd.read_csv(frozen_size_location, index_col='DER')
+    for der_name in expected_df.index:
+        print(f'\nDER SIZING: {der_name}\n')
+        for col in expected_df.columns:
+            # NOTE: this loops through expected columns (extra columns appearing in the actual
+            #       size results file are ignored)
+            print(col)
             actual_value = actual_df.loc[der_name, col]
-            if str(test_value) != 'nan' and str(actual_value) != 'nan':
-                error_message = f'ValueError in [{der_name}, {col}]\nExpected: {actual_value}\nGot: {test_value}'
+            expected_value = expected_df.loc[der_name, col]
+            print(actual_value, expected_value)
+            if str(actual_value) != 'nan' and str(expected_value) != 'nan':
+                error_message = f'ValueError in [{der_name}, {col}]\nExpected: {expected_value}\nGot: {actual_value}'
 
-                assert_within_error_bound(actual_value, test_value, error_bound, error_message)
+                assert_within_error_bound(expected_value, actual_value, error_bound, error_message)
 
 
 def compare_lcpc_results(results, frozen_lcpc_location: str, error_bound: float):
-    test_df = results.instances[0].drill_down_dict.get('load_coverage_prob')
-    assert test_df is not None
-    actual_df = pd.read_csv(frozen_lcpc_location)
-    for time_step in actual_df.index:
-
-        test_value = test_df.loc[time_step]['Load Coverage Probability (%)']
+    # this test compares each row of the load coverage probability data
+    #   (from the internal results data (drill_down) with the load_coverage_prob
+    #   file in results (frozen)
+    actual_df = results.instances[0].drill_down_dict.get('load_coverage_prob')
+    assert actual_df is not None
+    expected_df = pd.read_csv(frozen_lcpc_location, index_col='Outage Length (hrs)')
+    for time_step in expected_df.index:
+        # loop through keys in expected dataframe
         actual_value = actual_df.loc[time_step]['Load Coverage Probability (%)']
-        if test_value != 'nan' and actual_value != 'nan':
-            error_message = f'ValueError in [{time_step}]\nExpected: {actual_value}\nGot: {test_value}'
+        expected_value = expected_df.loc[time_step]['Load Coverage Probability (%)']
+        if actual_value != 'nan' and expected_value != 'nan':
+            error_message = f'ValueError in [{time_step}]\nExpected: {expected_value}\nGot: {actual_value}'
 
-            assert_within_error_bound(actual_value, test_value, error_bound, error_message)
+            assert_within_error_bound(expected_value, actual_value, error_bound, error_message)
+
+
+def modify_mp(tag, key='name', value='yes', column='Active', mp_in=DEFAULT_MP, mp_out_tag=None):
+    # read in default MP, modify it, write it to a temp file
+    mp = pd.read_csv(f'{mp_in}{CSV}')
+    indexes = (mp.Tag == tag) & (mp.Key == key)
+    indexes = indexes[indexes].index.values
+    if len(indexes) != 1:
+        raise Exception(f'a unique row from the default model parameters cannot be determined (tag: {tag}, key: {key}')
+    mp_cell = (indexes[0], column)
+    mp.loc[mp_cell] = value
+    if mp_out_tag is None:
+        tempfile_name = f'{TEMP_MP}--{tag}'
+    else:
+        tempfile_name = f'{TEMP_MP}--{mp_out_tag}'
+    mp.to_csv(f'{tempfile_name}{CSV}', index=False)
+    return tempfile_name
+
+def remove_temp_files(temp_mp):
+    Path(f'{temp_mp}{CSV}').unlink()
+    Path(f'{temp_mp}{JSON}').unlink()

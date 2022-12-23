@@ -1820,6 +1820,15 @@
                         },
                         "type": "nan"
                     },
+                    "ccost": {
+                        "opt_value": "0",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "construction_year": {
                         "opt_value": "2017",
                         "sensitivity": {
@@ -1865,6 +1874,28 @@
                         },
                         "type": "int"
                     },
+                    "fixed_om": {
+                        "opt_value": "100",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "macrs_term": {
+                        "evaluation": {
+                            "active": "n",
+                            "value": "0"
+                        },
+                        "opt_value": "3",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
                     "name": {
                         "opt_value": "Demand Response Tech",
                         "sensitivity": {
@@ -1894,6 +1925,15 @@
                     },
                     "power_rating": {
                         "opt_value": "100",
+                        "sensitivity": {
+                            "active": "no",
+                            "coupled": "None",
+                            "value": "nan"
+                        },
+                        "type": "float"
+                    },
+                    "rcost": {
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3158,7 +3198,7 @@
                         "type": "float"
                     },
                     "ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",
@@ -3687,7 +3727,7 @@
                         "type": "float"
                     },
                     "ts_constraints": {
-                        "opt_value": "1",
+                        "opt_value": "0",
                         "sensitivity": {
                             "active": "no",
                             "coupled": "None",

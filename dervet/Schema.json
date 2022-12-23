@@ -765,7 +765,6 @@
                     },
                     "decommissioning_cost": {
                         "cba": "n",
-                        "min": "0.0",
                         "type": "float",
                         "unit": "$"
                     },
@@ -791,6 +790,29 @@
                         "min": "-100.0",
                         "type": "float",
                         "unit": "%"
+                    },
+                    "ccost": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$"
+                    },
+                    "fixed_om": {
+                        "cba": "y",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$/year"
+                    },
+                    "macrs_term": {
+                        "allowed_values": "3|5|7|10|15|20",
+                        "cba": "n",
+                        "type": "float"
+                    },
+                    "rcost": {
+                        "cba": "n",
+                        "min": "0.0",
+                        "type": "float",
+                        "unit": "$"
                     },
                     "ecc%": {
                         "cba": "n",

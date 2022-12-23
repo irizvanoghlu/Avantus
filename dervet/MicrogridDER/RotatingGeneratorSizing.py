@@ -65,6 +65,10 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
             if self.max_rated_power:
                 self.size_constraints += [cvx.NonPos(self.rated_power - self.max_rated_power)]
 
+        self.unset_rated_power = None
+        self.unset_size_constraints = None
+        self.was_sized = False
+
     def discharge_capacity(self, solution=False):
         """
 
@@ -154,7 +158,21 @@ class RotatingGeneratorSizing(RotatingGenerator, DERExtension, ContinuousSizing)
         """ Save value of size variables of DERs
 
         """
+        # set these unset_ values to fall back on (if unset_size() is called)
+        self.unset_rated_power = self.rated_power
+        self.unset_size_constraints = self.size_constraints
         self.rated_power = self.name_plate_capacity(True)
+        self.size_constraints = []
+        self.was_sized = True
+
+    def unset_size(self):
+        """ Return size variables back to what they were before sizing
+            Can only be used after set_size() is called
+        """
+        if self.was_sized:
+            self.rated_power = self.unset_rated_power
+            self.size_constraints = self.unset_size_constraints
+            self.was_sized = False
 
     def sizing_summary(self):
         """

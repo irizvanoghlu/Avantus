@@ -76,7 +76,7 @@ class MicrogridServiceAggregator(ServiceAggregator):
         Returns: boolean, interect btw list of market services
 
         """
-        return {'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys())
+        return bool({'SR', 'NSR', 'FR', 'LF'} & set(self.value_streams.keys()))
 
     def set_size(self, der_lst, start_year):
         """ part of Deferral's sizing module: TODO REPLACE WITH set_size IN MICROGRID POI

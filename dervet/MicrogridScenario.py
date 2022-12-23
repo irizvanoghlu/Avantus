@@ -81,6 +81,7 @@ class MicrogridScenario(Scenario):
         'CT': CT,
         'CHP': CHP,
         'Load': ControllableLoad,
+        'ControllableLoad': ControllableLoad,
         'ElectricVehicle1': ElectricVehicle1,
         'ElectricVehicle2': ElectricVehicle2,
     }
@@ -119,6 +120,7 @@ class MicrogridScenario(Scenario):
             'Boiler': input_tree.Boiler,
             'CT': input_tree.CT,
             'CHP': input_tree.CHP,
+            'ControllableLoad': input_tree.ControllableLoad
         })
         self.value_stream_input_map.update({'Reliability': input_tree.Reliability})
         # flags to indicate which module dervet should go to
@@ -150,18 +152,14 @@ class MicrogridScenario(Scenario):
 
         # set the project end year
         self.end_year = self.cost_benefit_analysis.find_end_year(der_lst)
-        if self.end_year.year == 0:
-            # some type error was recorded. throw error and exit
-            raise Exception("Error occurred while trying to determine the end of the analysis." +
-                            " Please check the error_log.log in your results folder for more " +
-                            "information.")
         # if economic carrying cost, check for value conflicts in CBA and scenario
         if self.cost_benefit_analysis.ecc_mode:
             self.cost_benefit_analysis.ecc_checks(der_lst, self.service_agg.value_streams)
         # update opt_years based on this new end_year
         add_analysis_years = \
             self.cost_benefit_analysis.get_years_before_and_after_failures(self.end_year, der_lst)
-        TellUser.debug(f"Adding {add_analysis_years} to opt_years")
+        if len(add_analysis_years) > 0:
+            TellUser.debug(f"Adding {add_analysis_years} to opt_years")
         set_opt_yrs = set(self.opt_years)
         set_opt_yrs.update(add_analysis_years)
         self.opt_years = list(set_opt_yrs)
@@ -199,10 +197,10 @@ class MicrogridScenario(Scenario):
                                    f"implementation")
                     raise ParameterError('See dervet.log for more information.')
                 for der_inst in der_lst:
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target==0:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target == 0:
                         TellUser.error(f"SOC target must be more than 0 for reliability sizing as it is the starting ES SOC during an outage")
                         raise ParameterError('See dervet.log for more information.')
-                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target<100:
+                    if der_inst.technology_type == 'Energy Storage System' and der_inst.soc_target < 1:
                         TellUser.warning('Initial SOC when outage starts is not 100%, it will oversize DER ratings')
 
             else:
@@ -210,6 +208,9 @@ class MicrogridScenario(Scenario):
 
         if self.reliability_sizing:
             der_list = vs_dct['Reliability'].sizing_module(der_lst, self.optimization_levels.index)
+            if der_list is None:
+                TellUser.error(f'Sizing for Reliability is infeasible given the inputs and constraints. Please adjust the parameters and try again.')
+                raise ParameterError('See dervet.log for more information.')
             self.poi.der_list = der_list
             # Resetting sizing flag. It doesn't size for other services.
             self.poi.is_sizing_optimization = False
@@ -221,23 +222,35 @@ class MicrogridScenario(Scenario):
 
         if self.service_agg.is_reliability_only() or self.service_agg.post_facto_reliability_only_and_user_defined_constraints():
             self.service_agg.value_streams['Reliability'].use_sizing_module_results = True
+            TellUser.info("With only an active Reliability Service, size optimizations are already complete. " +
+                          "No further optimizations will run.")
             self.opt_engine = False
 
     def check_opt_sizing_conditions(self):
         """ Throws an error if any DER is being sized under assumptions that will not
         result in a solution within a reasonable amount of time.
         Called IFF we are preforming an optimization based sizing analysis.
+        Also throws warnings where appropriate.
 
         """
+        # begin with no error
         error = False
+        # warn if there are negative energy prices (in DA.price time series)
+        try:
+            if np.min(self.service_agg.value_streams['DA'].price) < 0:
+                TellUser.warning('Performing optimal sizing with negative DA energy prices may ' +
+                                'result in impossible operational results. Consider turning ' +
+                                'off optimal sizing or using energy prices that are non-negative.')
+        except KeyError:
+            pass
         # make sure the optimization horizon is the whole year
         if self.n != 'year':
             TellUser.error('Trying to size without setting the optimization window to \'year\'')
             error = True
         # any wholesale markets active?
         if self.service_agg.is_whole_sale_market():
-            TellUser.warning('trying to size the power of the battery to maximize profits in ' +
-                             'wholesale markets. We will not run analysis power capacity is not ' +
+            TellUser.warning('trying to size the power of a DER to maximize profits in ' +
+                             'wholesale markets. We will not run analysis if power capacity is not ' +
                              'limited by the DERs or through market participation constraints.')
             # check that at least one: (1) (2) is false
             # 1) if all wholesale markets has a max defined
@@ -255,9 +268,9 @@ class MicrogridScenario(Scenario):
                            'calculations. Please turn off post_facto_only or stop sizing')
             error = True
         # check if binary will create a DCP error based on formulation
-        if self.poi.is_dcp_error(self.incl_binary):
-            TellUser.error('trying to size power and use binary formulation results in ' +
-                           'nonlinear models')
+        if self.poi.is_dervet_power_sizing() and self.incl_binary:
+            TellUser.error('trying to size power while using the binary formulation results in ' +
+                           'nonlinear models.')
             error = True
         if error:
             raise ParameterError("Further calculations requires that economic dispatch is " +
@@ -303,9 +316,14 @@ class MicrogridScenario(Scenario):
             **kwargs: allows child classes to pass in additional arguments to set_up_optimization
 
         """
+        # NOTE: system_requirements may already exist via run.fill_and_drop_data()
+        # but we need to run it again after a possible Reliability Sizing occurs
+        # can we just reset it to an empty dict here, to avoid redundancies?
+        #self.system_requirements = {}
         self.system_requirements = self.service_agg.identify_system_requirements(self.poi.der_list,
                                                                                   self.opt_years,
                                                                                   self.frequency)
+
         alpha = 1
         if self.poi.is_sizing_optimization:
             # calculate the annuity scalar that will convert any yearly costs into a present value
@@ -334,22 +352,13 @@ class MicrogridScenario(Scenario):
                 TellUser.info(f"Optimization window #{opt_period} does not have any constraints or objectives to minimize -- SKIPPING...")
                 continue
 
-#            #NOTE: these print statements reveal the final constraints and costs for debugging
-#            print(f'\nFinal constraints ({len(constraints)}):')
-#
-#            #NOTE: more detail on constraints
-#            for i, c in enumerate(constraints):
-#                print(f'constraint {i}: {c.name()}')
-#                print(f"  variables: {', '.join([j.name() for j in c.variables()])}")
-#                #print('  parameters:')
-#                #for p in c.parameters():
-#                #    print(f'    {p.name()} = {p.value}')
-#                print()
-#
-#            print('\n'.join([k.name() for k in constraints]))
-#            print(f'\ncosts ({len(functions)}):')
-#            print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
-#            print()
+            ##NOTE: these print statements reveal the final constraints and costs for debugging
+            #print(f'\nFinal constraints ({len(constraints)}):')
+            #print('\n'.join([f'{i}: {c}' for i, c in enumerate(constraints)]))
+            ##print('\n'.join([k.name() for k in constraints]))
+            #print(f'\ncosts ({len(functions)}):')
+            #print('\n'.join([f'{k}: {v}' for k, v in functions.items()]))
+            #print()
 
             cvx_problem, obj_expressions, cvx_error_msg = self.solve_optimization(functions, constraints, force_glpk_mi=self.poi.has_thermal_load)
             self.save_optimization_results(opt_period, sub_index, cvx_problem, obj_expressions, cvx_error_msg)

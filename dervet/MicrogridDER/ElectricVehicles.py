@@ -332,7 +332,7 @@ class ElectricVehicle1(DER, ContinuousSizing, DERExtension):
 
         """
         pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func, results)
-        if self.variables_df.empty:
+        if self.variables_df.index.empty:
             return pro_forma
         analysis_years = self.variables_df.index.year.unique()
         om_costs = pd.DataFrame()
@@ -575,7 +575,7 @@ class ElectricVehicle2(DER, ContinuousSizing, DERExtension):
 
         """
         pro_forma = super().proforma_report(apply_inflation_rate_func, fill_forward_func, results)
-        if self.variables_df.empty:
+        if self.variables_df.index.empty:
             return pro_forma
         analysis_years = self.variables_df.index.year.unique()
         om_costs = pd.DataFrame()

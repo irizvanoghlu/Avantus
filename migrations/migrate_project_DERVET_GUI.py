@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Electric Power Research Institute
+Copyright (c) 2023, Electric Power Research Institute
 
  All rights reserved.
 
@@ -217,7 +217,7 @@ if __name__ == "__main__":
           'A new directory is created (with \'_v2\' appended to the name) which will ' +
           f'contain the new converted \'{PROJECT_FILENAME}\' file. ' +
           'Should be used with Python 3.2 or greater',
-        epilog='Copyright 2022. Electric Power Research Institute (EPRI). All Rights Reserved.',
+        epilog='Copyright 2023. Electric Power Research Institute (EPRI). All Rights Reserved.',
     )
     parser.add_argument('v1_directory_name', type=str, help='specify the directory name to work on')
     args = parser.parse_args()

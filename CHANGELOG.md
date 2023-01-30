@@ -5,8 +5,9 @@ Questions and feedback can be submitted to the Electric Power Research Institute
 
 The format is based on [Keep a Changelog] (https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.3] - 2022-12-16
+## [1.2.3] - 2023-01-26
 ### Fixed
+- Simplify the README
 - improvements to the Reliability Sizing module
   - define a minimum 72-hour continuous window for infeasibility checking to capture day and night
   - fix the size of non-ESS DERs first and then iterate on ESS sizing

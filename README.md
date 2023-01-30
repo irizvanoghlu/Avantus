@@ -21,19 +21,26 @@ notes on how to deploy the project on a live system.
 Follow these steps to run DER-VET through your command line on your local computer.
 
 1. #### Clone/download this repository onto your local computer.
-    When cloning a repo with 'git clone', if you do not specify a new directory as the last argument, it will be named
-   `DER-VET`. Alternatively, you can specify this and name it as you please. Regardless of what the downloaded folder is
-   named or located, this new directory becomes the 'root directory' of dervet.
+    Navigate to a folder on your computer where you place git repositories. Normally this is a folder named `git` that
+    lives in your home directory, but it can be any folder.
+
+    Enter the following command from a terminal/prompt to 'clone' the repo and download it to your computer. Note that
+    using the `--recurse-submodules` flag will also clone the required `StorageVET` submodule automatically:
+    ```
+    git clone --recurse-submodules https://github.com/epri-dev/DER-VET.git
+    ```
+
+    When cloning a repo with 'git clone', if you do not specify a new directory as the last argument (as shown above),
+    it will be named `DER-VET`. Alternatively, you can specify this and name it as you please. Regardless of what the
+    downloaded folder is named or located, this new directory becomes the 'root directory' of dervet.
 
     >The *root directory* refers to the folder with folders/files such as
    > `dervet`, `data`, `test`, `README.md` (this file), `Model_Parameters_Template_DER.csv`, and `run_DERVET.py`.
 
-2. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer in the *root directory* as `storagevet`.
-
-3. #### Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**
+2. #### Install [Anaconda](https://www.anaconda.com/products/individual) for python 3.**
    >It is recommended for Windows users to install and use Anaconda.
 
-4. #### Install system requirements
+3. #### Install system requirements
     **On Windows**
     Install the Build Tools for [Visual Studio](https://visualstudio.microsoft.com/downloads/). When prompted by the
     installer, select C++ build tools and the appropriate Windows SDK specified in the table below and install.
@@ -48,18 +55,19 @@ Follow these steps to run DER-VET through your command line on your local comput
 
     Install [Xcode](https://developer.apple.com/xcode/) and [GLPK](https://formulae.brew.sh/formula/glpk)
 
-5. #### Open Anaconda Prompt
+4. #### Open Anaconda Prompt
     or a corresponding shell/terminal/console/prompt, in **administrator mode**
    >You will need administrator access on your computer.
 
    *Refer to step 7 for more guidance on which prompt to open.*
 
-6. #### Navigate to your `dervet` folder.
+5. #### Navigate to your `dervet` folder.
    This is the location of the repository or downloaded folder on your local computer. We refer to this location as the
     "root directory"
 
-7. #### Create Python environment
-    We give the user 2 routes to create a python environment for python 3.8.13
+6. #### Create Python environment
+    It is recommended that the latest Python 3.8 version be used. As of this writing, that version is Python 3.8.16
+    We give the user 2 routes to create a python environment for python 3.8.16
    >Most Windows users have success with the Conda route.
 
     Each route results in a siloed python environment, but with different properties.
@@ -73,13 +81,13 @@ Follow these steps to run DER-VET through your command line on your local comput
 
     Enter the following command:
     ```
-    conda create -n dervet-venv python=3.8.13
+    conda create -n dervet-venv python=3.8.16
     ```
-    >The python version is specified, meaning conda does not have to be associated with a python 3.8.13.
+    >The python version is specified, meaning conda does not have to be associated with a python 3.8.16.
 
     **Pip Route**
 
-    If you have Python 3.8.13 installed directly on your computer, then we recommend trying this route.
+    If you have Python 3.8.16 installed directly on your computer, then we recommend trying this route.
 
     >This route lets you to open the prompt of your choice in step 5.
 
@@ -88,9 +96,9 @@ Follow these steps to run DER-VET through your command line on your local comput
     pip install virtualenv
     virtualenv dervet-venv
     ```
-    >The `pip` should be associated to the **python 3.8.13 installation**
+    >The `pip` should be associated to the **python 3.8.16 installation**
 
-8. #### Activate Python 3.8.13 environment
+7. #### Activate Python 3.8.16 environment
     **Conda Route**
 
     Enter the following command into anaconda prompt:
@@ -111,7 +119,7 @@ Follow these steps to run DER-VET through your command line on your local comput
     "./dervet-venv/Scripts/activate"
     ```
 
-9. #### Install project dependencies
+8. #### Install project dependencies
     **Conda Route**
 
     Enter the following commands in anaconda prompt:
@@ -142,19 +150,18 @@ DER-VET on you local `C:\` drive.
 
 2. #### Clone/download this repository onto your local computer as `dervet`.
     Place this new `dervet` folder in `C:\DERVET\DervetBackEnd`, thus replacing the existing one.
+    Use the `--recurse-submodules` flag with the `git clone` command to also download the required `StorageVET` repo.
+    The root directory is `C:\DERVET\DervetBackEnd\dervet`
 
-3. #### Clone/download the sub-repository, [StorageVET](https://github.com/epri-dev/StorageVET), onto your local computer into the root folder as `storagevet`.
-    The root directory is `C:\DERVET\DervetBackEnd\dervet`, which was updated in the previous step.
+3. #### Open Anaconda Prompt
 
-4. #### Open Anaconda Prompt
-
-5. #### Activate Python 3.8.13 environment
+4. #### Activate Python 3.8.16 environment
     ```
     conda activate "C:\DERVET\DervetBackEnd\"
     cd C:\DERVET\DervetBackEnd\dervet
     ```
 
-6. #### Update project dependencies
+5. #### Update project dependencies
     ```
     pip install setuptools==52.0.0
     conda install conda-forge::blas=*=openblas --file requirements.txt --file requirements-dev.txt
@@ -170,7 +177,7 @@ Follow these steps to run DER-VET from the command prompt
 
 2. ####  Navigate to the root "dervet" folder.
 
-2. ####  Enter the following into your command prompt:
+3. ####  Enter the following into your command prompt:
 
     ```
     python run_DERVET.py Model_Parameters_Template_DER.csv
@@ -208,8 +215,8 @@ The script accepts a single positional argument: the name of a folder which must
 
 ## Versioning
 
-We use [Gitlab](https://gitlab.epri.com/storagevet/dervet) for versioning. For the versions available,
-see the [list of releases](https://github.com/epri-dev/DER-VET/releases)  on this repository.
+For the versions available, please
+see the [list of releases](https://github.com/epri-dev/DER-VET/releases) on out GitHub repository.
 This is version 1.2.3
 
 ## Authors
@@ -240,7 +247,7 @@ This project is licensed under the BSD (3-clause) License - see [LICENSE.txt](./
 
 DER-VET v1.2.3
 
-Copyright © 2022 Electric Power Research Institute, Inc. All Rights Reserved.
+Copyright © 2023 Electric Power Research Institute, Inc. All Rights Reserved.
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
